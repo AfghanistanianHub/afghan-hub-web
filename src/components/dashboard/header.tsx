@@ -1,13 +1,26 @@
 import Link from "next/link";
-import { Bell, Menu, Search } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import { logout } from "@/app/(dashboard)/actions";
+import {
+  NotificationBell,
+  type NotificationSummary,
+} from "@/components/dashboard/notification-bell";
 
 type HeaderProps = {
+  currentUserId: string;
   displayName: string;
   email: string;
+  notifications: NotificationSummary[];
+  unreadNotificationCount: number;
 };
 
-export function Header({ displayName, email }: HeaderProps) {
+export function Header({
+  currentUserId,
+  displayName,
+  email,
+  notifications,
+  unreadNotificationCount,
+}: HeaderProps) {
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
@@ -40,13 +53,11 @@ export function Header({ displayName, email }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-3">
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="rounded-xl border border-slate-800 p-3 text-slate-400 transition hover:bg-slate-900 hover:text-white"
-        >
-          <Bell className="size-5" />
-        </button>
+        <NotificationBell
+          currentUserId={currentUserId}
+          notifications={notifications}
+          unreadCount={unreadNotificationCount}
+        />
 
         <div className="hidden text-right sm:block">
           <p className="text-sm font-semibold text-white">{displayName}</p>

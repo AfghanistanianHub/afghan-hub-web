@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { saveProfile } from "./actions";
+import AvatarUpload from "@/components/profile/avatar-upload";
 
 type ProfilePageProps = {
   searchParams: Promise<{
@@ -26,8 +27,8 @@ export default async function ProfilePage({
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "first_name,last_name,profession,company,city,province_state,country,bio",
-    )
+  "first_name,last_name,headline,profession,company,city,province_state,country,bio,linkedin_url,website_url,languages,skills,avatar_url",
+)
     .eq("id", user.id)
     .maybeSingle();
 
@@ -59,6 +60,13 @@ export default async function ProfilePage({
             </div>
           ) : null}
 
+          <div className="mt-8">
+            <AvatarUpload
+              userId={user.id}
+              currentAvatarUrl={profile?.avatar_url}
+            />
+          </div>
+
           <form action={saveProfile} className="mt-8 space-y-6">
             <div className="grid gap-6 sm:grid-cols-2">
               <label className="block">
@@ -85,6 +93,74 @@ export default async function ProfilePage({
                 />
               </label>
             </div>
+
+            <label className="block">
+              <span className="text-sm font-medium text-slate-200">
+                Headline
+              </span>
+              <input
+                name="headline"
+                defaultValue={profile?.headline ?? ""}
+                placeholder="Computer Technician | Founder of BC Computers"
+                className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none transition focus:border-emerald-500"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-medium text-slate-200">
+                LinkedIn
+              </span>
+              <input
+                name="linkedin_url"
+                type="url"
+                defaultValue={profile?.linkedin_url ?? ""}
+                placeholder="https://www.linkedin.com/in/yourname"
+                className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none transition focus:border-emerald-500"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-medium text-slate-200">
+                Website
+              </span>
+              <input
+                name="website_url"
+                type="url"
+                defaultValue={profile?.website_url ?? ""}
+                placeholder="https://yourwebsite.com"
+                className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none transition focus:border-emerald-500"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-medium text-slate-200">
+                Languages
+              </span>
+              <input
+                name="languages"
+                defaultValue={profile?.languages?.join(", ") ?? ""}
+                placeholder="Dari, English, Persian"
+                className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none transition focus:border-emerald-500"
+              />
+              <span className="mt-2 block text-xs text-slate-500">
+                Separate each language with a comma.
+              </span>
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-medium text-slate-200">
+                Skills
+              </span>
+              <input
+                name="skills"
+                defaultValue={profile?.skills?.join(", ") ?? ""}
+                placeholder="Computer repair, Filmmaking, Community organizing"
+                className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none transition focus:border-emerald-500"
+              />
+              <span className="mt-2 block text-xs text-slate-500">
+                Separate each skill with a comma.
+              </span>
+            </label>
 
             <div className="grid gap-6 sm:grid-cols-2">
               <label className="block">

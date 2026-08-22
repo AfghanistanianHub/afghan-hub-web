@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useMemo, useState } from "react";
 import {
@@ -114,10 +115,13 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
               .join(" at ");
 
             return (
-              <article
-                key={member.id}
-                className="rounded-2xl border border-slate-800 bg-slate-900 p-6 transition hover:-translate-y-0.5 hover:border-emerald-500/50"
-              >
+              <Link
+  key={member.id}
+  href={`/members/${member.id}`}
+  className="block"
+><article
+  className="rounded-2xl border border-slate-800 bg-slate-900 p-6 transition hover:-translate-y-0.5 hover:border-emerald-500/50"
+>
                 <div className="flex items-start gap-4">
                   {member.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -176,6 +180,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                   </div>
                 ) : null}
               </article>
+		</Link>
             );
           })}
         </div>

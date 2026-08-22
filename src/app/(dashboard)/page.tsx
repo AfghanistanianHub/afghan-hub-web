@@ -81,9 +81,9 @@ export default async function DashboardPage() {
 
               {profile?.headline || location ? (
                 <div className="mt-5 flex flex-wrap gap-2 text-sm text-slate-300">
-                  {profile.headline ? (
+                  {profile?.headline ? (
                     <span className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1.5">
-                      {profile.headline}
+                      {profile?.headline}
                     </span>
                   ) : null}
 

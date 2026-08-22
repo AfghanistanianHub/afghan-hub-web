@@ -1,8 +1,67 @@
+import { ConnectionRequests } from "@/components/network/connection-requests";
 import { MemberDirectory } from "@/components/network/member-directory";
+import { MyConnections } from "@/components/network/my-connections";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function NetworkPage() {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: incomingRequests } = user
+    ? await supabase
+        .from("connections")
+        .select(`
+          id,
+          requester:profiles!connections_requester_id_fkey (
+            id,
+            display_name,
+            first_name,
+            last_name,
+            avatar_url,
+            headline
+          )
+        `)
+        .eq("recipient_id", user.id)
+        .eq("status", "pending")
+        .order("created_at", { ascending: false })
+    : { data: [] };
+
+  const { data: acceptedConnections } = user
+    ? await supabase
+        .from("connections")
+        .select(`
+          id,
+          requester_id,
+          recipient_id,
+          requester:profiles!connections_requester_id_fkey (
+            id,
+            display_name,
+            first_name,
+            last_name,
+            headline,
+            city,
+            country
+          ),
+          recipient:profiles!connections_recipient_id_fkey (
+            id,
+            display_name,
+            first_name,
+            last_name,
+            headline,
+            city,
+            country
+          )
+        `)
+        .eq("status", "accepted")
+        .or(
+          "requester_id.eq." + user.id +
+            ",recipient_id.eq." + user.id,
+        )
+        .order("updated_at", { ascending: false })
+    : { data: [] };
 
   const { data: members, error } = await supabase
     .from("profiles")
@@ -43,6 +102,15 @@ export default async function NetworkPage() {
             students, community leaders, and other members around the world.
           </p>
         </section>
+
+        <ConnectionRequests requests={incomingRequests ?? []} />
+
+        {user ? (
+          <MyConnections
+            currentUserId={user.id}
+            connections={acceptedConnections ?? []}
+          />
+        ) : null}
 
         {error ? (
           <div className="mt-8 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">

@@ -28,6 +28,19 @@ export async function saveProfile(formData: FormData) {
 
   const firstName = getOptionalString(formData, "first_name");
   const lastName = getOptionalString(formData, "last_name");
+const headline = getOptionalString(formData, "headline");
+const linkedinUrl = getOptionalString(formData, "linkedin_url");
+const websiteUrl = getOptionalString(formData, "website_url");
+
+const languages = getOptionalString(formData, "languages")
+  ?.split(",")
+  .map((item) => item.trim())
+  .filter(Boolean);
+
+const skills = getOptionalString(formData, "skills")
+  ?.split(",")
+  .map((item) => item.trim())
+  .filter(Boolean);
   const profession = getOptionalString(formData, "profession");
   const company = getOptionalString(formData, "company");
   const city = getOptionalString(formData, "city");
@@ -44,6 +57,7 @@ export async function saveProfile(formData: FormData) {
       email: user.email ?? null,
       first_name: firstName,
       last_name: lastName,
+	headline,
       display_name: displayName,
       profession,
       company,
@@ -51,6 +65,10 @@ export async function saveProfile(formData: FormData) {
       province_state: provinceState,
       country,
       bio,
+	linkedin_url: linkedinUrl,
+website_url: websiteUrl,
+languages: languages ?? [],
+skills: skills ?? [],
       onboarding_completed: true,
       updated_at: new Date().toISOString(),
     },
