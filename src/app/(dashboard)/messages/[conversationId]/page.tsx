@@ -127,7 +127,7 @@ export default async function ConversationPage({
 
   return (
     <main className="flex min-h-[calc(100vh-73px)] flex-col px-6 py-6 lg:px-10">
-      {hasUnreadMessages ? (
+      {hasUnreadMessages && messageLimit === 100 ? (
         <MarkConversationRead conversationId={conversationId} />
       ) : null}
       <RealtimeReadReceiptRefresh conversationId={conversationId} />
@@ -178,20 +178,31 @@ export default async function ConversationPage({
           latestMessageId={messages.at(-1)?.id ?? null}
           scrollToLatest={messageLimit === 100}
         >
-          {hasEarlierMessages ? (
-            <div className="pb-2 text-center">
+          {hasEarlierMessages || messageLimit > 100 ? (
+            <div className="flex flex-wrap items-center justify-center gap-2 pb-2 text-center">
               {messageLimit < 1000 ? (
-                <Link
-                  href={`/messages/${conversationId}?limit=${nextMessageLimit}`}
-                  className="inline-flex rounded-lg border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white"
-                >
-                  Load earlier messages
-                </Link>
-              ) : (
+                hasEarlierMessages ? (
+                  <Link
+                    href={`/messages/${conversationId}?limit=${nextMessageLimit}`}
+                    className="inline-flex rounded-lg border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white"
+                  >
+                    Load earlier messages
+                  </Link>
+                ) : null
+              ) : hasEarlierMessages ? (
                 <p className="text-xs text-slate-500">
                   Showing the latest 1,000 messages.
                 </p>
-              )}
+              ) : null}
+
+              {messageLimit > 100 ? (
+                <Link
+                  href={`/messages/${conversationId}`}
+                  className="inline-flex rounded-lg border border-emerald-700/70 px-4 py-2 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-950/60 hover:text-emerald-200"
+                >
+                  Back to latest
+                </Link>
+              ) : null}
             </div>
           ) : null}
 

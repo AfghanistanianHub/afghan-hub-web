@@ -12,9 +12,24 @@ export function MarkConversationRead({
   conversationId,
 }: MarkConversationReadProps) {
   useEffect(() => {
-    startTransition(() => {
-      void markConversationRead(conversationId);
-    });
+    const markReadWhenVisible = () => {
+      if (document.visibilityState !== "visible" || !document.hasFocus()) {
+        return;
+      }
+
+      startTransition(() => {
+        void markConversationRead(conversationId);
+      });
+    };
+
+    markReadWhenVisible();
+    document.addEventListener("visibilitychange", markReadWhenVisible);
+    window.addEventListener("focus", markReadWhenVisible);
+
+    return () => {
+      document.removeEventListener("visibilitychange", markReadWhenVisible);
+      window.removeEventListener("focus", markReadWhenVisible);
+    };
   }, [conversationId]);
 
   return null;
