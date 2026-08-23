@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { ArrowLeft, Send, UserRound } from "lucide-react";
 
 import { sendMessage } from "@/app/(dashboard)/messages/actions";
-import { RealtimeMessageRefresh } from "@/components/messages/realtime-message-refresh";
+import { MarkConversationRead } from "@/components/messages/mark-conversation-read";
 import { createClient } from "@/lib/supabase/server";
 
 type ConversationPageProps = {
@@ -49,7 +49,7 @@ export default async function ConversationPage({
 
   const { data: membership } = await supabase
     .from("conversation_members")
-    .select("conversation_id")
+    .select("conversation_id, last_read_at")
     .eq("conversation_id", conversationId)
     .eq("profile_id", user.id)
     .maybeSingle();
@@ -89,17 +89,19 @@ export default async function ConversationPage({
     ? getMemberName(otherMember)
     : "Afghan Hub Member";
 
-  await supabase
-    .from("conversation_members")
-    .update({
-      last_read_at: new Date().toISOString(),
-    })
-    .eq("conversation_id", conversationId)
-    .eq("profile_id", user.id);
+  const hasUnreadMessages = (messages ?? []).some(
+    (message) =>
+      message.sender_id !== user.id &&
+      (!membership.last_read_at ||
+        new Date(message.created_at).getTime() >
+          new Date(membership.last_read_at).getTime()),
+  );
 
   return (
     <main className="flex min-h-[calc(100vh-73px)] flex-col px-6 py-6 lg:px-10">
-      <RealtimeMessageRefresh conversationId={conversationId} />
+      {hasUnreadMessages ? (
+        <MarkConversationRead conversationId={conversationId} />
+      ) : null}
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
         <header className="flex items-center gap-4 border-b border-slate-800 px-5 py-4">
           <Link
@@ -111,6 +113,7 @@ export default async function ConversationPage({
           </Link>
 
           {otherMember?.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={otherMember.avatar_url}
               alt=""

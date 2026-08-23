@@ -178,3 +178,56 @@ export async function sendMessage(formData: FormData) {
   revalidatePath(`/messages/${conversationId}`);
 }
 
+export async function markConversationRead(conversationId: string) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user || !conversationId) {
+    return;
+  }
+
+  const { data: membership } = await supabase
+    .from("conversation_members")
+    .select("last_read_at")
+    .eq("conversation_id", conversationId)
+    .eq("profile_id", user.id)
+    .maybeSingle();
+
+  if (!membership) {
+    return;
+  }
+
+  const { data: latestMessage } = await supabase
+    .from("messages")
+    .select("created_at")
+    .eq("conversation_id", conversationId)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (
+    !latestMessage ||
+    (membership.last_read_at &&
+      new Date(membership.last_read_at).getTime() >=
+        new Date(latestMessage.created_at).getTime())
+  ) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("conversation_members")
+    .update({ last_read_at: latestMessage.created_at })
+    .eq("conversation_id", conversationId)
+    .eq("profile_id", user.id);
+
+  if (error) {
+    throw new Error("Unable to mark the conversation as read.");
+  }
+
+  revalidatePath("/", "layout");
+}
+

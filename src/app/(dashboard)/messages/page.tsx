@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { MessageSquare, UserRound } from "lucide-react";
 
-import { RealtimeMessageRefresh } from "@/components/messages/realtime-message-refresh";
+import { getUnreadMessageCounts } from "@/lib/messages";
 import { createClient } from "@/lib/supabase/server";
 
 function getMemberName(profile: {
@@ -53,8 +53,6 @@ export default async function MessagesPage() {
   if (conversationIds.length === 0) {
     return (
       <main className="px-6 py-8 lg:px-10">
-        <RealtimeMessageRefresh />
-
         <div className="mx-auto max-w-5xl">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">
@@ -152,11 +150,10 @@ export default async function MessagesPage() {
     }
   }
 
-  const lastReadByConversation = new Map(
-    (myMemberships ?? []).map((membership) => [
-      membership.conversation_id,
-      membership.last_read_at,
-    ]),
+  const unreadCounts = getUnreadMessageCounts(
+    myMemberships ?? [],
+    messages ?? [],
+    user.id,
   );
 
   const conversationList = (conversations ?? [])
@@ -173,6 +170,7 @@ export default async function MessagesPage() {
         ...conversation,
         profile,
         latestMessage,
+        unreadCount: unreadCounts.get(conversation.id) ?? 0,
         sortDate:
           latestMessage?.created_at ?? conversation.updated_at,
       };
@@ -185,8 +183,6 @@ export default async function MessagesPage() {
 
   return (
     <main className="px-6 py-8 lg:px-10">
-      <RealtimeMessageRefresh />
-
       <div className="mx-auto max-w-5xl">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">
@@ -207,7 +203,11 @@ export default async function MessagesPage() {
               <Link
                 key={conversation.id}
                 href={`/messages/${conversation.id}`}
-                className="flex items-center gap-4 border-b border-slate-800 px-5 py-5 transition last:border-b-0 hover:bg-slate-800/70"
+                className={`flex items-center gap-4 border-b border-slate-800 px-5 py-5 transition last:border-b-0 hover:bg-slate-800/70 ${
+                  conversation.unreadCount > 0
+                    ? "bg-slate-800/40"
+                    : ""
+                }`}
               >
                 {conversation.profile?.avatar_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -224,7 +224,13 @@ export default async function MessagesPage() {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-4">
-                    <h2 className="truncate font-semibold text-white">
+                    <h2
+                      className={`truncate text-white ${
+                        conversation.unreadCount > 0
+                          ? "font-bold"
+                          : "font-semibold"
+                      }`}
+                    >
                       {memberName}
                     </h2>
 
@@ -233,17 +239,36 @@ export default async function MessagesPage() {
                     </span>
                   </div>
 
-                  <p className="mt-1 truncate text-sm text-slate-400">
-                    {conversation.latestMessage
-                      ? `${
-                          conversation.latestMessage.sender_id ===
-                          user.id
-                            ? "You: "
-                            : ""
-                        }${conversation.latestMessage.body}`
-                      : conversation.profile?.headline ||
-                        "Start the conversation"}
-                  </p>
+                  <div className="mt-1 flex items-center gap-3">
+                    <p
+                      className={`min-w-0 flex-1 truncate text-sm ${
+                        conversation.unreadCount > 0
+                          ? "font-medium text-slate-200"
+                          : "text-slate-400"
+                      }`}
+                    >
+                      {conversation.latestMessage
+                        ? `${
+                            conversation.latestMessage.sender_id ===
+                            user.id
+                              ? "You: "
+                              : ""
+                          }${conversation.latestMessage.body}`
+                        : conversation.profile?.headline ||
+                          "Start the conversation"}
+                    </p>
+
+                    {conversation.unreadCount > 0 ? (
+                      <span
+                        aria-label={`${conversation.unreadCount} unread messages`}
+                        className="flex min-w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500 px-1.5 py-0.5 text-xs font-bold text-slate-950"
+                      >
+                        {conversation.unreadCount > 99
+                          ? "99+"
+                          : conversation.unreadCount}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
               </Link>
             );
