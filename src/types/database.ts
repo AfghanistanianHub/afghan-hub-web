@@ -350,6 +350,10 @@ export type Database = {
         Row: {
           actor_id: string | null
           connection_id: string | null
+          content_id: string | null
+          content_slug: string | null
+          content_title: string | null
+          content_type: string | null
           conversation_id: string | null
           created_at: string
           id: string
@@ -361,6 +365,10 @@ export type Database = {
         Insert: {
           actor_id?: string | null
           connection_id?: string | null
+          content_id?: string | null
+          content_slug?: string | null
+          content_title?: string | null
+          content_type?: string | null
           conversation_id?: string | null
           created_at?: string
           id?: string
@@ -372,6 +380,10 @@ export type Database = {
         Update: {
           actor_id?: string | null
           connection_id?: string | null
+          content_id?: string | null
+          content_slug?: string | null
+          content_title?: string | null
+          content_type?: string | null
           conversation_id?: string | null
           created_at?: string
           id?: string

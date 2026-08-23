@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { Bell, UserRound } from "lucide-react";
+import { Bell, CircleCheck, CircleX, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -14,6 +14,9 @@ export type NotificationSummary = {
   id: string;
   type: string;
   conversationId: string | null;
+  contentType: string | null;
+  contentSlug: string | null;
+  contentTitle: string | null;
   readAt: string | null;
   createdAt: string;
   actor: {
@@ -56,6 +59,14 @@ function getNotificationMessage(notification: NotificationSummary) {
 
   if (notification.type === "new_message") {
     return `${actorName} sent you a new message.`;
+  }
+
+  if (notification.type === "content_approved") {
+    return `Your ${notification.contentType ?? "submission"} “${notification.contentTitle ?? "Untitled"}” was approved.`;
+  }
+
+  if (notification.type === "content_rejected") {
+    return `Your ${notification.contentType ?? "submission"} “${notification.contentTitle ?? "Untitled"}” was not approved. You can edit and resubmit it.`;
   }
 
   return "You have a new notification.";
@@ -191,6 +202,13 @@ export function NotificationBell({
               {notifications.map((notification) => {
                 const actorName = getActorName(notification.actor);
                 const isUnread = !notification.readAt;
+                const isModerationNotification =
+                  notification.type === "content_approved" ||
+                  notification.type === "content_rejected";
+                const ModerationIcon =
+                  notification.type === "content_approved"
+                    ? CircleCheck
+                    : CircleX;
 
                 return (
                   <form
@@ -210,7 +228,17 @@ export function NotificationBell({
                         isUnread ? "bg-emerald-500/5" : ""
                       }`}
                     >
-                      {notification.actor?.avatarUrl ? (
+                      {isModerationNotification ? (
+                        <span
+                          className={`flex size-10 shrink-0 items-center justify-center rounded-full ${
+                            notification.type === "content_approved"
+                              ? "bg-emerald-500/10 text-emerald-400"
+                              : "bg-red-500/10 text-red-300"
+                          }`}
+                        >
+                          <ModerationIcon className="size-5" />
+                        </span>
+                      ) : notification.actor?.avatarUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={notification.actor.avatarUrl}
@@ -258,7 +286,7 @@ export function NotificationBell({
                 No notifications yet
               </p>
               <p className="mt-1 text-xs leading-5 text-slate-500">
-                New connections and messages will appear here.
+                New connections, messages, and moderation decisions will appear here.
               </p>
             </div>
           )}
