@@ -28,6 +28,7 @@ export default async function OpportunitiesPage() {
         slug
       )
     `)
+    .eq("status", "published")
     .order("created_at", { ascending: false });
 
   return (

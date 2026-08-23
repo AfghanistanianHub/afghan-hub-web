@@ -253,6 +253,7 @@ export async function updateOpportunity(formData: FormData) {
       external_url: getOptionalString(formData, "external_url"),
       contact_email: getOptionalString(formData, "contact_email"),
       deadline,
+      status: "draft",
       updated_at: new Date().toISOString(),
     })
     .eq("id", existingOpportunity.id)
@@ -336,11 +337,11 @@ export async function toggleSavedOpportunity(formData: FormData) {
 
   const { data: opportunity } = await supabase
     .from("opportunities")
-    .select("id")
+    .select("id,status")
     .eq("id", opportunityId)
     .maybeSingle();
 
-  if (!opportunity) {
+  if (!opportunity || opportunity.status !== "published") {
     redirect("/opportunities");
   }
 

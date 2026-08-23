@@ -4,16 +4,24 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, Settings, UserRound, X } from "lucide-react";
 
-import { dashboardNavigation } from "@/components/dashboard/navigation";
+import {
+  dashboardNavigation,
+  moderationNavigation,
+} from "@/components/dashboard/navigation";
 
 type MobileNavigationProps = {
+  canModerate: boolean;
   unreadMessageCount: number;
 };
 
 export function MobileNavigation({
+  canModerate,
   unreadMessageCount,
 }: MobileNavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const navigation = canModerate
+    ? [...dashboardNavigation, moderationNavigation]
+    : dashboardNavigation;
 
   useEffect(() => {
     if (!isOpen) {
@@ -83,7 +91,7 @@ export function MobileNavigation({
             </div>
 
             <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-6">
-              {dashboardNavigation.map((item) => {
+              {navigation.map((item) => {
                 const Icon = item.icon;
 
                 return (

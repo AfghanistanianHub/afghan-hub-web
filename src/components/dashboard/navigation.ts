@@ -3,6 +3,7 @@ import {
   Bookmark,
   Building2,
   CalendarDays,
+  ClipboardCheck,
   House,
   MessageSquare,
   Search,
@@ -56,3 +57,9 @@ export const dashboardNavigation = [
     icon: MessageSquare,
   },
 ] as const;
+
+export const moderationNavigation = {
+  label: "Moderation",
+  href: "/moderation",
+  icon: ClipboardCheck,
+} as const;

@@ -1,13 +1,24 @@
 import Link from "next/link";
 import { Settings, UserRound } from "lucide-react";
 
-import { dashboardNavigation } from "@/components/dashboard/navigation";
+import {
+  dashboardNavigation,
+  moderationNavigation,
+} from "@/components/dashboard/navigation";
 
 type SidebarProps = {
+  canModerate: boolean;
   unreadMessageCount: number;
 };
 
-export function Sidebar({ unreadMessageCount }: SidebarProps) {
+export function Sidebar({
+  canModerate,
+  unreadMessageCount,
+}: SidebarProps) {
+  const navigation = canModerate
+    ? [...dashboardNavigation, moderationNavigation]
+    : dashboardNavigation;
+
   return (
     <aside className="hidden min-h-screen w-64 shrink-0 border-r border-slate-800 bg-slate-950 lg:flex lg:flex-col">
       <div className="flex h-20 items-center border-b border-slate-800 px-6">
@@ -17,7 +28,7 @@ export function Sidebar({ unreadMessageCount }: SidebarProps) {
       </div>
 
       <nav className="flex-1 space-y-1 px-4 py-6">
-        {dashboardNavigation.map((item) => {
+        {navigation.map((item) => {
           const Icon = item.icon;
 
           return (

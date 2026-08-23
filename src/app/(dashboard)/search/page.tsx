@@ -97,9 +97,49 @@ export default async function SearchPage({
         })
       : { data: [], error: null };
 
-  const results = ((data ?? []) as SearchResult[]).filter(
+  const rawResults = ((data ?? []) as SearchResult[]).filter(
     (result) => getResultHref(result) !== null,
   );
+  const opportunityIds = rawResults
+    .filter((result) => result.entity_type === "opportunity")
+    .map((result) => result.entity_id);
+  const eventIds = rawResults
+    .filter((result) => result.entity_type === "event")
+    .map((result) => result.entity_id);
+  const [{ data: visibleOpportunities }, { data: visibleEvents }] =
+    await Promise.all([
+      opportunityIds.length > 0
+        ? supabase
+            .from("opportunities")
+            .select("id")
+            .in("id", opportunityIds)
+            .eq("status", "published")
+        : Promise.resolve({ data: [] as { id: string }[] }),
+      eventIds.length > 0
+        ? supabase
+            .from("events")
+            .select("id")
+            .in("id", eventIds)
+            .eq("status", "published")
+        : Promise.resolve({ data: [] as { id: string }[] }),
+    ]);
+  const visibleOpportunityIds = new Set(
+    (visibleOpportunities ?? []).map((item) => item.id),
+  );
+  const visibleEventIds = new Set(
+    (visibleEvents ?? []).map((item) => item.id),
+  );
+  const results = rawResults.filter((result) => {
+    if (result.entity_type === "opportunity") {
+      return visibleOpportunityIds.has(result.entity_id);
+    }
+
+    if (result.entity_type === "event") {
+      return visibleEventIds.has(result.entity_id);
+    }
+
+    return true;
+  });
 
   return (
     <main className="px-4 py-8 md:px-8">

@@ -48,6 +48,21 @@ export default async function EventPage({ params }: Props) {
     notFound();
   }
 
+  const { data: viewerProfile } = user
+    ? await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle()
+    : { data: null };
+  const canModerate =
+    viewerProfile?.role === "admin" || viewerProfile?.role === "moderator";
+  const isOwner = user?.id === event.creator_id;
+
+  if (event.status !== "published" && !isOwner && !canModerate) {
+    notFound();
+  }
+
   const location = [
     event.city,
     event.province_state,
@@ -58,6 +73,14 @@ export default async function EventPage({ params }: Props) {
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-10">
+      {event.status !== "published" ? (
+        <div className="mb-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100">
+          {event.status === "draft"
+            ? "This event is waiting for moderator approval and is not visible to the community yet."
+            : "This event was not approved. Edit it to submit it for review again."}
+        </div>
+      ) : null}
+
       <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -70,7 +93,7 @@ export default async function EventPage({ params }: Props) {
             </h1>
           </div>
 
-          {user?.id === event.creator_id ? (
+          {isOwner ? (
             <div className="flex shrink-0 gap-3">
               <Link
               href={`/events/${event.slug}/edit`}

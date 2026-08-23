@@ -34,7 +34,7 @@ export default async function DashboardLayout({
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("display_name,first_name,onboarding_completed")
+      .select("display_name,first_name,onboarding_completed,role")
       .eq("id", user.id)
       .maybeSingle(),
     supabase
@@ -76,6 +76,8 @@ export default async function DashboardLayout({
     profile.first_name?.trim() ||
     user.email?.split("@")[0] ||
     "Member";
+  const canModerate =
+    profile.role === "admin" || profile.role === "moderator";
 
   const notifications: NotificationSummary[] = (
     notificationRows ?? []
@@ -126,10 +128,14 @@ export default async function DashboardLayout({
     <div className="min-h-screen bg-slate-950 text-white">
       <RealtimeMessageRefresh />
       <div className="flex min-h-screen">
-        <Sidebar unreadMessageCount={unreadMessageCount} />
+        <Sidebar
+          canModerate={canModerate}
+          unreadMessageCount={unreadMessageCount}
+        />
 
         <div className="min-w-0 flex-1">
           <Header
+            canModerate={canModerate}
             currentUserId={user.id}
             displayName={displayName}
             email={user.email ?? ""}

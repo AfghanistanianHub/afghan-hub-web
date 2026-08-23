@@ -39,6 +39,21 @@ export default async function OpportunityPage({
     notFound();
   }
 
+  const { data: viewerProfile } = user
+    ? await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle()
+    : { data: null };
+  const canModerate =
+    viewerProfile?.role === "admin" || viewerProfile?.role === "moderator";
+  const isOwner = user?.id === opportunity.author_id;
+
+  if (opportunity.status !== "published" && !isOwner && !canModerate) {
+    notFound();
+  }
+
   const { data: savedOpportunity } = user
     ? await supabase
         .from("saved_opportunities")
@@ -57,6 +72,14 @@ export default async function OpportunityPage({
         </div>
       ) : null}
 
+      {opportunity.status !== "published" ? (
+        <div className="mb-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100">
+          {opportunity.status === "draft"
+            ? "This opportunity is waiting for moderator approval and is not visible to the community yet."
+            : "This opportunity was not approved. Edit it to submit it for review again."}
+        </div>
+      ) : null}
+
       <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-8">
 
         <div className="mb-4 inline-flex rounded-full bg-emerald-600/20 px-3 py-1 text-sm text-emerald-400">
@@ -70,6 +93,7 @@ export default async function OpportunityPage({
 
           {user ? (
             <div className="flex shrink-0 flex-wrap justify-end gap-3">
+              {opportunity.status === "published" ? (
               <form action={toggleSavedOpportunity}>
                 <input
                   type="hidden"
@@ -97,8 +121,9 @@ export default async function OpportunityPage({
                   {isSaved ? "Saved" : "Save"}
                 </button>
               </form>
+              ) : null}
 
-              {user.id === opportunity.author_id ? (
+              {isOwner ? (
                 <>
               <Link
                 href={`/opportunities/${opportunity.slug}/edit`}

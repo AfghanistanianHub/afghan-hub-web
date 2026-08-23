@@ -271,6 +271,7 @@ export async function updateEvent(formData: FormData) {
       is_online: formData.get("is_online") === "on",
       online_url: getOptionalString(formData, "online_url"),
       capacity,
+      status: "draft",
       updated_at: new Date().toISOString(),
     })
     .eq("id", existingEvent.id)

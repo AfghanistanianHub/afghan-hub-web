@@ -720,6 +720,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_moderate: { Args: never; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       is_conversation_member: {
         Args: { target_conversation_id: string }
@@ -728,6 +729,14 @@ export type Database = {
       mark_all_notifications_read: { Args: never; Returns: number }
       mark_notification_read: {
         Args: { target_notification_id: string }
+        Returns: boolean
+      }
+      moderate_event: {
+        Args: { target_decision: string; target_event_id: string }
+        Returns: boolean
+      }
+      moderate_opportunity: {
+        Args: { target_decision: string; target_opportunity_id: string }
         Returns: boolean
       }
       respond_connection_request: {

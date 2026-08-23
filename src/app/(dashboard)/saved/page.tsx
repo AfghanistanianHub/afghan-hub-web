@@ -15,6 +15,7 @@ function getOpportunity(
         city: string | null;
         country: string | null;
         deadline: string | null;
+        status: string;
       }
     | {
         id: string;
@@ -25,6 +26,7 @@ function getOpportunity(
         city: string | null;
         country: string | null;
         deadline: string | null;
+        status: string;
       }[]
     | null,
 ) {
@@ -56,7 +58,8 @@ export default async function SavedOpportunitiesPage() {
         type,
         city,
         country,
-        deadline
+        deadline,
+        status
       )
     `)
     .eq("profile_id", user.id)
@@ -64,7 +67,12 @@ export default async function SavedOpportunitiesPage() {
 
   const opportunities = (savedRows ?? [])
     .map((row) => getOpportunity(row.opportunity))
-    .filter((opportunity) => opportunity !== null);
+    .filter(
+      (
+        opportunity,
+      ): opportunity is NonNullable<ReturnType<typeof getOpportunity>> =>
+        opportunity !== null && opportunity.status === "published",
+    );
 
   return (
     <main className="px-4 py-8 md:px-8">

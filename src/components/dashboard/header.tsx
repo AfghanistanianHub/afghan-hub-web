@@ -8,6 +8,7 @@ import {
 } from "@/components/dashboard/notification-bell";
 
 type HeaderProps = {
+  canModerate: boolean;
   currentUserId: string;
   displayName: string;
   email: string;
@@ -17,6 +18,7 @@ type HeaderProps = {
 };
 
 export function Header({
+  canModerate,
   currentUserId,
   displayName,
   email,
@@ -30,6 +32,7 @@ export function Header({
     <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-slate-800 bg-slate-950/90 px-4 backdrop-blur md:px-8">
       <div className="flex items-center gap-3">
         <MobileNavigation
+          canModerate={canModerate}
           unreadMessageCount={unreadMessageCount}
         />
 

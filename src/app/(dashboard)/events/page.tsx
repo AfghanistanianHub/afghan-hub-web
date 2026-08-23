@@ -11,6 +11,7 @@ function getOrganizationName(
 
 export default async function EventsPage() {
   const supabase = await createClient();
+  const now = new Date().toISOString();
 
   const { data: events } = await supabase
     .from("events")
@@ -30,6 +31,8 @@ export default async function EventsPage() {
         slug
       )
     `)
+    .eq("status", "published")
+    .gte("starts_at", now)
     .order("starts_at", { ascending: true });
 
   return (

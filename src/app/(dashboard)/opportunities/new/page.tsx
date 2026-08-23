@@ -187,7 +187,7 @@ export default async function NewOpportunityPage() {
           type="submit"
           className="rounded-lg bg-emerald-600 px-5 py-3 font-semibold hover:bg-emerald-500"
         >
-          Publish Opportunity
+          Submit for Review
         </button>
       </form>
     </main>
