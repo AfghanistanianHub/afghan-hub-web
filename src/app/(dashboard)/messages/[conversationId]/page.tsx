@@ -4,11 +4,15 @@ import { ArrowLeft, Send, UserRound } from "lucide-react";
 
 import { sendMessage } from "@/app/(dashboard)/messages/actions";
 import { MarkConversationRead } from "@/components/messages/mark-conversation-read";
+import { MessageThread } from "@/components/messages/message-thread";
 import { createClient } from "@/lib/supabase/server";
 
 type ConversationPageProps = {
   params: Promise<{
     conversationId: string;
+  }>;
+  searchParams: Promise<{
+    limit?: string;
   }>;
 };
 
@@ -35,8 +39,14 @@ function formatMessageTime(value: string) {
 
 export default async function ConversationPage({
   params,
+  searchParams,
 }: ConversationPageProps) {
   const { conversationId } = await params;
+  const { limit: limitValue } = await searchParams;
+  const parsedLimit = Number.parseInt(limitValue ?? "", 10);
+  const messageLimit = Number.isFinite(parsedLimit)
+    ? Math.min(Math.max(parsedLimit, 100), 1000)
+    : 100;
   const supabase = await createClient();
 
   const {
@@ -58,18 +68,25 @@ export default async function ConversationPage({
     redirect("/messages");
   }
 
-  const [{ data: memberRows }, { data: messages }] = await Promise.all([
+  const [
+    { data: memberRows },
+    { data: messageRows, count: messageCount },
+  ] = await Promise.all([
     supabase
       .from("conversation_members")
       .select("profile_id")
       .eq("conversation_id", conversationId),
     supabase
       .from("messages")
-      .select("id, sender_id, body, created_at")
+      .select("id, sender_id, body, created_at", { count: "exact" })
       .eq("conversation_id", conversationId)
       .is("deleted_at", null)
-      .order("created_at", { ascending: true }),
+      .order("created_at", { ascending: false })
+      .range(0, messageLimit - 1),
   ]);
+  const messages = [...(messageRows ?? [])].reverse();
+  const hasEarlierMessages = (messageCount ?? 0) > messageLimit;
+  const nextMessageLimit = Math.min(messageLimit + 100, 1000);
 
   const otherMemberId = (memberRows ?? []).find(
     (member) => member.profile_id !== user.id,
@@ -145,8 +162,28 @@ export default async function ConversationPage({
           </div>
         </header>
 
-        <section className="flex-1 space-y-4 overflow-y-auto px-5 py-6">
-          {(messages ?? []).length === 0 ? (
+        <MessageThread
+          latestMessageId={messages.at(-1)?.id ?? null}
+          scrollToLatest={messageLimit === 100}
+        >
+          {hasEarlierMessages ? (
+            <div className="pb-2 text-center">
+              {messageLimit < 1000 ? (
+                <Link
+                  href={`/messages/${conversationId}?limit=${nextMessageLimit}`}
+                  className="inline-flex rounded-lg border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white"
+                >
+                  Load earlier messages
+                </Link>
+              ) : (
+                <p className="text-xs text-slate-500">
+                  Showing the latest 1,000 messages.
+                </p>
+              )}
+            </div>
+          ) : null}
+
+          {messages.length === 0 ? (
             <div className="flex h-full min-h-72 items-center justify-center text-center">
               <div>
                 <h1 className="text-lg font-semibold text-white">
@@ -158,7 +195,7 @@ export default async function ConversationPage({
               </div>
             </div>
           ) : (
-            (messages ?? []).map((message) => {
+            messages.map((message) => {
               const isMine = message.sender_id === user.id;
 
               return (
@@ -193,7 +230,7 @@ export default async function ConversationPage({
               );
             })
           )}
-        </section>
+        </MessageThread>
 
         <form
           action={sendMessage}
