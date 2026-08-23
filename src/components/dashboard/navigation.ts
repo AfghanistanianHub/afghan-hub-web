@@ -4,6 +4,7 @@ import {
   Building2,
   CalendarDays,
   ClipboardCheck,
+  FileClock,
   House,
   MessageSquare,
   Search,
@@ -35,6 +36,11 @@ export const dashboardNavigation = [
     label: "Saved",
     href: "/saved",
     icon: Bookmark,
+  },
+  {
+    label: "My submissions",
+    href: "/submissions",
+    icon: FileClock,
   },
   {
     label: "Businesses",

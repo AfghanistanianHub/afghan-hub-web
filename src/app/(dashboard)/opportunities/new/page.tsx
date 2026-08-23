@@ -26,6 +26,9 @@ export default async function NewOpportunityPage() {
         <p className="mt-2 text-slate-400">
           Share a job, scholarship, volunteer role, mentorship, or another opportunity.
         </p>
+        <p className="mt-3 text-sm text-amber-200">
+          Your submission will be reviewed before it appears publicly.
+        </p>
       </div>
 
       <form

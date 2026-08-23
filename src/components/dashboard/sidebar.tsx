@@ -27,7 +27,7 @@ export function Sidebar({
         </Link>
       </div>
 
-      <nav className="flex-1 space-y-1 px-4 py-6">
+      <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-6">
         {navigation.map((item) => {
           const Icon = item.icon;
 

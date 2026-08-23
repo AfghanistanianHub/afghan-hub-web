@@ -27,6 +27,9 @@ export default async function NewEventPage() {
         <p className="mt-2 text-slate-400">
           Share an in-person or online event with the Afghan Hub community.
         </p>
+        <p className="mt-3 text-sm text-amber-200">
+          Your submission will be reviewed before it appears publicly.
+        </p>
       </div>
 
       <form
