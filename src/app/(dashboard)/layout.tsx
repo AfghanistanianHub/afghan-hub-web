@@ -135,6 +135,7 @@ export default async function DashboardLayout({
             email={user.email ?? ""}
             notifications={notifications}
             unreadNotificationCount={unreadNotificationCount ?? 0}
+            unreadMessageCount={unreadMessageCount}
           />
 
           {children}

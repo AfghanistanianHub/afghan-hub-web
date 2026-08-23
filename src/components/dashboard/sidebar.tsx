@@ -1,52 +1,7 @@
 import Link from "next/link";
-import {
-  BriefcaseBusiness,
-  Building2,
-  CalendarDays,
-  House,
-  MessageSquare,
-  Settings,
-  UserRound,
-  UsersRound,
-} from "lucide-react";
+import { Settings, UserRound } from "lucide-react";
 
-const navigation = [
-  {
-    label: "Home",
-    href: "/",
-    icon: House,
-  },
-  {
-    label: "Network",
-    href: "/network",
-    icon: UsersRound,
-  },
-  {
-    label: "Opportunities",
-    href: "/opportunities",
-    icon: BriefcaseBusiness,
-  },
-  {
-    label: "Businesses",
-    href: "/businesses",
-    icon: Building2,
-  },
-  {
-    label: "Organizations",
-    href: "/organizations",
-    icon: UsersRound,
-  },
-  {
-    label: "Events",
-    href: "/events",
-    icon: CalendarDays,
-  },
-  {
-    label: "Messages",
-    href: "/messages",
-    icon: MessageSquare,
-  },
-];
+import { dashboardNavigation } from "@/components/dashboard/navigation";
 
 type SidebarProps = {
   unreadMessageCount: number;
@@ -62,7 +17,7 @@ export function Sidebar({ unreadMessageCount }: SidebarProps) {
       </div>
 
       <nav className="flex-1 space-y-1 px-4 py-6">
-        {navigation.map((item) => {
+        {dashboardNavigation.map((item) => {
           const Icon = item.icon;
 
           return (
