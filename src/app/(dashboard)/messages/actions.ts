@@ -25,100 +25,13 @@ export async function startConversation(formData: FormData) {
     redirect("/network");
   }
 
-  const { data: connection } = await supabase
-    .from("connections")
-    .select("id")
-    .eq("status", "accepted")
-    .or(
-      `and(requester_id.eq.${user.id},recipient_id.eq.${memberId}),and(requester_id.eq.${memberId},recipient_id.eq.${user.id})`,
-    )
-    .limit(1)
-    .maybeSingle();
+  const { data: conversationId, error } = await supabase.rpc(
+    "start_direct_conversation",
+    { target_member_id: memberId },
+  );
 
-  if (!connection) {
-    redirect(`/members/${memberId}`);
-  }
-
-  const { data: myMemberships } = await supabase
-    .from("conversation_members")
-    .select("conversation_id")
-    .eq("profile_id", user.id);
-
-  const conversationIds = [
-    ...new Set(
-      (myMemberships ?? []).map(
-        (membership) => membership.conversation_id,
-      ),
-    ),
-  ];
-
-  if (conversationIds.length > 0) {
-    const { data: membershipRows } = await supabase
-      .from("conversation_members")
-      .select("conversation_id, profile_id")
-      .in("conversation_id", conversationIds);
-
-    const membersByConversation = new Map<string, string[]>();
-
-    for (const membership of membershipRows ?? []) {
-      const members =
-        membersByConversation.get(membership.conversation_id) ?? [];
-
-      members.push(membership.profile_id);
-      membersByConversation.set(membership.conversation_id, members);
-    }
-
-    const existingConversationId = conversationIds.find(
-      (conversationId) => {
-        const members =
-          membersByConversation.get(conversationId) ?? [];
-
-        return (
-          members.length === 2 &&
-          members.includes(user.id) &&
-          members.includes(memberId)
-        );
-      },
-    );
-
-    if (existingConversationId) {
-      redirect(`/messages/${existingConversationId}`);
-    }
-  }
-
-  const conversationId = crypto.randomUUID();
-
-  const { error: conversationError } = await supabase
-    .from("conversations")
-    .insert({
-      id: conversationId,
-      created_by: user.id,
-    });
-
-  if (conversationError) {
-    throw new Error("Unable to start the conversation.");
-  }
-
-  const { error: creatorMemberError } = await supabase
-    .from("conversation_members")
-    .insert({
-      conversation_id: conversationId,
-      profile_id: user.id,
-    });
-
-  if (creatorMemberError) {
-    throw new Error("Unable to add the conversation creator.");
-  }
-
-  const { error: otherMemberError } = await supabase
-    .from("conversation_members")
-    .insert({
-      conversation_id: conversationId,
-      profile_id: memberId,
-    });
-
-  if (otherMemberError) {
-    throw new Error("Unable to add the conversation member.");
+  if (error || !conversationId) {
+    redirect(`/members/${memberId}?error=Unable%20to%20start%20conversation`);
   }
 
   revalidatePath("/messages");
@@ -189,45 +102,18 @@ export async function markConversationRead(conversationId: string) {
     return;
   }
 
-  const { data: membership } = await supabase
-    .from("conversation_members")
-    .select("last_read_at")
-    .eq("conversation_id", conversationId)
-    .eq("profile_id", user.id)
-    .maybeSingle();
-
-  if (!membership) {
-    return;
-  }
-
-  const { data: latestMessage } = await supabase
-    .from("messages")
-    .select("created_at")
-    .eq("conversation_id", conversationId)
-    .is("deleted_at", null)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (
-    !latestMessage ||
-    (membership.last_read_at &&
-      new Date(membership.last_read_at).getTime() >=
-        new Date(latestMessage.created_at).getTime())
-  ) {
-    return;
-  }
-
-  const { error } = await supabase
-    .from("conversation_members")
-    .update({ last_read_at: latestMessage.created_at })
-    .eq("conversation_id", conversationId)
-    .eq("profile_id", user.id);
+  const { data: updated, error } = await supabase.rpc(
+    "mark_conversation_read",
+    { target_conversation_id: conversationId },
+  );
 
   if (error) {
     throw new Error("Unable to mark the conversation as read.");
   }
 
+  if (!updated) {
+    return;
+  }
+
   revalidatePath("/", "layout");
 }
-

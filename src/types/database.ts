@@ -754,12 +754,35 @@ export type Database = {
     }
     Functions: {
       can_moderate: { Args: never; Returns: boolean }
+      get_message_inbox: {
+        Args: never
+        Returns: {
+          conversation_id: string
+          conversation_updated_at: string
+          latest_message_body: string | null
+          latest_message_created_at: string | null
+          latest_message_sender_id: string | null
+          other_member_id: string | null
+          unread_count: number
+        }[]
+      }
+      get_unread_message_counts: {
+        Args: never
+        Returns: {
+          conversation_id: string
+          unread_count: number
+        }[]
+      }
       is_admin: { Args: never; Returns: boolean }
       is_conversation_member: {
         Args: { target_conversation_id: string }
         Returns: boolean
       }
       mark_all_notifications_read: { Args: never; Returns: number }
+      mark_conversation_read: {
+        Args: { target_conversation_id: string }
+        Returns: boolean
+      }
       mark_notification_read: {
         Args: { target_notification_id: string }
         Returns: boolean
@@ -797,6 +820,10 @@ export type Database = {
           subtitle: string
           title: string
         }[]
+      }
+      start_direct_conversation: {
+        Args: { target_member_id: string }
+        Returns: string
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }

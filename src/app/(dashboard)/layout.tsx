@@ -5,7 +5,6 @@ import { Sidebar } from "@/components/dashboard/sidebar";
 import { RealtimeMessageRefresh } from "@/components/messages/realtime-message-refresh";
 import {
   getTotalUnreadMessageCount,
-  getUnreadMessageCounts,
 } from "@/lib/messages";
 import { createClient } from "@/lib/supabase/server";
 
@@ -30,7 +29,7 @@ export default async function DashboardLayout({
     { data: profile },
     { data: notificationRows },
     { count: unreadNotificationCount },
-    { data: messageMemberships },
+    { data: unreadMessageRows },
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -65,10 +64,7 @@ export default async function DashboardLayout({
       .select("id", { count: "exact", head: true })
       .eq("recipient_id", user.id)
       .is("read_at", null),
-    supabase
-      .from("conversation_members")
-      .select("conversation_id, last_read_at")
-      .eq("profile_id", user.id),
+    supabase.rpc("get_unread_message_counts"),
   ]);
 
   if (!profile?.onboarding_completed) {
@@ -112,23 +108,12 @@ export default async function DashboardLayout({
     };
   });
 
-  const conversationIds = (messageMemberships ?? []).map(
-    (membership) => membership.conversation_id,
-  );
-  const { data: incomingMessages } =
-    conversationIds.length > 0
-      ? await supabase
-          .from("messages")
-          .select("conversation_id, sender_id, created_at")
-          .in("conversation_id", conversationIds)
-          .neq("sender_id", user.id)
-          .is("deleted_at", null)
-      : { data: [] };
   const unreadMessageCount = getTotalUnreadMessageCount(
-    getUnreadMessageCounts(
-      messageMemberships ?? [],
-      incomingMessages ?? [],
-      user.id,
+    new Map(
+      (unreadMessageRows ?? []).map((row) => [
+        row.conversation_id,
+        Number(row.unread_count),
+      ]),
     ),
   );
 
