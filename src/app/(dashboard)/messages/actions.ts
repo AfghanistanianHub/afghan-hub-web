@@ -4,6 +4,14 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
+const uuidPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export type SendMessageState = {
+  error: string | null;
+  sentAt: number | null;
+};
+
 export async function startConversation(formData: FormData) {
   const supabase = await createClient();
 
@@ -38,7 +46,10 @@ export async function startConversation(formData: FormData) {
   redirect(`/messages/${conversationId}`);
 }
 
-export async function sendMessage(formData: FormData) {
+export async function sendMessage(
+  _previousState: SendMessageState,
+  formData: FormData,
+): Promise<SendMessageState> {
   const supabase = await createClient();
 
   const {
@@ -54,16 +65,22 @@ export async function sendMessage(formData: FormData) {
 
   if (
     typeof conversationId !== "string" ||
-    !conversationId ||
+    !uuidPattern.test(conversationId) ||
     typeof messageValue !== "string"
   ) {
-    redirect("/messages");
+    return {
+      error: "Unable to identify this conversation.",
+      sentAt: null,
+    };
   }
 
   const message = messageValue.trim();
 
   if (!message || message.length > 4000) {
-    redirect(`/messages/${conversationId}`);
+    return {
+      error: "Enter a message between 1 and 4,000 characters.",
+      sentAt: null,
+    };
   }
 
   const { data: membership } = await supabase
@@ -74,7 +91,10 @@ export async function sendMessage(formData: FormData) {
     .maybeSingle();
 
   if (!membership) {
-    redirect("/messages");
+    return {
+      error: "You no longer have access to this conversation.",
+      sentAt: null,
+    };
   }
 
   const { error } = await supabase.from("messages").insert({
@@ -84,11 +104,15 @@ export async function sendMessage(formData: FormData) {
   });
 
   if (error) {
-    throw new Error("Unable to send the message.");
+    return {
+      error: "Your message could not be sent. Please try again.",
+      sentAt: null,
+    };
   }
 
   revalidatePath("/messages");
   revalidatePath(`/messages/${conversationId}`);
+  return { error: null, sentAt: Date.now() };
 }
 
 export async function markConversationRead(conversationId: string) {

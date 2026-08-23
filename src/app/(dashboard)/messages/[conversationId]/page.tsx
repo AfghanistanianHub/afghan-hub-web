@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, CheckCheck, Send, UserRound } from "lucide-react";
+import { ArrowLeft, CheckCheck, UserRound } from "lucide-react";
 
-import { sendMessage } from "@/app/(dashboard)/messages/actions";
 import { MarkConversationRead } from "@/components/messages/mark-conversation-read";
+import { MessageComposer } from "@/components/messages/message-composer";
 import { MessageThread } from "@/components/messages/message-thread";
 import { RealtimeReadReceiptRefresh } from "@/components/messages/realtime-read-receipt-refresh";
 import { createClient } from "@/lib/supabase/server";
@@ -251,33 +251,7 @@ export default async function ConversationPage({
           )}
         </MessageThread>
 
-        <form
-          action={sendMessage}
-          className="flex items-end gap-3 border-t border-slate-800 bg-slate-950/60 p-4"
-        >
-          <input
-            type="hidden"
-            name="conversation_id"
-            value={conversationId}
-          />
-
-          <textarea
-            name="message"
-            required
-            maxLength={4000}
-            rows={1}
-            placeholder="Write a message..."
-            className="min-h-12 flex-1 resize-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-emerald-500"
-          />
-
-          <button
-            type="submit"
-            aria-label="Send message"
-            className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white transition hover:bg-emerald-500"
-          >
-            <Send className="size-5" />
-          </button>
-        </form>
+        <MessageComposer conversationId={conversationId} />
       </div>
     </main>
   );
