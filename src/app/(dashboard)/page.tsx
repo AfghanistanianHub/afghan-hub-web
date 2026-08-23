@@ -4,9 +4,26 @@ import {
   BriefcaseBusiness,
   Building2,
   CalendarDays,
+  MapPin,
   UsersRound,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+
+function getOrganizationName(
+  organization: { name: string } | { name: string }[] | null,
+) {
+  return Array.isArray(organization)
+    ? organization[0]?.name
+    : organization?.name;
+}
+
+function formatEventDate(value: string) {
+  return new Intl.DateTimeFormat("en-CA", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(value));
+}
 
 const quickActions = [
   {
@@ -42,11 +59,53 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("display_name,first_name,headline,city,country")
-    .eq("id", user!.id)
-    .single();
+  const now = new Date().toISOString();
+  const [
+    { data: profile },
+    { data: suggestedOpportunities },
+    { data: upcomingEvents },
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("display_name,first_name,headline,city,country")
+      .eq("id", user!.id)
+      .single(),
+    supabase
+      .from("opportunities")
+      .select(`
+        id,
+        title,
+        slug,
+        summary,
+        type,
+        city,
+        country,
+        deadline,
+        organization:organizations (
+          name
+        )
+      `)
+      .eq("status", "published")
+      .or(`deadline.is.null,deadline.gte.${now}`)
+      .order("created_at", { ascending: false })
+      .limit(3),
+    supabase
+      .from("events")
+      .select(`
+        id,
+        title,
+        slug,
+        starts_at,
+        city,
+        country,
+        venue_name,
+        is_online
+      `)
+      .eq("status", "published")
+      .gte("starts_at", now)
+      .order("starts_at", { ascending: true })
+      .limit(3),
+  ]);
 
   const displayName =
     profile?.display_name ||
@@ -142,21 +201,82 @@ export default async function DashboardPage() {
           <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
             <div>
               <p className="text-sm font-semibold text-emerald-400">
-                Community activity
+                Recommended for you
               </p>
-              <h2 className="mt-1 text-xl font-bold">Latest updates</h2>
+              <h2 className="mt-1 text-xl font-bold">
+                Suggested opportunities
+              </h2>
             </div>
 
-            <div className="mt-10 flex min-h-52 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-700 bg-slate-950/50 px-6 text-center">
-              <UsersRound className="size-10 text-slate-600" />
-              <h3 className="mt-4 font-semibold text-white">
-                Community feed coming next
-              </h3>
-              <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
-                New members, organizations, opportunities, and events will
-                appear here as the community grows.
-              </p>
-            </div>
+            {suggestedOpportunities?.length ? (
+              <div className="mt-5 divide-y divide-slate-800">
+                {suggestedOpportunities.map((opportunity) => {
+                  const organizationName = getOrganizationName(
+                    opportunity.organization,
+                  );
+                  const location = [
+                    opportunity.city,
+                    opportunity.country,
+                  ]
+                    .filter(Boolean)
+                    .join(", ");
+
+                  return (
+                    <Link
+                      key={opportunity.id}
+                      href={`/opportunities/${opportunity.slug}`}
+                      className="group block py-5 first:pt-0 last:pb-0"
+                    >
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold capitalize text-emerald-400">
+                          {opportunity.type}
+                        </span>
+                        {organizationName ? (
+                          <span className="text-xs text-slate-500">
+                            {organizationName}
+                          </span>
+                        ) : null}
+                      </div>
+
+                      <h3 className="mt-3 font-bold text-white transition group-hover:text-emerald-300">
+                        {opportunity.title}
+                      </h3>
+
+                      {opportunity.summary ? (
+                        <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-400">
+                          {opportunity.summary}
+                        </p>
+                      ) : null}
+
+                      {location ? (
+                        <p className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+                          <MapPin className="size-3.5" />
+                          {location}
+                        </p>
+                      ) : null}
+                    </Link>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="mt-5 rounded-xl border border-dashed border-slate-700 bg-slate-950/50 px-5 py-10 text-center">
+                <BriefcaseBusiness className="mx-auto size-9 text-slate-600" />
+                <h3 className="mt-3 font-semibold text-white">
+                  No active opportunities yet
+                </h3>
+                <p className="mt-2 text-sm text-slate-500">
+                  New opportunities will appear here when they are published.
+                </p>
+              </div>
+            )}
+
+            <Link
+              href="/opportunities"
+              className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-emerald-400 hover:text-emerald-300"
+            >
+              Browse all opportunities
+              <ArrowRight className="size-4" />
+            </Link>
           </section>
 
           <aside className="space-y-6">
@@ -184,12 +304,49 @@ export default async function DashboardPage() {
               <p className="text-sm font-semibold text-emerald-400">
                 Upcoming events
               </p>
-              <h2 className="mt-1 text-xl font-bold">Nothing scheduled yet</h2>
 
-              <p className="mt-3 text-sm leading-6 text-slate-400">
-                Community events will be displayed here once they are
-                published.
-              </p>
+              {upcomingEvents?.length ? (
+                <div className="mt-4 space-y-4">
+                  {upcomingEvents.map((event) => {
+                    const location = event.is_online
+                      ? "Online"
+                      : [event.venue_name, event.city, event.country]
+                          .filter(Boolean)
+                          .join(", ");
+
+                    return (
+                      <Link
+                        key={event.id}
+                        href={`/events/${event.slug}`}
+                        className="block rounded-xl border border-slate-800 bg-slate-950/50 p-4 transition hover:border-emerald-500/50"
+                      >
+                        <p className="text-xs font-semibold text-emerald-400">
+                          {formatEventDate(event.starts_at)}
+                        </p>
+                        <h3 className="mt-2 font-semibold text-white">
+                          {event.title}
+                        </h3>
+                        {location ? (
+                          <p className="mt-2 flex items-start gap-2 text-xs leading-5 text-slate-500">
+                            <MapPin className="mt-0.5 size-3.5 shrink-0" />
+                            {location}
+                          </p>
+                        ) : null}
+                      </Link>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="mt-4 rounded-xl border border-dashed border-slate-700 bg-slate-950/50 px-4 py-8 text-center">
+                  <CalendarDays className="mx-auto size-8 text-slate-600" />
+                  <h2 className="mt-3 font-semibold text-white">
+                    Nothing scheduled yet
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-slate-500">
+                    Upcoming community events will appear here.
+                  </p>
+                </div>
+              )}
 
               <Link
                 href="/events"
