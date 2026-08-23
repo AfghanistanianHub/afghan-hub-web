@@ -4,6 +4,14 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
+const uuidPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export type SendMessageState = {
+  error: string | null;
+  sentAt: number | null;
+};
+
 export async function startConversation(formData: FormData) {
   const supabase = await createClient();
 
@@ -25,107 +33,23 @@ export async function startConversation(formData: FormData) {
     redirect("/network");
   }
 
-  const { data: connection } = await supabase
-    .from("connections")
-    .select("id")
-    .eq("status", "accepted")
-    .or(
-      `and(requester_id.eq.${user.id},recipient_id.eq.${memberId}),and(requester_id.eq.${memberId},recipient_id.eq.${user.id})`,
-    )
-    .limit(1)
-    .maybeSingle();
+  const { data: conversationId, error } = await supabase.rpc(
+    "start_direct_conversation",
+    { target_member_id: memberId },
+  );
 
-  if (!connection) {
-    redirect(`/members/${memberId}`);
-  }
-
-  const { data: myMemberships } = await supabase
-    .from("conversation_members")
-    .select("conversation_id")
-    .eq("profile_id", user.id);
-
-  const conversationIds = [
-    ...new Set(
-      (myMemberships ?? []).map(
-        (membership) => membership.conversation_id,
-      ),
-    ),
-  ];
-
-  if (conversationIds.length > 0) {
-    const { data: membershipRows } = await supabase
-      .from("conversation_members")
-      .select("conversation_id, profile_id")
-      .in("conversation_id", conversationIds);
-
-    const membersByConversation = new Map<string, string[]>();
-
-    for (const membership of membershipRows ?? []) {
-      const members =
-        membersByConversation.get(membership.conversation_id) ?? [];
-
-      members.push(membership.profile_id);
-      membersByConversation.set(membership.conversation_id, members);
-    }
-
-    const existingConversationId = conversationIds.find(
-      (conversationId) => {
-        const members =
-          membersByConversation.get(conversationId) ?? [];
-
-        return (
-          members.length === 2 &&
-          members.includes(user.id) &&
-          members.includes(memberId)
-        );
-      },
-    );
-
-    if (existingConversationId) {
-      redirect(`/messages/${existingConversationId}`);
-    }
-  }
-
-  const conversationId = crypto.randomUUID();
-
-  const { error: conversationError } = await supabase
-    .from("conversations")
-    .insert({
-      id: conversationId,
-      created_by: user.id,
-    });
-
-  if (conversationError) {
-    throw new Error("Unable to start the conversation.");
-  }
-
-  const { error: creatorMemberError } = await supabase
-    .from("conversation_members")
-    .insert({
-      conversation_id: conversationId,
-      profile_id: user.id,
-    });
-
-  if (creatorMemberError) {
-    throw new Error("Unable to add the conversation creator.");
-  }
-
-  const { error: otherMemberError } = await supabase
-    .from("conversation_members")
-    .insert({
-      conversation_id: conversationId,
-      profile_id: memberId,
-    });
-
-  if (otherMemberError) {
-    throw new Error("Unable to add the conversation member.");
+  if (error || !conversationId) {
+    redirect(`/members/${memberId}?error=Unable%20to%20start%20conversation`);
   }
 
   revalidatePath("/messages");
   redirect(`/messages/${conversationId}`);
 }
 
-export async function sendMessage(formData: FormData) {
+export async function sendMessage(
+  _previousState: SendMessageState,
+  formData: FormData,
+): Promise<SendMessageState> {
   const supabase = await createClient();
 
   const {
@@ -141,16 +65,22 @@ export async function sendMessage(formData: FormData) {
 
   if (
     typeof conversationId !== "string" ||
-    !conversationId ||
+    !uuidPattern.test(conversationId) ||
     typeof messageValue !== "string"
   ) {
-    redirect("/messages");
+    return {
+      error: "Unable to identify this conversation.",
+      sentAt: null,
+    };
   }
 
   const message = messageValue.trim();
 
   if (!message || message.length > 4000) {
-    redirect(`/messages/${conversationId}`);
+    return {
+      error: "Enter a message between 1 and 4,000 characters.",
+      sentAt: null,
+    };
   }
 
   const { data: membership } = await supabase
@@ -161,7 +91,10 @@ export async function sendMessage(formData: FormData) {
     .maybeSingle();
 
   if (!membership) {
-    redirect("/messages");
+    return {
+      error: "You no longer have access to this conversation.",
+      sentAt: null,
+    };
   }
 
   const { error } = await supabase.from("messages").insert({
@@ -171,10 +104,40 @@ export async function sendMessage(formData: FormData) {
   });
 
   if (error) {
-    throw new Error("Unable to send the message.");
+    return {
+      error: "Your message could not be sent. Please try again.",
+      sentAt: null,
+    };
   }
 
   revalidatePath("/messages");
   revalidatePath(`/messages/${conversationId}`);
+  return { error: null, sentAt: Date.now() };
 }
 
+export async function markConversationRead(conversationId: string) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user || !conversationId) {
+    return;
+  }
+
+  const { data: updated, error } = await supabase.rpc(
+    "mark_conversation_read",
+    { target_conversation_id: conversationId },
+  );
+
+  if (error) {
+    throw new Error("Unable to mark the conversation as read.");
+  }
+
+  if (!updated) {
+    return;
+  }
+
+  revalidatePath("/", "layout");
+}

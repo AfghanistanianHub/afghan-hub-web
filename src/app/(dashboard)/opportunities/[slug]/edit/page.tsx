@@ -56,6 +56,9 @@ export default async function EditOpportunityPage({
         <p className="mt-2 text-slate-400">
           Update the opportunity information below.
         </p>
+        <p className="mt-3 text-sm text-amber-200">
+          Saving changes submits this opportunity for moderator review.
+        </p>
       </div>
 
       {error ? (
@@ -266,7 +269,7 @@ export default async function EditOpportunityPage({
             type="submit"
             className="rounded-lg bg-emerald-600 px-5 py-3 font-semibold hover:bg-emerald-500"
           >
-            Save Changes
+            Save and Submit for Review
           </button>
 
           <Link

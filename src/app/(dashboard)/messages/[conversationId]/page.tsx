@@ -1,14 +1,19 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, Send, UserRound } from "lucide-react";
+import { ArrowLeft, CheckCheck, UserRound } from "lucide-react";
 
-import { sendMessage } from "@/app/(dashboard)/messages/actions";
-import { RealtimeMessageRefresh } from "@/components/messages/realtime-message-refresh";
+import { MarkConversationRead } from "@/components/messages/mark-conversation-read";
+import { MessageComposer } from "@/components/messages/message-composer";
+import { MessageThread } from "@/components/messages/message-thread";
+import { RealtimeReadReceiptRefresh } from "@/components/messages/realtime-read-receipt-refresh";
 import { createClient } from "@/lib/supabase/server";
 
 type ConversationPageProps = {
   params: Promise<{
     conversationId: string;
+  }>;
+  searchParams: Promise<{
+    limit?: string;
   }>;
 };
 
@@ -35,8 +40,14 @@ function formatMessageTime(value: string) {
 
 export default async function ConversationPage({
   params,
+  searchParams,
 }: ConversationPageProps) {
   const { conversationId } = await params;
+  const { limit: limitValue } = await searchParams;
+  const parsedLimit = Number.parseInt(limitValue ?? "", 10);
+  const messageLimit = Number.isFinite(parsedLimit)
+    ? Math.min(Math.max(parsedLimit, 100), 1000)
+    : 100;
   const supabase = await createClient();
 
   const {
@@ -49,7 +60,7 @@ export default async function ConversationPage({
 
   const { data: membership } = await supabase
     .from("conversation_members")
-    .select("conversation_id")
+    .select("conversation_id, last_read_at")
     .eq("conversation_id", conversationId)
     .eq("profile_id", user.id)
     .maybeSingle();
@@ -58,22 +69,30 @@ export default async function ConversationPage({
     redirect("/messages");
   }
 
-  const [{ data: memberRows }, { data: messages }] = await Promise.all([
+  const [
+    { data: memberRows },
+    { data: messageRows, count: messageCount },
+  ] = await Promise.all([
     supabase
       .from("conversation_members")
-      .select("profile_id")
+      .select("profile_id, last_read_at")
       .eq("conversation_id", conversationId),
     supabase
       .from("messages")
-      .select("id, sender_id, body, created_at")
+      .select("id, sender_id, body, created_at", { count: "exact" })
       .eq("conversation_id", conversationId)
       .is("deleted_at", null)
-      .order("created_at", { ascending: true }),
+      .order("created_at", { ascending: false })
+      .range(0, messageLimit - 1),
   ]);
+  const messages = [...(messageRows ?? [])].reverse();
+  const hasEarlierMessages = (messageCount ?? 0) > messageLimit;
+  const nextMessageLimit = Math.min(messageLimit + 100, 1000);
 
-  const otherMemberId = (memberRows ?? []).find(
+  const otherMembership = (memberRows ?? []).find(
     (member) => member.profile_id !== user.id,
-  )?.profile_id;
+  );
+  const otherMemberId = otherMembership?.profile_id;
 
   const { data: otherMember } = otherMemberId
     ? await supabase
@@ -89,17 +108,29 @@ export default async function ConversationPage({
     ? getMemberName(otherMember)
     : "Afghan Hub Member";
 
-  await supabase
-    .from("conversation_members")
-    .update({
-      last_read_at: new Date().toISOString(),
-    })
-    .eq("conversation_id", conversationId)
-    .eq("profile_id", user.id);
+  const hasUnreadMessages = (messages ?? []).some(
+    (message) =>
+      message.sender_id !== user.id &&
+      (!membership.last_read_at ||
+        new Date(message.created_at).getTime() >
+          new Date(membership.last_read_at).getTime()),
+  );
+  const latestSentMessage = messages.findLast(
+    (message) => message.sender_id === user.id,
+  );
+  const latestSentMessageIsSeen = Boolean(
+    latestSentMessage &&
+      otherMembership?.last_read_at &&
+      new Date(otherMembership.last_read_at).getTime() >=
+        new Date(latestSentMessage.created_at).getTime(),
+  );
 
   return (
     <main className="flex min-h-[calc(100vh-73px)] flex-col px-6 py-6 lg:px-10">
-      <RealtimeMessageRefresh conversationId={conversationId} />
+      {hasUnreadMessages && messageLimit === 100 ? (
+        <MarkConversationRead conversationId={conversationId} />
+      ) : null}
+      <RealtimeReadReceiptRefresh conversationId={conversationId} />
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
         <header className="flex items-center gap-4 border-b border-slate-800 px-5 py-4">
           <Link
@@ -111,6 +142,7 @@ export default async function ConversationPage({
           </Link>
 
           {otherMember?.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={otherMember.avatar_url}
               alt=""
@@ -142,8 +174,39 @@ export default async function ConversationPage({
           </div>
         </header>
 
-        <section className="flex-1 space-y-4 overflow-y-auto px-5 py-6">
-          {(messages ?? []).length === 0 ? (
+        <MessageThread
+          latestMessageId={messages.at(-1)?.id ?? null}
+          scrollToLatest={messageLimit === 100}
+        >
+          {hasEarlierMessages || messageLimit > 100 ? (
+            <div className="flex flex-wrap items-center justify-center gap-2 pb-2 text-center">
+              {messageLimit < 1000 ? (
+                hasEarlierMessages ? (
+                  <Link
+                    href={`/messages/${conversationId}?limit=${nextMessageLimit}`}
+                    className="inline-flex rounded-lg border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white"
+                  >
+                    Load earlier messages
+                  </Link>
+                ) : null
+              ) : hasEarlierMessages ? (
+                <p className="text-xs text-slate-500">
+                  Showing the latest 1,000 messages.
+                </p>
+              ) : null}
+
+              {messageLimit > 100 ? (
+                <Link
+                  href={`/messages/${conversationId}`}
+                  className="inline-flex rounded-lg border border-emerald-700/70 px-4 py-2 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-950/60 hover:text-emerald-200"
+                >
+                  Back to latest
+                </Link>
+              ) : null}
+            </div>
+          ) : null}
+
+          {messages.length === 0 ? (
             <div className="flex h-full min-h-72 items-center justify-center text-center">
               <div>
                 <h1 className="text-lg font-semibold text-white">
@@ -155,7 +218,7 @@ export default async function ConversationPage({
               </div>
             </div>
           ) : (
-            (messages ?? []).map((message) => {
+            messages.map((message) => {
               const isMine = message.sender_id === user.id;
 
               return (
@@ -184,41 +247,22 @@ export default async function ConversationPage({
                       }`}
                     >
                       {formatMessageTime(message.created_at)}
+                      {isMine &&
+                      message.id === latestSentMessage?.id &&
+                      latestSentMessageIsSeen ? (
+                        <span className="ml-2 inline-flex items-center gap-1 font-medium">
+                          <CheckCheck className="size-3.5" /> Seen
+                        </span>
+                      ) : null}
                     </p>
                   </div>
                 </div>
               );
             })
           )}
-        </section>
+        </MessageThread>
 
-        <form
-          action={sendMessage}
-          className="flex items-end gap-3 border-t border-slate-800 bg-slate-950/60 p-4"
-        >
-          <input
-            type="hidden"
-            name="conversation_id"
-            value={conversationId}
-          />
-
-          <textarea
-            name="message"
-            required
-            maxLength={4000}
-            rows={1}
-            placeholder="Write a message..."
-            className="min-h-12 flex-1 resize-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-emerald-500"
-          />
-
-          <button
-            type="submit"
-            aria-label="Send message"
-            className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white transition hover:bg-emerald-500"
-          >
-            <Send className="size-5" />
-          </button>
-        </form>
+        <MessageComposer conversationId={conversationId} />
       </div>
     </main>
   );

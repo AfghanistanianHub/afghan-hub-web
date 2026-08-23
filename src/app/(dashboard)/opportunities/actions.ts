@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -131,7 +132,7 @@ export async function createOpportunity(formData: FormData) {
     slug,
     summary,
     description,
-    type,
+    type: type as (typeof opportunityTypes)[number],
     city: getOptionalString(formData, "city"),
     province_state: getOptionalString(formData, "province_state"),
     country: getOptionalString(formData, "country"),
@@ -243,7 +244,7 @@ export async function updateOpportunity(formData: FormData) {
       title,
       summary,
       description,
-      type,
+      type: type as (typeof opportunityTypes)[number],
       organization_id: organizationId,
       city: getOptionalString(formData, "city"),
       province_state: getOptionalString(formData, "province_state"),
@@ -252,6 +253,7 @@ export async function updateOpportunity(formData: FormData) {
       external_url: getOptionalString(formData, "external_url"),
       contact_email: getOptionalString(formData, "contact_email"),
       deadline,
+      status: "draft",
       updated_at: new Date().toISOString(),
     })
     .eq("id", existingOpportunity.id)
@@ -312,4 +314,63 @@ export async function deleteOpportunity(formData: FormData) {
   }
 
   redirect("/opportunities");
+}
+
+export async function toggleSavedOpportunity(formData: FormData) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    redirect("/login");
+  }
+
+  const opportunityId = getOptionalString(formData, "opportunity_id");
+  const opportunitySlug = getOptionalString(formData, "opportunity_slug");
+
+  if (!opportunityId || !opportunitySlug) {
+    redirect("/opportunities");
+  }
+
+  const { data: opportunity } = await supabase
+    .from("opportunities")
+    .select("id,status")
+    .eq("id", opportunityId)
+    .maybeSingle();
+
+  if (!opportunity || opportunity.status !== "published") {
+    redirect("/opportunities");
+  }
+
+  const { data: savedOpportunity } = await supabase
+    .from("saved_opportunities")
+    .select("opportunity_id")
+    .eq("profile_id", user.id)
+    .eq("opportunity_id", opportunityId)
+    .maybeSingle();
+
+  const { error } = savedOpportunity
+    ? await supabase
+        .from("saved_opportunities")
+        .delete()
+        .eq("profile_id", user.id)
+        .eq("opportunity_id", opportunityId)
+    : await supabase.from("saved_opportunities").insert({
+        profile_id: user.id,
+        opportunity_id: opportunityId,
+      });
+
+  if (error) {
+    redirect(
+      `/opportunities/${opportunitySlug}?error=${encodeURIComponent(
+        error.message,
+      )}`,
+    );
+  }
+
+  revalidatePath(`/opportunities/${opportunitySlug}`);
+  revalidatePath("/saved");
 }

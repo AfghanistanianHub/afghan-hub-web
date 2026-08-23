@@ -26,6 +26,9 @@ export default async function NewOpportunityPage() {
         <p className="mt-2 text-slate-400">
           Share a job, scholarship, volunteer role, mentorship, or another opportunity.
         </p>
+        <p className="mt-3 text-sm text-amber-200">
+          Your submission will be reviewed before it appears publicly.
+        </p>
       </div>
 
       <form
@@ -187,7 +190,7 @@ export default async function NewOpportunityPage() {
           type="submit"
           className="rounded-lg bg-emerald-600 px-5 py-3 font-semibold hover:bg-emerald-500"
         >
-          Publish Opportunity
+          Submit for Review
         </button>
       </form>
     </main>

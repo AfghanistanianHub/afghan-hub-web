@@ -2,6 +2,10 @@ import { redirect } from "next/navigation";
 import { Header } from "@/components/dashboard/header";
 import type { NotificationSummary } from "@/components/dashboard/notification-bell";
 import { Sidebar } from "@/components/dashboard/sidebar";
+import { RealtimeMessageRefresh } from "@/components/messages/realtime-message-refresh";
+import {
+  getTotalUnreadMessageCount,
+} from "@/lib/messages";
 import { createClient } from "@/lib/supabase/server";
 
 type DashboardLayoutProps = {
@@ -25,10 +29,11 @@ export default async function DashboardLayout({
     { data: profile },
     { data: notificationRows },
     { count: unreadNotificationCount },
+    { data: unreadMessageRows },
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("display_name,first_name,onboarding_completed")
+      .select("display_name,first_name,onboarding_completed,role")
       .eq("id", user.id)
       .maybeSingle(),
     supabase
@@ -37,6 +42,10 @@ export default async function DashboardLayout({
         id,
         type,
         conversation_id,
+        content_type,
+        content_slug,
+        content_title,
+        content_note,
         read_at,
         created_at,
         actor:profiles!notifications_actor_id_fkey (
@@ -55,6 +64,7 @@ export default async function DashboardLayout({
       .select("id", { count: "exact", head: true })
       .eq("recipient_id", user.id)
       .is("read_at", null),
+    supabase.rpc("get_unread_message_counts"),
   ]);
 
   if (!profile?.onboarding_completed) {
@@ -66,6 +76,8 @@ export default async function DashboardLayout({
     profile.first_name?.trim() ||
     user.email?.split("@")[0] ||
     "Member";
+  const canModerate =
+    profile.role === "admin" || profile.role === "moderator";
 
   const notifications: NotificationSummary[] = (
     notificationRows ?? []
@@ -78,6 +90,10 @@ export default async function DashboardLayout({
       id: notification.id,
       type: notification.type,
       conversationId: notification.conversation_id,
+      contentType: notification.content_type,
+      contentSlug: notification.content_slug,
+      contentTitle: notification.content_title,
+      contentNote: notification.content_note,
       readAt: notification.read_at,
       createdAt: notification.created_at,
       actor: actor
@@ -92,18 +108,33 @@ export default async function DashboardLayout({
     };
   });
 
+  const unreadMessageCount = getTotalUnreadMessageCount(
+    new Map(
+      (unreadMessageRows ?? []).map((row) => [
+        row.conversation_id,
+        Number(row.unread_count),
+      ]),
+    ),
+  );
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+      <RealtimeMessageRefresh />
       <div className="flex min-h-screen">
-        <Sidebar />
+        <Sidebar
+          canModerate={canModerate}
+          unreadMessageCount={unreadMessageCount}
+        />
 
         <div className="min-w-0 flex-1">
           <Header
+            canModerate={canModerate}
             currentUserId={user.id}
             displayName={displayName}
             email={user.email ?? ""}
             notifications={notifications}
             unreadNotificationCount={unreadNotificationCount ?? 0}
+            unreadMessageCount={unreadMessageCount}
           />
 
           {children}

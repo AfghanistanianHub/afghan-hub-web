@@ -36,7 +36,7 @@ export async function markNotificationRead(formData: FormData) {
   const { data: notification, error: notificationError } =
     await supabase
       .from("notifications")
-      .select("id, type, conversation_id")
+      .select("id, type, conversation_id, content_type, content_slug")
       .eq("id", notificationId)
       .eq("recipient_id", user.id)
       .maybeSingle();
@@ -49,14 +49,25 @@ export async function markNotificationRead(formData: FormData) {
     redirect("/");
   }
 
-  const destination =
-    notification.type === "new_message" &&
-    notification.conversation_id
-      ? `/messages/${notification.conversation_id}`
-      : notification.type === "connection_request" ||
-          notification.type === "connection_accepted"
-        ? "/network"
-        : "/";
+  let destination = "/";
+
+  if (notification.type === "new_message" && notification.conversation_id) {
+    destination = `/messages/${notification.conversation_id}`;
+  } else if (
+    notification.type === "connection_request" ||
+    notification.type === "connection_accepted"
+  ) {
+    destination = "/network";
+  } else if (
+    (notification.type === "content_approved" ||
+      notification.type === "content_rejected") &&
+    notification.content_slug
+  ) {
+    destination =
+      notification.content_type === "event"
+        ? `/events/${notification.content_slug}`
+        : `/opportunities/${notification.content_slug}`;
+  }
 
   const { error } = await supabase.rpc("mark_notification_read", {
     target_notification_id: notification.id,

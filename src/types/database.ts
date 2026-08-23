@@ -220,6 +220,9 @@ export type Database = {
           ends_at: string | null
           id: string
           is_online: boolean
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           online_url: string | null
           organization_id: string | null
           province_state: string | null
@@ -243,6 +246,9 @@ export type Database = {
           ends_at?: string | null
           id?: string
           is_online?: boolean
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           online_url?: string | null
           organization_id?: string | null
           province_state?: string | null
@@ -266,6 +272,9 @@ export type Database = {
           ends_at?: string | null
           id?: string
           is_online?: boolean
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           online_url?: string | null
           organization_id?: string | null
           province_state?: string | null
@@ -350,6 +359,11 @@ export type Database = {
         Row: {
           actor_id: string | null
           connection_id: string | null
+          content_id: string | null
+          content_note: string | null
+          content_slug: string | null
+          content_title: string | null
+          content_type: string | null
           conversation_id: string | null
           created_at: string
           id: string
@@ -361,6 +375,11 @@ export type Database = {
         Insert: {
           actor_id?: string | null
           connection_id?: string | null
+          content_id?: string | null
+          content_note?: string | null
+          content_slug?: string | null
+          content_title?: string | null
+          content_type?: string | null
           conversation_id?: string | null
           created_at?: string
           id?: string
@@ -372,6 +391,11 @@ export type Database = {
         Update: {
           actor_id?: string | null
           connection_id?: string | null
+          content_id?: string | null
+          content_note?: string | null
+          content_slug?: string | null
+          content_title?: string | null
+          content_type?: string | null
           conversation_id?: string | null
           created_at?: string
           id?: string
@@ -431,6 +455,9 @@ export type Database = {
           external_url: string | null
           id: string
           is_remote: boolean
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           organization_id: string | null
           province_state: string | null
           search_vector: unknown
@@ -453,6 +480,9 @@ export type Database = {
           external_url?: string | null
           id?: string
           is_remote?: boolean
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           organization_id?: string | null
           province_state?: string | null
           search_vector?: unknown
@@ -475,6 +505,9 @@ export type Database = {
           external_url?: string | null
           id?: string
           is_remote?: boolean
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           organization_id?: string | null
           province_state?: string | null
           search_vector?: unknown
@@ -720,14 +753,54 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_moderate: { Args: never; Returns: boolean }
+      get_message_inbox: {
+        Args: never
+        Returns: {
+          conversation_id: string
+          conversation_updated_at: string
+          latest_message_body: string | null
+          latest_message_created_at: string | null
+          latest_message_sender_id: string | null
+          other_member_id: string | null
+          unread_count: number
+        }[]
+      }
+      get_unread_message_counts: {
+        Args: never
+        Returns: {
+          conversation_id: string
+          unread_count: number
+        }[]
+      }
       is_admin: { Args: never; Returns: boolean }
       is_conversation_member: {
         Args: { target_conversation_id: string }
         Returns: boolean
       }
       mark_all_notifications_read: { Args: never; Returns: number }
+      mark_conversation_read: {
+        Args: { target_conversation_id: string }
+        Returns: boolean
+      }
       mark_notification_read: {
         Args: { target_notification_id: string }
+        Returns: boolean
+      }
+      moderate_event: {
+        Args: {
+          target_decision: string
+          target_event_id: string
+          target_note: string | null
+        }
+        Returns: boolean
+      }
+      moderate_opportunity: {
+        Args: {
+          target_decision: string
+          target_note: string | null
+          target_opportunity_id: string
+        }
         Returns: boolean
       }
       respond_connection_request: {
@@ -747,6 +820,10 @@ export type Database = {
           subtitle: string
           title: string
         }[]
+      }
+      start_direct_conversation: {
+        Args: { target_member_id: string }
+        Returns: string
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }

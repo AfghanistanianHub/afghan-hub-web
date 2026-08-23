@@ -27,6 +27,9 @@ export default async function NewEventPage() {
         <p className="mt-2 text-slate-400">
           Share an in-person or online event with the Afghan Hub community.
         </p>
+        <p className="mt-3 text-sm text-amber-200">
+          Your submission will be reviewed before it appears publicly.
+        </p>
       </div>
 
       <form
@@ -220,7 +223,7 @@ export default async function NewEventPage() {
           type="submit"
           className="rounded-lg bg-emerald-600 px-5 py-3 font-semibold hover:bg-emerald-500"
         >
-          Publish Event
+          Submit for Review
         </button>
       </form>
     </main>
