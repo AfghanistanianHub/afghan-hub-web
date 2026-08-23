@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -312,4 +313,63 @@ export async function deleteOpportunity(formData: FormData) {
   }
 
   redirect("/opportunities");
+}
+
+export async function toggleSavedOpportunity(formData: FormData) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    redirect("/login");
+  }
+
+  const opportunityId = getOptionalString(formData, "opportunity_id");
+  const opportunitySlug = getOptionalString(formData, "opportunity_slug");
+
+  if (!opportunityId || !opportunitySlug) {
+    redirect("/opportunities");
+  }
+
+  const { data: opportunity } = await supabase
+    .from("opportunities")
+    .select("id")
+    .eq("id", opportunityId)
+    .maybeSingle();
+
+  if (!opportunity) {
+    redirect("/opportunities");
+  }
+
+  const { data: savedOpportunity } = await supabase
+    .from("saved_opportunities")
+    .select("opportunity_id")
+    .eq("profile_id", user.id)
+    .eq("opportunity_id", opportunityId)
+    .maybeSingle();
+
+  const { error } = savedOpportunity
+    ? await supabase
+        .from("saved_opportunities")
+        .delete()
+        .eq("profile_id", user.id)
+        .eq("opportunity_id", opportunityId)
+    : await supabase.from("saved_opportunities").insert({
+        profile_id: user.id,
+        opportunity_id: opportunityId,
+      });
+
+  if (error) {
+    redirect(
+      `/opportunities/${opportunitySlug}?error=${encodeURIComponent(
+        error.message,
+      )}`,
+    );
+  }
+
+  revalidatePath(`/opportunities/${opportunitySlug}`);
+  revalidatePath("/saved");
 }

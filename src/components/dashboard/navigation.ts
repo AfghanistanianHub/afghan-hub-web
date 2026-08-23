@@ -1,5 +1,6 @@
 import {
   BriefcaseBusiness,
+  Bookmark,
   Building2,
   CalendarDays,
   House,
@@ -28,6 +29,11 @@ export const dashboardNavigation = [
     label: "Opportunities",
     href: "/opportunities",
     icon: BriefcaseBusiness,
+  },
+  {
+    label: "Saved",
+    href: "/saved",
+    icon: Bookmark,
   },
   {
     label: "Businesses",

@@ -1,16 +1,27 @@
+import {
+  toggleSavedOpportunity,
+} from "@/app/(dashboard)/opportunities/actions";
 import { DeleteOpportunityButton } from "@/components/opportunities/delete-opportunity-button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Bookmark } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 type Props = {
   params: Promise<{
     slug: string;
   }>;
+  searchParams: Promise<{
+    error?: string;
+  }>;
 };
 
-export default async function OpportunityPage({ params }: Props) {
+export default async function OpportunityPage({
+  params,
+  searchParams,
+}: Props) {
   const { slug } = await params;
+  const { error: actionError } = await searchParams;
 
   const supabase = await createClient();
 
@@ -28,8 +39,24 @@ export default async function OpportunityPage({ params }: Props) {
     notFound();
   }
 
+  const { data: savedOpportunity } = user
+    ? await supabase
+        .from("saved_opportunities")
+        .select("opportunity_id")
+        .eq("profile_id", user.id)
+        .eq("opportunity_id", opportunity.id)
+        .maybeSingle()
+    : { data: null };
+  const isSaved = Boolean(savedOpportunity);
+
   return (
     <main className="mx-auto max-w-4xl px-6 py-10">
+      {actionError ? (
+        <div className="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">
+          {actionError}
+        </div>
+      ) : null}
+
       <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-8">
 
         <div className="mb-4 inline-flex rounded-full bg-emerald-600/20 px-3 py-1 text-sm text-emerald-400">
@@ -41,8 +68,38 @@ export default async function OpportunityPage({ params }: Props) {
             {opportunity.title}
           </h1>
 
-          {user?.id === opportunity.author_id ? (
-            <div className="flex shrink-0 gap-3">
+          {user ? (
+            <div className="flex shrink-0 flex-wrap justify-end gap-3">
+              <form action={toggleSavedOpportunity}>
+                <input
+                  type="hidden"
+                  name="opportunity_id"
+                  value={opportunity.id}
+                />
+                <input
+                  type="hidden"
+                  name="opportunity_slug"
+                  value={opportunity.slug}
+                />
+                <button
+                  type="submit"
+                  aria-pressed={isSaved}
+                  className={`inline-flex items-center gap-2 rounded-lg border px-4 py-2 font-semibold transition ${
+                    isSaved
+                      ? "border-emerald-500/60 bg-emerald-500/10 text-emerald-300"
+                      : "border-slate-700 hover:bg-slate-800"
+                  }`}
+                >
+                  <Bookmark
+                    className="size-4"
+                    fill={isSaved ? "currentColor" : "none"}
+                  />
+                  {isSaved ? "Saved" : "Save"}
+                </button>
+              </form>
+
+              {user.id === opportunity.author_id ? (
+                <>
               <Link
                 href={`/opportunities/${opportunity.slug}/edit`}
                 className="rounded-lg border border-slate-700 px-4 py-2 font-semibold hover:bg-slate-800"
@@ -53,6 +110,8 @@ export default async function OpportunityPage({ params }: Props) {
               <DeleteOpportunityButton
                 slug={opportunity.slug}
               />
+                </>
+              ) : null}
             </div>
           ) : null}
         </div>
