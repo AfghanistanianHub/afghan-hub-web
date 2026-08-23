@@ -163,25 +163,46 @@ function ModerationButtons({
   entityType: "opportunity" | "event";
 }) {
   return (
-    <form action={moderateContent} className="mt-6 flex gap-3">
-      <input type="hidden" name="entity_id" value={entityId} />
-      <input type="hidden" name="entity_type" value={entityType} />
-      <button
-        type="submit"
-        name="decision"
-        value="approve"
-        className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-emerald-400"
-      >
-        <Check className="size-4" /> Approve
-      </button>
-      <button
-        type="submit"
-        name="decision"
-        value="reject"
-        className="inline-flex items-center gap-2 rounded-lg border border-red-500/40 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/10"
-      >
-        <X className="size-4" /> Reject
-      </button>
-    </form>
+    <div className="mt-6 space-y-3">
+      <form action={moderateContent}>
+        <input type="hidden" name="entity_id" value={entityId} />
+        <input type="hidden" name="entity_type" value={entityType} />
+        <input type="hidden" name="decision" value="approve" />
+        <button
+          type="submit"
+          className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-emerald-400"
+        >
+          <Check className="size-4" /> Approve
+        </button>
+      </form>
+
+      <details className="rounded-xl border border-red-500/30 bg-red-500/5 p-3">
+        <summary className="cursor-pointer text-sm font-semibold text-red-300">
+          Reject with a reason
+        </summary>
+        <form action={moderateContent} className="mt-3 space-y-3">
+          <input type="hidden" name="entity_id" value={entityId} />
+          <input type="hidden" name="entity_type" value={entityType} />
+          <input type="hidden" name="decision" value="reject" />
+          <label className="block text-xs font-medium text-slate-300">
+            Explain what should be corrected
+            <textarea
+              name="moderation_note"
+              required
+              minLength={10}
+              maxLength={1000}
+              rows={3}
+              className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white outline-none focus:border-red-400"
+            />
+          </label>
+          <button
+            type="submit"
+            className="inline-flex items-center gap-2 rounded-lg border border-red-500/40 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/10"
+          >
+            <X className="size-4" /> Reject submission
+          </button>
+        </form>
+      </details>
+    </div>
   );
 }

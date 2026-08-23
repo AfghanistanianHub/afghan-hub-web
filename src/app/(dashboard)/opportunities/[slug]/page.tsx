@@ -76,7 +76,11 @@ export default async function OpportunityPage({
         <div className="mb-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100">
           {opportunity.status === "draft"
             ? "This opportunity is waiting for moderator approval and is not visible to the community yet."
-            : "This opportunity was not approved. Edit it to submit it for review again."}
+            : `This opportunity was not approved.${
+                opportunity.moderation_note
+                  ? ` Reason: ${opportunity.moderation_note}`
+                  : ""
+              } Edit it to submit it for review again.`}
         </div>
       ) : null}
 

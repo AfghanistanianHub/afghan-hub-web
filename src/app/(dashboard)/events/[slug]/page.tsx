@@ -77,7 +77,11 @@ export default async function EventPage({ params }: Props) {
         <div className="mb-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100">
           {event.status === "draft"
             ? "This event is waiting for moderator approval and is not visible to the community yet."
-            : "This event was not approved. Edit it to submit it for review again."}
+            : `This event was not approved.${
+                event.moderation_note
+                  ? ` Reason: ${event.moderation_note}`
+                  : ""
+              } Edit it to submit it for review again.`}
         </div>
       ) : null}
 

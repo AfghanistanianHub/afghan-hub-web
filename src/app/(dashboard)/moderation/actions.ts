@@ -26,6 +26,7 @@ export async function moderateContent(formData: FormData) {
   const entityType = getString(formData, "entity_type");
   const entityId = getString(formData, "entity_id");
   const decision = getString(formData, "decision");
+  const note = getString(formData, "moderation_note");
 
   if (
     !entityId ||
@@ -33,6 +34,12 @@ export async function moderateContent(formData: FormData) {
     !decisions.includes(decision as (typeof decisions)[number])
   ) {
     redirect("/moderation?error=Invalid%20moderation%20request");
+  }
+
+  if (decision === "reject" && (note.length < 10 || note.length > 1000)) {
+    redirect(
+      "/moderation?error=Please%20provide%20a%20rejection%20reason%20between%2010%20and%201000%20characters",
+    );
   }
 
   const { data: profile } = await supabase
@@ -50,10 +57,12 @@ export async function moderateContent(formData: FormData) {
       ? await supabase.rpc("moderate_opportunity", {
           target_opportunity_id: entityId,
           target_decision: decision,
+          target_note: decision === "reject" ? note : null,
         })
       : await supabase.rpc("moderate_event", {
           target_event_id: entityId,
           target_decision: decision,
+          target_note: decision === "reject" ? note : null,
         });
 
   if (error || !updated) {

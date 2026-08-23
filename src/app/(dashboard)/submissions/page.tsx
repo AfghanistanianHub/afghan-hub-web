@@ -57,12 +57,12 @@ export default async function SubmissionsPage() {
     await Promise.all([
       supabase
         .from("opportunities")
-        .select("id,title,slug,summary,type,status,created_at,updated_at")
+        .select("id,title,slug,summary,type,status,moderation_note,created_at,updated_at")
         .eq("author_id", user.id)
         .order("updated_at", { ascending: false }),
       supabase
         .from("events")
-        .select("id,title,slug,summary,status,starts_at,created_at,updated_at")
+        .select("id,title,slug,summary,status,moderation_note,starts_at,created_at,updated_at")
         .eq("creator_id", user.id)
         .order("updated_at", { ascending: false }),
     ]);
@@ -127,6 +127,7 @@ export default async function SubmissionsPage() {
                   title={opportunity.title}
                   summary={opportunity.summary}
                   status={opportunity.status}
+                  moderationNote={opportunity.moderation_note}
                   detailHref={`/opportunities/${opportunity.slug}`}
                   editHref={`/opportunities/${opportunity.slug}/edit`}
                   meta={`${opportunity.type} · Updated ${formatDate(opportunity.updated_at)}`}
@@ -159,6 +160,7 @@ export default async function SubmissionsPage() {
                   title={event.title}
                   summary={event.summary}
                   status={event.status}
+                  moderationNote={event.moderation_note}
                   detailHref={`/events/${event.slug}`}
                   editHref={`/events/${event.slug}/edit`}
                   meta={`Starts ${formatDate(event.starts_at)} · Updated ${formatDate(event.updated_at)}`}
@@ -186,6 +188,7 @@ function SubmissionCard({
   title,
   summary,
   status,
+  moderationNote,
   detailHref,
   editHref,
   meta,
@@ -193,6 +196,7 @@ function SubmissionCard({
   title: string;
   summary: string | null;
   status: string;
+  moderationNote: string | null;
   detailHref: string;
   editHref: string;
   meta: string;
@@ -222,6 +226,13 @@ function SubmissionCard({
         <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-400">
           {summary}
         </p>
+      ) : null}
+
+      {presentation.label === "Not approved" && moderationNote ? (
+        <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-sm leading-6 text-red-200">
+          <span className="font-semibold">Moderator note:</span>{" "}
+          {moderationNote}
+        </div>
       ) : null}
 
       <div className="mt-6 flex gap-3">

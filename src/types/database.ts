@@ -220,6 +220,9 @@ export type Database = {
           ends_at: string | null
           id: string
           is_online: boolean
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           online_url: string | null
           organization_id: string | null
           province_state: string | null
@@ -243,6 +246,9 @@ export type Database = {
           ends_at?: string | null
           id?: string
           is_online?: boolean
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           online_url?: string | null
           organization_id?: string | null
           province_state?: string | null
@@ -266,6 +272,9 @@ export type Database = {
           ends_at?: string | null
           id?: string
           is_online?: boolean
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           online_url?: string | null
           organization_id?: string | null
           province_state?: string | null
@@ -351,6 +360,7 @@ export type Database = {
           actor_id: string | null
           connection_id: string | null
           content_id: string | null
+          content_note: string | null
           content_slug: string | null
           content_title: string | null
           content_type: string | null
@@ -366,6 +376,7 @@ export type Database = {
           actor_id?: string | null
           connection_id?: string | null
           content_id?: string | null
+          content_note?: string | null
           content_slug?: string | null
           content_title?: string | null
           content_type?: string | null
@@ -381,6 +392,7 @@ export type Database = {
           actor_id?: string | null
           connection_id?: string | null
           content_id?: string | null
+          content_note?: string | null
           content_slug?: string | null
           content_title?: string | null
           content_type?: string | null
@@ -443,6 +455,9 @@ export type Database = {
           external_url: string | null
           id: string
           is_remote: boolean
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           organization_id: string | null
           province_state: string | null
           search_vector: unknown
@@ -465,6 +480,9 @@ export type Database = {
           external_url?: string | null
           id?: string
           is_remote?: boolean
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           organization_id?: string | null
           province_state?: string | null
           search_vector?: unknown
@@ -487,6 +505,9 @@ export type Database = {
           external_url?: string | null
           id?: string
           is_remote?: boolean
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           organization_id?: string | null
           province_state?: string | null
           search_vector?: unknown
@@ -744,11 +765,19 @@ export type Database = {
         Returns: boolean
       }
       moderate_event: {
-        Args: { target_decision: string; target_event_id: string }
+        Args: {
+          target_decision: string
+          target_event_id: string
+          target_note: string | null
+        }
         Returns: boolean
       }
       moderate_opportunity: {
-        Args: { target_decision: string; target_opportunity_id: string }
+        Args: {
+          target_decision: string
+          target_note: string | null
+          target_opportunity_id: string
+        }
         Returns: boolean
       }
       respond_connection_request: {

@@ -46,6 +46,7 @@ export default async function DashboardLayout({
         content_type,
         content_slug,
         content_title,
+        content_note,
         read_at,
         created_at,
         actor:profiles!notifications_actor_id_fkey (
@@ -96,6 +97,7 @@ export default async function DashboardLayout({
       contentType: notification.content_type,
       contentSlug: notification.content_slug,
       contentTitle: notification.content_title,
+      contentNote: notification.content_note,
       readAt: notification.read_at,
       createdAt: notification.created_at,
       actor: actor

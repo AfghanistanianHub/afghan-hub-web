@@ -17,6 +17,7 @@ export type NotificationSummary = {
   contentType: string | null;
   contentSlug: string | null;
   contentTitle: string | null;
+  contentNote: string | null;
   readAt: string | null;
   createdAt: string;
   actor: {
@@ -66,7 +67,10 @@ function getNotificationMessage(notification: NotificationSummary) {
   }
 
   if (notification.type === "content_rejected") {
-    return `Your ${notification.contentType ?? "submission"} “${notification.contentTitle ?? "Untitled"}” was not approved. You can edit and resubmit it.`;
+    const reason = notification.contentNote
+      ? ` Reason: ${notification.contentNote}`
+      : "";
+    return `Your ${notification.contentType ?? "submission"} “${notification.contentTitle ?? "Untitled"}” was not approved.${reason}`;
   }
 
   return "You have a new notification.";
