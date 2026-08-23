@@ -4,6 +4,7 @@ import {
   CalendarDays,
   House,
   MessageSquare,
+  Search,
   UsersRound,
 } from "lucide-react";
 
@@ -17,6 +18,11 @@ export const dashboardNavigation = [
     label: "Network",
     href: "/network",
     icon: UsersRound,
+  },
+  {
+    label: "Search",
+    href: "/search",
+    icon: Search,
   },
   {
     label: "Opportunities",

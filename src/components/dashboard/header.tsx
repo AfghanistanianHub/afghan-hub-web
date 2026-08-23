@@ -40,15 +40,21 @@ export function Header({
           AFGHAN HUB
         </Link>
 
-        <div className="relative hidden w-80 md:block">
-          <Search className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
+        <form
+          action="/search"
+          role="search"
+          className="relative hidden w-80 md:block"
+        >
+          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
 
           <input
+            name="q"
             type="search"
             placeholder="Search Afghan Hub"
+            aria-label="Search Afghan Hub"
             className="w-full rounded-xl border border-slate-800 bg-slate-900 py-3 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-emerald-500"
           />
-        </div>
+        </form>
       </div>
 
       <div className="flex items-center gap-3">
