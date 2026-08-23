@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, Send, UserRound } from "lucide-react";
+import { ArrowLeft, CheckCheck, Send, UserRound } from "lucide-react";
 
 import { sendMessage } from "@/app/(dashboard)/messages/actions";
 import { MarkConversationRead } from "@/components/messages/mark-conversation-read";
 import { MessageThread } from "@/components/messages/message-thread";
+import { RealtimeReadReceiptRefresh } from "@/components/messages/realtime-read-receipt-refresh";
 import { createClient } from "@/lib/supabase/server";
 
 type ConversationPageProps = {
@@ -74,7 +75,7 @@ export default async function ConversationPage({
   ] = await Promise.all([
     supabase
       .from("conversation_members")
-      .select("profile_id")
+      .select("profile_id, last_read_at")
       .eq("conversation_id", conversationId),
     supabase
       .from("messages")
@@ -88,9 +89,10 @@ export default async function ConversationPage({
   const hasEarlierMessages = (messageCount ?? 0) > messageLimit;
   const nextMessageLimit = Math.min(messageLimit + 100, 1000);
 
-  const otherMemberId = (memberRows ?? []).find(
+  const otherMembership = (memberRows ?? []).find(
     (member) => member.profile_id !== user.id,
-  )?.profile_id;
+  );
+  const otherMemberId = otherMembership?.profile_id;
 
   const { data: otherMember } = otherMemberId
     ? await supabase
@@ -113,12 +115,22 @@ export default async function ConversationPage({
         new Date(message.created_at).getTime() >
           new Date(membership.last_read_at).getTime()),
   );
+  const latestSentMessage = messages.findLast(
+    (message) => message.sender_id === user.id,
+  );
+  const latestSentMessageIsSeen = Boolean(
+    latestSentMessage &&
+      otherMembership?.last_read_at &&
+      new Date(otherMembership.last_read_at).getTime() >=
+        new Date(latestSentMessage.created_at).getTime(),
+  );
 
   return (
     <main className="flex min-h-[calc(100vh-73px)] flex-col px-6 py-6 lg:px-10">
       {hasUnreadMessages ? (
         <MarkConversationRead conversationId={conversationId} />
       ) : null}
+      <RealtimeReadReceiptRefresh conversationId={conversationId} />
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
         <header className="flex items-center gap-4 border-b border-slate-800 px-5 py-4">
           <Link
@@ -224,6 +236,13 @@ export default async function ConversationPage({
                       }`}
                     >
                       {formatMessageTime(message.created_at)}
+                      {isMine &&
+                      message.id === latestSentMessage?.id &&
+                      latestSentMessageIsSeen ? (
+                        <span className="ml-2 inline-flex items-center gap-1 font-medium">
+                          <CheckCheck className="size-3.5" /> Seen
+                        </span>
+                      ) : null}
                     </p>
                   </div>
                 </div>
