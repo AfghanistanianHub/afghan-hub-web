@@ -115,20 +115,30 @@ export async function sendMessage(
   return { error: null, sentAt: Date.now() };
 }
 
-export async function markConversationRead(conversationId: string) {
+export async function markConversationRead(
+  conversationId: string,
+  readThroughMessageId: string,
+) {
   const supabase = await createClient();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user || !conversationId) {
+  if (
+    !user ||
+    !uuidPattern.test(conversationId) ||
+    !uuidPattern.test(readThroughMessageId)
+  ) {
     return;
   }
 
   const { data: updated, error } = await supabase.rpc(
     "mark_conversation_read",
-    { target_conversation_id: conversationId },
+    {
+      target_conversation_id: conversationId,
+      read_through_message_id: readThroughMessageId,
+    },
   );
 
   if (error) {

@@ -86,6 +86,7 @@ export default async function ConversationPage({
       .range(0, messageLimit - 1),
   ]);
   const messages = [...(messageRows ?? [])].reverse();
+  const latestDisplayedMessageId = messages.at(-1)?.id ?? null;
   const hasEarlierMessages = (messageCount ?? 0) > messageLimit;
   const nextMessageLimit = Math.min(messageLimit + 100, 1000);
 
@@ -127,8 +128,11 @@ export default async function ConversationPage({
 
   return (
     <main className="flex min-h-[calc(100vh-73px)] flex-col px-6 py-6 lg:px-10">
-      {hasUnreadMessages && messageLimit === 100 ? (
-        <MarkConversationRead conversationId={conversationId} />
+      {hasUnreadMessages && messageLimit === 100 && latestDisplayedMessageId ? (
+        <MarkConversationRead
+          conversationId={conversationId}
+          readThroughMessageId={latestDisplayedMessageId}
+        />
       ) : null}
       <RealtimeReadReceiptRefresh conversationId={conversationId} />
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
@@ -175,7 +179,7 @@ export default async function ConversationPage({
         </header>
 
         <MessageThread
-          latestMessageId={messages.at(-1)?.id ?? null}
+          latestMessageId={latestDisplayedMessageId}
           scrollToLatest={messageLimit === 100}
         >
           {hasEarlierMessages || messageLimit > 100 ? (
