@@ -6,10 +6,12 @@ import { markConversationRead } from "@/app/(dashboard)/messages/actions";
 
 type MarkConversationReadProps = {
   conversationId: string;
+  readThroughMessageId: string;
 };
 
 export function MarkConversationRead({
   conversationId,
+  readThroughMessageId,
 }: MarkConversationReadProps) {
   useEffect(() => {
     const markReadWhenVisible = () => {
@@ -18,7 +20,7 @@ export function MarkConversationRead({
       }
 
       startTransition(() => {
-        void markConversationRead(conversationId);
+        void markConversationRead(conversationId, readThroughMessageId);
       });
     };
 
@@ -30,7 +32,7 @@ export function MarkConversationRead({
       document.removeEventListener("visibilitychange", markReadWhenVisible);
       window.removeEventListener("focus", markReadWhenVisible);
     };
-  }, [conversationId]);
+  }, [conversationId, readThroughMessageId]);
 
   return null;
 }

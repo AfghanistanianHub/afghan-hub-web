@@ -780,7 +780,10 @@ export type Database = {
       }
       mark_all_notifications_read: { Args: never; Returns: number }
       mark_conversation_read: {
-        Args: { target_conversation_id: string }
+        Args: {
+          read_through_message_id: string
+          target_conversation_id: string
+        }
         Returns: boolean
       }
       mark_notification_read: {
