@@ -97,6 +97,9 @@ export function NotificationBell({
 
   useEffect(() => {
     const supabase = createClient();
+    const refreshNotifications = () => {
+      router.refresh();
+    };
     const channel = supabase
       .channel(`notifications:${currentUserId}`)
       .on(
@@ -107,9 +110,17 @@ export function NotificationBell({
           table: "notifications",
           filter: `recipient_id=eq.${currentUserId}`,
         },
-        () => {
-          router.refresh();
+        refreshNotifications,
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "notifications",
+          filter: `recipient_id=eq.${currentUserId}`,
         },
+        refreshNotifications,
       )
       .subscribe();
 
