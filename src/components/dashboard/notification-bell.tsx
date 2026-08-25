@@ -8,6 +8,7 @@ import {
   markAllNotificationsRead,
   markNotificationRead,
 } from "@/app/(dashboard)/notifications/actions";
+import { ExternalImage } from "@/components/ui/external-image";
 import { createClient } from "@/lib/supabase/client";
 
 export type NotificationSummary = {
@@ -254,10 +255,11 @@ export function NotificationBell({
                           <ModerationIcon className="size-5" />
                         </span>
                       ) : notification.actor?.avatarUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <ExternalImage
                           src={notification.actor.avatarUrl}
                           alt=""
+                          width={40}
+                          height={40}
                           className="size-10 shrink-0 rounded-full object-cover"
                         />
                       ) : (

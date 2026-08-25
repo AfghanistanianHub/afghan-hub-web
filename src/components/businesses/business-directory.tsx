@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { ExternalImage } from "@/components/ui/external-image";
+
 type Business = {
   id: string;
   name: string;
@@ -52,10 +54,11 @@ export function BusinessDirectory({
           >
             <div className="flex items-start gap-4">
               {business.logo_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <ExternalImage
                   src={business.logo_url}
                   alt={`${business.name} logo`}
+                  width={56}
+                  height={56}
                   className="h-14 w-14 rounded-xl object-cover"
                 />
               ) : (

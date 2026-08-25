@@ -6,6 +6,7 @@ import { MarkConversationRead } from "@/components/messages/mark-conversation-re
 import { MessageComposer } from "@/components/messages/message-composer";
 import { MessageThread } from "@/components/messages/message-thread";
 import { RealtimeReadReceiptRefresh } from "@/components/messages/realtime-read-receipt-refresh";
+import { ExternalImage } from "@/components/ui/external-image";
 import { createClient } from "@/lib/supabase/server";
 
 type ConversationPageProps = {
@@ -146,10 +147,11 @@ export default async function ConversationPage({
           </Link>
 
           {otherMember?.avatar_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <ExternalImage
               src={otherMember.avatar_url}
               alt=""
+              width={44}
+              height={44}
               className="size-11 shrink-0 rounded-full object-cover"
             />
           ) : (

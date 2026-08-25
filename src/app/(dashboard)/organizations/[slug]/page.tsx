@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+import { ExternalImage } from "@/components/ui/external-image";
 import { createClient } from "@/lib/supabase/server";
 
 type OrganizationPageProps = {
@@ -80,9 +82,11 @@ const programs = Array.isArray(organization.programs)
 
         <section className="mt-6 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50">
           {organization.cover_url ? (
-            <img
+            <ExternalImage
               src={organization.cover_url}
               alt={`${organization.name} cover`}
+              width={1200}
+              height={400}
               className="h-40 w-full object-cover md:h-56"
             />
           ) : (
@@ -92,9 +96,11 @@ const programs = Array.isArray(organization.programs)
           <div className="px-6 pb-8 md:px-10">
             <div className="-mt-12 flex flex-col gap-5 sm:flex-row sm:items-end">
               {organization.logo_url ? (
-                <img
+                <ExternalImage
                   src={organization.logo_url}
                   alt={`${organization.name} logo`}
+                  width={96}
+                  height={96}
                   className="h-24 w-24 rounded-2xl border-4 border-slate-950 object-cover"
                 />
               ) : (

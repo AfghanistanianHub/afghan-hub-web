@@ -8,6 +8,7 @@ import {
   UsersRound,
 } from "lucide-react";
 
+import { ExternalImage } from "@/components/ui/external-image";
 import { createClient } from "@/lib/supabase/server";
 
 type SearchPageProps = {
@@ -206,10 +207,11 @@ export default async function SearchPage({
                       className="flex items-start gap-4 rounded-2xl border border-slate-800 bg-slate-900 p-5 transition hover:-translate-y-0.5 hover:border-emerald-500/50"
                     >
                       {result.image_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <ExternalImage
                           src={result.image_url}
                           alt=""
+                          width={48}
+                          height={48}
                           className="size-12 shrink-0 rounded-xl object-cover"
                         />
                       ) : (

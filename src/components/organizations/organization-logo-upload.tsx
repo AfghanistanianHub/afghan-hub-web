@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+
+import { ExternalImage } from "@/components/ui/external-image";
 import { createClient } from "@/lib/supabase/client";
 
 type OrganizationLogoUploadProps = {
@@ -143,9 +145,11 @@ export function OrganizationLogoUpload({
 
         <div className="mt-5">
           {currentCoverUrl ? (
-            <img
+            <ExternalImage
               src={currentCoverUrl}
               alt={`${organizationName} cover`}
+              width={1200}
+              height={400}
               className="h-48 w-full rounded-2xl object-cover"
             />
           ) : (
@@ -185,9 +189,11 @@ export function OrganizationLogoUpload({
 
         <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
         {currentLogoUrl ? (
-          <img
+          <ExternalImage
             src={currentLogoUrl}
             alt={`${organizationName} logo`}
+            width={96}
+            height={96}
             className="h-24 w-24 rounded-2xl object-cover"
           />
         ) : (

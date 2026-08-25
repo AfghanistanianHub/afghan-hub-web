@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { MessageSquare, UserRound } from "lucide-react";
 
+import { ExternalImage } from "@/components/ui/external-image";
 import { createClient } from "@/lib/supabase/server";
 
 function getMemberName(profile: {
@@ -116,10 +117,11 @@ export default async function MessagesPage() {
                   }`}
                 >
                   {profile?.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <ExternalImage
                       src={profile.avatar_url}
                       alt=""
+                      width={48}
+                      height={48}
                       className="size-12 shrink-0 rounded-full object-cover"
                     />
                   ) : (

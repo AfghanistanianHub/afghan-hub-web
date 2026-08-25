@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ExternalImage } from "@/components/ui/external-image";
 import { createClient } from "@/lib/supabase/server";
 
 type BusinessPageProps = {
@@ -82,10 +83,11 @@ export default async function BusinessPage({
           <div className="px-6 pb-8 md:px-10">
             <div className="-mt-12 flex flex-col gap-5 sm:flex-row sm:items-end">
               {business.logo_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <ExternalImage
                   src={business.logo_url}
                   alt={`${business.name} logo`}
+                  width={96}
+                  height={96}
                   className="h-24 w-24 rounded-2xl border-4 border-slate-950 object-cover"
                 />
               ) : (

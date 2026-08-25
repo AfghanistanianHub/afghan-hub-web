@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { ConnectionButton } from "@/components/network/connection-button";
+import { ExternalImage } from "@/components/ui/external-image";
 import { createClient } from "@/lib/supabase/server";
 
 type MemberProfilePageProps = {
@@ -155,10 +156,11 @@ export default async function MemberProfilePage({
             <div className="-mt-14 flex flex-col gap-5 md:-mt-16 md:flex-row md:items-end md:justify-between">
               <div className="flex flex-col gap-5 md:flex-row md:items-end">
                 {profile.avatar_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <ExternalImage
                     src={profile.avatar_url}
                     alt={memberName}
+                    width={128}
+                    height={128}
                     className="size-28 rounded-2xl border-4 border-slate-900 bg-slate-950 object-cover shadow-xl md:size-32"
                   />
                 ) : (
