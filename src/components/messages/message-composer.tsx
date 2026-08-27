@@ -60,6 +60,7 @@ export function MessageComposer({
             if (
               event.key === "Enter" &&
               !event.shiftKey &&
+              !event.nativeEvent.isComposing &&
               !isPending
             ) {
               event.preventDefault();
