@@ -9,6 +9,8 @@ import {
   UserRound,
 } from "lucide-react";
 
+import { ExternalImage } from "@/components/ui/external-image";
+
 export type Member = {
   id: string;
   display_name: string | null;
@@ -124,10 +126,11 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
 >
                 <div className="flex items-start gap-4">
                   {member.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <ExternalImage
                       src={member.avatar_url}
                       alt={memberName}
+                      width={56}
+                      height={56}
                       className="size-14 rounded-full object-cover"
                     />
                   ) : (

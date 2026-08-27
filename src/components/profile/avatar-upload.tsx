@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+
+import { ExternalImage } from "@/components/ui/external-image";
 import { createClient } from "@/lib/supabase/client";
 
 type AvatarUploadProps = {
@@ -62,9 +64,11 @@ export default function AvatarUpload({
   return (
     <div className="space-y-4">
       {currentAvatarUrl ? (
-        <img
+        <ExternalImage
           src={currentAvatarUrl}
           alt="Profile avatar"
+          width={96}
+          height={96}
           className="h-24 w-24 rounded-full object-cover"
         />
       ) : (

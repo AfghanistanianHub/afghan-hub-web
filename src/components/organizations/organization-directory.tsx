@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { ExternalImage } from "@/components/ui/external-image";
+
 type Organization = {
   id: string;
   name: string;
@@ -50,9 +52,11 @@ export function OrganizationDirectory({
           >
             <div className="flex items-start gap-4">
               {organization.logo_url ? (
-                <img
+                <ExternalImage
                   src={organization.logo_url}
                   alt={`${organization.name} logo`}
+                  width={56}
+                  height={56}
                   className="h-14 w-14 rounded-xl object-cover"
                 />
               ) : (
