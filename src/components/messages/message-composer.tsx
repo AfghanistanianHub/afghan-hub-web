@@ -59,7 +59,7 @@ export function MessageComposer({
           onKeyDown={(event) => {
             if (
               event.key === "Enter" &&
-              (event.metaKey || event.ctrlKey) &&
+              !event.shiftKey &&
               !isPending
             ) {
               event.preventDefault();
@@ -89,7 +89,7 @@ export function MessageComposer({
             {state.error}
           </p>
         ) : (
-          <p className="text-slate-600">Ctrl/⌘ + Enter to send</p>
+          <p className="text-slate-600">Enter to send · Shift+Enter for a new line</p>
         )}
         <span className="ml-auto text-slate-600">Maximum 4,000 characters</span>
       </div>
