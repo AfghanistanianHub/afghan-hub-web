@@ -108,6 +108,23 @@ export async function respondConnectionRequest(formData: FormData) {
     throw new Error("Unable to update connection request.");
   }
 
+  const { data: requestNotification } = await supabase
+    .from("notifications")
+    .select("id")
+    .eq("recipient_id", user.id)
+    .eq("type", "connection_request")
+    .eq("connection_id", connection.id)
+    .is("read_at", null)
+    .limit(1)
+    .maybeSingle();
+
+  if (requestNotification) {
+    await supabase.rpc("mark_notification_read", {
+      target_notification_id: requestNotification.id,
+    });
+  }
+
+  revalidatePath("/(dashboard)", "layout");
   revalidatePath("/network");
   revalidatePath("/members/" + connection.requester_id);
 }
