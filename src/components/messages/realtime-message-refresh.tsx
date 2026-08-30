@@ -6,10 +6,12 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type RealtimeMessageRefreshProps = {
+  currentUserId: string;
   conversationId?: string;
 };
 
 export function RealtimeMessageRefresh({
+  currentUserId,
   conversationId,
 }: RealtimeMessageRefreshProps) {
   const router = useRouter();
@@ -20,7 +22,7 @@ export function RealtimeMessageRefresh({
       .channel(
         conversationId
           ? `messages:${conversationId}`
-          : "messages:inbox",
+          : `messages:inbox:${currentUserId}`,
       )
       .on(
         "postgres_changes",
@@ -36,12 +38,29 @@ export function RealtimeMessageRefresh({
           router.refresh();
         },
       )
-      .subscribe();
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "conversation_members",
+          filter: `profile_id=eq.${currentUserId}`,
+        },
+        () => {
+          router.refresh();
+        },
+      )
+      .subscribe((status) => {
+        // Recover changes missed before joining or while disconnected.
+        if (status === "SUBSCRIBED") {
+          router.refresh();
+        }
+      });
 
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [conversationId, router]);
+  }, [conversationId, currentUserId, router]);
 
   return null;
 }

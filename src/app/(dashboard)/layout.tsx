@@ -119,7 +119,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <RealtimeMessageRefresh />
+      <RealtimeMessageRefresh currentUserId={user.id} />
       <div className="flex min-h-screen">
         <Sidebar
           canModerate={canModerate}
