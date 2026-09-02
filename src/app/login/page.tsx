@@ -70,9 +70,9 @@ export default async function LoginPage({
               name="password"
               type="password"
               required
-              minLength={6}
+              minLength={8}
               autoComplete="current-password"
-              placeholder="Minimum 6 characters"
+              placeholder="Minimum 8 characters"
               className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-emerald-500"
             />
           </div>
