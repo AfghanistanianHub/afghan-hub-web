@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { login, signup } from "./actions";
 
 type LoginPageProps = {
@@ -58,12 +59,21 @@ export default async function LoginPage({
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="mb-2 block text-sm font-medium text-slate-200"
-            >
-              Password
-            </label>
+            <div className="mb-2 flex items-center justify-between gap-4">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-slate-200"
+              >
+                Password
+              </label>
+
+              <Link
+                href="/forgot-password"
+                className="text-sm font-medium text-emerald-400 hover:text-emerald-300"
+              >
+                Forgot password?
+              </Link>
+            </div>
 
             <input
               id="password"
