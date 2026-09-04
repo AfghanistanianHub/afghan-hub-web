@@ -38,11 +38,12 @@ export default async function OrganizationPage({
         cover_url,
         is_verified,
         is_accepting_volunteers,
+        status,
+        moderation_note,
         owner_id
       `,
     )
     .eq("slug", slug)
-    .eq("status", "published")
     .maybeSingle();
 
   if (error || !organization) {
@@ -79,6 +80,18 @@ const programs = Array.isArray(organization.programs)
         >
           ← Back to organizations
         </Link>
+
+        {organization.status !== "published" ? (
+          <div className="mt-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100">
+            {organization.status === "draft"
+              ? "This organization is waiting for moderator approval and is not visible to the community yet."
+              : `This organization was not approved.${
+                  organization.moderation_note
+                    ? ` Reason: ${organization.moderation_note}`
+                    : ""
+                } Edit it to submit it for review again.`}
+          </div>
+        ) : null}
 
         <section className="mt-6 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50">
           {organization.cover_url ? (
