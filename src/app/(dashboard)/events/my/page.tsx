@@ -121,7 +121,7 @@ export default async function MyEventsPage() {
         .order("starts_at", { ascending: true })
     : { data: [] };
 
-  const now = Date.now();
+  const now = new Date().getTime();
   const upcomingRegistered =
     registeredEvents?.filter(
       (event) => new Date(event.starts_at).getTime() >= now,
