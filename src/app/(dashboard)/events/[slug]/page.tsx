@@ -4,6 +4,7 @@ import {
 } from "@/app/(dashboard)/events/actions";
 import { DeleteEventButton } from "@/components/events/delete-event-button";
 import Link from "next/link";
+import { buildGoogleCalendarUrl } from "@/lib/calendar";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -98,6 +99,19 @@ export default async function EventPage({ params, searchParams }: Props) {
   ]
     .filter(Boolean)
     .join(", ");
+
+  const calendarLocation = event.is_online
+    ? event.online_url
+    : [event.venue_name, event.address_line, location].filter(Boolean).join(", ");
+  const eventUrl = `https://app.apnbc.ca/events/${event.slug}`;
+  const googleCalendarUrl = buildGoogleCalendarUrl({
+    title: event.title,
+    startsAt: event.starts_at,
+    endsAt: event.ends_at,
+    description: event.summary,
+    location: calendarLocation,
+    url: eventUrl,
+  });
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-10">
@@ -254,7 +268,8 @@ export default async function EventPage({ params, searchParams }: Props) {
         </div>
 
         {event.status === "published" ? (
-          <section className="mt-8 rounded-2xl border border-slate-800 bg-slate-950/60 p-6">
+          <>
+            <section className="mt-8 rounded-2xl border border-slate-800 bg-slate-950/60 p-6">
             <div className="flex flex-wrap items-center justify-between gap-5">
               <div>
                 <h2 className="text-lg font-bold text-white">
@@ -305,7 +320,31 @@ export default async function EventPage({ params, searchParams }: Props) {
                 <p className="text-sm text-slate-500">Registration closed</p>
               ) : null}
             </div>
-          </section>
+            </section>
+
+            <section className="mt-6 rounded-2xl border border-slate-800 bg-slate-950/60 p-6">
+              <h2 className="text-lg font-bold text-white">Add to calendar</h2>
+              <p className="mt-2 text-sm text-slate-400">
+                Save the date in Google Calendar or download a calendar file for Apple Calendar, Outlook, and other apps.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <a
+                  href={googleCalendarUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg bg-emerald-500 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-400"
+                >
+                  Google Calendar
+                </a>
+                <a
+                  href={`/events/${event.slug}/calendar`}
+                  className="rounded-lg border border-slate-700 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:bg-slate-800"
+                >
+                  Download calendar file
+                </a>
+              </div>
+            </section>
+          </>
         ) : null}
       </div>
     </main>
