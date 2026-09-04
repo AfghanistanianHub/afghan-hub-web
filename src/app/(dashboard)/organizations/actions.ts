@@ -97,7 +97,7 @@ export async function createOrganization(formData: FormData) {
     province_state: provinceState,
     country,
     programs,
-    status: "published",
+    status: "draft",
     updated_at: new Date().toISOString(),
   });
 
@@ -155,6 +155,7 @@ export async function updateOrganization(formData: FormData) {
       province_state: getOptionalString(formData, "province_state"),
       country: getOptionalString(formData, "country"),
       is_accepting_volunteers: isAcceptingVolunteers,
+      status: "draft",
       updated_at: new Date().toISOString(),
     })
     .eq("slug", slug)
