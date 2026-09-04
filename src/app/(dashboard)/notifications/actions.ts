@@ -63,10 +63,15 @@ export async function markNotificationRead(formData: FormData) {
       notification.type === "content_rejected") &&
     notification.content_slug
   ) {
-    destination =
-      notification.content_type === "event"
-        ? `/events/${notification.content_slug}`
-        : `/opportunities/${notification.content_slug}`;
+    if (notification.content_type === "event") {
+      destination = `/events/${notification.content_slug}`;
+    } else if (notification.content_type === "business") {
+      destination = `/businesses/${notification.content_slug}`;
+    } else if (notification.content_type === "organization") {
+      destination = `/organizations/${notification.content_slug}`;
+    } else {
+      destination = `/opportunities/${notification.content_slug}`;
+    }
   }
 
   const { error } = await supabase.rpc("mark_notification_read", {

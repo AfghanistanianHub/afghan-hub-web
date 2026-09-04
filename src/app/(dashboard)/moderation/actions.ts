@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 
-const entityTypes = ["opportunity", "event"] as const;
+const entityTypes = ["opportunity", "event", "business", "organization"] as const;
 const decisions = ["approve", "reject"] as const;
 
 function getString(formData: FormData, field: string) {
@@ -52,27 +52,56 @@ export async function moderateContent(formData: FormData) {
     redirect("/");
   }
 
-  const { data: updated, error } =
-    entityType === "opportunity"
-      ? await supabase.rpc("moderate_opportunity", {
-          target_opportunity_id: entityId,
-          target_decision: decision,
-          target_note: decision === "reject" ? note : null,
-        })
-      : await supabase.rpc("moderate_event", {
-          target_event_id: entityId,
-          target_decision: decision,
-          target_note: decision === "reject" ? note : null,
-        });
+  let updated = false;
+  let moderationError: string | null = null;
+  const targetNote = decision === "reject" ? note : null;
 
-  if (error || !updated) {
-    const message = error?.message ?? "Content is no longer pending review";
+  if (entityType === "opportunity") {
+    const { data, error } = await supabase.rpc("moderate_opportunity", {
+      target_opportunity_id: entityId,
+      target_decision: decision,
+      target_note: targetNote,
+    });
+    updated = Boolean(data);
+    moderationError = error?.message ?? null;
+  } else if (entityType === "event") {
+    const { data, error } = await supabase.rpc("moderate_event", {
+      target_event_id: entityId,
+      target_decision: decision,
+      target_note: targetNote,
+    });
+    updated = Boolean(data);
+    moderationError = error?.message ?? null;
+  } else if (entityType === "business") {
+    const { data, error } = await supabase.rpc("moderate_business", {
+      target_business_id: entityId,
+      target_decision: decision,
+      target_note: targetNote,
+    });
+    updated = Boolean(data);
+    moderationError = error?.message ?? null;
+  } else {
+    const { data, error } = await supabase.rpc("moderate_organization", {
+      target_organization_id: entityId,
+      target_decision: decision,
+      target_note: targetNote,
+    });
+    updated = Boolean(data);
+    moderationError = error?.message ?? null;
+  }
+
+  if (moderationError || !updated) {
+    const message =
+      moderationError ?? "Content is no longer pending review";
     redirect(`/moderation?error=${encodeURIComponent(message)}`);
   }
 
   revalidatePath("/moderation");
   revalidatePath("/opportunities");
   revalidatePath("/events");
+  revalidatePath("/businesses");
+  revalidatePath("/organizations");
+  revalidatePath("/submissions");
   revalidatePath("/");
   redirect(`/moderation?success=${decision === "approve" ? "approved" : "rejected"}`);
 }

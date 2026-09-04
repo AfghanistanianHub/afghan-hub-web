@@ -37,11 +37,12 @@ export default async function BusinessPage({
         logo_url,
         is_verified,
         is_hiring,
+        status,
+        moderation_note,
         owner_id
       `,
     )
     .eq("slug", slug)
-    .eq("status", "published")
     .maybeSingle();
 
   if (error || !business) {
@@ -76,6 +77,18 @@ export default async function BusinessPage({
         >
           ← Back to businesses
         </Link>
+
+        {business.status !== "published" ? (
+          <div className="mt-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100">
+            {business.status === "draft"
+              ? "This business is waiting for moderator approval and is not visible to the community yet."
+              : `This business was not approved.${
+                  business.moderation_note
+                    ? ` Reason: ${business.moderation_note}`
+                    : ""
+                } Edit it to submit it for review again.`}
+          </div>
+        ) : null}
 
         <section className="mt-6 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50">
           <div className="h-24 bg-gradient-to-r from-slate-800 to-slate-900 md:h-32" />

@@ -1,16 +1,25 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
+  BriefcaseBusiness,
+  Building2,
   CalendarDays,
   Check,
   CircleCheck,
   CircleX,
   Clock3,
+  UsersRound,
   X,
 } from "lucide-react";
 
 import { moderateContent } from "@/app/(dashboard)/moderation/actions";
 import { createClient } from "@/lib/supabase/server";
+
+type ModerationEntityType =
+  | "opportunity"
+  | "event"
+  | "business"
+  | "organization";
 
 type ModerationPageProps = {
   searchParams: Promise<{
@@ -22,7 +31,7 @@ type ModerationPageProps = {
 
 type HistoryItem = {
   id: string;
-  entityType: "opportunity" | "event";
+  entityType: ModerationEntityType;
   title: string;
   slug: string;
   status: string;
@@ -53,6 +62,29 @@ function isApproved(item: HistoryItem) {
   return item.status === "published";
 }
 
+function getEntityHref(entityType: ModerationEntityType, slug: string) {
+  if (entityType === "opportunity") {
+    return `/opportunities/${slug}`;
+  }
+
+  if (entityType === "event") {
+    return `/events/${slug}`;
+  }
+
+  if (entityType === "business") {
+    return `/businesses/${slug}`;
+  }
+
+  return `/organizations/${slug}`;
+}
+
+function getEntityLabel(entityType: ModerationEntityType) {
+  if (entityType === "opportunity") return "Opportunity";
+  if (entityType === "event") return "Event";
+  if (entityType === "business") return "Business";
+  return "Organization";
+}
+
 export default async function ModerationPage({
   searchParams,
 }: ModerationPageProps) {
@@ -80,8 +112,12 @@ export default async function ModerationPage({
   const [
     { data: opportunities },
     { data: events },
+    { data: businesses },
+    { data: organizations },
     { data: moderatedOpportunities },
     { data: moderatedEvents },
+    { data: moderatedBusinesses },
+    { data: moderatedOrganizations },
   ] = await Promise.all([
     supabase
       .from("opportunities")
@@ -94,6 +130,16 @@ export default async function ModerationPage({
       .eq("status", "draft")
       .order("created_at", { ascending: true }),
     supabase
+      .from("businesses")
+      .select("id,name,slug,short_description,category,created_at")
+      .eq("status", "draft")
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("organizations")
+      .select("id,name,slug,short_description,organization_type,created_at")
+      .eq("status", "draft")
+      .order("created_at", { ascending: true }),
+    supabase
       .from("opportunities")
       .select("id,title,slug,status,moderation_note,moderated_at")
       .not("moderated_at", "is", null)
@@ -105,10 +151,25 @@ export default async function ModerationPage({
       .not("moderated_at", "is", null)
       .order("moderated_at", { ascending: false })
       .limit(20),
+    supabase
+      .from("businesses")
+      .select("id,name,slug,status,moderation_note,moderated_at")
+      .not("moderated_at", "is", null)
+      .order("moderated_at", { ascending: false })
+      .limit(20),
+    supabase
+      .from("organizations")
+      .select("id,name,slug,status,moderation_note,moderated_at")
+      .not("moderated_at", "is", null)
+      .order("moderated_at", { ascending: false })
+      .limit(20),
   ]);
 
   const pendingCount =
-    (opportunities?.length ?? 0) + (events?.length ?? 0);
+    (opportunities?.length ?? 0) +
+    (events?.length ?? 0) +
+    (businesses?.length ?? 0) +
+    (organizations?.length ?? 0);
 
   const history: HistoryItem[] = [
     ...(moderatedOpportunities ?? [])
@@ -139,13 +200,41 @@ export default async function ModerationPage({
         moderationNote: item.moderation_note,
         moderatedAt: item.moderated_at,
       })),
+    ...(moderatedBusinesses ?? [])
+      .filter(
+        (item): item is typeof item & { moderated_at: string } =>
+          Boolean(item.moderated_at),
+      )
+      .map((item) => ({
+        id: item.id,
+        entityType: "business" as const,
+        title: item.name,
+        slug: item.slug,
+        status: item.status,
+        moderationNote: item.moderation_note,
+        moderatedAt: item.moderated_at,
+      })),
+    ...(moderatedOrganizations ?? [])
+      .filter(
+        (item): item is typeof item & { moderated_at: string } =>
+          Boolean(item.moderated_at),
+      )
+      .map((item) => ({
+        id: item.id,
+        entityType: "organization" as const,
+        title: item.name,
+        slug: item.slug,
+        status: item.status,
+        moderationNote: item.moderation_note,
+        moderatedAt: item.moderated_at,
+      })),
   ]
     .sort(
       (a, b) =>
         new Date(b.moderatedAt).getTime() -
         new Date(a.moderatedAt).getTime(),
     )
-    .slice(0, 30);
+    .slice(0, 40);
 
   return (
     <main className="px-4 py-8 md:px-8">
@@ -157,8 +246,8 @@ export default async function ModerationPage({
           Content moderation
         </h1>
         <p className="mt-3 text-slate-400">
-          Review opportunities and events before they become visible to the
-          community, and keep a record of recent decisions.
+          Review opportunities, events, businesses, and organizations before
+          they become visible to the community.
         </p>
 
         {error ? (
@@ -213,57 +302,59 @@ export default async function ModerationPage({
             {pendingCount > 0 ? (
               <div className="mt-5 grid gap-5 lg:grid-cols-2">
                 {opportunities?.map((opportunity) => (
-                  <article
+                  <ModerationCard
                     key={`opportunity-${opportunity.id}`}
-                    className="rounded-2xl border border-slate-800 bg-slate-900 p-6"
-                  >
-                    <span className="text-xs font-semibold uppercase tracking-wide text-emerald-400">
-                      Opportunity · {opportunity.type}
-                    </span>
-                    <Link
-                      href={`/opportunities/${opportunity.slug}`}
-                      className="mt-3 block text-xl font-bold hover:text-emerald-300"
-                    >
-                      {opportunity.title}
-                    </Link>
-                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-400">
-                      {opportunity.summary}
-                    </p>
-                    <p className="mt-4 text-xs text-slate-500">
-                      Submitted {formatDate(opportunity.created_at)}
-                    </p>
-                    <ModerationButtons
-                      entityId={opportunity.id}
-                      entityType="opportunity"
-                    />
-                  </article>
+                    entityId={opportunity.id}
+                    entityType="opportunity"
+                    href={`/opportunities/${opportunity.slug}`}
+                    label={`Opportunity · ${opportunity.type}`}
+                    title={opportunity.title}
+                    summary={opportunity.summary}
+                    meta={`Submitted ${formatDate(opportunity.created_at)}`}
+                  />
                 ))}
 
                 {events?.map((event) => (
-                  <article
+                  <ModerationCard
                     key={`event-${event.id}`}
-                    className="rounded-2xl border border-slate-800 bg-slate-900 p-6"
-                  >
-                    <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-400">
-                      <CalendarDays className="size-3.5" /> Event
-                    </span>
-                    <Link
-                      href={`/events/${event.slug}`}
-                      className="mt-3 block text-xl font-bold hover:text-emerald-300"
-                    >
-                      {event.title}
-                    </Link>
-                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-400">
-                      {event.summary}
-                    </p>
-                    <p className="mt-4 text-xs text-slate-500">
-                      Starts {formatDate(event.starts_at)}
-                    </p>
-                    <ModerationButtons
-                      entityId={event.id}
-                      entityType="event"
-                    />
-                  </article>
+                    entityId={event.id}
+                    entityType="event"
+                    href={`/events/${event.slug}`}
+                    label="Event"
+                    title={event.title}
+                    summary={event.summary}
+                    meta={`Starts ${formatDate(event.starts_at)}`}
+                  />
+                ))}
+
+                {businesses?.map((business) => (
+                  <ModerationCard
+                    key={`business-${business.id}`}
+                    entityId={business.id}
+                    entityType="business"
+                    href={`/businesses/${business.slug}`}
+                    label={`Business · ${business.category}`}
+                    title={business.name}
+                    summary={business.short_description}
+                    meta={`Submitted ${formatDate(business.created_at)}`}
+                  />
+                ))}
+
+                {organizations?.map((organization) => (
+                  <ModerationCard
+                    key={`organization-${organization.id}`}
+                    entityId={organization.id}
+                    entityType="organization"
+                    href={`/organizations/${organization.slug}`}
+                    label={
+                      organization.organization_type
+                        ? `Organization · ${organization.organization_type}`
+                        : "Organization"
+                    }
+                    title={organization.name}
+                    summary={organization.short_description}
+                    meta={`Submitted ${formatDate(organization.created_at)}`}
+                  />
                 ))}
               </div>
             ) : (
@@ -277,8 +368,8 @@ export default async function ModerationPage({
             <div>
               <h2 className="text-xl font-bold">Recent decisions</h2>
               <p className="mt-2 text-sm text-slate-500">
-                The latest approved and rejected submissions across events and
-                opportunities.
+                The latest approved and rejected submissions across all
+                moderated content.
               </p>
             </div>
 
@@ -286,10 +377,6 @@ export default async function ModerationPage({
               <div className="mt-5 space-y-4">
                 {history.map((item) => {
                   const approved = isApproved(item);
-                  const href =
-                    item.entityType === "event"
-                      ? `/events/${item.slug}`
-                      : `/opportunities/${item.slug}`;
                   const DecisionIcon = approved ? CircleCheck : CircleX;
 
                   return (
@@ -301,7 +388,7 @@ export default async function ModerationPage({
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                              {item.entityType}
+                              {getEntityLabel(item.entityType)}
                             </span>
                             <span
                               className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
@@ -316,7 +403,7 @@ export default async function ModerationPage({
                           </div>
 
                           <Link
-                            href={href}
+                            href={getEntityHref(item.entityType, item.slug)}
                             className="mt-3 block text-lg font-bold text-white hover:text-emerald-300"
                           >
                             {item.title}
@@ -350,12 +437,61 @@ export default async function ModerationPage({
   );
 }
 
+function ModerationCard({
+  entityId,
+  entityType,
+  href,
+  label,
+  title,
+  summary,
+  meta,
+}: {
+  entityId: string;
+  entityType: ModerationEntityType;
+  href: string;
+  label: string;
+  title: string;
+  summary: string | null;
+  meta: string;
+}) {
+  const Icon =
+    entityType === "opportunity"
+      ? BriefcaseBusiness
+      : entityType === "event"
+        ? CalendarDays
+        : entityType === "business"
+          ? Building2
+          : UsersRound;
+
+  return (
+    <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+      <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-400">
+        <Icon className="size-3.5" />
+        {label}
+      </span>
+      <Link
+        href={href}
+        className="mt-3 block text-xl font-bold hover:text-emerald-300"
+      >
+        {title}
+      </Link>
+      {summary ? (
+        <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-400">
+          {summary}
+        </p>
+      ) : null}
+      <p className="mt-4 text-xs text-slate-500">{meta}</p>
+      <ModerationButtons entityId={entityId} entityType={entityType} />
+    </article>
+  );
+}
+
 function ModerationButtons({
   entityId,
   entityType,
 }: {
   entityId: string;
-  entityType: "opportunity" | "event";
+  entityType: ModerationEntityType;
 }) {
   return (
     <div className="mt-6 space-y-3">
