@@ -279,6 +279,7 @@ export async function setBusinessVerification(formData: FormData) {
     .update({ is_verified: verified })
     .eq("id", businessId)
     .eq("slug", slug)
+    .eq("status", "published")
     .select("slug")
     .maybeSingle();
 
