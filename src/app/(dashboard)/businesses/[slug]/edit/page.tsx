@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import { BusinessMediaUpload } from "@/components/businesses/business-media-upload";
 import { createClient } from "@/lib/supabase/server";
 import { updateBusiness } from "../../actions";
 
@@ -47,6 +48,8 @@ export default async function EditBusinessPage({
         city,
         province_state,
         country,
+        logo_url,
+        cover_url,
         is_hiring,
         owner_id
       `,
@@ -84,6 +87,16 @@ export default async function EditBusinessPage({
             {formError}
           </div>
         ) : null}
+
+        <div className="mt-8">
+          <BusinessMediaUpload
+            businessId={business.id}
+            businessName={business.name}
+            userId={user.id}
+            currentLogoUrl={business.logo_url}
+            currentCoverUrl={business.cover_url}
+          />
+        </div>
 
         <form
           action={updateBusiness}
