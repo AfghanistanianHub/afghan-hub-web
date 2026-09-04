@@ -2,10 +2,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   BriefcaseBusiness,
+  Building2,
   CalendarDays,
   CircleCheck,
   Clock3,
   Pencil,
+  UsersRound,
   XCircle,
 } from "lucide-react";
 
@@ -59,8 +61,12 @@ export default async function SubmissionsPage() {
 
   const today = getUtcDateKey(new Date());
 
-  const [{ data: opportunities, error: opportunitiesError }, { data: events, error: eventsError }] =
-    await Promise.all([
+  const [
+    { data: opportunities, error: opportunitiesError },
+    { data: events, error: eventsError },
+    { data: businesses, error: businessesError },
+    { data: organizations, error: organizationsError },
+  ] = await Promise.all([
       supabase
         .from("opportunities")
         .select("id,title,slug,summary,type,status,deadline,moderation_note,created_at,updated_at")
@@ -71,11 +77,30 @@ export default async function SubmissionsPage() {
         .select("id,title,slug,summary,status,moderation_note,starts_at,created_at,updated_at")
         .eq("creator_id", user.id)
         .order("updated_at", { ascending: false }),
+      supabase
+        .from("businesses")
+        .select("id,name,slug,short_description,category,status,moderation_note,updated_at")
+        .eq("owner_id", user.id)
+        .order("updated_at", { ascending: false }),
+      supabase
+        .from("organizations")
+        .select("id,name,slug,short_description,organization_type,status,moderation_note,updated_at")
+        .eq("owner_id", user.id)
+        .order("updated_at", { ascending: false }),
     ]);
 
-  const hasError = Boolean(opportunitiesError || eventsError);
+  const hasError = Boolean(
+    opportunitiesError ||
+      eventsError ||
+      businessesError ||
+      organizationsError,
+  );
   const hasSubmissions =
-    (opportunities?.length ?? 0) + (events?.length ?? 0) > 0;
+    (opportunities?.length ?? 0) +
+      (events?.length ?? 0) +
+      (businesses?.length ?? 0) +
+      (organizations?.length ?? 0) >
+    0;
 
   return (
     <main className="px-4 py-8 md:px-8">
@@ -150,6 +175,72 @@ export default async function SubmissionsPage() {
               href="/opportunities/new"
               label="Submit an opportunity"
               text="You have not submitted an opportunity yet."
+            />
+          )}
+        </section>
+
+        <section className="mt-12">
+          <div className="flex items-center gap-3">
+            <Building2 className="size-5 text-emerald-400" />
+            <h2 className="text-xl font-bold">Businesses</h2>
+            <span className="rounded-full bg-slate-800 px-2.5 py-1 text-xs text-slate-300">
+              {businesses?.length ?? 0}
+            </span>
+          </div>
+
+          {businesses?.length ? (
+            <div className="mt-5 grid gap-5 md:grid-cols-2">
+              {businesses.map((business) => (
+                <SubmissionCard
+                  key={business.id}
+                  title={business.name}
+                  summary={business.short_description}
+                  status={business.status}
+                  moderationNote={business.moderation_note}
+                  detailHref={`/businesses/${business.slug}`}
+                  editHref={`/businesses/${business.slug}/edit`}
+                  meta={`${business.category} · Updated ${formatDate(business.updated_at)}`}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              href="/businesses/new"
+              label="Create a business"
+              text="You have not submitted a business yet."
+            />
+          )}
+        </section>
+
+        <section className="mt-12">
+          <div className="flex items-center gap-3">
+            <UsersRound className="size-5 text-emerald-400" />
+            <h2 className="text-xl font-bold">Organizations</h2>
+            <span className="rounded-full bg-slate-800 px-2.5 py-1 text-xs text-slate-300">
+              {organizations?.length ?? 0}
+            </span>
+          </div>
+
+          {organizations?.length ? (
+            <div className="mt-5 grid gap-5 md:grid-cols-2">
+              {organizations.map((organization) => (
+                <SubmissionCard
+                  key={organization.id}
+                  title={organization.name}
+                  summary={organization.short_description}
+                  status={organization.status}
+                  moderationNote={organization.moderation_note}
+                  detailHref={`/organizations/${organization.slug}`}
+                  editHref={`/organizations/${organization.slug}/edit`}
+                  meta={`${organization.organization_type ?? "Organization"} · Updated ${formatDate(organization.updated_at)}`}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              href="/organizations/new"
+              label="Create an organization"
+              text="You have not submitted an organization yet."
             />
           )}
         </section>
