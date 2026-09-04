@@ -1,16 +1,16 @@
 import Link from "next/link";
-import { login, signup } from "./actions";
+import { requestPasswordReset } from "./actions";
 
-type LoginPageProps = {
+type ForgotPasswordPageProps = {
   searchParams: Promise<{
     error?: string;
     message?: string;
   }>;
 };
 
-export default async function LoginPage({
+export default async function ForgotPasswordPage({
   searchParams,
-}: LoginPageProps) {
+}: ForgotPasswordPageProps) {
   const { error, message } = await searchParams;
 
   return (
@@ -20,10 +20,10 @@ export default async function LoginPage({
           Afghan Hub
         </p>
 
-        <h1 className="mt-3 text-3xl font-bold">Welcome</h1>
+        <h1 className="mt-3 text-3xl font-bold">Reset your password</h1>
 
         <p className="mt-2 text-sm text-slate-400">
-          Sign in to your account or create a new account.
+          Enter your email address and we will send you a secure reset link.
         </p>
 
         {error && (
@@ -58,49 +58,20 @@ export default async function LoginPage({
             />
           </div>
 
-          <div>
-            <div className="mb-2 flex items-center justify-between gap-4">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-slate-200"
-              >
-                Password
-              </label>
-
-              <Link
-                href="/forgot-password"
-                className="text-sm font-medium text-emerald-400 hover:text-emerald-300"
-              >
-                Forgot password?
-              </Link>
-            </div>
-
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              minLength={8}
-              autoComplete="current-password"
-              placeholder="Minimum 8 characters"
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition placeholder:text-slate-600 focus:border-emerald-500"
-            />
-          </div>
-
           <button
-            formAction={login}
+            formAction={requestPasswordReset}
             className="w-full rounded-lg bg-emerald-500 px-4 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400"
           >
-            Sign in
-          </button>
-
-          <button
-            formAction={signup}
-            className="w-full rounded-lg border border-slate-700 px-4 py-3 font-semibold text-white transition hover:border-slate-500 hover:bg-slate-800"
-          >
-            Create account
+            Send reset link
           </button>
         </form>
+
+        <Link
+          href="/login"
+          className="mt-6 block text-center text-sm font-medium text-emerald-400 hover:text-emerald-300"
+        >
+          Back to sign in
+        </Link>
       </div>
     </main>
   );
