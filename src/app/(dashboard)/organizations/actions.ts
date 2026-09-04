@@ -207,6 +207,7 @@ export async function setOrganizationVerification(formData: FormData) {
     .update({ is_verified: verified })
     .eq("id", organizationId)
     .eq("slug", slug)
+    .eq("status", "published")
     .select("slug")
     .maybeSingle();
 
