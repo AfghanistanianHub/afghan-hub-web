@@ -1,3 +1,4 @@
+import { setBusinessVerification } from "@/app/(dashboard)/businesses/actions";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -8,12 +9,17 @@ type BusinessPageProps = {
   params: Promise<{
     slug: string;
   }>;
+  searchParams: Promise<{
+    error?: string;
+  }>;
 };
 
 export default async function BusinessPage({
   params,
+  searchParams,
 }: BusinessPageProps) {
   const { slug } = await params;
+  const { error: actionError } = await searchParams;
   const supabase = await createClient();
 
   const { data: business, error } = await supabase
@@ -53,7 +59,17 @@ export default async function BusinessPage({
     data: { user },
   } = await supabase.auth.getUser();
 
+  const { data: viewerProfile } = user
+    ? await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle()
+    : { data: null };
+
   const canEdit = user?.id === business.owner_id;
+  const canVerify =
+    viewerProfile?.role === "admin" && business.status === "published";
   const services = Array.isArray(business.services)
     ? business.services.filter(
         (service: unknown): service is string =>
@@ -77,6 +93,12 @@ export default async function BusinessPage({
         >
           ← Back to businesses
         </Link>
+
+        {actionError ? (
+          <div className="mt-6 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">
+            {actionError}
+          </div>
+        ) : null}
 
         {business.status !== "published" ? (
           <div className="mt-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100">
@@ -142,13 +164,37 @@ export default async function BusinessPage({
               </p>
             ) : null}
 
-            {canEdit ? (
-              <Link
-                href={`/businesses/${business.slug}/edit`}
-                className="mt-6 inline-flex rounded-lg border border-slate-700 px-5 py-3 font-semibold transition hover:bg-slate-800"
-              >
-                Edit business
-              </Link>
+            {canEdit || canVerify ? (
+              <div className="mt-6 flex flex-wrap gap-3">
+                {canEdit ? (
+                  <Link
+                    href={`/businesses/${business.slug}/edit`}
+                    className="inline-flex rounded-lg border border-slate-700 px-5 py-3 font-semibold transition hover:bg-slate-800"
+                  >
+                    Edit business
+                  </Link>
+                ) : null}
+
+                {canVerify ? (
+                  <form action={setBusinessVerification}>
+                    <input type="hidden" name="business_id" value={business.id} />
+                    <input type="hidden" name="slug" value={business.slug} />
+                    <input
+                      type="hidden"
+                      name="verified"
+                      value={business.is_verified ? "false" : "true"}
+                    />
+                    <button
+                      type="submit"
+                      className="inline-flex rounded-lg border border-emerald-500/40 px-5 py-3 font-semibold text-emerald-300 transition hover:bg-emerald-500/10"
+                    >
+                      {business.is_verified
+                        ? "Remove verification"
+                        : "Verify business"}
+                    </button>
+                  </form>
+                ) : null}
+              </div>
             ) : null}
           </div>
         </section>

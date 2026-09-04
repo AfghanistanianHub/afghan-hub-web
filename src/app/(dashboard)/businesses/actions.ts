@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
@@ -240,4 +241,59 @@ export async function updateBusiness(formData: FormData) {
   }
 
   redirect(`/businesses/${updatedBusiness.slug}`);
+}
+
+
+export async function setBusinessVerification(formData: FormData) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    redirect("/login");
+  }
+
+  const businessId = getOptionalString(formData, "business_id");
+  const slug = getOptionalString(formData, "slug");
+  const verified = formData.get("verified") === "true";
+
+  if (!businessId || !slug) {
+    redirect("/businesses");
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profile?.role !== "admin") {
+    redirect("/");
+  }
+
+  const { data: business, error } = await supabase
+    .from("businesses")
+    .update({ is_verified: verified })
+    .eq("id", businessId)
+    .eq("slug", slug)
+    .eq("status", "published")
+    .select("slug")
+    .maybeSingle();
+
+  if (error || !business) {
+    redirect(
+      `/businesses/${slug}?error=${encodeURIComponent(
+        error?.message ?? "Unable to update verification",
+      )}`,
+    );
+  }
+
+  revalidatePath("/businesses");
+  revalidatePath(`/businesses/${slug}`);
+  revalidatePath("/search");
+  revalidatePath("/");
+  redirect(`/businesses/${slug}`);
 }
