@@ -170,12 +170,20 @@ export default async function EventsPage({ searchParams }: Props) {
           </p>
         </div>
 
-        <Link
-          href="/events/new"
-          className="rounded-lg bg-emerald-600 px-5 py-3 font-semibold hover:bg-emerald-500"
-        >
-          Create Event
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/events/my"
+            className="rounded-lg border border-slate-700 px-5 py-3 font-semibold text-slate-200 hover:bg-slate-800"
+          >
+            My events
+          </Link>
+          <Link
+            href="/events/new"
+            className="rounded-lg bg-emerald-600 px-5 py-3 font-semibold hover:bg-emerald-500"
+          >
+            Create Event
+          </Link>
+        </div>
       </div>
 
       <form
