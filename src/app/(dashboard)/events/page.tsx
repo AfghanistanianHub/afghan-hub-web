@@ -235,7 +235,7 @@ export default async function EventsPage({ searchParams }: Props) {
 
           {hasFilters ? (
             <Link
-              href={view === "calendar" ? makeHref("calendar") : "/events"}
+              href={view === "calendar" ? `/events?view=calendar&month=${monthKey}` : "/events"}
               className="rounded-lg border border-slate-700 px-4 py-3 font-semibold text-slate-200 transition hover:bg-slate-800"
             >
               Clear
