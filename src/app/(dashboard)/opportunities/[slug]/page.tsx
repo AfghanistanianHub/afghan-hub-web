@@ -6,6 +6,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bookmark } from "lucide-react";
 import {
+  formatOpportunityDeadline,
   getUtcDateKey,
   hasOpportunityDeadlinePassed,
 } from "@/lib/opportunities";
@@ -183,7 +184,7 @@ export default async function OpportunityPage({
           {opportunity.deadline && (
             <p>
               <strong>Deadline:</strong>{" "}
-              {new Date(opportunity.deadline).toLocaleDateString()}
+              {formatOpportunityDeadline(opportunity.deadline)}
             </p>
           )}
 
