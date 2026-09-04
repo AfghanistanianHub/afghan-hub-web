@@ -112,23 +112,44 @@ export default async function SearchPage({
       opportunityIds.length > 0
         ? supabase
             .from("opportunities")
-            .select("id")
+            .select("id,deadline")
             .in("id", opportunityIds)
             .eq("status", "published")
-        : Promise.resolve({ data: [] as { id: string }[] }),
+        : Promise.resolve({
+            data: [] as { id: string; deadline: string | null }[],
+          }),
       eventIds.length > 0
         ? supabase
             .from("events")
-            .select("id")
+            .select("id,starts_at,ends_at")
             .in("id", eventIds)
             .eq("status", "published")
-        : Promise.resolve({ data: [] as { id: string }[] }),
+        : Promise.resolve({
+            data: [] as {
+              id: string;
+              starts_at: string;
+              ends_at: string | null;
+            }[],
+          }),
     ]);
+  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date().getTime();
   const visibleOpportunityIds = new Set(
-    (visibleOpportunities ?? []).map((item) => item.id),
+    (visibleOpportunities ?? [])
+      .filter(
+        (item) =>
+          item.deadline === null ||
+          item.deadline.slice(0, 10) >= today,
+      )
+      .map((item) => item.id),
   );
   const visibleEventIds = new Set(
-    (visibleEvents ?? []).map((item) => item.id),
+    (visibleEvents ?? [])
+      .filter((item) => {
+        const visibleThrough = item.ends_at ?? item.starts_at;
+        return new Date(visibleThrough).getTime() >= now;
+      })
+      .map((item) => item.id),
   );
   const results = rawResults.filter((result) => {
     if (result.entity_type === "opportunity") {
