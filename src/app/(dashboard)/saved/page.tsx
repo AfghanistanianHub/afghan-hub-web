@@ -2,6 +2,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Bookmark, MapPin } from "lucide-react";
 
+import {
+  getUtcDateKey,
+  hasOpportunityDeadlinePassed,
+} from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
 
 function getOpportunity(
@@ -46,6 +50,8 @@ export default async function SavedOpportunitiesPage() {
     redirect("/login");
   }
 
+  const today = getUtcDateKey(new Date());
+
   const { data: savedRows, error } = await supabase
     .from("saved_opportunities")
     .select(`
@@ -71,7 +77,9 @@ export default async function SavedOpportunitiesPage() {
       (
         opportunity,
       ): opportunity is NonNullable<ReturnType<typeof getOpportunity>> =>
-        opportunity !== null && opportunity.status === "published",
+        opportunity !== null &&
+        opportunity.status === "published" &&
+        !hasOpportunityDeadlinePassed(opportunity.deadline, today),
     );
 
   return (

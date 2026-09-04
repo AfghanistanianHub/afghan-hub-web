@@ -1,4 +1,8 @@
 import Link from "next/link";
+import {
+  formatOpportunityDeadline,
+  getUtcDateKey,
+} from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
 
 type Props = {
@@ -58,6 +62,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
       : "all";
 
   const supabase = await createClient();
+  const today = getUtcDateKey(new Date());
 
   let opportunitiesQuery = supabase
     .from("opportunities")
@@ -78,6 +83,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
       )
     `)
     .eq("status", "published")
+    .or(`deadline.is.null,deadline.gte.${today}`)
     .order("created_at", { ascending: false });
 
   if (search) {
@@ -275,11 +281,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
                 {opportunity.deadline ? (
                   <span>
                     Deadline{" "}
-                    {new Intl.DateTimeFormat("en-CA", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    }).format(new Date(opportunity.deadline))}
+                    {formatOpportunityDeadline(opportunity.deadline)}
                   </span>
                 ) : null}
               </div>

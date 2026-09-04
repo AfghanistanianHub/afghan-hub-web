@@ -2,6 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import {
+  getUtcDateKey,
+  hasOpportunityDeadlinePassed,
+} from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
 
 const opportunityTypes = [
@@ -337,12 +341,20 @@ export async function toggleSavedOpportunity(formData: FormData) {
 
   const { data: opportunity } = await supabase
     .from("opportunities")
-    .select("id,status")
+    .select("id,status,deadline")
     .eq("id", opportunityId)
     .maybeSingle();
 
   if (!opportunity || opportunity.status !== "published") {
     redirect("/opportunities");
+  }
+
+  const today = getUtcDateKey(new Date());
+
+  if (hasOpportunityDeadlinePassed(opportunity.deadline, today)) {
+    redirect(
+      `/opportunities/${opportunitySlug}?error=This%20opportunity%20has%20expired`,
+    );
   }
 
   const { data: savedOpportunity } = await supabase

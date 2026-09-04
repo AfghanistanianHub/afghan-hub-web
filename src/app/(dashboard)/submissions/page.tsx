@@ -9,6 +9,10 @@ import {
   XCircle,
 } from "lucide-react";
 
+import {
+  getUtcDateKey,
+  hasOpportunityDeadlinePassed,
+} from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
 
 function formatDate(value: string) {
@@ -53,11 +57,13 @@ export default async function SubmissionsPage() {
     redirect("/login");
   }
 
+  const today = getUtcDateKey(new Date());
+
   const [{ data: opportunities, error: opportunitiesError }, { data: events, error: eventsError }] =
     await Promise.all([
       supabase
         .from("opportunities")
-        .select("id,title,slug,summary,type,status,moderation_note,created_at,updated_at")
+        .select("id,title,slug,summary,type,status,deadline,moderation_note,created_at,updated_at")
         .eq("author_id", user.id)
         .order("updated_at", { ascending: false }),
       supabase
@@ -126,7 +132,12 @@ export default async function SubmissionsPage() {
                   key={opportunity.id}
                   title={opportunity.title}
                   summary={opportunity.summary}
-                  status={opportunity.status}
+                  status={
+                    opportunity.status === "published" &&
+                    hasOpportunityDeadlinePassed(opportunity.deadline, today)
+                      ? "expired"
+                      : opportunity.status
+                  }
                   moderationNote={opportunity.moderation_note}
                   detailHref={`/opportunities/${opportunity.slug}`}
                   editHref={`/opportunities/${opportunity.slug}/edit`}

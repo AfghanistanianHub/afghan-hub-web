@@ -5,6 +5,11 @@ import { DeleteOpportunityButton } from "@/components/opportunities/delete-oppor
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bookmark } from "lucide-react";
+import {
+  formatOpportunityDeadline,
+  getUtcDateKey,
+  hasOpportunityDeadlinePassed,
+} from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
 
 type Props = {
@@ -54,6 +59,9 @@ export default async function OpportunityPage({
     notFound();
   }
 
+  const today = getUtcDateKey(new Date());
+  const isExpired = hasOpportunityDeadlinePassed(opportunity.deadline, today);
+
   const { data: savedOpportunity } = user
     ? await supabase
         .from("saved_opportunities")
@@ -84,6 +92,12 @@ export default async function OpportunityPage({
         </div>
       ) : null}
 
+      {opportunity.status === "published" && isExpired ? (
+        <div className="mb-6 rounded-xl border border-slate-600 bg-slate-800/70 p-4 text-sm text-slate-200">
+          This opportunity has passed its application deadline and is no longer active.
+        </div>
+      ) : null}
+
       <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-8">
 
         <div className="mb-4 inline-flex rounded-full bg-emerald-600/20 px-3 py-1 text-sm text-emerald-400">
@@ -97,7 +111,7 @@ export default async function OpportunityPage({
 
           {user ? (
             <div className="flex shrink-0 flex-wrap justify-end gap-3">
-              {opportunity.status === "published" ? (
+              {opportunity.status === "published" && !isExpired ? (
               <form action={toggleSavedOpportunity}>
                 <input
                   type="hidden"
@@ -170,7 +184,7 @@ export default async function OpportunityPage({
           {opportunity.deadline && (
             <p>
               <strong>Deadline:</strong>{" "}
-              {new Date(opportunity.deadline).toLocaleDateString()}
+              {formatOpportunityDeadline(opportunity.deadline)}
             </p>
           )}
 
@@ -180,7 +194,7 @@ export default async function OpportunityPage({
             </p>
           )}
 
-          {opportunity.external_url && (
+          {opportunity.external_url && !isExpired && (
             <p>
               <a
                 href={opportunity.external_url}
@@ -192,6 +206,10 @@ export default async function OpportunityPage({
               </a>
             </p>
           )}
+
+          {opportunity.external_url && isExpired ? (
+            <p className="text-slate-500">Applications closed</p>
+          ) : null}
 
         </div>
       </div>
