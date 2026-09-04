@@ -1,3 +1,4 @@
+import { setOrganizationVerification } from "@/app/(dashboard)/organizations/actions";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -8,12 +9,17 @@ type OrganizationPageProps = {
   params: Promise<{
     slug: string;
   }>;
+  searchParams: Promise<{
+    error?: string;
+  }>;
 };
 
 export default async function OrganizationPage({
   params,
+  searchParams,
 }: OrganizationPageProps) {
   const { slug } = await params;
+  const { error: actionError } = await searchParams;
   const supabase = await createClient();
 
   const { data: organization, error } = await supabase
@@ -54,7 +60,17 @@ export default async function OrganizationPage({
     data: { user },
   } = await supabase.auth.getUser();
 
+  const { data: viewerProfile } = user
+    ? await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle()
+    : { data: null };
+
   const canEdit = user?.id === organization.owner_id;
+  const canVerify =
+    viewerProfile?.role === "admin" && organization.status === "published";
 
 const programs = Array.isArray(organization.programs)
   ? organization.programs.filter(
@@ -80,6 +96,12 @@ const programs = Array.isArray(organization.programs)
         >
           ← Back to organizations
         </Link>
+
+        {actionError ? (
+          <div className="mt-6 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">
+            {actionError}
+          </div>
+        ) : null}
 
         {organization.status !== "published" ? (
           <div className="mt-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100">
@@ -153,13 +175,41 @@ const programs = Array.isArray(organization.programs)
               </p>
             ) : null}
 
-            {canEdit ? (
-              <Link
-                href={`/organizations/${organization.slug}/edit`}
-                className="mt-6 inline-flex rounded-lg border border-slate-700 px-5 py-3 font-semibold transition hover:bg-slate-800"
-              >
-                Edit organization
-              </Link>
+            {canEdit || canVerify ? (
+              <div className="mt-6 flex flex-wrap gap-3">
+                {canEdit ? (
+                  <Link
+                    href={`/organizations/${organization.slug}/edit`}
+                    className="inline-flex rounded-lg border border-slate-700 px-5 py-3 font-semibold transition hover:bg-slate-800"
+                  >
+                    Edit organization
+                  </Link>
+                ) : null}
+
+                {canVerify ? (
+                  <form action={setOrganizationVerification}>
+                    <input
+                      type="hidden"
+                      name="organization_id"
+                      value={organization.id}
+                    />
+                    <input type="hidden" name="slug" value={organization.slug} />
+                    <input
+                      type="hidden"
+                      name="verified"
+                      value={organization.is_verified ? "false" : "true"}
+                    />
+                    <button
+                      type="submit"
+                      className="inline-flex rounded-lg border border-emerald-500/40 px-5 py-3 font-semibold text-emerald-300 transition hover:bg-emerald-500/10"
+                    >
+                      {organization.is_verified
+                        ? "Remove verification"
+                        : "Verify organization"}
+                    </button>
+                  </form>
+                ) : null}
+              </div>
             ) : null}
           </div>
         </section>
