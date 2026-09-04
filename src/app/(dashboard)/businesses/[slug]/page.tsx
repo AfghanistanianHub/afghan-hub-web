@@ -41,6 +41,7 @@ export default async function BusinessPage({
         province_state,
         country,
         logo_url,
+        cover_url,
         is_verified,
         is_hiring,
         status,
@@ -113,7 +114,17 @@ export default async function BusinessPage({
         ) : null}
 
         <section className="mt-6 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50">
-          <div className="h-24 bg-gradient-to-r from-slate-800 to-slate-900 md:h-32" />
+          {business.cover_url ? (
+            <ExternalImage
+              src={business.cover_url}
+              alt={`${business.name} cover`}
+              width={1200}
+              height={400}
+              className="h-40 w-full object-cover md:h-56"
+            />
+          ) : (
+            <div className="h-40 bg-gradient-to-r from-slate-800 to-slate-900 md:h-56" />
+          )}
 
           <div className="px-6 pb-8 md:px-10">
             <div className="-mt-12 flex flex-col gap-5 sm:flex-row sm:items-end">
