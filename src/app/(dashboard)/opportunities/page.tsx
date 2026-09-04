@@ -1,5 +1,8 @@
 import Link from "next/link";
-import { getUtcDateKey } from "@/lib/opportunities";
+import {
+  formatOpportunityDeadline,
+  getUtcDateKey,
+} from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
 
 type Props = {
@@ -278,11 +281,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
                 {opportunity.deadline ? (
                   <span>
                     Deadline{" "}
-                    {new Intl.DateTimeFormat("en-CA", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    }).format(new Date(opportunity.deadline))}
+                    {formatOpportunityDeadline(opportunity.deadline)}
                   </span>
                 ) : null}
               </div>
