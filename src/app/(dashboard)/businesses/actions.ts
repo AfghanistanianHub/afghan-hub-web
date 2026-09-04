@@ -109,7 +109,7 @@ export async function createBusiness(formData: FormData) {
     province_state: getOptionalString(formData, "province_state"),
     country: getOptionalString(formData, "country"),
     is_hiring: formData.get("is_hiring") === "on",
-    status: "published" as const,
+    status: "draft" as const,
     updated_at: new Date().toISOString(),
   };
 
@@ -223,6 +223,7 @@ export async function updateBusiness(formData: FormData) {
       province_state: getOptionalString(formData, "province_state"),
       country: getOptionalString(formData, "country"),
       is_hiring: formData.get("is_hiring") === "on",
+      status: "draft",
       updated_at: new Date().toISOString(),
     })
     .eq("slug", slug)
