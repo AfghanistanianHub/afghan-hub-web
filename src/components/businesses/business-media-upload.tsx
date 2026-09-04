@@ -65,12 +65,20 @@ export function BusinessMediaUpload({
       data: { publicUrl },
     } = supabase.storage.from("business-media").getPublicUrl(filePath);
 
+    const mediaUpdate =
+      kind === "logo"
+        ? {
+            logo_url: publicUrl,
+            updated_at: new Date().toISOString(),
+          }
+        : {
+            cover_url: publicUrl,
+            updated_at: new Date().toISOString(),
+          };
+
     const { error: updateError } = await supabase
       .from("businesses")
-      .update({
-        [kind === "logo" ? "logo_url" : "cover_url"]: publicUrl,
-        updated_at: new Date().toISOString(),
-      })
+      .update(mediaUpdate)
       .eq("id", businessId)
       .eq("owner_id", userId);
 
