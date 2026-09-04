@@ -7,6 +7,7 @@ import {
   MapPin,
   UsersRound,
 } from "lucide-react";
+import { getUtcDateKey } from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
 
 function getOrganizationName(
@@ -60,6 +61,7 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
 
   const now = new Date().toISOString();
+  const today = getUtcDateKey(new Date());
   const [
     { data: profile },
     { data: suggestedOpportunities },
@@ -86,7 +88,7 @@ export default async function DashboardPage() {
         )
       `)
       .eq("status", "published")
-      .or(`deadline.is.null,deadline.gte.${now}`)
+      .or(`deadline.is.null,deadline.gte.${today}`)
       .order("created_at", { ascending: false })
       .limit(3),
     supabase
