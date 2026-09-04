@@ -77,27 +77,19 @@ alter table public.notifications
     )
   );
 
-drop policy if exists "businesses_select_published_or_owner" on public.businesses;
-create policy "businesses_select_published_or_owner"
+drop policy if exists "Moderators can review businesses" on public.businesses;
+create policy "Moderators can review businesses"
 on public.businesses
 for select
-to anon, authenticated
-using (
-  status = 'published'::public.entity_status
-  or owner_id = (select auth.uid())
-  or public.can_moderate()
-);
+to authenticated
+using (public.can_moderate());
 
-drop policy if exists "organizations_select_published_or_owner" on public.organizations;
-create policy "organizations_select_published_or_owner"
+drop policy if exists "Moderators can review organizations" on public.organizations;
+create policy "Moderators can review organizations"
 on public.organizations
 for select
-to anon, authenticated
-using (
-  status = 'published'::public.entity_status
-  or owner_id = (select auth.uid())
-  or public.can_moderate()
-);
+to authenticated
+using (public.can_moderate());
 
 create or replace function public.moderate_business(
   target_business_id uuid,
