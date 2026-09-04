@@ -310,6 +310,42 @@ export type Database = {
           },
         ]
       }
+      event_rsvps: {
+        Row: {
+          created_at: string
+          event_id: string
+          profile_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          profile_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          profile_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_rsvps_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_rsvps_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           body: string
@@ -754,6 +790,10 @@ export type Database = {
     }
     Functions: {
       can_moderate: { Args: never; Returns: boolean }
+      get_event_rsvp_count: {
+        Args: { target_event_id: string }
+        Returns: number
+      }
       get_message_inbox: {
         Args: never
         Returns: {
@@ -809,6 +849,10 @@ export type Database = {
       respond_connection_request: {
         Args: { target_connection_id: string; target_decision: string }
         Returns: boolean
+      }
+      rsvp_to_event: {
+        Args: { target_event_id: string }
+        Returns: undefined
       }
       search_afghan_hub: {
         Args: { result_limit?: number; search_query: string }

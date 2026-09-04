@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -332,4 +333,74 @@ export async function deleteEvent(formData: FormData) {
   }
 
   redirect("/events");
+}
+
+
+export async function rsvpEvent(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    redirect("/login");
+  }
+
+  const eventId = getOptionalString(formData, "event_id");
+  const slug = getOptionalString(formData, "slug");
+
+  if (!eventId || !slug) {
+    redirect("/events");
+  }
+
+  const { error } = await supabase.rpc("rsvp_to_event", {
+    target_event_id: eventId,
+  });
+
+  if (error) {
+    const result =
+      error.message.includes("event_full")
+        ? "full"
+        : error.message.includes("event_has_started")
+          ? "started"
+          : "error";
+
+    redirect(`/events/${slug}?rsvp=${result}`);
+  }
+
+  revalidatePath(`/events/${slug}`);
+  redirect(`/events/${slug}?rsvp=joined`);
+}
+
+export async function cancelEventRsvp(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    redirect("/login");
+  }
+
+  const eventId = getOptionalString(formData, "event_id");
+  const slug = getOptionalString(formData, "slug");
+
+  if (!eventId || !slug) {
+    redirect("/events");
+  }
+
+  const { error } = await supabase
+    .from("event_rsvps")
+    .delete()
+    .eq("event_id", eventId)
+    .eq("profile_id", user.id);
+
+  if (error) {
+    redirect(`/events/${slug}?rsvp=error`);
+  }
+
+  revalidatePath(`/events/${slug}`);
+  redirect(`/events/${slug}?rsvp=cancelled`);
 }

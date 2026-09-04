@@ -1,3 +1,7 @@
+import {
+  cancelEventRsvp,
+  rsvpEvent,
+} from "@/app/(dashboard)/events/actions";
 import { DeleteEventButton } from "@/components/events/delete-event-button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -6,6 +10,9 @@ import { createClient } from "@/lib/supabase/server";
 type Props = {
   params: Promise<{
     slug: string;
+  }>;
+  searchParams: Promise<{
+    rsvp?: string;
   }>;
 };
 
@@ -24,8 +31,8 @@ function formatDateTime(value: string | null) {
   }).format(new Date(value));
 }
 
-export default async function EventPage({ params }: Props) {
-  const { slug } = await params;
+export default async function EventPage({ params, searchParams }: Props) {
+  const [{ slug }, { rsvp }] = await Promise.all([params, searchParams]);
   const supabase = await createClient();
 
   const {
@@ -63,6 +70,27 @@ export default async function EventPage({ params }: Props) {
     notFound();
   }
 
+  const [{ data: rsvpCountData }, { data: viewerRsvp }] =
+    user && event.status === "published"
+      ? await Promise.all([
+          supabase.rpc("get_event_rsvp_count", {
+            target_event_id: event.id,
+          }),
+          supabase
+            .from("event_rsvps")
+            .select("event_id")
+            .eq("event_id", event.id)
+            .eq("profile_id", user.id)
+            .maybeSingle(),
+        ])
+      : [{ data: 0 }, { data: null }];
+
+  const rsvpCount = Number(rsvpCountData ?? 0);
+  const hasRsvp = Boolean(viewerRsvp);
+  const hasStarted = new Date(event.starts_at) <= new Date();
+  const isFull =
+    event.capacity !== null && rsvpCount >= event.capacity;
+
   const location = [
     event.city,
     event.province_state,
@@ -73,6 +101,36 @@ export default async function EventPage({ params }: Props) {
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-10">
+      {rsvp === "joined" ? (
+        <div className="mb-6 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-sm text-emerald-100">
+          You are registered for this event.
+        </div>
+      ) : null}
+
+      {rsvp === "cancelled" ? (
+        <div className="mb-6 rounded-xl border border-slate-700 bg-slate-800/70 p-4 text-sm text-slate-200">
+          Your registration was cancelled.
+        </div>
+      ) : null}
+
+      {rsvp === "full" ? (
+        <div className="mb-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100">
+          This event has reached its capacity.
+        </div>
+      ) : null}
+
+      {rsvp === "started" ? (
+        <div className="mb-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100">
+          Registration is closed because this event has started.
+        </div>
+      ) : null}
+
+      {rsvp === "error" ? (
+        <div className="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">
+          We could not update your registration. Please try again.
+        </div>
+      ) : null}
+
       {event.status !== "published" ? (
         <div className="mb-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100">
           {event.status === "draft"
@@ -194,6 +252,61 @@ export default async function EventPage({ params }: Props) {
             </p>
           ) : null}
         </div>
+
+        {event.status === "published" ? (
+          <section className="mt-8 rounded-2xl border border-slate-800 bg-slate-950/60 p-6">
+            <div className="flex flex-wrap items-center justify-between gap-5">
+              <div>
+                <h2 className="text-lg font-bold text-white">
+                  Event registration
+                </h2>
+                <p className="mt-2 text-sm text-slate-400">
+                  {rsvpCount} {rsvpCount === 1 ? "person is" : "people are"} going
+                  {event.capacity !== null
+                    ? ` · ${Math.max(event.capacity - rsvpCount, 0)} spots remaining`
+                    : ""}
+                </p>
+              </div>
+
+              {!isOwner && user && !hasStarted ? (
+                hasRsvp ? (
+                  <form action={cancelEventRsvp}>
+                    <input type="hidden" name="event_id" value={event.id} />
+                    <input type="hidden" name="slug" value={event.slug} />
+                    <button
+                      type="submit"
+                      className="rounded-lg border border-slate-700 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:bg-slate-800"
+                    >
+                      Cancel registration
+                    </button>
+                  </form>
+                ) : (
+                  <form action={rsvpEvent}>
+                    <input type="hidden" name="event_id" value={event.id} />
+                    <input type="hidden" name="slug" value={event.slug} />
+                    <button
+                      type="submit"
+                      disabled={isFull}
+                      className="rounded-lg bg-emerald-500 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
+                    >
+                      {isFull ? "Event full" : "Register"}
+                    </button>
+                  </form>
+                )
+              ) : null}
+
+              {isOwner ? (
+                <p className="text-sm font-medium text-emerald-300">
+                  You are hosting this event.
+                </p>
+              ) : null}
+
+              {hasStarted ? (
+                <p className="text-sm text-slate-500">Registration closed</p>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
       </div>
     </main>
   );
