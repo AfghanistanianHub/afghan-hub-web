@@ -28,6 +28,9 @@ export type Database = {
           is_hiring: boolean
           is_verified: boolean
           logo_url: string | null
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           name: string
           owner_id: string
           phone: string | null
@@ -53,6 +56,9 @@ export type Database = {
           is_hiring?: boolean
           is_verified?: boolean
           logo_url?: string | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           name: string
           owner_id: string
           phone?: string | null
@@ -78,6 +84,9 @@ export type Database = {
           is_hiring?: boolean
           is_verified?: boolean
           logo_url?: string | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           name?: string
           owner_id?: string
           phone?: string | null
@@ -591,6 +600,9 @@ export type Database = {
           is_accepting_volunteers: boolean
           is_verified: boolean
           logo_url: string | null
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           mission: string | null
           name: string
           organization_type: string | null
@@ -617,6 +629,9 @@ export type Database = {
           is_accepting_volunteers?: boolean
           is_verified?: boolean
           logo_url?: string | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           mission?: string | null
           name: string
           organization_type?: string | null
@@ -830,6 +845,14 @@ export type Database = {
         Args: { target_notification_id: string }
         Returns: boolean
       }
+      moderate_business: {
+        Args: {
+          target_business_id: string
+          target_decision: string
+          target_note: string | null
+        }
+        Returns: boolean
+      }
       moderate_event: {
         Args: {
           target_decision: string
@@ -843,6 +866,14 @@ export type Database = {
           target_decision: string
           target_note: string | null
           target_opportunity_id: string
+        }
+        Returns: boolean
+      }
+      moderate_organization: {
+        Args: {
+          target_decision: string
+          target_note: string | null
+          target_organization_id: string
         }
         Returns: boolean
       }
