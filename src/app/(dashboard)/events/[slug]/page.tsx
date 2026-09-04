@@ -170,11 +170,20 @@ export default async function EventPage({ params, searchParams }: Props) {
           </div>
 
           {isOwner ? (
-            <div className="flex shrink-0 gap-3">
+            <div className="flex shrink-0 flex-wrap gap-3">
+              {event.status === "published" ? (
+                <Link
+                  href={`/events/${event.slug}/attendees`}
+                  className="rounded-lg border border-slate-700 px-4 py-2 font-semibold hover:bg-slate-800"
+                >
+                  Attendees
+                </Link>
+              ) : null}
+
               <Link
-              href={`/events/${event.slug}/edit`}
-              className="rounded-lg border border-slate-700 px-4 py-2 font-semibold hover:bg-slate-800"
-            >
+                href={`/events/${event.slug}/edit`}
+                className="rounded-lg border border-slate-700 px-4 py-2 font-semibold hover:bg-slate-800"
+              >
                 Edit
               </Link>
 
