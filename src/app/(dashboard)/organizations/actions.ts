@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -167,5 +168,59 @@ export async function updateOrganization(formData: FormData) {
     );
   }
 
+  redirect(`/organizations/${slug}`);
+}
+
+
+export async function setOrganizationVerification(formData: FormData) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    redirect("/login");
+  }
+
+  const organizationId = getOptionalString(formData, "organization_id");
+  const slug = getOptionalString(formData, "slug");
+  const verified = formData.get("verified") === "true";
+
+  if (!organizationId || !slug) {
+    redirect("/organizations");
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profile?.role !== "admin") {
+    redirect("/");
+  }
+
+  const { data: organization, error } = await supabase
+    .from("organizations")
+    .update({ is_verified: verified })
+    .eq("id", organizationId)
+    .eq("slug", slug)
+    .select("slug")
+    .maybeSingle();
+
+  if (error || !organization) {
+    redirect(
+      `/organizations/${slug}?error=${encodeURIComponent(
+        error?.message ?? "Unable to update verification",
+      )}`,
+    );
+  }
+
+  revalidatePath("/organizations");
+  revalidatePath(`/organizations/${slug}`);
+  revalidatePath("/search");
+  revalidatePath("/");
   redirect(`/organizations/${slug}`);
 }
