@@ -39,5 +39,8 @@ jobs:
       - name: Messaging regression tests
         run: node --test tests/*.test.mjs
 
+      - name: Agent runtime syntax check
+        run: node --check agents/orchestrator.mjs
+
       - name: Build
         run: npm run build
