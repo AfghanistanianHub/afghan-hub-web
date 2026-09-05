@@ -35,7 +35,7 @@ jobs:
         run: npm ci
 
       - name: Install agent runtime
-        run: npm install --prefix agents --ignore-scripts --no-audit --no-fund
+        run: npm install --prefix agents --package-lock=false --ignore-scripts --no-audit --no-fund
 
       - name: Stop if another pull request is open
         id: gate
