@@ -50,13 +50,18 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check OpenAI API key
+      - name: Check agent secrets
         if: steps.gate.outputs.skip == 'false'
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AFGHAN_HUB_AGENT_GITHUB_TOKEN: ${{ secrets.AFGHAN_HUB_AGENT_GITHUB_TOKEN }}
         run: |
           if [ -z "$OPENAI_API_KEY" ]; then
             echo "::error::OPENAI_API_KEY is not configured in repository Actions secrets."
+            exit 1
+          fi
+          if [ -z "$AFGHAN_HUB_AGENT_GITHUB_TOKEN" ]; then
+            echo "::error::AFGHAN_HUB_AGENT_GITHUB_TOKEN is not configured. Use a fine-grained token with Contents and Pull requests write access to this repository."
             exit 1
           fi
 
@@ -64,6 +69,7 @@ jobs:
         if: steps.gate.outputs.skip == 'false'
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AFGHAN_HUB_AGENT_GITHUB_TOKEN: ${{ secrets.AFGHAN_HUB_AGENT_GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AFGHAN_HUB_AGENT_MODEL: gpt-5.6-sol
         run: node agents/orchestrator.mjs
