@@ -25,37 +25,13 @@ export async function sendConnectionRequest(formData: FormData) {
     redirect("/network");
   }
 
-  const { data: recipient } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("id", recipientId)
-    .eq("is_public", true)
-    .eq("onboarding_completed", true)
-    .maybeSingle();
+  const { data: connectionId, error } = await supabase.rpc(
+    "send_connection_request",
+    { target_recipient_id: recipientId },
+  );
 
-  if (!recipient) {
-    redirect("/network");
-  }
-
-  const { data: existingConnection } = await supabase
-    .from("connections")
-    .select("id")
-    .or(
-      `and(requester_id.eq.${user.id},recipient_id.eq.${recipientId}),and(requester_id.eq.${recipientId},recipient_id.eq.${user.id})`,
-    )
-    .limit(1)
-    .maybeSingle();
-
-  if (!existingConnection) {
-    const { error } = await supabase.from("connections").insert({
-      requester_id: user.id,
-      recipient_id: recipientId,
-      status: "pending",
-    });
-
-    if (error) {
-      throw new Error("Unable to send connection request.");
-    }
+  if (error || !connectionId) {
+    throw new Error("Unable to send connection request.");
   }
 
   revalidatePath(`/members/${recipientId}`);
