@@ -76,7 +76,9 @@ export function OrganizationLogoUpload({
       return;
     }
 
-    setMessage("Organization logo updated.");
+    setMessage(
+      "Organization logo updated. The listing has been resubmitted for review.",
+    );
     setUploading(false);
     window.location.reload();
   }
@@ -133,7 +135,9 @@ export function OrganizationLogoUpload({
       return;
     }
 
-    setMessage("Organization cover updated.");
+    setMessage(
+      "Organization cover updated. The listing has been resubmitted for review.",
+    );
     setUploading(false);
     window.location.reload();
   }

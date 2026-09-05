@@ -49,7 +49,8 @@ export default async function OrganizationsPage({
         province_state,
         country,
         logo_url,
-        is_verified
+        is_verified,
+        is_accepting_volunteers
       `,
     )
     .eq("status", "published")

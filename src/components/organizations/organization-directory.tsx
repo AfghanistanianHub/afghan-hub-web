@@ -13,6 +13,7 @@ type Organization = {
   country: string | null;
   logo_url: string | null;
   is_verified: boolean;
+  is_accepting_volunteers: boolean;
 };
 
 type OrganizationDirectoryProps = {
@@ -66,7 +67,7 @@ export function OrganizationDirectory({
               )}
 
               <div className="min-w-0">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <h2 className="truncate text-lg font-semibold">
                     {organization.name}
                   </h2>
@@ -74,6 +75,12 @@ export function OrganizationDirectory({
                   {organization.is_verified ? (
                     <span className="text-xs font-medium text-emerald-400">
                       Verified
+                    </span>
+                  ) : null}
+
+                  {organization.is_accepting_volunteers ? (
+                    <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-300">
+                      Volunteers
                     </span>
                   ) : null}
                 </div>
