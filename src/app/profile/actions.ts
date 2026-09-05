@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isValidHttpUrl } from "@/lib/validation";
 
 function getOptionalString(formData: FormData, field: string) {
   const value = formData.get(field);
@@ -31,6 +32,14 @@ export async function saveProfile(formData: FormData) {
 const headline = getOptionalString(formData, "headline");
 const linkedinUrl = getOptionalString(formData, "linkedin_url");
 const websiteUrl = getOptionalString(formData, "website_url");
+
+  if (linkedinUrl && !isValidHttpUrl(linkedinUrl)) {
+    redirect("/profile?error=Enter%20a%20valid%20LinkedIn%20URL");
+  }
+
+  if (websiteUrl && !isValidHttpUrl(websiteUrl)) {
+    redirect("/profile?error=Enter%20a%20valid%20website%20URL");
+  }
 
 const languages = getOptionalString(formData, "languages")
   ?.split(",")

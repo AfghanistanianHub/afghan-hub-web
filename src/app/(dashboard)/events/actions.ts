@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isValidHttpUrl } from "@/lib/validation";
 
 function getOptionalString(formData: FormData, field: string) {
   const value = formData.get(field);
@@ -104,6 +105,12 @@ export async function createEvent(formData: FormData) {
     }
   }
 
+  const onlineUrl = getOptionalString(formData, "online_url");
+
+  if (onlineUrl && !isValidHttpUrl(onlineUrl)) {
+    redirect("/events/new?error=Enter%20a%20valid%20online%20event%20URL");
+  }
+
   const capacityValue = getOptionalString(formData, "capacity");
   let capacity: number | null = null;
 
@@ -149,7 +156,7 @@ export async function createEvent(formData: FormData) {
     province_state: getOptionalString(formData, "province_state"),
     country: getOptionalString(formData, "country"),
     is_online: formData.get("is_online") === "on",
-    online_url: getOptionalString(formData, "online_url"),
+    online_url: onlineUrl,
     capacity,
     status: "draft",
     updated_at: new Date().toISOString(),
@@ -242,6 +249,14 @@ export async function updateEvent(formData: FormData) {
     }
   }
 
+  const onlineUrl = getOptionalString(formData, "online_url");
+
+  if (onlineUrl && !isValidHttpUrl(onlineUrl)) {
+    redirect(
+      `/events/${originalSlug}/edit?error=Enter%20a%20valid%20online%20event%20URL`,
+    );
+  }
+
   const capacityValue = getOptionalString(formData, "capacity");
   let capacity: number | null = null;
 
@@ -270,7 +285,7 @@ export async function updateEvent(formData: FormData) {
       province_state: getOptionalString(formData, "province_state"),
       country: getOptionalString(formData, "country"),
       is_online: formData.get("is_online") === "on",
-      online_url: getOptionalString(formData, "online_url"),
+      online_url: onlineUrl,
       capacity,
       status: "draft",
       updated_at: new Date().toISOString(),

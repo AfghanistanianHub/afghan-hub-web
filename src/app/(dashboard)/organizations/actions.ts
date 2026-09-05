@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isValidEmail, isValidHttpUrl } from "@/lib/validation";
 
 function getOptionalString(formData: FormData, field: string) {
   const value = formData.get(field);
@@ -57,6 +58,14 @@ export async function createOrganization(formData: FormData) {
   const city = getOptionalString(formData, "city");
   const provinceState = getOptionalString(formData, "province_state");
   const country = getOptionalString(formData, "country");
+
+  if (websiteUrl && !isValidHttpUrl(websiteUrl)) {
+    redirect("/organizations/new?error=Enter%20a%20valid%20website%20URL");
+  }
+
+  if (email && !isValidEmail(email)) {
+    redirect("/organizations/new?error=Enter%20a%20valid%20email%20address");
+  }
 
   const programs =
     getOptionalString(formData, "programs")
@@ -131,6 +140,21 @@ export async function updateOrganization(formData: FormData) {
     redirect("/organizations?error=Missing%20organization%20information");
   }
 
+  const websiteUrl = getOptionalString(formData, "website_url");
+  const email = getOptionalString(formData, "email");
+
+  if (websiteUrl && !isValidHttpUrl(websiteUrl)) {
+    redirect(
+      `/organizations/${slug}/edit?error=Enter%20a%20valid%20website%20URL`,
+    );
+  }
+
+  if (email && !isValidEmail(email)) {
+    redirect(
+      `/organizations/${slug}/edit?error=Enter%20a%20valid%20email%20address`,
+    );
+  }
+
   const programs =
     getOptionalString(formData, "programs")
       ?.split(",")
@@ -149,8 +173,8 @@ export async function updateOrganization(formData: FormData) {
       description: getOptionalString(formData, "description"),
       mission: getOptionalString(formData, "mission"),
       programs,
-      website_url: getOptionalString(formData, "website_url"),
-      email: getOptionalString(formData, "email"),
+      website_url: websiteUrl,
+      email,
       phone: getOptionalString(formData, "phone"),
       city: getOptionalString(formData, "city"),
       province_state: getOptionalString(formData, "province_state"),

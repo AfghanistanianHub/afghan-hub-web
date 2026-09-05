@@ -8,6 +8,7 @@ import {
   normalizeOpportunityDeadline,
 } from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
+import { isValidEmail, isValidHttpUrl } from "@/lib/validation";
 
 const opportunityTypes = [
   "job",
@@ -98,6 +99,17 @@ export async function createOpportunity(formData: FormData) {
     }
   }
 
+  const externalUrl = getOptionalString(formData, "external_url");
+  const contactEmail = getOptionalString(formData, "contact_email");
+
+  if (externalUrl && !isValidHttpUrl(externalUrl)) {
+    redirect("/opportunities/new?error=Enter%20a%20valid%20application%20URL");
+  }
+
+  if (contactEmail && !isValidEmail(contactEmail)) {
+    redirect("/opportunities/new?error=Enter%20a%20valid%20contact%20email");
+  }
+
   const deadlineValue = getOptionalString(formData, "deadline");
   let deadline: string | null = null;
 
@@ -140,8 +152,8 @@ export async function createOpportunity(formData: FormData) {
     province_state: getOptionalString(formData, "province_state"),
     country: getOptionalString(formData, "country"),
     is_remote: formData.get("is_remote") === "on",
-    external_url: getOptionalString(formData, "external_url"),
-    contact_email: getOptionalString(formData, "contact_email"),
+    external_url: externalUrl,
+    contact_email: contactEmail,
     deadline,
     status: "draft",
     updated_at: new Date().toISOString(),
@@ -226,6 +238,21 @@ export async function updateOpportunity(formData: FormData) {
     }
   }
 
+  const externalUrl = getOptionalString(formData, "external_url");
+  const contactEmail = getOptionalString(formData, "contact_email");
+
+  if (externalUrl && !isValidHttpUrl(externalUrl)) {
+    redirect(
+      `/opportunities/${originalSlug}/edit?error=Enter%20a%20valid%20application%20URL`,
+    );
+  }
+
+  if (contactEmail && !isValidEmail(contactEmail)) {
+    redirect(
+      `/opportunities/${originalSlug}/edit?error=Enter%20a%20valid%20contact%20email`,
+    );
+  }
+
   const deadlineValue = getOptionalString(formData, "deadline");
   let deadline: string | null = null;
 
@@ -251,8 +278,8 @@ export async function updateOpportunity(formData: FormData) {
       province_state: getOptionalString(formData, "province_state"),
       country: getOptionalString(formData, "country"),
       is_remote: formData.get("is_remote") === "on",
-      external_url: getOptionalString(formData, "external_url"),
-      contact_email: getOptionalString(formData, "contact_email"),
+      external_url: externalUrl,
+      contact_email: contactEmail,
       deadline,
       status: "draft",
       updated_at: new Date().toISOString(),
