@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import {
   getUtcDateKey,
   hasOpportunityDeadlinePassed,
+  normalizeOpportunityDeadline,
 } from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
 
@@ -101,13 +102,11 @@ export async function createOpportunity(formData: FormData) {
   let deadline: string | null = null;
 
   if (deadlineValue) {
-    const parsedDeadline = new Date(deadlineValue);
+    deadline = normalizeOpportunityDeadline(deadlineValue);
 
-    if (Number.isNaN(parsedDeadline.getTime())) {
+    if (!deadline) {
       redirect("/opportunities/new?error=Invalid%20deadline");
     }
-
-    deadline = parsedDeadline.toISOString();
   }
 
   const baseSlug = createSlug(title) || "opportunity";
@@ -231,15 +230,13 @@ export async function updateOpportunity(formData: FormData) {
   let deadline: string | null = null;
 
   if (deadlineValue) {
-    const parsedDeadline = new Date(`${deadlineValue}T12:00:00`);
+    deadline = normalizeOpportunityDeadline(deadlineValue);
 
-    if (Number.isNaN(parsedDeadline.getTime())) {
+    if (!deadline) {
       redirect(
         `/opportunities/${originalSlug}/edit?error=Invalid%20deadline`,
       );
     }
-
-    deadline = parsedDeadline.toISOString();
   }
 
   const { error } = await supabase
