@@ -13,6 +13,7 @@ type HeaderProps = {
   displayName: string;
   email: string;
   notifications: NotificationSummary[];
+  pendingModerationCount: number;
   unreadNotificationCount: number;
   unreadMessageCount: number;
 };
@@ -23,6 +24,7 @@ export function Header({
   displayName,
   email,
   notifications,
+  pendingModerationCount,
   unreadNotificationCount,
   unreadMessageCount,
 }: HeaderProps) {
@@ -33,6 +35,7 @@ export function Header({
       <div className="flex items-center gap-3">
         <MobileNavigation
           canModerate={canModerate}
+          pendingModerationCount={pendingModerationCount}
           unreadMessageCount={unreadMessageCount}
         />
 
