@@ -13,7 +13,7 @@ export function DeadlinePicker({
   defaultValue,
 }: DeadlinePickerProps) {
   const initialDate = defaultValue
-    ? parseISO(defaultValue)
+    ? parseISO(defaultValue.slice(0, 10))
     : undefined;
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
