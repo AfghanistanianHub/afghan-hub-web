@@ -1,0 +1,9 @@
+{
+  "name": "afghan-hub-autopilot",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@openai/agents": "0.17.0",
+    "zod": "4.4.3"
+  }
+}
