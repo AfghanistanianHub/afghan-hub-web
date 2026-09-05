@@ -1,0 +1,69 @@
+name: Afghan Hub Autopilot
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: afghan-hub-autopilot
+  cancel-in-progress: false
+
+jobs:
+  autopilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install app dependencies
+        run: npm ci
+
+      - name: Install agent runtime
+        run: npm install --prefix agents --ignore-scripts --no-audit --no-fund
+
+      - name: Stop if another pull request is open
+        id: gate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          count="$(gh pr list --state open --limit 1 --json number --jq 'length')"
+          if [ "$count" != "0" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Another pull request is open; Level 1 autopilot will wait."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check OpenAI API key
+        if: steps.gate.outputs.skip == 'false'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::OPENAI_API_KEY is not configured in repository Actions secrets."
+            exit 1
+          fi
+
+      - name: Run Level 1 autopilot
+        if: steps.gate.outputs.skip == 'false'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AFGHAN_HUB_AGENT_MODEL: gpt-5.6-sol
+        run: node agents/orchestrator.mjs
