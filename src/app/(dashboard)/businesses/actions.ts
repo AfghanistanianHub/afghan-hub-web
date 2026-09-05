@@ -25,19 +25,6 @@ function createSlug(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-function isValidHttpUrl(value: string) {
-  try {
-    const url = new URL(value);
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
-}
-
-function isValidEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
 export async function createBusiness(formData: FormData) {
   const supabase = await createClient();
 
