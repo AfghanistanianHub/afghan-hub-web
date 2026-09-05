@@ -245,10 +245,21 @@ export default async function ModerationPage({
         <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
           Content moderation
         </h1>
-        <p className="mt-3 text-slate-400">
-          Review opportunities, events, businesses, and organizations before
-          they become visible to the community.
-        </p>
+        <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <p className="max-w-3xl text-slate-400">
+            Review opportunities, events, businesses, and organizations before
+            they become visible to the community.
+          </p>
+
+          {profile.role === "admin" ? (
+            <Link
+              href="/moderation/team"
+              className="inline-flex w-fit rounded-lg border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-slate-800 hover:text-white"
+            >
+              Manage moderation team
+            </Link>
+          ) : null}
+        </div>
 
         {error ? (
           <div className="mt-6 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">
