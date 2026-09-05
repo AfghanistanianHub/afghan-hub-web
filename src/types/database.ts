@@ -885,6 +885,13 @@ export type Database = {
         Args: { target_event_id: string }
         Returns: undefined
       }
+      set_profile_role: {
+        Args: {
+          target_profile_id: string
+          target_role: Database["public"]["Enums"]["user_role"]
+        }
+        Returns: boolean
+      }
       search_afghan_hub: {
         Args: { result_limit?: number; search_query: string }
         Returns: {
