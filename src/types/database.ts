@@ -881,6 +881,10 @@ export type Database = {
         Args: { target_connection_id: string; target_decision: string }
         Returns: boolean
       }
+      send_connection_request: {
+        Args: { target_recipient_id: string }
+        Returns: string
+      }
       rsvp_to_event: {
         Args: { target_event_id: string }
         Returns: undefined
