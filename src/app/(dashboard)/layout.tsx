@@ -79,6 +79,40 @@ export default async function DashboardLayout({
   const canModerate =
     profile.role === "admin" || profile.role === "moderator";
 
+  let pendingModerationCount = 0;
+
+  if (canModerate) {
+    const [
+      { count: pendingOpportunities },
+      { count: pendingEvents },
+      { count: pendingBusinesses },
+      { count: pendingOrganizations },
+    ] = await Promise.all([
+      supabase
+        .from("opportunities")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "draft"),
+      supabase
+        .from("events")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "draft"),
+      supabase
+        .from("businesses")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "draft"),
+      supabase
+        .from("organizations")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "draft"),
+    ]);
+
+    pendingModerationCount =
+      (pendingOpportunities ?? 0) +
+      (pendingEvents ?? 0) +
+      (pendingBusinesses ?? 0) +
+      (pendingOrganizations ?? 0);
+  }
+
   const notifications: NotificationSummary[] = (
     notificationRows ?? []
   ).map((notification) => {
@@ -123,6 +157,7 @@ export default async function DashboardLayout({
       <div className="flex min-h-screen">
         <Sidebar
           canModerate={canModerate}
+          pendingModerationCount={pendingModerationCount}
           unreadMessageCount={unreadMessageCount}
         />
 
@@ -133,6 +168,7 @@ export default async function DashboardLayout({
             displayName={displayName}
             email={user.email ?? ""}
             notifications={notifications}
+            pendingModerationCount={pendingModerationCount}
             unreadNotificationCount={unreadNotificationCount ?? 0}
             unreadMessageCount={unreadMessageCount}
           />
