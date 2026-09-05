@@ -8,11 +8,13 @@ import {
 
 type SidebarProps = {
   canModerate: boolean;
+  pendingModerationCount: number;
   unreadMessageCount: number;
 };
 
 export function Sidebar({
   canModerate,
+  pendingModerationCount,
   unreadMessageCount,
 }: SidebarProps) {
   const navigation = canModerate
@@ -39,15 +41,25 @@ export function Sidebar({
             >
               <Icon className="size-5" />
               {item.label}
-              {item.href === "/messages" &&
-              unreadMessageCount > 0 ? (
+
+              {item.href === "/messages" && unreadMessageCount > 0 ? (
                 <span
                   aria-label={`${unreadMessageCount} unread messages`}
                   className="ml-auto flex min-w-6 items-center justify-center rounded-full bg-emerald-500 px-1.5 py-0.5 text-xs font-bold text-slate-950"
                 >
-                  {unreadMessageCount > 99
+                  {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
+                </span>
+              ) : null}
+
+              {item.href === "/moderation" &&
+              pendingModerationCount > 0 ? (
+                <span
+                  aria-label={`${pendingModerationCount} submissions pending moderation`}
+                  className="ml-auto flex min-w-6 items-center justify-center rounded-full bg-amber-400 px-1.5 py-0.5 text-xs font-bold text-slate-950"
+                >
+                  {pendingModerationCount > 99
                     ? "99+"
-                    : unreadMessageCount}
+                    : pendingModerationCount}
                 </span>
               ) : null}
             </Link>
