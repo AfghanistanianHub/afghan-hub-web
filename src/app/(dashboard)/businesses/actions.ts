@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
+import { isValidEmail, isValidHttpUrl } from "@/lib/validation";
 
 function getOptionalString(formData: FormData, field: string) {
   const value = formData.get(field);
@@ -24,7 +25,7 @@ function createSlug(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-function isValidWebsiteUrl(value: string) {
+function isValidHttpUrl(value: string) {
   try {
     const url = new URL(value);
     return url.protocol === "http:" || url.protocol === "https:";
@@ -73,7 +74,7 @@ export async function createBusiness(formData: FormData) {
   const websiteUrl = getOptionalString(formData, "website_url");
   const email = getOptionalString(formData, "email");
 
-  if (websiteUrl && !isValidWebsiteUrl(websiteUrl)) {
+  if (websiteUrl && !isValidHttpUrl(websiteUrl)) {
     redirect("/businesses/new?error=Enter%20a%20valid%20website%20URL");
   }
 
@@ -185,7 +186,7 @@ export async function updateBusiness(formData: FormData) {
   const websiteUrl = getOptionalString(formData, "website_url");
   const email = getOptionalString(formData, "email");
 
-  if (websiteUrl && !isValidWebsiteUrl(websiteUrl)) {
+  if (websiteUrl && !isValidHttpUrl(websiteUrl)) {
     redirect(`${errorPath}Enter%20a%20valid%20website%20URL`);
   }
 
