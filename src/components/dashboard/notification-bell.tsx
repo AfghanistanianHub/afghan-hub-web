@@ -37,9 +37,7 @@ type NotificationBellProps = {
 };
 
 function getActorName(actor: NotificationSummary["actor"]) {
-  if (!actor) {
-    return "An Afghan Hub member";
-  }
+  if (!actor) return "An Afghan Hub member";
 
   return (
     actor.displayName?.trim() ||
@@ -51,26 +49,14 @@ function getActorName(actor: NotificationSummary["actor"]) {
 function getNotificationMessage(notification: NotificationSummary) {
   const actorName = getActorName(notification.actor);
 
-  if (notification.type === "connection_request") {
-    return `${actorName} sent you a connection request.`;
-  }
-
-  if (notification.type === "connection_accepted") {
-    return `${actorName} accepted your connection request.`;
-  }
-
-  if (notification.type === "new_message") {
-    return `${actorName} sent you a new message.`;
-  }
-
+  if (notification.type === "connection_request") return `${actorName} sent you a connection request.`;
+  if (notification.type === "connection_accepted") return `${actorName} accepted your connection request.`;
+  if (notification.type === "new_message") return `${actorName} sent you a new message.`;
   if (notification.type === "content_approved") {
     return `Your ${notification.contentType ?? "submission"} “${notification.contentTitle ?? "Untitled"}” was approved.`;
   }
-
   if (notification.type === "content_rejected") {
-    const reason = notification.contentNote
-      ? ` Reason: ${notification.contentNote}`
-      : "";
+    const reason = notification.contentNote ? ` Reason: ${notification.contentNote}` : "";
     return `Your ${notification.contentType ?? "submission"} “${notification.contentTitle ?? "Untitled"}” was not approved.${reason}`;
   }
 
@@ -86,11 +72,7 @@ function formatNotificationTime(value: string) {
   }).format(new Date(value));
 }
 
-export function NotificationBell({
-  currentUserId,
-  notifications,
-  unreadCount,
-}: NotificationBellProps) {
+export function NotificationBell({ currentUserId, notifications, unreadCount }: NotificationBellProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const panelId = useId();
@@ -98,31 +80,11 @@ export function NotificationBell({
 
   useEffect(() => {
     const supabase = createClient();
-    const refreshNotifications = () => {
-      router.refresh();
-    };
+    const refreshNotifications = () => router.refresh();
     const channel = supabase
       .channel(`notifications:${currentUserId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "notifications",
-          filter: `recipient_id=eq.${currentUserId}`,
-        },
-        refreshNotifications,
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "notifications",
-          filter: `recipient_id=eq.${currentUserId}`,
-        },
-        refreshNotifications,
-      )
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `recipient_id=eq.${currentUserId}` }, refreshNotifications)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "notifications", filter: `recipient_id=eq.${currentUserId}` }, refreshNotifications)
       .subscribe();
 
     return () => {
@@ -131,38 +93,24 @@ export function NotificationBell({
   }, [currentUserId, router]);
 
   useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
+    if (!isOpen) return;
 
     function handlePointerDown(event: PointerEvent) {
-      if (
-        event.target instanceof Node &&
-        !containerRef.current?.contains(event.target)
-      ) {
-        setIsOpen(false);
-      }
+      if (event.target instanceof Node && !containerRef.current?.contains(event.target)) setIsOpen(false);
     }
-
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-      }
+      if (event.key === "Escape") setIsOpen(false);
     }
 
     document.addEventListener("pointerdown", handlePointerDown);
     document.addEventListener("keydown", handleKeyDown);
-
     return () => {
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen]);
 
-  const bellLabel =
-    unreadCount > 0
-      ? `Notifications, ${unreadCount} unread`
-      : "Notifications";
+  const bellLabel = unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications";
 
   return (
     <div ref={containerRef} className="relative">
@@ -173,12 +121,11 @@ export function NotificationBell({
         aria-controls={panelId}
         aria-haspopup="dialog"
         onClick={() => setIsOpen((current) => !current)}
-        className="relative rounded-xl border border-slate-800 p-3 text-slate-400 transition hover:bg-slate-900 hover:text-white"
+        className="relative rounded-xl border border-border bg-card p-3 text-muted-foreground shadow-sm transition hover:border-primary/30 hover:bg-accent hover:text-foreground"
       >
         <Bell className="size-5" />
-
         {unreadCount > 0 ? (
-          <span className="absolute -right-1.5 -top-1.5 flex min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1.5 py-0.5 text-[10px] font-bold leading-none text-slate-950 ring-2 ring-slate-950">
+          <span className="absolute -right-1.5 -top-1.5 flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold leading-none text-primary-foreground ring-2 ring-background">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         ) : null}
@@ -189,24 +136,18 @@ export function NotificationBell({
           id={panelId}
           role="dialog"
           aria-label="Notifications"
-          className="absolute right-0 z-50 mt-3 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl shadow-black/40"
+          className="absolute right-0 z-50 mt-3 w-[min(23rem,calc(100vw-2rem))] overflow-hidden rounded-3xl border border-border bg-card shadow-2xl shadow-foreground/10"
         >
-          <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3">
+          <div className="flex items-center justify-between border-b border-border px-5 py-4">
             <div>
-              <p className="font-semibold text-white">Notifications</p>
-              <p className="mt-0.5 text-xs text-slate-500">
-                {unreadCount > 0
-                  ? `${unreadCount} unread`
-                  : "You’re all caught up"}
+              <p className="font-semibold text-foreground">Notifications</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {unreadCount > 0 ? `${unreadCount} unread` : "You’re all caught up"}
               </p>
             </div>
-
             {unreadCount > 0 ? (
               <form action={markAllNotificationsRead}>
-                <button
-                  type="submit"
-                  className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-emerald-400 transition hover:bg-emerald-500/10 hover:text-emerald-300"
-                >
+                <button type="submit" className="rounded-xl px-3 py-2 text-xs font-semibold text-primary transition hover:bg-primary/10">
                   Mark all read
                 </button>
               </form>
@@ -218,56 +159,26 @@ export function NotificationBell({
               {notifications.map((notification) => {
                 const actorName = getActorName(notification.actor);
                 const isUnread = !notification.readAt;
-                const isModerationNotification =
-                  notification.type === "content_approved" ||
-                  notification.type === "content_rejected";
-                const ModerationIcon =
-                  notification.type === "content_approved"
-                    ? CircleCheck
-                    : CircleX;
+                const isModerationNotification = notification.type === "content_approved" || notification.type === "content_rejected";
+                const ModerationIcon = notification.type === "content_approved" ? CircleCheck : CircleX;
 
                 return (
-                  <form
-                    key={notification.id}
-                    action={markNotificationRead}
-                    className="border-b border-slate-800 last:border-b-0"
-                  >
-                    <input
-                      type="hidden"
-                      name="notification_id"
-                      value={notification.id}
-                    />
-
+                  <form key={notification.id} action={markNotificationRead} className="border-b border-border last:border-b-0">
+                    <input type="hidden" name="notification_id" value={notification.id} />
                     <button
                       type="submit"
-                      className={`flex w-full gap-3 px-4 py-3.5 text-left transition hover:bg-slate-800/80 ${
-                        isUnread ? "bg-emerald-500/5" : ""
-                      }`}
+                      className={`flex w-full gap-3 px-5 py-4 text-left transition hover:bg-accent/70 ${isUnread ? "bg-primary/[0.04]" : ""}`}
                     >
                       {isModerationNotification ? (
-                        <span
-                          className={`flex size-10 shrink-0 items-center justify-center rounded-full ${
-                            notification.type === "content_approved"
-                              ? "bg-emerald-500/10 text-emerald-400"
-                              : "bg-red-500/10 text-red-300"
-                          }`}
-                        >
+                        <span className={`flex size-10 shrink-0 items-center justify-center rounded-2xl ${notification.type === "content_approved" ? "bg-primary/10 text-primary" : "bg-red-50 text-red-600"}`}>
                           <ModerationIcon className="size-5" />
                         </span>
                       ) : notification.actor?.avatarUrl ? (
-                        <ExternalImage
-                          src={notification.actor.avatarUrl}
-                          alt=""
-                          width={40}
-                          height={40}
-                          className="size-10 shrink-0 rounded-full object-cover"
-                        />
+                        <ExternalImage src={notification.actor.avatarUrl} alt="" width={40} height={40} className="size-10 shrink-0 rounded-2xl object-cover" />
                       ) : (
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-slate-800 text-slate-400">
+                        <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
                           {notification.actor ? (
-                            <span className="text-sm font-bold text-emerald-400">
-                              {actorName.charAt(0).toUpperCase()}
-                            </span>
+                            <span className="text-sm font-bold text-primary">{actorName.charAt(0).toUpperCase()}</span>
                           ) : (
                             <UserRound className="size-5" />
                           )}
@@ -275,34 +186,23 @@ export function NotificationBell({
                       )}
 
                       <span className="min-w-0 flex-1">
-                        <span className="block text-sm leading-5 text-slate-200">
-                          {getNotificationMessage(notification)}
-                        </span>
-                        <span className="mt-1 block text-xs text-slate-500">
-                          {formatNotificationTime(
-                            notification.createdAt,
-                          )}
-                        </span>
+                        <span className="block text-sm leading-5 text-foreground">{getNotificationMessage(notification)}</span>
+                        <span className="mt-1 block text-xs text-muted-foreground">{formatNotificationTime(notification.createdAt)}</span>
                       </span>
 
-                      {isUnread ? (
-                        <span
-                          aria-label="Unread"
-                          className="mt-2 size-2 shrink-0 rounded-full bg-emerald-400"
-                        />
-                      ) : null}
+                      {isUnread ? <span aria-label="Unread" className="mt-2 size-2 shrink-0 rounded-full bg-primary" /> : null}
                     </button>
                   </form>
                 );
               })}
             </div>
           ) : (
-            <div className="px-6 py-10 text-center">
-              <Bell className="mx-auto size-8 text-slate-600" />
-              <p className="mt-3 text-sm font-medium text-slate-300">
-                No notifications yet
-              </p>
-              <p className="mt-1 text-xs leading-5 text-slate-500">
+            <div className="px-6 py-12 text-center">
+              <span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+                <Bell className="size-6" />
+              </span>
+              <p className="mt-4 text-sm font-semibold text-foreground">No notifications yet</p>
+              <p className="mx-auto mt-1 max-w-64 text-xs leading-5 text-muted-foreground">
                 New connections, messages, and moderation decisions will appear here.
               </p>
             </div>
