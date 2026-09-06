@@ -26,15 +26,11 @@ export function MobileNavigation({
     : dashboardNavigation;
 
   useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
+    if (!isOpen) return;
 
     const previousOverflow = document.body.style.overflow;
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-      }
+      if (event.key === "Escape") setIsOpen(false);
     };
 
     document.body.style.overflow = "hidden";
@@ -54,7 +50,7 @@ export function MobileNavigation({
         aria-controls="mobile-navigation"
         aria-expanded={isOpen}
         onClick={() => setIsOpen(true)}
-        className="rounded-lg border border-slate-800 p-2 text-slate-400 transition hover:bg-slate-900 hover:text-white lg:hidden"
+        className="rounded-xl border border-border bg-card p-2.5 text-muted-foreground shadow-sm transition hover:border-primary/30 hover:bg-accent hover:text-foreground lg:hidden"
       >
         <Menu className="size-5" />
       </button>
@@ -65,19 +61,19 @@ export function MobileNavigation({
             type="button"
             aria-label="Close navigation"
             onClick={() => setIsOpen(false)}
-            className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-foreground/15 backdrop-blur-sm"
           />
 
           <aside
             id="mobile-navigation"
             aria-label="Main navigation"
-            className="relative flex h-full w-[min(20rem,88vw)] flex-col border-r border-slate-800 bg-slate-950 shadow-2xl"
+            className="relative flex h-full w-[min(20rem,88vw)] flex-col border-r border-border bg-background shadow-2xl"
           >
-            <div className="flex h-20 items-center justify-between border-b border-slate-800 px-5">
+            <div className="flex h-20 items-center justify-between border-b border-border px-5">
               <Link
                 href="/"
                 onClick={() => setIsOpen(false)}
-                className="text-sm font-bold tracking-[0.18em] text-emerald-400"
+                className="text-sm font-bold tracking-[0.18em] text-primary"
               >
                 AFGHAN HUB
               </Link>
@@ -86,7 +82,7 @@ export function MobileNavigation({
                 type="button"
                 aria-label="Close navigation"
                 onClick={() => setIsOpen(false)}
-                className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-900 hover:text-white"
+                className="rounded-xl p-2 text-muted-foreground transition hover:bg-accent hover:text-foreground"
               >
                 <X className="size-5" />
               </button>
@@ -101,29 +97,28 @@ export function MobileNavigation({
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white"
+                    className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-muted-foreground transition hover:bg-accent hover:text-foreground"
                   >
-                    <Icon className="size-5" />
+                    <span className="flex size-9 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+                      <Icon className="size-4.5" />
+                    </span>
                     {item.label}
 
                     {item.href === "/messages" && unreadMessageCount > 0 ? (
                       <span
                         aria-label={`${unreadMessageCount} unread messages`}
-                        className="ml-auto flex min-w-6 items-center justify-center rounded-full bg-emerald-500 px-1.5 py-0.5 text-xs font-bold text-slate-950"
+                        className="ml-auto flex min-w-6 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-foreground"
                       >
                         {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
                       </span>
                     ) : null}
 
-                    {item.href === "/moderation" &&
-                    pendingModerationCount > 0 ? (
+                    {item.href === "/moderation" && pendingModerationCount > 0 ? (
                       <span
                         aria-label={`${pendingModerationCount} submissions pending moderation`}
-                        className="ml-auto flex min-w-6 items-center justify-center rounded-full bg-amber-400 px-1.5 py-0.5 text-xs font-bold text-slate-950"
+                        className="ml-auto flex min-w-6 items-center justify-center rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-800"
                       >
-                        {pendingModerationCount > 99
-                          ? "99+"
-                          : pendingModerationCount}
+                        {pendingModerationCount > 99 ? "99+" : pendingModerationCount}
                       </span>
                     ) : null}
                   </Link>
@@ -131,11 +126,11 @@ export function MobileNavigation({
               })}
             </nav>
 
-            <div className="space-y-1 border-t border-slate-800 p-4">
+            <div className="space-y-1 border-t border-border p-4">
               <Link
                 href="/profile"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white"
+                className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-muted-foreground transition hover:bg-accent hover:text-foreground"
               >
                 <UserRound className="size-5" />
                 Edit profile
@@ -144,7 +139,7 @@ export function MobileNavigation({
               <Link
                 href="/settings"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white"
+                className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-muted-foreground transition hover:bg-accent hover:text-foreground"
               >
                 <Settings className="size-5" />
                 Settings
