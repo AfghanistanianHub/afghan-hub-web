@@ -182,7 +182,7 @@ function validationText(v) {
 
 async function doReviews(task) {
   const prompt = "Review the current diff for this task:\n\n" + task;
-  const [a, b] = await Promise.all([run(reviewer, prompt), run(securityReviewer, prompt)]);
+  const [a, b] = await Promise.all([run(reviewer, prompt, { maxTurns: 4 }), run(securityReviewer, prompt, { maxTurns: 4 })]);
   return { code: a.finalOutput, security: b.finalOutput };
 }
 
@@ -203,7 +203,7 @@ async function main() {
   if (!process.env.OPENAI_API_KEY) throw new Error("OPENAI_API_KEY is required");
   if (execFileSync("git", ["status", "--porcelain"], { cwd: ROOT, encoding: "utf8" }).trim()) throw new Error("Clean checkout required");
 
-  const planned = await run(planner, "Select the single best safe Level 1 task to advance Afghan Hub toward RC1.");
+  const planned = await run(planner, "Select the single best safe Level 1 task to advance Afghan Hub toward RC1.", { maxTurns: 4 });
   const plan = planned.finalOutput;
   if (!plan) throw new Error("Planner returned no plan");
   console.log("Plan:", JSON.stringify(plan, null, 2));
@@ -217,7 +217,7 @@ async function main() {
   execFileSync("git", ["checkout", "-b", branch], { cwd: ROOT, stdio: "inherit" });
 
   const task = "Task: " + plan.title + "\n\n" + plan.summary + "\n\nWhy now: " + plan.reason;
-  await run(builder, task);
+  await run(builder, task, { maxTurns: 7 });
 
   let files = changedFiles();
   assertSafe(files);
@@ -228,7 +228,7 @@ async function main() {
 
   let reviews = await doReviews(task);
   if (!reviewsPass(reviews)) {
-    await run(builder, task + "\n\nFix these concrete review blockers only:\n" + reviewText(reviews));
+    await run(builder, task + "\n\nFix these concrete review blockers only:\n" + reviewText(reviews), { maxTurns: 5 });
     files = changedFiles();
     assertSafe(files);
     reviews = await doReviews(task);
