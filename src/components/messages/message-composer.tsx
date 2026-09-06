@@ -17,13 +17,8 @@ const initialState: SendMessageState = {
   sentAt: null,
 };
 
-export function MessageComposer({
-  conversationId,
-}: MessageComposerProps) {
-  const [state, formAction, isPending] = useActionState(
-    sendMessage,
-    initialState,
-  );
+export function MessageComposer({ conversationId }: MessageComposerProps) {
+  const [state, formAction, isPending] = useActionState(sendMessage, initialState);
   const formRef = useRef<HTMLFormElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -35,16 +30,8 @@ export function MessageComposer({
   }, [state.sentAt]);
 
   return (
-    <form
-      ref={formRef}
-      action={formAction}
-      className="border-t border-slate-800 bg-slate-950/60 p-4"
-    >
-      <input
-        type="hidden"
-        name="conversation_id"
-        value={conversationId}
-      />
+    <form ref={formRef} action={formAction} className="border-t border-border bg-card p-4">
+      <input type="hidden" name="conversation_id" value={conversationId} />
 
       <div className="flex items-end gap-3">
         <textarea
@@ -67,17 +54,17 @@ export function MessageComposer({
               formRef.current?.requestSubmit();
             }
           }}
-          className="min-h-12 flex-1 resize-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-emerald-500 disabled:cursor-wait disabled:opacity-70"
+          className="min-h-12 flex-1 resize-none rounded-2xl border border-border bg-muted/45 px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/50 focus:bg-card focus:ring-4 focus:ring-primary/10 disabled:cursor-wait disabled:opacity-70"
         />
 
         <button
           type="submit"
           disabled={isPending}
           aria-label={isPending ? "Sending message" : "Send message"}
-          className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white transition hover:bg-emerald-500 disabled:cursor-wait disabled:opacity-60"
+          className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm transition hover:opacity-90 disabled:cursor-wait disabled:opacity-60"
         >
           {isPending ? (
-            <span className="size-5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+            <span className="size-5 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
           ) : (
             <Send className="size-5" />
           )}
@@ -86,13 +73,13 @@ export function MessageComposer({
 
       <div className="mt-2 flex items-center justify-between gap-4 text-xs">
         {state.error ? (
-          <p id="message-error" role="alert" className="text-red-300">
+          <p id="message-error" role="alert" className="text-red-600">
             {state.error}
           </p>
         ) : (
-          <p className="text-slate-600">Enter to send · Shift+Enter for a new line</p>
+          <p className="text-muted-foreground">Enter to send · Shift+Enter for a new line</p>
         )}
-        <span className="ml-auto text-slate-600">Maximum 4,000 characters</span>
+        <span className="ml-auto text-muted-foreground">Maximum 4,000 characters</span>
       </div>
     </form>
   );
