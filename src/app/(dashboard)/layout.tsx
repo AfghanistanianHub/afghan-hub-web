@@ -3,18 +3,14 @@ import { Header } from "@/components/dashboard/header";
 import type { NotificationSummary } from "@/components/dashboard/notification-bell";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { RealtimeMessageRefresh } from "@/components/messages/realtime-message-refresh";
-import {
-  getTotalUnreadMessageCount,
-} from "@/lib/messages";
+import { getTotalUnreadMessageCount } from "@/lib/messages";
 import { createClient } from "@/lib/supabase/server";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
 };
 
-export default async function DashboardLayout({
-  children,
-}: DashboardLayoutProps) {
+export default async function DashboardLayout({ children }: DashboardLayoutProps) {
   const supabase = await createClient();
 
   const {
@@ -76,8 +72,7 @@ export default async function DashboardLayout({
     profile.first_name?.trim() ||
     user.email?.split("@")[0] ||
     "Member";
-  const canModerate =
-    profile.role === "admin" || profile.role === "moderator";
+  const canModerate = profile.role === "admin" || profile.role === "moderator";
 
   let pendingModerationCount = 0;
 
@@ -88,22 +83,10 @@ export default async function DashboardLayout({
       { count: pendingBusinesses },
       { count: pendingOrganizations },
     ] = await Promise.all([
-      supabase
-        .from("opportunities")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "draft"),
-      supabase
-        .from("events")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "draft"),
-      supabase
-        .from("businesses")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "draft"),
-      supabase
-        .from("organizations")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "draft"),
+      supabase.from("opportunities").select("id", { count: "exact", head: true }).eq("status", "draft"),
+      supabase.from("events").select("id", { count: "exact", head: true }).eq("status", "draft"),
+      supabase.from("businesses").select("id", { count: "exact", head: true }).eq("status", "draft"),
+      supabase.from("organizations").select("id", { count: "exact", head: true }).eq("status", "draft"),
     ]);
 
     pendingModerationCount =
@@ -113,12 +96,8 @@ export default async function DashboardLayout({
       (pendingOrganizations ?? 0);
   }
 
-  const notifications: NotificationSummary[] = (
-    notificationRows ?? []
-  ).map((notification) => {
-    const actor = Array.isArray(notification.actor)
-      ? notification.actor[0]
-      : notification.actor;
+  const notifications: NotificationSummary[] = (notificationRows ?? []).map((notification) => {
+    const actor = Array.isArray(notification.actor) ? notification.actor[0] : notification.actor;
 
     return {
       id: notification.id,
@@ -152,7 +131,7 @@ export default async function DashboardLayout({
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <RealtimeMessageRefresh currentUserId={user.id} />
       <div className="flex min-h-screen">
         <Sidebar
