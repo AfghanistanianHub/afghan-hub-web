@@ -34,9 +34,7 @@ function getOpportunity(
       }[]
     | null,
 ) {
-  return Array.isArray(opportunity)
-    ? opportunity[0]
-    : opportunity;
+  return Array.isArray(opportunity) ? opportunity[0] : opportunity;
 }
 
 export default async function SavedOpportunitiesPage() {
@@ -85,19 +83,25 @@ export default async function SavedOpportunitiesPage() {
   return (
     <main className="px-4 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-400">
-          Your collection
-        </p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-          Saved opportunities
-        </h1>
-        <p className="mt-3 leading-7 text-slate-400">
-          Keep useful jobs, scholarships, volunteer roles, and programs in one
-          place.
-        </p>
+        <section className="surface-panel relative overflow-hidden rounded-[2rem] border border-border/70 px-6 py-8 md:px-8">
+          <div className="absolute -right-16 -top-16 size-52 rounded-full border border-primary/15" />
+          <div className="absolute -right-4 top-10 size-28 rounded-full border border-primary/10" />
+          <div className="relative max-w-2xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+              Your collection
+            </p>
+            <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+              Saved opportunities
+            </h1>
+            <p className="mt-3 leading-7 text-muted-foreground">
+              Keep useful jobs, scholarships, volunteer roles, and programs in one
+              place.
+            </p>
+          </div>
+        </section>
 
         {error ? (
-          <div className="mt-8 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">
+          <div className="mt-8 rounded-2xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
             We could not load your saved opportunities. Please try again.
           </div>
         ) : null}
@@ -113,21 +117,21 @@ export default async function SavedOpportunitiesPage() {
                 <Link
                   key={opportunity.id}
                   href={`/opportunities/${opportunity.slug}`}
-                  className="rounded-2xl border border-slate-800 bg-slate-900 p-6 transition hover:-translate-y-0.5 hover:border-emerald-500/50"
+                  className="group rounded-2xl border border-border bg-card p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-md"
                 >
-                  <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold capitalize text-emerald-400">
+                  <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold capitalize text-primary">
                     {opportunity.type}
                   </span>
-                  <h2 className="mt-4 text-xl font-bold text-white">
+                  <h2 className="mt-4 text-xl font-bold text-card-foreground transition group-hover:text-primary">
                     {opportunity.title}
                   </h2>
                   {opportunity.summary ? (
-                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-400">
+                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">
                       {opportunity.summary}
                     </p>
                   ) : null}
                   {location ? (
-                    <p className="mt-4 flex items-center gap-2 text-xs text-slate-500">
+                    <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
                       <MapPin className="size-3.5" />
                       {location}
                     </p>
@@ -139,17 +143,19 @@ export default async function SavedOpportunitiesPage() {
         ) : null}
 
         {!error && opportunities.length === 0 ? (
-          <div className="mt-8 flex min-h-72 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-700 bg-slate-900/50 px-6 text-center">
-            <Bookmark className="size-11 text-slate-600" />
-            <h2 className="mt-4 text-lg font-bold text-white">
+          <div className="mt-8 flex min-h-72 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/70 px-6 text-center">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-secondary text-primary">
+              <Bookmark className="size-7" />
+            </div>
+            <h2 className="mt-4 text-lg font-bold text-foreground">
               No saved opportunities yet
             </h2>
-            <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+            <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
               Save opportunities you want to review or apply for later.
             </p>
             <Link
               href="/opportunities"
-              className="mt-6 rounded-lg bg-emerald-500 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-400"
+              className="mt-6 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:opacity-90"
             >
               Browse opportunities
             </Link>
