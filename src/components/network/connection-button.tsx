@@ -17,64 +17,50 @@ type ConnectionButtonProps = {
     status: string;
   } | null;
 };
+
 export function ConnectionButton({
   currentUserId,
   memberId,
   connection,
 }: ConnectionButtonProps) {
-  if (currentUserId === memberId) {
-    return null;
-  }
+  if (currentUserId === memberId) return null;
+
+  const primaryButton =
+    "rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90";
+  const secondaryButton =
+    "rounded-xl border border-border bg-card px-4 py-3 font-semibold text-foreground transition hover:bg-muted";
 
   if (!connection) {
     return (
       <form action={sendConnectionRequest}>
         <input type="hidden" name="recipient_id" value={memberId} />
-
-        <button
-          type="submit"
-          className="rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white transition hover:bg-emerald-500"
-        >
-          Connect
-        </button>
+        <button type="submit" className={primaryButton}>Connect</button>
       </form>
     );
   }
 
   if (connection.status === "accepted") {
     return (
-      <div className="flex items-center gap-3">
-        <span className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-3 font-semibold text-emerald-300">
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="rounded-xl border border-primary/20 bg-primary/10 px-5 py-3 font-semibold text-primary">
           Connected
         </span>
 
         <form action={startConversation}>
           <input type="hidden" name="member_id" value={memberId} />
-          <button
-            type="submit"
-            className="rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white transition hover:bg-emerald-500"
-          >
-            Message
-          </button>
+          <button type="submit" className={primaryButton}>Message</button>
         </form>
 
         <form
           action={removeConnection}
           onSubmit={(event) => {
-            if (!window.confirm("Remove this connection?")) {
-              event.preventDefault();
-            }
+            if (!window.confirm("Remove this connection?")) event.preventDefault();
           }}
         >
-          <input
-            type="hidden"
-            name="connection_id"
-            value={connection.id}
-          />
-
+          <input type="hidden" name="connection_id" value={connection.id} />
           <button
             type="submit"
-            className="rounded-xl border border-red-800 px-4 py-3 font-semibold text-red-400 hover:bg-red-950/50"
+            className="rounded-xl border border-destructive/25 bg-card px-4 py-3 font-semibold text-destructive transition hover:bg-destructive/10"
           >
             Disconnect
           </button>
@@ -86,34 +72,21 @@ export function ConnectionButton({
   if (connection.status === "pending") {
     if (connection.requester_id === currentUserId) {
       return (
-        <div className="flex items-center gap-3">
-          <span className="rounded-xl border border-slate-700 bg-slate-800 px-5 py-3 font-semibold text-slate-300">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="rounded-xl border border-border bg-muted/70 px-5 py-3 font-semibold text-muted-foreground">
             Request sent
           </span>
 
           <form action={removeConnection}>
-            <input
-              type="hidden"
-              name="connection_id"
-              value={connection.id}
-            />
-
-            <button
-              type="submit"
-              className="rounded-xl border border-slate-700 px-4 py-3 font-semibold text-slate-300 hover:bg-slate-800"
-            >
-              Cancel request
-            </button>
+            <input type="hidden" name="connection_id" value={connection.id} />
+            <button type="submit" className={secondaryButton}>Cancel request</button>
           </form>
         </div>
       );
     }
 
     return (
-      <Link
-        href="/network"
-        className="rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white transition hover:bg-emerald-500"
-      >
+      <Link href="/network" className={primaryButton}>
         Respond to request
       </Link>
     );
@@ -121,7 +94,7 @@ export function ConnectionButton({
 
   if (connection.status === "declined") {
     return (
-      <span className="rounded-xl border border-slate-700 bg-slate-800 px-5 py-3 font-semibold text-slate-400">
+      <span className="rounded-xl border border-border bg-muted/60 px-5 py-3 font-semibold text-muted-foreground">
         Request declined
       </span>
     );
