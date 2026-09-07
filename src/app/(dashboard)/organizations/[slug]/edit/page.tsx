@@ -61,28 +61,33 @@ export default async function EditOrganizationPage({
     notFound();
   }
 
+  const fieldClassName =
+    "mt-2 w-full rounded-xl border border-border bg-card px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10";
+
   return (
     <main className="px-4 py-8 md:px-8">
       <div className="mx-auto max-w-4xl">
         <Link
           href={`/organizations/${organization.slug}`}
-          className="text-sm font-medium text-emerald-400 hover:text-emerald-300"
+          className="text-sm font-semibold text-primary transition hover:opacity-75"
         >
           ← Back to organization
         </Link>
 
         <section className="mt-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-400">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
             Organization settings
           </p>
-
-          <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
+          <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
             Edit {organization.name}
           </h1>
+          <p className="mt-2 text-muted-foreground">
+            Keep your organization profile current and useful to the community.
+          </p>
         </section>
 
         {formError ? (
-          <div className="mt-8 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">
+          <div className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
             {formError}
           </div>
         ) : null}
@@ -97,191 +102,112 @@ export default async function EditOrganizationPage({
           />
         </div>
 
-        <form
-          action={updateOrganization}
-          className="mt-8 space-y-8 rounded-2xl border border-slate-800 bg-slate-900/50 p-6 md:p-8"
-        >
+        <form action={updateOrganization} className="surface-panel mt-8 space-y-8 rounded-3xl p-6 md:p-8">
           <input type="hidden" name="slug" value={organization.slug} />
 
           <section>
-            <h2 className="text-xl font-semibold">Basic information</h2>
+            <h2 className="text-xl font-semibold text-foreground">Basic information</h2>
 
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               <label className="md:col-span-2">
-                <span className="text-sm font-medium">Organization name *</span>
-                <input
-                  required
-                  name="name"
-                  type="text"
-                  defaultValue={organization.name}
-                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-emerald-500"
-                />
+                <span className="text-sm font-semibold text-foreground">Organization name *</span>
+                <input required name="name" type="text" defaultValue={organization.name} className={fieldClassName} />
               </label>
 
               <label>
-                <span className="text-sm font-medium">Organization type</span>
-                <select
-                  name="organization_type"
-                  defaultValue={organization.organization_type ?? ""}
-                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-emerald-500"
-                >
+                <span className="text-sm font-semibold text-foreground">Organization type</span>
+                <select name="organization_type" defaultValue={organization.organization_type ?? ""} className={fieldClassName}>
                   <option value="">Select a type</option>
                   <option value="Nonprofit">Nonprofit</option>
-                  <option value="Community organization">
-                    Community organization
-                  </option>
-                  <option value="Professional association">
-                    Professional association
-                  </option>
-                  <option value="Cultural organization">
-                    Cultural organization
-                  </option>
-                  <option value="Student organization">
-                    Student organization
-                  </option>
+                  <option value="Community organization">Community organization</option>
+                  <option value="Professional association">Professional association</option>
+                  <option value="Cultural organization">Cultural organization</option>
+                  <option value="Student organization">Student organization</option>
                   <option value="Charity">Charity</option>
-                  <option value="Media organization">
-                    Media organization
-                  </option>
+                  <option value="Media organization">Media organization</option>
                   <option value="Other">Other</option>
                 </select>
               </label>
 
               <label>
-                <span className="text-sm font-medium">Website</span>
-                <input
-                  name="website_url"
-                  type="url"
-                  defaultValue={organization.website_url ?? ""}
-                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-emerald-500"
-                />
+                <span className="text-sm font-semibold text-foreground">Website</span>
+                <input name="website_url" type="url" defaultValue={organization.website_url ?? ""} className={fieldClassName} />
               </label>
 
               <label className="md:col-span-2">
-                <span className="text-sm font-medium">Short description</span>
-                <input
-                  name="short_description"
-                  type="text"
-                  maxLength={220}
-                  defaultValue={organization.short_description ?? ""}
-                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-emerald-500"
-                />
+                <span className="text-sm font-semibold text-foreground">Short description</span>
+                <input name="short_description" type="text" maxLength={220} defaultValue={organization.short_description ?? ""} className={fieldClassName} />
               </label>
 
               <label className="md:col-span-2">
-                <span className="text-sm font-medium">Full description</span>
-                <textarea
-                  name="description"
-                  rows={6}
-                  defaultValue={organization.description ?? ""}
-                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-emerald-500"
-                />
+                <span className="text-sm font-semibold text-foreground">Full description</span>
+                <textarea name="description" rows={6} defaultValue={organization.description ?? ""} className={fieldClassName} />
               </label>
 
               <label className="md:col-span-2">
-                <span className="text-sm font-medium">Mission</span>
-                <textarea
-                  name="mission"
-                  rows={4}
-                  defaultValue={organization.mission ?? ""}
-                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-emerald-500"
-                />
+                <span className="text-sm font-semibold text-foreground">Mission</span>
+                <textarea name="mission" rows={4} defaultValue={organization.mission ?? ""} className={fieldClassName} />
               </label>
 
               <label className="md:col-span-2">
-                <span className="text-sm font-medium">Programs</span>
-                <input
-                  name="programs"
-                  type="text"
-                  defaultValue={organization.programs.join(", ")}
-                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-emerald-500"
-                />
-                <span className="mt-2 block text-xs text-slate-500">
-                  Separate each program with a comma.
-                </span>
+                <span className="text-sm font-semibold text-foreground">Programs</span>
+                <input name="programs" type="text" defaultValue={organization.programs.join(", ")} className={fieldClassName} />
+                <span className="mt-2 block text-xs text-muted-foreground">Separate each program with a comma.</span>
               </label>
             </div>
           </section>
 
-          <section className="border-t border-slate-800 pt-8">
-            <h2 className="text-xl font-semibold">Contact and location</h2>
+          <section className="border-t border-border pt-8">
+            <h2 className="text-xl font-semibold text-foreground">Contact and location</h2>
 
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               <label>
-                <span className="text-sm font-medium">Email</span>
-                <input
-                  name="email"
-                  type="email"
-                  defaultValue={organization.email ?? ""}
-                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-emerald-500"
-                />
+                <span className="text-sm font-semibold text-foreground">Email</span>
+                <input name="email" type="email" defaultValue={organization.email ?? ""} className={fieldClassName} />
               </label>
 
               <label>
-                <span className="text-sm font-medium">Phone</span>
-                <input
-                  name="phone"
-                  type="tel"
-                  defaultValue={organization.phone ?? ""}
-                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-emerald-500"
-                />
+                <span className="text-sm font-semibold text-foreground">Phone</span>
+                <input name="phone" type="tel" defaultValue={organization.phone ?? ""} className={fieldClassName} />
               </label>
 
               <label>
-                <span className="text-sm font-medium">City</span>
-                <input
-                  name="city"
-                  type="text"
-                  defaultValue={organization.city ?? ""}
-                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-emerald-500"
-                />
+                <span className="text-sm font-semibold text-foreground">City</span>
+                <input name="city" type="text" defaultValue={organization.city ?? ""} className={fieldClassName} />
               </label>
 
               <label>
-                <span className="text-sm font-medium">Province / State</span>
-                <input
-                  name="province_state"
-                  type="text"
-                  defaultValue={organization.province_state ?? ""}
-                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-emerald-500"
-                />
+                <span className="text-sm font-semibold text-foreground">Province / State</span>
+                <input name="province_state" type="text" defaultValue={organization.province_state ?? ""} className={fieldClassName} />
               </label>
 
               <label>
-                <span className="text-sm font-medium">Country</span>
-                <input
-                  name="country"
-                  type="text"
-                  defaultValue={organization.country ?? ""}
-                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-emerald-500"
-                />
+                <span className="text-sm font-semibold text-foreground">Country</span>
+                <input name="country" type="text" defaultValue={organization.country ?? ""} className={fieldClassName} />
               </label>
 
-              <label className="flex items-center gap-3 pt-7">
+              <label className="flex items-center gap-3 rounded-xl border border-border bg-muted/30 px-4 py-3 md:self-end">
                 <input
                   name="is_accepting_volunteers"
                   type="checkbox"
                   defaultChecked={organization.is_accepting_volunteers}
-                  className="h-5 w-5 rounded border-slate-700 bg-slate-950"
+                  className="size-4 rounded border-border accent-[var(--primary)]"
                 />
-                <span className="text-sm font-medium">
-                  Accepting volunteers
-                </span>
+                <span className="text-sm font-medium text-foreground">Accepting volunteers</span>
               </label>
             </div>
           </section>
 
-          <div className="flex flex-col-reverse gap-3 border-t border-slate-800 pt-6 sm:flex-row sm:justify-end">
+          <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:justify-end">
             <Link
               href={`/organizations/${organization.slug}`}
-              className="rounded-lg border border-slate-700 px-5 py-3 text-center font-semibold hover:bg-slate-800"
+              className="rounded-xl border border-border bg-card px-5 py-3 text-center text-sm font-semibold transition hover:bg-muted"
             >
               Cancel
             </Link>
-
             <button
               type="submit"
-              className="rounded-lg bg-emerald-500 px-5 py-3 font-semibold text-slate-950 hover:bg-emerald-400"
+              className="rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:opacity-90"
             >
               Save changes
             </button>
