@@ -55,9 +55,9 @@ export function MyConnections({
   return (
     <section className="mt-8">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white">My connections</h2>
+        <h2 className="text-xl font-bold text-foreground">My connections</h2>
 
-        <span className="text-sm text-slate-500">
+        <span className="text-sm text-muted-foreground">
           {members.length} connected
         </span>
       </div>
@@ -73,20 +73,20 @@ export function MyConnections({
             <Link
               key={member.id}
               href={"/members/" + member.id}
-              className="rounded-2xl border border-slate-800 bg-slate-900 p-5 transition hover:border-emerald-500/50"
+              className="group rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-md"
             >
               <div className="flex items-center gap-3">
-                <div className="flex size-12 items-center justify-center rounded-xl bg-slate-800 font-bold text-emerald-400">
+                <div className="flex size-12 items-center justify-center rounded-xl bg-primary/[0.10] font-bold text-primary transition group-hover:bg-primary/[0.14]">
                   {name.charAt(0).toUpperCase()}
                 </div>
 
                 <div className="min-w-0">
-                  <p className="truncate font-semibold text-white">
+                  <p className="truncate font-semibold text-foreground">
                     {name}
                   </p>
 
                   {member.headline ? (
-                    <p className="mt-1 truncate text-sm text-slate-400">
+                    <p className="mt-1 truncate text-sm text-muted-foreground">
                       {member.headline}
                     </p>
                   ) : null}
@@ -94,7 +94,7 @@ export function MyConnections({
               </div>
 
               {location ? (
-                <p className="mt-4 text-sm text-slate-500">
+                <p className="mt-4 text-sm text-muted-foreground">
                   {location}
                 </p>
               ) : null}
