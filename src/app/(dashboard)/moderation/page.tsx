@@ -63,18 +63,9 @@ function isApproved(item: HistoryItem) {
 }
 
 function getEntityHref(entityType: ModerationEntityType, slug: string) {
-  if (entityType === "opportunity") {
-    return `/opportunities/${slug}`;
-  }
-
-  if (entityType === "event") {
-    return `/events/${slug}`;
-  }
-
-  if (entityType === "business") {
-    return `/businesses/${slug}`;
-  }
-
+  if (entityType === "opportunity") return `/opportunities/${slug}`;
+  if (entityType === "event") return `/events/${slug}`;
+  if (entityType === "business") return `/businesses/${slug}`;
   return `/organizations/${slug}`;
 }
 
@@ -95,9 +86,7 @@ export default async function ModerationPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
+  if (!user) redirect("/login");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -239,14 +228,14 @@ export default async function ModerationPage({
   return (
     <main className="px-4 py-8 md:px-8">
       <div className="mx-auto max-w-6xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-400">
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
           Admin tools
         </p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
+        <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
           Content moderation
         </h1>
         <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <p className="max-w-3xl text-slate-400">
+          <p className="max-w-3xl text-muted-foreground">
             Review opportunities, events, businesses, and organizations before
             they become visible to the community.
           </p>
@@ -254,7 +243,7 @@ export default async function ModerationPage({
           {profile.role === "admin" ? (
             <Link
               href="/moderation/team"
-              className="inline-flex w-fit rounded-lg border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-slate-800 hover:text-white"
+              className="inline-flex w-fit rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted"
             >
               Manage moderation team
             </Link>
@@ -262,39 +251,39 @@ export default async function ModerationPage({
         </div>
 
         {error ? (
-          <div className="mt-6 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">
+          <div className="mt-6 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
             {error}
           </div>
         ) : null}
 
         {success ? (
-          <div className="mt-6 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-sm text-emerald-200">
+          <div className="mt-6 rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm text-primary">
             The submission was {success}.
           </div>
         ) : null}
 
-        <div className="mt-8 inline-flex rounded-xl border border-slate-800 bg-slate-900 p-1">
+        <div className="mt-8 inline-flex rounded-2xl border border-border bg-muted/50 p-1">
           <Link
             href="/moderation"
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+            className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
               activeView === "pending"
-                ? "bg-slate-800 text-white"
-                : "text-slate-400 hover:text-white"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Pending review
             {pendingCount > 0 ? (
-              <span className="ml-2 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs text-emerald-300">
+              <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
                 {pendingCount}
               </span>
             ) : null}
           </Link>
           <Link
             href="/moderation?view=history"
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+            className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
               activeView === "history"
-                ? "bg-slate-800 text-white"
-                : "text-slate-400 hover:text-white"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Recent decisions
@@ -304,8 +293,8 @@ export default async function ModerationPage({
         {activeView === "pending" ? (
           <>
             <div className="mt-8 flex items-center justify-between">
-              <h2 className="text-xl font-bold">Pending review</h2>
-              <span className="rounded-full bg-slate-800 px-3 py-1 text-sm text-slate-300">
+              <h2 className="text-xl font-bold text-foreground">Pending review</h2>
+              <span className="rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground">
                 {pendingCount}
               </span>
             </div>
@@ -324,7 +313,6 @@ export default async function ModerationPage({
                     meta={`Submitted ${formatDate(opportunity.created_at)}`}
                   />
                 ))}
-
                 {events?.map((event) => (
                   <ModerationCard
                     key={`event-${event.id}`}
@@ -337,7 +325,6 @@ export default async function ModerationPage({
                     meta={`Starts ${formatDate(event.starts_at)}`}
                   />
                 ))}
-
                 {businesses?.map((business) => (
                   <ModerationCard
                     key={`business-${business.id}`}
@@ -350,7 +337,6 @@ export default async function ModerationPage({
                     meta={`Submitted ${formatDate(business.created_at)}`}
                   />
                 ))}
-
                 {organizations?.map((organization) => (
                   <ModerationCard
                     key={`organization-${organization.id}`}
@@ -369,7 +355,7 @@ export default async function ModerationPage({
                 ))}
               </div>
             ) : (
-              <div className="mt-5 rounded-2xl border border-dashed border-slate-700 bg-slate-900/50 p-12 text-center text-slate-400">
+              <div className="mt-5 rounded-3xl border border-dashed border-border bg-muted/30 p-12 text-center text-muted-foreground">
                 There is nothing waiting for review.
               </div>
             )}
@@ -377,10 +363,9 @@ export default async function ModerationPage({
         ) : (
           <section className="mt-8">
             <div>
-              <h2 className="text-xl font-bold">Recent decisions</h2>
-              <p className="mt-2 text-sm text-slate-500">
-                The latest approved and rejected submissions across all
-                moderated content.
+              <h2 className="text-xl font-bold text-foreground">Recent decisions</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                The latest approved and rejected submissions across all moderated content.
               </p>
             </div>
 
@@ -393,19 +378,19 @@ export default async function ModerationPage({
                   return (
                     <article
                       key={`${item.entityType}-${item.id}`}
-                      className="rounded-2xl border border-slate-800 bg-slate-900 p-5"
+                      className="surface-panel rounded-2xl p-5"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                               {getEntityLabel(item.entityType)}
                             </span>
                             <span
                               className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
                                 approved
-                                  ? "bg-emerald-500/10 text-emerald-300"
-                                  : "bg-red-500/10 text-red-300"
+                                  ? "bg-primary/10 text-primary"
+                                  : "bg-destructive/10 text-destructive"
                               }`}
                             >
                               <DecisionIcon className="size-3.5" />
@@ -415,19 +400,19 @@ export default async function ModerationPage({
 
                           <Link
                             href={getEntityHref(item.entityType, item.slug)}
-                            className="mt-3 block text-lg font-bold text-white hover:text-emerald-300"
+                            className="mt-3 block text-lg font-bold text-foreground transition hover:text-primary"
                           >
                             {item.title}
                           </Link>
 
                           {item.moderationNote ? (
-                            <p className="mt-3 text-sm leading-6 text-slate-400">
+                            <p className="mt-3 text-sm leading-6 text-muted-foreground">
                               Reason: {item.moderationNote}
                             </p>
                           ) : null}
                         </div>
 
-                        <p className="flex shrink-0 items-center gap-2 text-xs text-slate-500">
+                        <p className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
                           <Clock3 className="size-3.5" />
                           {formatDateTime(item.moderatedAt)}
                         </p>
@@ -437,7 +422,7 @@ export default async function ModerationPage({
                 })}
               </div>
             ) : (
-              <div className="mt-5 rounded-2xl border border-dashed border-slate-700 bg-slate-900/50 p-12 text-center text-slate-400">
+              <div className="mt-5 rounded-3xl border border-dashed border-border bg-muted/30 p-12 text-center text-muted-foreground">
                 No moderation decisions have been recorded yet.
               </div>
             )}
@@ -475,23 +460,23 @@ function ModerationCard({
           : UsersRound;
 
   return (
-    <article className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-      <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-400">
+    <article className="surface-panel rounded-2xl p-6 transition hover:-translate-y-0.5 hover:shadow-md">
+      <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-primary">
         <Icon className="size-3.5" />
         {label}
       </span>
       <Link
         href={href}
-        className="mt-3 block text-xl font-bold hover:text-emerald-300"
+        className="mt-3 block text-xl font-bold text-foreground transition hover:text-primary"
       >
         {title}
       </Link>
       {summary ? (
-        <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-400">
+        <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">
           {summary}
         </p>
       ) : null}
-      <p className="mt-4 text-xs text-slate-500">{meta}</p>
+      <p className="mt-4 text-xs text-muted-foreground">{meta}</p>
       <ModerationButtons entityId={entityId} entityType={entityType} />
     </article>
   );
@@ -512,21 +497,21 @@ function ModerationButtons({
         <input type="hidden" name="decision" value="approve" />
         <button
           type="submit"
-          className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-emerald-400"
+          className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:opacity-90"
         >
           <Check className="size-4" /> Approve
         </button>
       </form>
 
-      <details className="rounded-xl border border-red-500/30 bg-red-500/5 p-3">
-        <summary className="cursor-pointer text-sm font-semibold text-red-300">
+      <details className="rounded-xl border border-destructive/20 bg-destructive/5 p-3">
+        <summary className="cursor-pointer text-sm font-semibold text-destructive">
           Reject with a reason
         </summary>
         <form action={moderateContent} className="mt-3 space-y-3">
           <input type="hidden" name="entity_id" value={entityId} />
           <input type="hidden" name="entity_type" value={entityType} />
           <input type="hidden" name="decision" value="reject" />
-          <label className="block text-xs font-medium text-slate-300">
+          <label className="block text-xs font-medium text-foreground">
             Explain what should be corrected
             <textarea
               name="moderation_note"
@@ -534,12 +519,12 @@ function ModerationButtons({
               minLength={10}
               maxLength={1000}
               rows={3}
-              className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white outline-none focus:border-red-400"
+              className="mt-2 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-destructive focus:ring-2 focus:ring-destructive/10"
             />
           </label>
           <button
             type="submit"
-            className="inline-flex items-center gap-2 rounded-lg border border-red-500/40 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/10"
+            className="inline-flex items-center gap-2 rounded-xl border border-destructive/30 px-4 py-2 text-sm font-semibold text-destructive transition hover:bg-destructive/10"
           >
             <X className="size-4" /> Reject submission
           </button>
