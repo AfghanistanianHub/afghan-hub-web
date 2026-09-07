@@ -4,7 +4,7 @@ import {
 import { DeleteOpportunityButton } from "@/components/opportunities/delete-opportunity-button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Bookmark } from "lucide-react";
+import { Bookmark, CalendarDays, ExternalLink, MapPin } from "lucide-react";
 import {
   formatOpportunityDeadline,
   getUtcDateKey,
@@ -51,6 +51,7 @@ export default async function OpportunityPage({
         .eq("id", user.id)
         .maybeSingle()
     : { data: null };
+
   const canModerate =
     viewerProfile?.role === "admin" || viewerProfile?.role === "moderator";
   const isOwner = user?.id === opportunity.author_id;
@@ -71,17 +72,25 @@ export default async function OpportunityPage({
         .maybeSingle()
     : { data: null };
   const isSaved = Boolean(savedOpportunity);
+  const location = [opportunity.city, opportunity.country].filter(Boolean).join(", ");
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-10">
+    <main className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-10">
+      <Link
+        href="/opportunities"
+        className="text-sm font-semibold text-primary transition hover:opacity-75"
+      >
+        ← Back to opportunities
+      </Link>
+
       {actionError ? (
-        <div className="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">
+        <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
           {actionError}
         </div>
       ) : null}
 
       {opportunity.status !== "published" ? (
-        <div className="mb-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100">
+        <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
           {opportunity.status === "draft"
             ? "This opportunity is waiting for moderator approval and is not visible to the community yet."
             : `This opportunity was not approved.${
@@ -93,126 +102,130 @@ export default async function OpportunityPage({
       ) : null}
 
       {opportunity.status === "published" && isExpired ? (
-        <div className="mb-6 rounded-xl border border-slate-600 bg-slate-800/70 p-4 text-sm text-slate-200">
+        <div className="mt-6 rounded-2xl border border-border bg-muted/50 p-4 text-sm text-muted-foreground">
           This opportunity has passed its application deadline and is no longer active.
         </div>
       ) : null}
 
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-8">
+      <section className="surface-panel mt-6 overflow-hidden rounded-3xl">
+        <div className="border-b border-border bg-primary/[0.035] px-6 py-8 md:px-8 md:py-10">
+          <div className="flex flex-wrap items-start justify-between gap-5">
+            <div className="max-w-3xl">
+              <span className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-primary">
+                {opportunity.type}
+              </span>
+              <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground md:text-5xl">
+                {opportunity.title}
+              </h1>
+              <p className="mt-5 text-lg leading-8 text-muted-foreground">
+                {opportunity.summary}
+              </p>
+            </div>
 
-        <div className="mb-4 inline-flex rounded-full bg-emerald-600/20 px-3 py-1 text-sm text-emerald-400">
-          {opportunity.type}
+            {user ? (
+              <div className="flex shrink-0 flex-wrap justify-end gap-3">
+                {opportunity.status === "published" && !isExpired ? (
+                  <form action={toggleSavedOpportunity}>
+                    <input type="hidden" name="opportunity_id" value={opportunity.id} />
+                    <input type="hidden" name="opportunity_slug" value={opportunity.slug} />
+                    <button
+                      type="submit"
+                      aria-pressed={isSaved}
+                      className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                        isSaved
+                          ? "border-primary/30 bg-primary/10 text-primary"
+                          : "border-border bg-card text-foreground hover:bg-muted"
+                      }`}
+                    >
+                      <Bookmark className="size-4" fill={isSaved ? "currentColor" : "none"} />
+                      {isSaved ? "Saved" : "Save"}
+                    </button>
+                  </form>
+                ) : null}
+
+                {isOwner ? (
+                  <>
+                    <Link
+                      href={`/opportunities/${opportunity.slug}/edit`}
+                      className="rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold transition hover:bg-muted"
+                    >
+                      Edit
+                    </Link>
+                    <DeleteOpportunityButton slug={opportunity.slug} />
+                  </>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
         </div>
 
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="text-4xl font-bold">
-            {opportunity.title}
-          </h1>
+        <div className="grid gap-8 p-6 md:p-8 lg:grid-cols-[minmax(0,1fr)_280px]">
+          <article className="min-w-0">
+            <div className="whitespace-pre-wrap leading-8 text-foreground/90">
+              {opportunity.description}
+            </div>
+          </article>
 
-          {user ? (
-            <div className="flex shrink-0 flex-wrap justify-end gap-3">
-              {opportunity.status === "published" && !isExpired ? (
-              <form action={toggleSavedOpportunity}>
-                <input
-                  type="hidden"
-                  name="opportunity_id"
-                  value={opportunity.id}
-                />
-                <input
-                  type="hidden"
-                  name="opportunity_slug"
-                  value={opportunity.slug}
-                />
-                <button
-                  type="submit"
-                  aria-pressed={isSaved}
-                  className={`inline-flex items-center gap-2 rounded-lg border px-4 py-2 font-semibold transition ${
-                    isSaved
-                      ? "border-emerald-500/60 bg-emerald-500/10 text-emerald-300"
-                      : "border-slate-700 hover:bg-slate-800"
-                  }`}
-                >
-                  <Bookmark
-                    className="size-4"
-                    fill={isSaved ? "currentColor" : "none"}
-                  />
-                  {isSaved ? "Saved" : "Save"}
-                </button>
-              </form>
+          <aside className="h-fit rounded-2xl border border-border bg-muted/30 p-5">
+            <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-muted-foreground">
+              Opportunity details
+            </h2>
+            <div className="mt-5 space-y-4 text-sm">
+              {location ? (
+                <div className="flex gap-3">
+                  <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <div>
+                    <p className="font-semibold text-foreground">Location</p>
+                    <p className="mt-1 text-muted-foreground">{location}</p>
+                  </div>
+                </div>
               ) : null}
 
-              {isOwner ? (
-                <>
-              <Link
-                href={`/opportunities/${opportunity.slug}/edit`}
-                className="rounded-lg border border-slate-700 px-4 py-2 font-semibold hover:bg-slate-800"
-              >
-                Edit
-              </Link>
+              {opportunity.deadline ? (
+                <div className="flex gap-3">
+                  <CalendarDays className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <div>
+                    <p className="font-semibold text-foreground">Deadline</p>
+                    <p className="mt-1 text-muted-foreground">
+                      {formatOpportunityDeadline(opportunity.deadline)}
+                    </p>
+                  </div>
+                </div>
+              ) : null}
 
-              <DeleteOpportunityButton
-                slug={opportunity.slug}
-              />
-                </>
+              {opportunity.contact_email ? (
+                <div>
+                  <p className="font-semibold text-foreground">Contact</p>
+                  <a
+                    href={`mailto:${opportunity.contact_email}`}
+                    className="mt-1 block break-words text-primary hover:underline"
+                  >
+                    {opportunity.contact_email}
+                  </a>
+                </div>
               ) : null}
             </div>
-          ) : null}
-        </div>
 
-        <p className="mt-4 text-lg text-slate-300">
-          {opportunity.summary}
-        </p>
-
-        <div className="mt-8 whitespace-pre-wrap leading-8 text-slate-200">
-          {opportunity.description}
-        </div>
-
-        <div className="mt-10 border-t border-slate-800 pt-6 space-y-2 text-slate-400">
-
-          {opportunity.city && (
-            <p>
-              <strong>City:</strong> {opportunity.city}
-            </p>
-          )}
-
-          {opportunity.country && (
-            <p>
-              <strong>Country:</strong> {opportunity.country}
-            </p>
-          )}
-
-          {opportunity.deadline && (
-            <p>
-              <strong>Deadline:</strong>{" "}
-              {formatOpportunityDeadline(opportunity.deadline)}
-            </p>
-          )}
-
-          {opportunity.contact_email && (
-            <p>
-              <strong>Email:</strong> {opportunity.contact_email}
-            </p>
-          )}
-
-          {opportunity.external_url && !isExpired && (
-            <p>
+            {opportunity.external_url && !isExpired ? (
               <a
                 href={opportunity.external_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-emerald-400 hover:underline"
+                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition hover:opacity-90"
               >
-                Apply Here
+                Apply now
+                <ExternalLink className="size-4" />
               </a>
-            </p>
-          )}
+            ) : null}
 
-          {opportunity.external_url && isExpired ? (
-            <p className="text-slate-500">Applications closed</p>
-          ) : null}
-
+            {opportunity.external_url && isExpired ? (
+              <p className="mt-6 rounded-xl bg-muted px-4 py-3 text-center text-sm font-medium text-muted-foreground">
+                Applications closed
+              </p>
+            ) : null}
+          </aside>
         </div>
-      </div>
+      </section>
     </main>
   );
 }
