@@ -8,6 +8,7 @@ import {
   Sparkles,
   UsersRound,
 } from "lucide-react";
+import { ConnectionThread } from "@/components/ui/connection-thread";
 import { getUtcDateKey } from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
 
@@ -125,7 +126,7 @@ export default async function DashboardPage() {
       <div className="mx-auto max-w-7xl space-y-8">
         <section className="surface-panel relative overflow-hidden rounded-[2rem] px-6 py-8 md:px-10 md:py-10">
           <div className="pointer-events-none absolute -right-16 -top-24 size-72 rounded-full bg-primary/10 blur-3xl" />
-          <div className="pointer-events-none absolute right-20 top-14 size-28 rounded-full border border-primary/15" />
+          <ConnectionThread className="pointer-events-none absolute -right-8 top-3 hidden h-52 w-[32rem] text-primary/55 lg:block" />
 
           <div className="relative flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
             <div className="max-w-3xl">
@@ -189,7 +190,7 @@ export default async function DashboardPage() {
                   href={action.href}
                   className="group surface-panel rounded-[1.5rem] p-5 transition duration-200 hover:-translate-y-1 hover:border-primary/30"
                 >
-                  <div className="flex size-11 items-center justify-center rounded-2xl bg-primary/8 text-primary">
+                  <div className="flex size-11 items-center justify-center rounded-2xl bg-primary/[0.08] text-primary">
                     <Icon className="size-5" />
                   </div>
 
@@ -243,7 +244,7 @@ export default async function DashboardPage() {
                       className="group block py-5 first:pt-0 last:pb-0"
                     >
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full bg-primary/8 px-2.5 py-1 text-xs font-semibold capitalize text-primary">
+                        <span className="rounded-full bg-primary/[0.08] px-2.5 py-1 text-xs font-semibold capitalize text-primary">
                           {opportunity.type}
                         </span>
                         {organizationName ? (
