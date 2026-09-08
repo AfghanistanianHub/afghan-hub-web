@@ -85,7 +85,7 @@ export default async function EditBusinessPage({
         </section>
 
         {formError ? (
-          <div className="mt-8 rounded-xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
+          <div className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.08] p-4 text-sm text-destructive">
             {formError}
           </div>
         ) : null}
