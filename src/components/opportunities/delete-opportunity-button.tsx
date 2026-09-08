@@ -1,5 +1,7 @@
 "use client";
 
+import { Trash2 } from "lucide-react";
+
 import { deleteOpportunity } from "@/app/(dashboard)/opportunities/actions";
 
 type DeleteOpportunityButtonProps = {
@@ -26,8 +28,9 @@ export function DeleteOpportunityButton({
 
       <button
         type="submit"
-        className="rounded-lg border border-red-800 px-4 py-2 font-semibold text-red-400 hover:bg-red-950/50"
+        className="inline-flex items-center gap-2 rounded-xl border border-destructive/25 bg-destructive/[0.04] px-4 py-2 text-sm font-semibold text-destructive transition hover:bg-destructive/[0.08]"
       >
+        <Trash2 className="size-4" />
         Delete
       </button>
     </form>
