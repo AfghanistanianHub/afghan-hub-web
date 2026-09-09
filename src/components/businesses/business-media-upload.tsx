@@ -26,11 +26,7 @@ export function BusinessMediaUpload({
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
 
-  async function uploadImage(
-    file: File,
-    kind: "logo" | "cover",
-    maxSizeMb: number,
-  ) {
+  async function uploadImage(file: File, kind: "logo" | "cover", maxSizeMb: number) {
     setMessage("");
 
     if (!allowedTypes.includes(file.type)) {
@@ -44,16 +40,12 @@ export function BusinessMediaUpload({
     }
 
     setUploading(true);
-
     const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
     const filePath = `${businessId}/${kind}.${extension}`;
 
     const { error: uploadError } = await supabase.storage
       .from("business-media")
-      .upload(filePath, file, {
-        upsert: true,
-        contentType: file.type,
-      });
+      .upload(filePath, file, { upsert: true, contentType: file.type });
 
     if (uploadError) {
       setMessage(uploadError.message);
@@ -61,20 +53,13 @@ export function BusinessMediaUpload({
       return;
     }
 
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("business-media").getPublicUrl(filePath);
+    const { data: { publicUrl } } = supabase.storage
+      .from("business-media")
+      .getPublicUrl(filePath);
 
-    const mediaUpdate =
-      kind === "logo"
-        ? {
-            logo_url: publicUrl,
-            updated_at: new Date().toISOString(),
-          }
-        : {
-            cover_url: publicUrl,
-            updated_at: new Date().toISOString(),
-          };
+    const mediaUpdate = kind === "logo"
+      ? { logo_url: publicUrl, updated_at: new Date().toISOString() }
+      : { cover_url: publicUrl, updated_at: new Date().toISOString() };
 
     const { error: updateError } = await supabase
       .from("businesses")
@@ -88,18 +73,18 @@ export function BusinessMediaUpload({
       return;
     }
 
-    setMessage(
-      `Business ${kind} updated. The listing has been resubmitted for review.`,
-    );
+    setMessage(`Business ${kind} updated. The listing has been resubmitted for review.`);
     setUploading(false);
     window.location.reload();
   }
 
-  return (
-    <div className="space-y-8">
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
-        <h2 className="text-xl font-semibold">Business cover</h2>
+  const uploadClass =
+    "inline-flex cursor-pointer rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90";
 
+  return (
+    <div className="space-y-6">
+      <section className="surface-panel rounded-2xl p-6">
+        <h2 className="text-xl font-semibold">Business cover</h2>
         <div className="mt-5">
           {currentCoverUrl ? (
             <ExternalImage
@@ -110,15 +95,14 @@ export function BusinessMediaUpload({
               className="h-48 w-full rounded-2xl object-cover"
             />
           ) : (
-            <div className="flex h-48 w-full items-center justify-center rounded-2xl bg-slate-800 text-sm text-slate-400">
+            <div className="flex h-48 w-full items-center justify-center rounded-2xl border border-dashed border-border bg-muted/60 text-sm text-muted-foreground">
               No cover image
             </div>
           )}
 
           <div className="mt-4">
-            <label className="inline-flex cursor-pointer rounded-lg bg-emerald-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400">
+            <label className={uploadClass}>
               {uploading ? "Uploading..." : "Upload cover"}
-
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
@@ -126,24 +110,17 @@ export function BusinessMediaUpload({
                 className="hidden"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
-
-                  if (file) {
-                    void uploadImage(file, "cover", 8);
-                  }
+                  if (file) void uploadImage(file, "cover", 8);
                 }}
               />
             </label>
-
-            <p className="mt-2 text-xs text-slate-500">
-              Recommended ratio: 3:1. Maximum size: 8 MB.
-            </p>
+            <p className="mt-2 text-xs text-muted-foreground">Recommended ratio: 3:1. Maximum size: 8 MB.</p>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+      <section className="surface-panel rounded-2xl p-6">
         <h2 className="text-xl font-semibold">Business logo</h2>
-
         <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
           {currentLogoUrl ? (
             <ExternalImage
@@ -154,15 +131,14 @@ export function BusinessMediaUpload({
               className="h-24 w-24 rounded-2xl object-cover"
             />
           ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-slate-800 text-3xl font-bold text-emerald-400">
+            <div className="flex h-24 w-24 items-center justify-center rounded-2xl border border-border bg-primary/10 text-3xl font-bold text-primary">
               {businessName.charAt(0).toUpperCase()}
             </div>
           )}
 
           <div>
-            <label className="inline-flex cursor-pointer rounded-lg bg-emerald-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400">
+            <label className={uploadClass}>
               {uploading ? "Uploading..." : "Upload logo"}
-
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
@@ -170,24 +146,15 @@ export function BusinessMediaUpload({
                 className="hidden"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
-
-                  if (file) {
-                    void uploadImage(file, "logo", 5);
-                  }
+                  if (file) void uploadImage(file, "logo", 5);
                 }}
               />
             </label>
-
-            <p className="mt-2 text-xs text-slate-500">
-              JPG, PNG, or WebP. Maximum size: 5 MB.
-            </p>
-
-            {message ? (
-              <p className="mt-2 text-sm text-slate-300">{message}</p>
-            ) : null}
+            <p className="mt-2 text-xs text-muted-foreground">JPG, PNG, or WebP. Maximum size: 5 MB.</p>
+            {message ? <p className="mt-2 text-sm text-foreground/80">{message}</p> : null}
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

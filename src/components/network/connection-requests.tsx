@@ -36,10 +36,8 @@ export function ConnectionRequests({
   }
 
   return (
-    <section className="mt-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6">
-      <h2 className="text-xl font-bold text-white">
-        Connection requests
-      </h2>
+    <section className="mt-8 rounded-2xl border border-primary/15 bg-primary/[0.04] p-6">
+      <h2 className="text-xl font-bold text-foreground">Connection requests</h2>
 
       <div className="mt-5 space-y-4">
         {requests.map((request) => {
@@ -56,31 +54,28 @@ export function ConnectionRequests({
           return (
             <div
               key={request.id}
-              className="flex flex-col gap-4 rounded-xl border border-slate-800 bg-slate-900 p-4 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
             >
               <Link
                 href={"/members/" + requester.id}
                 className="flex items-center gap-3"
               >
-                <div className="flex size-12 items-center justify-center rounded-xl bg-slate-800 font-bold text-emerald-400">
+                <div className="flex size-12 items-center justify-center rounded-xl bg-primary/[0.10] font-bold text-primary">
                   {name.charAt(0).toUpperCase()}
                 </div>
 
                 <div>
-                  <p className="font-semibold text-white">{name}</p>
+                  <p className="font-semibold text-foreground">{name}</p>
 
                   {requester.headline ? (
-                    <p className="mt-1 text-sm text-slate-400">
+                    <p className="mt-1 text-sm text-muted-foreground">
                       {requester.headline}
                     </p>
                   ) : null}
                 </div>
               </Link>
 
-              <form
-                action={respondConnectionRequest}
-                className="flex gap-3"
-              >
+              <form action={respondConnectionRequest} className="flex gap-3">
                 <input
                   type="hidden"
                   name="connection_id"
@@ -91,7 +86,7 @@ export function ConnectionRequests({
                   type="submit"
                   name="decision"
                   value="accepted"
-                  className="rounded-lg bg-emerald-600 px-4 py-2 font-semibold text-white hover:bg-emerald-500"
+                  className="rounded-lg bg-primary px-4 py-2 font-semibold text-primary-foreground transition hover:bg-primary/90"
                 >
                   Accept
                 </button>
@@ -100,7 +95,7 @@ export function ConnectionRequests({
                   type="submit"
                   name="decision"
                   value="declined"
-                  className="rounded-lg border border-slate-700 px-4 py-2 font-semibold text-slate-300 hover:bg-slate-800"
+                  className="rounded-lg border border-border bg-background px-4 py-2 font-semibold text-foreground transition hover:bg-muted"
                 >
                   Decline
                 </button>

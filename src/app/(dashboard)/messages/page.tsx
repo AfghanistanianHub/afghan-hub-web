@@ -32,13 +32,9 @@ export default async function MessagesPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
+  if (!user) redirect("/login");
 
-  const { data: inboxRows, error } = await supabase.rpc(
-    "get_message_inbox",
-  );
+  const { data: inboxRows, error } = await supabase.rpc("get_message_inbox");
   const otherMemberIds = [
     ...new Set(
       (inboxRows ?? [])
@@ -50,44 +46,49 @@ export default async function MessagesPage() {
     otherMemberIds.length > 0
       ? await supabase
           .from("profiles")
-          .select(
-            "id, display_name, first_name, last_name, headline, avatar_url",
-          )
+          .select("id, display_name, first_name, last_name, headline, avatar_url")
           .in("id", otherMemberIds)
       : { data: [] };
-  const profilesById = new Map(
-    (profiles ?? []).map((profile) => [profile.id, profile]),
-  );
+  const profilesById = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
 
   return (
-    <main className="px-6 py-8 lg:px-10">
+    <main className="px-4 py-8 md:px-8 lg:px-10">
       <div className="mx-auto max-w-5xl">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">
-            Community conversations
-          </p>
-          <h1 className="mt-2 text-3xl font-bold text-white">Messages</h1>
-        </div>
+        <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Community conversations</p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground md:text-4xl">Messages</h1>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
+              Keep conversations with your Afghan Hub connections organized in one place.
+            </p>
+          </div>
+
+          <Link
+            href="/network"
+            className="inline-flex w-fit items-center rounded-2xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm transition hover:border-primary/30 hover:bg-accent"
+          >
+            Find people
+          </Link>
+        </section>
 
         {error ? (
-          <div className="mt-8 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">
+          <div className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
             We could not load your conversations. Please try again.
           </div>
         ) : null}
 
         {!error && (inboxRows ?? []).length === 0 ? (
-          <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900/60 px-6 py-14 text-center">
-            <MessageSquare className="mx-auto size-10 text-slate-500" />
-            <h2 className="mt-4 text-lg font-semibold text-white">
-              No conversations yet
-            </h2>
-            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400">
-              Connect with another member, then visit their profile to start a
-              conversation.
+          <div className="mt-8 rounded-3xl border border-border bg-card px-6 py-16 text-center shadow-sm">
+            <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+              <MessageSquare className="size-7" />
+            </span>
+            <h2 className="mt-5 text-lg font-semibold text-foreground">No conversations yet</h2>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+              Connect with another member, then visit their profile to start a conversation.
             </p>
             <Link
               href="/network"
-              className="mt-6 inline-flex rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500"
+              className="mt-6 inline-flex rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-90"
             >
               Browse the network
             </Link>
@@ -95,25 +96,21 @@ export default async function MessagesPage() {
         ) : null}
 
         {!error && (inboxRows ?? []).length > 0 ? (
-          <div className="mt-8 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
+          <div className="mt-8 overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
             {(inboxRows ?? []).map((conversation) => {
               const profile = conversation.other_member_id
                 ? profilesById.get(conversation.other_member_id)
                 : undefined;
-              const memberName = profile
-                ? getMemberName(profile)
-                : "Afghan Hub Member";
+              const memberName = profile ? getMemberName(profile) : "Afghan Hub Member";
               const unreadCount = Number(conversation.unread_count);
-              const sortDate =
-                conversation.latest_message_created_at ??
-                conversation.conversation_updated_at;
+              const sortDate = conversation.latest_message_created_at ?? conversation.conversation_updated_at;
 
               return (
                 <Link
                   key={conversation.conversation_id}
                   href={`/messages/${conversation.conversation_id}`}
-                  className={`flex items-center gap-4 border-b border-slate-800 px-5 py-5 transition last:border-b-0 hover:bg-slate-800/70 ${
-                    unreadCount > 0 ? "bg-slate-800/40" : ""
+                  className={`group flex items-center gap-4 border-b border-border px-5 py-5 transition last:border-b-0 hover:bg-accent/70 ${
+                    unreadCount > 0 ? "bg-primary/[0.035]" : ""
                   }`}
                 >
                   {profile?.avatar_url ? (
@@ -122,49 +119,37 @@ export default async function MessagesPage() {
                       alt=""
                       width={48}
                       height={48}
-                      className="size-12 shrink-0 rounded-full object-cover"
+                      className="size-12 shrink-0 rounded-2xl object-cover"
                     />
                   ) : (
-                    <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-slate-800 text-slate-400">
+                    <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
                       <UserRound className="size-6" />
                     </div>
                   )}
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-4">
-                      <h2
-                        className={`truncate text-white ${
-                          unreadCount > 0 ? "font-bold" : "font-semibold"
-                        }`}
-                      >
+                      <h2 className={`truncate text-foreground ${unreadCount > 0 ? "font-bold" : "font-semibold"}`}>
                         {memberName}
                       </h2>
-                      <span className="shrink-0 text-xs text-slate-500">
-                        {formatMessageTime(sortDate)}
-                      </span>
+                      <span className="shrink-0 text-xs text-muted-foreground">{formatMessageTime(sortDate)}</span>
                     </div>
 
                     <div className="mt-1 flex items-center gap-3">
                       <p
                         className={`min-w-0 flex-1 truncate text-sm ${
-                          unreadCount > 0
-                            ? "font-medium text-slate-200"
-                            : "text-slate-400"
+                          unreadCount > 0 ? "font-medium text-foreground/80" : "text-muted-foreground"
                         }`}
                       >
                         {conversation.latest_message_body
-                          ? `${
-                              conversation.latest_message_sender_id === user.id
-                                ? "You: "
-                                : ""
-                            }${conversation.latest_message_body}`
+                          ? `${conversation.latest_message_sender_id === user.id ? "You: " : ""}${conversation.latest_message_body}`
                           : profile?.headline || "Start the conversation"}
                       </p>
 
                       {unreadCount > 0 ? (
                         <span
                           aria-label={`${unreadCount} unread messages`}
-                          className="flex min-w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500 px-1.5 py-0.5 text-xs font-bold text-slate-950"
+                          className="flex min-w-6 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-foreground"
                         >
                           {unreadCount > 99 ? "99+" : unreadCount}
                         </span>

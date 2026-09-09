@@ -33,51 +33,51 @@ export default async function SettingsPage({
 
   const accountName =
     profile?.display_name?.trim() ||
-    [profile?.first_name, profile?.last_name]
-      .filter(Boolean)
-      .join(" ") ||
+    [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") ||
     "Afghan Hub member";
   const accountEmail = profile?.email || user.email || "Not available";
 
   return (
     <main className="px-4 py-8 md:px-8">
       <div className="mx-auto max-w-3xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-400">
-          Account
-        </p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-          Settings
-        </h1>
-        <p className="mt-3 leading-7 text-slate-400">
-          Manage your account details and profile visibility.
-        </p>
+        <section className="surface-panel rounded-[2rem] border border-border/70 px-6 py-8 md:px-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+            Account
+          </p>
+          <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            Settings
+          </h1>
+          <p className="mt-3 leading-7 text-muted-foreground">
+            Manage your account details and profile visibility.
+          </p>
+        </section>
 
         {formError ? (
-          <div className="mt-8 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">
+          <div className="mt-8 rounded-2xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
             {formError}
           </div>
         ) : null}
 
         {saved === "1" ? (
-          <div className="mt-8 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-sm text-emerald-200">
+          <div className="mt-8 rounded-2xl border border-primary/20 bg-primary/8 p-4 text-sm text-primary">
             Your settings have been saved.
           </div>
         ) : null}
 
-        <section className="mt-8 rounded-2xl border border-slate-800 bg-slate-900/50 p-6 md:p-8">
-          <h2 className="text-xl font-semibold">Account information</h2>
+        <section className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
+          <h2 className="text-xl font-semibold text-card-foreground">
+            Account information
+          </h2>
 
           <dl className="mt-6 grid gap-6 sm:grid-cols-2">
             <div>
-              <dt className="text-sm text-slate-500">Name</dt>
-              <dd className="mt-1 font-medium text-slate-100">
-                {accountName}
-              </dd>
+              <dt className="text-sm text-muted-foreground">Name</dt>
+              <dd className="mt-1 font-medium text-foreground">{accountName}</dd>
             </div>
 
             <div>
-              <dt className="text-sm text-slate-500">Email</dt>
-              <dd className="mt-1 break-words font-medium text-slate-100">
+              <dt className="text-sm text-muted-foreground">Email</dt>
+              <dd className="mt-1 break-words font-medium text-foreground">
                 {accountEmail}
               </dd>
             </div>
@@ -85,7 +85,7 @@ export default async function SettingsPage({
 
           <Link
             href="/profile"
-            className="mt-6 inline-flex rounded-lg border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-slate-800 hover:text-white"
+            className="mt-6 inline-flex rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-secondary"
           >
             Edit profile details
           </Link>
@@ -93,26 +93,28 @@ export default async function SettingsPage({
 
         <form
           action={updateAccountSettings}
-          className="mt-6 rounded-2xl border border-slate-800 bg-slate-900/50 p-6 md:p-8"
+          className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8"
         >
-          <h2 className="text-xl font-semibold">Profile visibility</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-400">
-            Public profiles can appear in the member directory and be viewed
-            by other Afghan Hub members.
+          <h2 className="text-xl font-semibold text-card-foreground">
+            Profile visibility
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            Public profiles can appear in the member directory and be viewed by
+            other Afghan Hub members.
           </p>
 
-          <label className="mt-6 flex cursor-pointer items-start gap-4 rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+          <label className="mt-6 flex cursor-pointer items-start gap-4 rounded-2xl border border-border bg-secondary/45 p-4 transition hover:border-primary/25">
             <input
               name="is_public"
               type="checkbox"
               defaultChecked={profile?.is_public ?? true}
-              className="mt-0.5 size-5 rounded border-slate-600 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
+              className="mt-0.5 size-5 rounded border-input bg-background text-primary focus:ring-primary"
             />
             <span>
-              <span className="block font-semibold text-slate-100">
+              <span className="block font-semibold text-foreground">
                 Show my profile in the community
               </span>
-              <span className="mt-1 block text-sm leading-6 text-slate-500">
+              <span className="mt-1 block text-sm leading-6 text-muted-foreground">
                 Turn this off to hide your profile from public member listings.
               </span>
             </span>
@@ -121,7 +123,7 @@ export default async function SettingsPage({
           <div className="mt-6 flex justify-end">
             <button
               type="submit"
-              className="rounded-lg bg-emerald-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400"
+              className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:opacity-90"
             >
               Save settings
             </button>

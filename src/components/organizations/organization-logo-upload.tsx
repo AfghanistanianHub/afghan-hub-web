@@ -26,28 +26,21 @@ export function OrganizationLogoUpload({
 
   async function uploadLogo(file: File) {
     setMessage("");
-
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
       setMessage("Please select a JPG, PNG, or WebP image.");
       return;
     }
-
     if (file.size > 5 * 1024 * 1024) {
       setMessage("The image must be smaller than 5 MB.");
       return;
     }
 
     setUploading(true);
-
     const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
     const filePath = `${organizationId}/logo.${extension}`;
-
     const { error: uploadError } = await supabase.storage
       .from("organization-media")
-      .upload(filePath, file, {
-        upsert: true,
-        contentType: file.type,
-      });
+      .upload(filePath, file, { upsert: true, contentType: file.type });
 
     if (uploadError) {
       setMessage(uploadError.message);
@@ -55,18 +48,13 @@ export function OrganizationLogoUpload({
       return;
     }
 
-    const {
-      data: { publicUrl },
-    } = supabase.storage
+    const { data: { publicUrl } } = supabase.storage
       .from("organization-media")
       .getPublicUrl(filePath);
 
     const { error: updateError } = await supabase
       .from("organizations")
-      .update({
-        logo_url: publicUrl,
-        updated_at: new Date().toISOString(),
-      })
+      .update({ logo_url: publicUrl, updated_at: new Date().toISOString() })
       .eq("id", organizationId)
       .eq("owner_id", userId);
 
@@ -76,37 +64,28 @@ export function OrganizationLogoUpload({
       return;
     }
 
-    setMessage(
-      "Organization logo updated. The listing has been resubmitted for review.",
-    );
+    setMessage("Organization logo updated. The listing has been resubmitted for review.");
     setUploading(false);
     window.location.reload();
   }
 
   async function uploadCover(file: File) {
     setMessage("");
-
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
       setMessage("Please select a JPG, PNG, or WebP image.");
       return;
     }
-
     if (file.size > 8 * 1024 * 1024) {
       setMessage("The cover image must be smaller than 8 MB.");
       return;
     }
 
     setUploading(true);
-
     const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
     const filePath = `${organizationId}/cover.${extension}`;
-
     const { error: uploadError } = await supabase.storage
       .from("organization-media")
-      .upload(filePath, file, {
-        upsert: true,
-        contentType: file.type,
-      });
+      .upload(filePath, file, { upsert: true, contentType: file.type });
 
     if (uploadError) {
       setMessage(uploadError.message);
@@ -114,18 +93,13 @@ export function OrganizationLogoUpload({
       return;
     }
 
-    const {
-      data: { publicUrl },
-    } = supabase.storage
+    const { data: { publicUrl } } = supabase.storage
       .from("organization-media")
       .getPublicUrl(filePath);
 
     const { error: updateError } = await supabase
       .from("organizations")
-      .update({
-        cover_url: publicUrl,
-        updated_at: new Date().toISOString(),
-      })
+      .update({ cover_url: publicUrl, updated_at: new Date().toISOString() })
       .eq("id", organizationId)
       .eq("owner_id", userId);
 
@@ -135,18 +109,18 @@ export function OrganizationLogoUpload({
       return;
     }
 
-    setMessage(
-      "Organization cover updated. The listing has been resubmitted for review.",
-    );
+    setMessage("Organization cover updated. The listing has been resubmitted for review.");
     setUploading(false);
     window.location.reload();
   }
 
-  return (
-    <div className="space-y-8">
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
-        <h2 className="text-xl font-semibold">Organization cover</h2>
+  const uploadClass =
+    "inline-flex cursor-pointer rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:opacity-50";
 
+  return (
+    <div className="space-y-6">
+      <section className="surface-panel rounded-2xl p-6">
+        <h2 className="text-xl font-semibold">Organization cover</h2>
         <div className="mt-5">
           {currentCoverUrl ? (
             <ExternalImage
@@ -157,15 +131,14 @@ export function OrganizationLogoUpload({
               className="h-48 w-full rounded-2xl object-cover"
             />
           ) : (
-            <div className="flex h-48 w-full items-center justify-center rounded-2xl bg-slate-800 text-sm text-slate-400">
+            <div className="flex h-48 w-full items-center justify-center rounded-2xl border border-dashed border-border bg-muted/60 text-sm text-muted-foreground">
               No cover image
             </div>
           )}
 
           <div className="mt-4">
-            <label className="inline-flex cursor-pointer rounded-lg bg-emerald-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400">
+            <label className={uploadClass}>
               {uploading ? "Uploading..." : "Upload cover"}
-
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
@@ -173,68 +146,51 @@ export function OrganizationLogoUpload({
                 className="hidden"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
-
-                  if (file) {
-                    void uploadCover(file);
-                  }
+                  if (file) void uploadCover(file);
                 }}
               />
             </label>
-
-            <p className="mt-2 text-xs text-slate-500">
-              Recommended ratio: 3:1. Maximum size: 8 MB.
-            </p>
+            <p className="mt-2 text-xs text-muted-foreground">Recommended ratio: 3:1. Maximum size: 8 MB.</p>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+      <section className="surface-panel rounded-2xl p-6">
         <h2 className="text-xl font-semibold">Organization logo</h2>
-
         <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
-        {currentLogoUrl ? (
-          <ExternalImage
-            src={currentLogoUrl}
-            alt={`${organizationName} logo`}
-            width={96}
-            height={96}
-            className="h-24 w-24 rounded-2xl object-cover"
-          />
-        ) : (
-          <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-slate-800 text-3xl font-bold text-emerald-400">
-            {organizationName.charAt(0).toUpperCase()}
-          </div>
-        )}
-
-        <div>
-          <label className="inline-flex cursor-pointer rounded-lg bg-emerald-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400">
-            {uploading ? "Uploading..." : "Upload logo"}
-
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              disabled={uploading}
-              className="hidden"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-
-                if (file) {
-                  void uploadLogo(file);
-                }
-              }}
+          {currentLogoUrl ? (
+            <ExternalImage
+              src={currentLogoUrl}
+              alt={`${organizationName} logo`}
+              width={96}
+              height={96}
+              className="h-24 w-24 rounded-2xl object-cover"
             />
-          </label>
+          ) : (
+            <div className="flex h-24 w-24 items-center justify-center rounded-2xl border border-border bg-primary/10 text-3xl font-bold text-primary">
+              {organizationName.charAt(0).toUpperCase()}
+            </div>
+          )}
 
-          <p className="mt-2 text-xs text-slate-500">
-            JPG, PNG, or WebP. Maximum size: 5 MB.
-          </p>
-
-          {message ? (
-            <p className="mt-2 text-sm text-slate-300">{message}</p>
-          ) : null}
+          <div>
+            <label className={uploadClass}>
+              {uploading ? "Uploading..." : "Upload logo"}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                disabled={uploading}
+                className="hidden"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) void uploadLogo(file);
+                }}
+              />
+            </label>
+            <p className="mt-2 text-xs text-muted-foreground">JPG, PNG, or WebP. Maximum size: 5 MB.</p>
+            {message ? <p className="mt-2 text-sm text-foreground/80">{message}</p> : null}
+          </div>
         </div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

@@ -31,7 +31,7 @@ export function Header({
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
-    <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-slate-800 bg-slate-950/90 px-4 backdrop-blur md:px-8">
+    <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-border/80 bg-background/90 px-4 backdrop-blur-xl md:px-8">
       <div className="flex items-center gap-3">
         <MobileNavigation
           canModerate={canModerate}
@@ -41,7 +41,7 @@ export function Header({
 
         <Link
           href="/"
-          className="text-sm font-bold tracking-[0.18em] text-emerald-400 lg:hidden"
+          className="text-sm font-extrabold tracking-[0.18em] text-primary lg:hidden"
         >
           AFGHAN HUB
         </Link>
@@ -51,14 +51,14 @@ export function Header({
           role="search"
           className="relative hidden w-80 md:block"
         >
-          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
+          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
 
           <input
             name="q"
             type="search"
-            placeholder="Search Afghan Hub"
+            placeholder="Search people, organizations, opportunities..."
             aria-label="Search Afghan Hub"
-            className="w-full rounded-xl border border-slate-800 bg-slate-900 py-3 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-emerald-500"
+            className="w-full rounded-2xl border border-border bg-card/80 py-3 pl-11 pr-4 text-sm text-foreground shadow-sm outline-none transition placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
           />
         </form>
       </div>
@@ -71,18 +71,18 @@ export function Header({
         />
 
         <div className="hidden text-right sm:block">
-          <p className="text-sm font-semibold text-white">{displayName}</p>
-          <p className="max-w-48 truncate text-xs text-slate-500">{email}</p>
+          <p className="text-sm font-semibold text-foreground">{displayName}</p>
+          <p className="max-w-48 truncate text-xs text-muted-foreground">{email}</p>
         </div>
 
-        <div className="flex size-11 items-center justify-center rounded-full bg-emerald-500 font-bold text-slate-950">
+        <div className="flex size-11 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground shadow-sm ring-4 ring-primary/10">
           {initial}
         </div>
 
         <form action={logout}>
           <button
             type="submit"
-            className="rounded-xl border border-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:bg-slate-900 hover:text-white"
+            className="rounded-2xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm transition hover:bg-muted"
           >
             Sign out
           </button>

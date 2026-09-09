@@ -10,10 +10,7 @@ type AvatarUploadProps = {
   currentAvatarUrl?: string | null;
 };
 
-export default function AvatarUpload({
-  userId,
-  currentAvatarUrl,
-}: AvatarUploadProps) {
+export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadProps) {
   const supabase = createClient();
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
@@ -27,10 +24,7 @@ export default function AvatarUpload({
 
     const { error: uploadError } = await supabase.storage
       .from("avatars")
-      .upload(filePath, file, {
-        upsert: true,
-        contentType: file.type,
-      });
+      .upload(filePath, file, { upsert: true, contentType: file.type });
 
     if (uploadError) {
       setMessage(uploadError.message);
@@ -44,10 +38,7 @@ export default function AvatarUpload({
 
     const { error: profileError } = await supabase
       .from("profiles")
-      .update({
-        avatar_url: publicUrl,
-        updated_at: new Date().toISOString(),
-      })
+      .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
       .eq("id", userId);
 
     if (profileError) {
@@ -69,15 +60,15 @@ export default function AvatarUpload({
           alt="Profile avatar"
           width={96}
           height={96}
-          className="h-24 w-24 rounded-full object-cover"
+          className="size-24 rounded-full border border-border object-cover shadow-sm"
         />
       ) : (
-        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-slate-800 text-sm text-slate-400">
+        <div className="flex size-24 items-center justify-center rounded-full border border-border bg-muted text-sm text-muted-foreground">
           No photo
         </div>
       )}
 
-      <label className="inline-flex cursor-pointer rounded-lg bg-emerald-500 px-4 py-2 font-medium text-slate-950 transition hover:bg-emerald-400">
+      <label className="inline-flex cursor-pointer rounded-xl bg-primary px-4 py-2 font-medium text-primary-foreground transition hover:bg-primary/90">
         {uploading ? "Uploading..." : "Upload photo"}
         <input
           type="file"
@@ -86,15 +77,12 @@ export default function AvatarUpload({
           className="hidden"
           onChange={(event) => {
             const file = event.target.files?.[0];
-
-            if (file) {
-              void handleUpload(file);
-            }
+            if (file) void handleUpload(file);
           }}
         />
       </label>
 
-      {message ? <p className="text-sm text-slate-400">{message}</p> : null}
+      {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
     </div>
   );
 }

@@ -20,9 +20,7 @@ function getLocation(event: {
   city: string | null;
   country: string | null;
 }) {
-  if (event.is_online) {
-    return "Online";
-  }
+  if (event.is_online) return "Online";
 
   return [event.venue_name, event.city, event.country]
     .filter(Boolean)
@@ -52,30 +50,30 @@ function EventCard({
   return (
     <Link
       href={`/events/${event.slug}`}
-      className="block rounded-2xl border border-slate-800 bg-slate-900/60 p-5 transition hover:border-emerald-500/60"
+      className="surface-panel block rounded-2xl p-5 transition hover:-translate-y-0.5 hover:shadow-md"
     >
       <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-400">
+        <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
           {formatEventDate(event.starts_at)}
         </span>
 
         {showStatus ? (
-          <span className="rounded-full border border-slate-700 px-2.5 py-1 text-xs font-semibold capitalize text-slate-300">
+          <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold capitalize text-muted-foreground">
             {event.status}
           </span>
         ) : null}
       </div>
 
-      <h3 className="mt-3 text-lg font-bold text-white">{event.title}</h3>
+      <h3 className="mt-3 text-lg font-bold text-foreground">{event.title}</h3>
 
       {event.summary ? (
-        <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-400">
+        <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">
           {event.summary}
         </p>
       ) : null}
 
       {location ? (
-        <p className="mt-4 flex items-start gap-2 text-sm text-slate-500">
+        <p className="mt-4 flex items-start gap-2 text-sm text-muted-foreground">
           <MapPin className="mt-0.5 size-4 shrink-0" />
           {location}
         </p>
@@ -91,9 +89,7 @@ export default async function MyEventsPage() {
     error: userError,
   } = await supabase.auth.getUser();
 
-  if (userError || !user) {
-    redirect("/login");
-  }
+  if (userError || !user) redirect("/login");
 
   const [{ data: registrations }, { data: hostedEvents }] = await Promise.all([
     supabase
@@ -135,9 +131,13 @@ export default async function MyEventsPage() {
     <main className="mx-auto max-w-6xl px-6 py-10">
       <div className="flex flex-wrap items-center justify-between gap-5">
         <div>
-          <p className="text-sm font-semibold text-emerald-400">Events</p>
-          <h1 className="mt-1 text-4xl font-bold">My events</h1>
-          <p className="mt-2 text-slate-400">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+            Events
+          </p>
+          <h1 className="mt-2 text-4xl font-bold tracking-tight text-foreground">
+            My events
+          </h1>
+          <p className="mt-2 max-w-2xl text-muted-foreground">
             Keep track of events you registered for and events you are hosting.
           </p>
         </div>
@@ -145,13 +145,13 @@ export default async function MyEventsPage() {
         <div className="flex flex-wrap gap-3">
           <Link
             href="/events"
-            className="rounded-lg border border-slate-700 px-5 py-3 font-semibold text-slate-200 hover:bg-slate-800"
+            className="rounded-xl border border-border bg-background px-5 py-3 font-semibold text-foreground transition hover:bg-muted"
           >
             Browse events
           </Link>
           <Link
             href="/events/new"
-            className="rounded-lg bg-emerald-600 px-5 py-3 font-semibold hover:bg-emerald-500"
+            className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:opacity-90"
           >
             Create Event
           </Link>
@@ -160,8 +160,8 @@ export default async function MyEventsPage() {
 
       <section className="mt-10">
         <div>
-          <h2 className="text-2xl font-bold">Registered</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <h2 className="text-2xl font-bold text-foreground">Registered</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             Upcoming events you have confirmed you are attending.
           </p>
         </div>
@@ -173,20 +173,20 @@ export default async function MyEventsPage() {
             ))}
           </div>
         ) : (
-          <div className="mt-5 rounded-2xl border border-dashed border-slate-700 bg-slate-900/40 px-6 py-10 text-center">
-            <CalendarDays className="mx-auto size-9 text-slate-600" />
-            <h3 className="mt-3 font-semibold text-white">
+          <div className="mt-5 rounded-3xl border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
+            <CalendarDays className="mx-auto size-9 text-muted-foreground" />
+            <h3 className="mt-3 font-semibold text-foreground">
               No upcoming registrations
             </h3>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-muted-foreground">
               Register for an event and it will appear here.
             </p>
           </div>
         )}
 
         {pastRegistered.length ? (
-          <details className="mt-6 rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
-            <summary className="cursor-pointer font-semibold text-slate-300">
+          <details className="mt-6 rounded-2xl border border-border bg-muted/30 p-5">
+            <summary className="cursor-pointer font-semibold text-foreground">
               Past registrations ({pastRegistered.length})
             </summary>
             <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -201,10 +201,10 @@ export default async function MyEventsPage() {
         ) : null}
       </section>
 
-      <section className="mt-12 border-t border-slate-800 pt-10">
+      <section className="mt-12 border-t border-border pt-10">
         <div>
-          <h2 className="text-2xl font-bold">Hosting</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <h2 className="text-2xl font-bold text-foreground">Hosting</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             Events you created, including items still under review.
           </p>
         </div>
@@ -216,12 +216,12 @@ export default async function MyEventsPage() {
             ))}
           </div>
         ) : (
-          <div className="mt-5 rounded-2xl border border-dashed border-slate-700 bg-slate-900/40 px-6 py-10 text-center">
-            <CalendarDays className="mx-auto size-9 text-slate-600" />
-            <h3 className="mt-3 font-semibold text-white">
+          <div className="mt-5 rounded-3xl border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
+            <CalendarDays className="mx-auto size-9 text-muted-foreground" />
+            <h3 className="mt-3 font-semibold text-foreground">
               You are not hosting any events yet
             </h3>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-muted-foreground">
               Create an event to submit it for moderation.
             </p>
           </div>

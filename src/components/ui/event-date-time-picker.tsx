@@ -14,11 +14,7 @@ type EventDateTimePickerProps = {
 
 function toTwelveHourTime(date?: Date) {
   if (!date) {
-    return {
-      hour: "",
-      minute: "",
-      period: "AM",
-    };
+    return { hour: "", minute: "", period: "AM" };
   }
 
   const hours = date.getHours();
@@ -32,24 +28,12 @@ function toTwelveHourTime(date?: Date) {
   };
 }
 
-function toTwentyFourHourTime(
-  hour: string,
-  minute: string,
-  period: string,
-) {
-  if (!hour || !minute) {
-    return "";
-  }
+function toTwentyFourHourTime(hour: string, minute: string, period: string) {
+  if (!hour || !minute) return "";
 
   let numericHour = Number.parseInt(hour, 10);
-
-  if (period === "AM" && numericHour === 12) {
-    numericHour = 0;
-  }
-
-  if (period === "PM" && numericHour !== 12) {
-    numericHour += 12;
-  }
+  if (period === "AM" && numericHour === 12) numericHour = 0;
+  if (period === "PM" && numericHour !== 12) numericHour += 12;
 
   return `${String(numericHour).padStart(2, "0")}:${minute}`;
 }
@@ -60,67 +44,43 @@ export function EventDateTimePicker({
   defaultValue,
   required = false,
 }: EventDateTimePickerProps) {
-  const initialDate = defaultValue
-    ? parseISO(defaultValue)
-    : undefined;
-
+  const initialDate = defaultValue ? parseISO(defaultValue) : undefined;
   const initialTime = toTwelveHourTime(initialDate);
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    initialDate,
-  );
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(initialDate);
   const [hour, setHour] = useState(initialTime.hour);
   const [minute, setMinute] = useState(initialTime.minute);
   const [period, setPeriod] = useState(initialTime.period);
   const [isOpen, setIsOpen] = useState(false);
 
-  const twentyFourHourTime = toTwentyFourHourTime(
-    hour,
-    minute,
-    period,
-  );
+  const twentyFourHourTime = toTwentyFourHourTime(hour, minute, period);
+  const hiddenValue = selectedDate && twentyFourHourTime
+    ? `${format(selectedDate, "yyyy-MM-dd")}T${twentyFourHourTime}`
+    : "";
+  const displayValue = selectedDate && hour && minute
+    ? `${format(selectedDate, "MMMM d, yyyy")} at ${hour}:${minute} ${period}`
+    : label;
 
-  const hiddenValue =
-    selectedDate && twentyFourHourTime
-      ? `${format(selectedDate, "yyyy-MM-dd")}T${twentyFourHourTime}`
-      : "";
-
-  const displayValue =
-    selectedDate && hour && minute
-      ? `${format(selectedDate, "MMMM d, yyyy")} at ${hour}:${minute} ${period}`
-      : label;
+  const fieldClass =
+    "w-full rounded-xl border border-input bg-background px-3 py-3 text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/20";
 
   return (
     <div className="relative">
-      <input
-        type="hidden"
-        name={name}
-        value={hiddenValue}
-        required={required}
-      />
+      <input type="hidden" name={name} value={hiddenValue} required={required} />
 
       <button
         type="button"
         onClick={() => setIsOpen((current) => !current)}
-        className="flex w-full items-center justify-between rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-left outline-none transition hover:border-slate-600 focus:border-emerald-500"
+        className="flex w-full items-center justify-between rounded-xl border border-input bg-background px-4 py-3 text-left text-foreground outline-none transition hover:border-primary/50 hover:bg-muted/40 focus:border-primary focus:ring-2 focus:ring-ring/20"
       >
-        <span
-          className={
-            selectedDate && hour && minute
-              ? "text-slate-100"
-              : "text-slate-500"
-          }
-        >
+        <span className={selectedDate && hour && minute ? "text-foreground" : "text-muted-foreground"}>
           {displayValue}
         </span>
-
-        <span aria-hidden="true" className="text-lg text-slate-400">
-          📅
-        </span>
+        <span aria-hidden="true" className="text-lg text-muted-foreground">📅</span>
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 z-50 mt-2 w-full min-w-[340px] rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-2xl">
+        <div className="absolute left-0 z-50 mt-2 w-full min-w-[340px] rounded-2xl border border-border bg-popover p-4 text-popover-foreground shadow-xl">
           <DayPicker
             mode="single"
             selected={selectedDate}
@@ -128,71 +88,31 @@ export function EventDateTimePicker({
             disabled={{ before: new Date() }}
           />
 
-          <div className="mt-4 border-t border-slate-700 pt-4">
-            <p className="text-sm font-medium">Time</p>
-
+          <div className="mt-4 border-t border-border pt-4">
+            <p className="text-sm font-semibold">Time</p>
             <div className="mt-2 grid grid-cols-3 gap-3">
               <div>
-                <label
-                  htmlFor={`${name}-hour`}
-                  className="mb-1 block text-xs text-slate-400"
-                >
-                  Hour
-                </label>
-                <select
-                  id={`${name}-hour`}
-                  value={hour}
-                  onChange={(event) => setHour(event.target.value)}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-3 outline-none focus:border-emerald-500"
-                >
+                <label htmlFor={`${name}-hour`} className="mb-1 block text-xs text-muted-foreground">Hour</label>
+                <select id={`${name}-hour`} value={hour} onChange={(event) => setHour(event.target.value)} className={fieldClass}>
                   <option value="">--</option>
                   {Array.from({ length: 12 }, (_, index) => {
                     const value = String(index + 1).padStart(2, "0");
-
-                    return (
-                      <option key={value} value={value}>
-                        {value}
-                      </option>
-                    );
+                    return <option key={value} value={value}>{value}</option>;
                   })}
                 </select>
               </div>
 
               <div>
-                <label
-                  htmlFor={`${name}-minute`}
-                  className="mb-1 block text-xs text-slate-400"
-                >
-                  Minute
-                </label>
-                <select
-                  id={`${name}-minute`}
-                  value={minute}
-                  onChange={(event) => setMinute(event.target.value)}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-3 outline-none focus:border-emerald-500"
-                >
+                <label htmlFor={`${name}-minute`} className="mb-1 block text-xs text-muted-foreground">Minute</label>
+                <select id={`${name}-minute`} value={minute} onChange={(event) => setMinute(event.target.value)} className={fieldClass}>
                   <option value="">--</option>
-                  {["00", "15", "30", "45"].map((value) => (
-                    <option key={value} value={value}>
-                      {value}
-                    </option>
-                  ))}
+                  {["00", "15", "30", "45"].map((value) => <option key={value} value={value}>{value}</option>)}
                 </select>
               </div>
 
               <div>
-                <label
-                  htmlFor={`${name}-period`}
-                  className="mb-1 block text-xs text-slate-400"
-                >
-                  AM / PM
-                </label>
-                <select
-                  id={`${name}-period`}
-                  value={period}
-                  onChange={(event) => setPeriod(event.target.value)}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-3 outline-none focus:border-emerald-500"
-                >
+                <label htmlFor={`${name}-period`} className="mb-1 block text-xs text-muted-foreground">AM / PM</label>
+                <select id={`${name}-period`} value={period} onChange={(event) => setPeriod(event.target.value)} className={fieldClass}>
                   <option value="AM">AM</option>
                   <option value="PM">PM</option>
                 </select>
@@ -200,7 +120,7 @@ export function EventDateTimePicker({
             </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t border-slate-700 pt-3">
+          <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
             <button
               type="button"
               onClick={() => {
@@ -210,7 +130,7 @@ export function EventDateTimePicker({
                 setPeriod("AM");
                 setIsOpen(false);
               }}
-              className="rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-slate-800"
+              className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground"
             >
               Clear
             </button>
@@ -219,7 +139,7 @@ export function EventDateTimePicker({
               type="button"
               disabled={!selectedDate || !hour || !minute}
               onClick={() => setIsOpen(false)}
-              className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Done
             </button>
