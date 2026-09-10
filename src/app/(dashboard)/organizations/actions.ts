@@ -247,5 +247,7 @@ export async function setOrganizationVerification(formData: FormData) {
   revalidatePath(`/organizations/${slug}`);
   revalidatePath("/search");
   revalidatePath("/");
+  revalidatePath("/dashboard");
+  revalidatePath("/explore", "layout");
   redirect(`/organizations/${slug}`);
 }

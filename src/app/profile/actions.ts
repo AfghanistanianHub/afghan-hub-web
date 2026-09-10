@@ -90,5 +90,5 @@ skills: skills ?? [],
     redirect(`/profile?error=${encodeURIComponent(error.message)}`);
   }
 
-  redirect("/");
+  redirect("/dashboard");
 }

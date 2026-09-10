@@ -6,7 +6,7 @@ function getSafeNextPath(value: string | null) {
     return value;
   }
 
-  return "/";
+  return "/dashboard";
 }
 
 export async function GET(request: NextRequest) {

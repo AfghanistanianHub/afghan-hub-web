@@ -40,7 +40,7 @@ export function Header({
         />
 
         <Link
-          href="/"
+          href="/dashboard"
           className="text-sm font-extrabold tracking-[0.18em] text-primary lg:hidden"
         >
           AFGHAN HUB

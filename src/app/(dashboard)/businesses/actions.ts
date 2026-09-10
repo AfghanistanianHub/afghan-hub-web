@@ -283,5 +283,7 @@ export async function setBusinessVerification(formData: FormData) {
   revalidatePath(`/businesses/${slug}`);
   revalidatePath("/search");
   revalidatePath("/");
+  revalidatePath("/dashboard");
+  revalidatePath("/explore", "layout");
   redirect(`/businesses/${slug}`);
 }

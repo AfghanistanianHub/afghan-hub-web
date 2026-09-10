@@ -1,0 +1,79 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import test from "node:test";
+import vm from "node:vm";
+import ts from "typescript";
+
+function loadContent({ data = [], error = null, configured = true } = {}) {
+  const calls = [];
+  let config;
+  const query = new Proxy({}, { get(_target, method) {
+    if (method === "then") return (resolve) => resolve({ data, error });
+    return (...args) => { calls.push([method, ...args]); return query; };
+  } });
+  const exports = {};
+  const source = fs.readFileSync(new URL("../src/lib/public-content.ts", import.meta.url), "utf8");
+  vm.runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, {
+    exports, AbortSignal, Date, fetch: () => {},
+    process: { env: configured ? { NEXT_PUBLIC_SUPABASE_URL: "https://public.example", NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "publishable-test-key" } : {} },
+    require(name) {
+      if (name === "server-only") return {};
+      if (name === "react") return { cache: fn => fn };
+      if (name === "@/lib/opportunities") return { getUtcDateKey: () => "2026-09-10" };
+      if (name === "@supabase/supabase-js") return { createClient: (url, key, options) => { config = { url, key, options }; return { from: table => { calls.push(["from", table]); return query; } }; } };
+      throw new Error(`Unexpected dependency (public reads must not import a session client): ${name}`);
+    },
+  });
+  return { load: exports.getPublicListings, calls, config: () => config };
+}
+
+for (const kind of ["opportunities", "events", "businesses", "organizations"]) {
+  test(`${kind}: public reads use publication filter, anonymous configuration, and explicit safe fields`, async () => {
+    const app = loadContent();
+    await app.load(kind);
+    assert.ok(app.calls.some(call => call[0] === "eq" && call[1] === "status" && call[2] === "published"));
+    const selection = app.calls.find(call => call[0] === "select")[1];
+    assert.doesNotMatch(selection, /\*|owner_id|author_id|creator_id|moderation|contact_email|phone|email|online_url|profiles/);
+    assert.equal(app.config().key, "publishable-test-key");
+    assert.equal(app.config().options.auth.persistSession, false);
+    assert.equal(app.config().options.auth.autoRefreshToken, false);
+    assert.equal(app.config().options.auth.detectSessionInUrl, false);
+    assert.equal(app.config().options.cookies, undefined);
+  });
+}
+
+test("discovery excludes expired opportunities and past event starts", async () => {
+  const app = loadContent();
+  await app.load("opportunities");
+  assert.ok(app.calls.some(call => call[0] === "or" && call[1] === "deadline.is.null,deadline.gte.2026-09-10"));
+  await app.load("events");
+  assert.ok(app.calls.some(call => call[0] === "gte" && call[1] === "starts_at"));
+});
+
+test("detail lookup still filters publication without hiding historical public listings", async () => {
+  const app = loadContent();
+  await app.load("opportunities", { slug: "old-listing" });
+  assert.ok(app.calls.some(call => call[0] === "eq" && call[1] === "slug" && call[2] === "old-listing"));
+  assert.ok(app.calls.some(call => call[0] === "eq" && call[1] === "status" && call[2] === "published"));
+  assert.ok(!app.calls.some(call => call[0] === "or"));
+});
+
+test("pagination fetches one extra row and maps only public fields", async () => {
+  const row = { slug: "one", name: "Business", short_description: "Summary", description: "Details", category: "Services", city: "City", country: "Country", owner_id: "private", email: "private@example.com" };
+  const app = loadContent({ data: [row, { ...row, slug: "two" }] });
+  const result = await app.load("businesses", { limit: 1, page: 2, search: "50%_" });
+  assert.equal(result.items.length, 1);
+  assert.equal(result.hasMore, true);
+  assert.equal(result.items[0].owner_id, undefined);
+  assert.equal(result.items[0].email, undefined);
+  assert.ok(app.calls.some(call => call[0] === "range" && call[1] === 1 && call[2] === 2));
+  assert.ok(app.calls.some(call => call[0] === "ilike" && call[2] === "%50\\%\\_%"));
+});
+
+test("query failures and missing configuration remain distinguishable from empty results", async () => {
+  assert.equal((await loadContent({ error: { message: "internal details" } }).load("events")).unavailable, true);
+  assert.equal((await loadContent({ configured: false }).load("events")).unavailable, true);
+  const result = await loadContent().load("events");
+  assert.equal(result.unavailable, false);
+  assert.equal(result.items.length, 0);
+});

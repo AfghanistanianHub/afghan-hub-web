@@ -24,7 +24,7 @@ export function Sidebar({
   return (
     <aside className="hidden min-h-screen w-64 shrink-0 border-r border-sidebar-border bg-sidebar/95 lg:flex lg:flex-col">
       <div className="flex h-20 items-center border-b border-sidebar-border px-6">
-        <Link href="/" className="group inline-flex items-center gap-3">
+        <Link href="/dashboard" className="group inline-flex items-center gap-3">
           <span className="flex size-9 items-center justify-center rounded-2xl bg-primary text-sm font-black text-primary-foreground shadow-sm transition-transform group-hover:-rotate-3">
             A
           </span>
