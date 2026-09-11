@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ExternalImage } from "@/components/ui/external-image";
@@ -10,14 +11,20 @@ type AvatarUploadProps = {
   currentAvatarUrl?: string | null;
 };
 
+type UploadMessage = {
+  text: string;
+  kind: "success" | "error";
+} | null;
+
 export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadProps) {
+  const router = useRouter();
   const supabase = createClient();
   const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState<UploadMessage>(null);
 
   async function handleUpload(file: File) {
     setUploading(true);
-    setMessage("");
+    setMessage(null);
 
     const fileExtension = file.name.split(".").pop()?.toLowerCase() || "jpg";
     const filePath = `${userId}/avatar.${fileExtension}`;
@@ -27,7 +34,7 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
       .upload(filePath, file, { upsert: true, contentType: file.type });
 
     if (uploadError) {
-      setMessage(uploadError.message);
+      setMessage({ text: uploadError.message, kind: "error" });
       setUploading(false);
       return;
     }
@@ -42,18 +49,18 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
       .eq("id", userId);
 
     if (profileError) {
-      setMessage(profileError.message);
+      setMessage({ text: profileError.message, kind: "error" });
       setUploading(false);
       return;
     }
 
-    setMessage("Profile photo updated successfully.");
+    setMessage({ text: "Profile photo updated successfully.", kind: "success" });
     setUploading(false);
-    window.location.reload();
+    router.refresh();
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" aria-busy={uploading}>
       {currentAvatarUrl ? (
         <ExternalImage
           src={currentAvatarUrl}
@@ -68,13 +75,16 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
         </div>
       )}
 
-      <label className="inline-flex cursor-pointer rounded-xl bg-primary px-4 py-2 font-medium text-primary-foreground transition hover:bg-primary/90">
-        {uploading ? "Uploading..." : "Upload photo"}
+      <label className="inline-flex cursor-pointer rounded-xl bg-primary px-4 py-2 font-medium text-primary-foreground transition hover:bg-primary/90 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary">
+        <span role="status" aria-live="polite">
+          {uploading ? "Uploading…" : "Upload photo"}
+        </span>
         <input
           type="file"
           accept="image/jpeg,image/png,image/webp"
           disabled={uploading}
-          className="hidden"
+          aria-describedby={message ? "avatar-upload-message" : undefined}
+          className="sr-only"
           onChange={(event) => {
             const file = event.target.files?.[0];
             if (file) void handleUpload(file);
@@ -82,7 +92,16 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
         />
       </label>
 
-      {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
+      {message ? (
+        <p
+          id="avatar-upload-message"
+          role={message.kind === "error" ? "alert" : "status"}
+          aria-live={message.kind === "error" ? "assertive" : "polite"}
+          className={message.kind === "error" ? "text-sm text-destructive" : "text-sm text-muted-foreground"}
+        >
+          {message.text}
+        </p>
+      ) : null}
     </div>
   );
 }

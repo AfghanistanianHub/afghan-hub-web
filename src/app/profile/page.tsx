@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
+import AvatarUpload from "@/components/profile/avatar-upload";
 import { createClient } from "@/lib/supabase/server";
 import { saveProfile } from "./actions";
-import AvatarUpload from "@/components/profile/avatar-upload";
 
 type ProfilePageProps = {
   searchParams: Promise<{
@@ -32,7 +33,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
   return (
     <main className="min-h-screen bg-background px-6 py-12 text-foreground">
       <div className="mx-auto w-full max-w-2xl">
-        <Link href="/dashboard" className="text-sm text-muted-foreground transition hover:text-primary">← Back</Link>
+        <Link href="/dashboard" className="text-sm text-muted-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">← Back</Link>
 
         <div className="surface-panel mt-6 rounded-3xl p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.25em] text-primary">Afghan Hub</p>
@@ -40,7 +41,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
           <p className="mt-2 text-muted-foreground">Add some basic information so other community members can learn about you.</p>
 
           {error ? (
-            <div className="mt-6 rounded-xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">{error}</div>
+            <div role="alert" aria-live="assertive" className="mt-6 rounded-xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">{error}</div>
           ) : null}
 
           <div className="mt-8">
@@ -82,7 +83,12 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
 
             <label className="block"><span className="text-sm font-medium">About you</span><textarea name="bio" defaultValue={profile?.bio ?? ""} rows={5} placeholder="Tell the community a little about yourself..." className={`${fieldClassName} resize-none`} /></label>
 
-            <button type="submit" className="w-full rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90">Save profile</button>
+            <PendingSubmitButton
+              pendingLabel="Saving profile…"
+              className="w-full rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+            >
+              Save profile
+            </PendingSubmitButton>
           </form>
         </div>
       </div>
