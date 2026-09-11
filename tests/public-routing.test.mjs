@@ -17,6 +17,63 @@ test("category and pagination inputs reject prototype names and malformed pages"
   assert.equal(exports.publicHref("events", "a/b?next=bad"), "/explore/events/a%2Fb%3Fnext%3Dbad");
 });
 
+test("sitemap source excludes published records with placeholder titles or names", async () => {
+  const sitemapSourceExports = {};
+  const rows = {
+    opportunities: [
+      { slug: "placeholder-opportunity", title: "Test" },
+      { slug: "real-opportunity", title: "Community coordinator" },
+    ],
+    events: [
+      { slug: "placeholder-event", title: " Testing " },
+      { slug: "real-event", title: "Community night" },
+    ],
+    businesses: [
+      { slug: "placeholder-business", name: "N/A" },
+      { slug: "real-business", name: "Kabul Bakery" },
+    ],
+    organizations: [
+      { slug: "placeholder-organization", name: "NA" },
+      { slug: "real-organization", name: "Afghan Community Network" },
+    ],
+  };
+  const source = fs.readFileSync(new URL("../src/lib/public-sitemap.ts", import.meta.url), "utf8");
+  vm.runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, {
+    exports: sitemapSourceExports,
+    AbortSignal,
+    fetch: () => {},
+    Set,
+    process: { env: { NEXT_PUBLIC_SUPABASE_URL: "https://public.example", NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "publishable-test-key" } },
+    require(name) {
+      if (name === "server-only") return {};
+      if (name === "@supabase/supabase-js") return {
+        createClient: () => ({
+          from(table) {
+            const query = new Proxy({}, {
+              get(_target, method) {
+                if (method === "then") return resolve => resolve({ data: rows[table], error: null });
+                return () => query;
+              },
+            });
+            return query;
+          },
+        }),
+      };
+      throw new Error(`Unexpected dependency: ${name}`);
+    },
+  });
+  const items = await sitemapSourceExports.getPublicSitemapItems();
+  assert.deepEqual(
+    Array.from(items, item => `${item.kind}/${item.slug}`).sort(),
+    [
+      "businesses/real-business",
+      "events/real-event",
+      "opportunities/real-opportunity",
+      "organizations/real-organization",
+    ],
+  );
+});
+
 test("sitemap contains canonical public categories and published detail URLs without private/search URLs", async () => {
   const sitemapExports = {};
   const source = fs.readFileSync(new URL("../src/app/sitemap.ts", import.meta.url), "utf8");
