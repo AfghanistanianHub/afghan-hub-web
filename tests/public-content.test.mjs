@@ -49,6 +49,21 @@ test("public copy hides exact placeholder values without mutating real content",
   assert.equal(app.clean("Test-driven mentoring program"), "Test-driven mentoring program");
 });
 
+test("public listings with placeholder titles or names are omitted entirely", async () => {
+  const fixtures = [
+    ["opportunities", { slug: "test-opportunity", title: " Test ", summary: "Useful summary", description: "Useful description", type: "job", city: null, country: null, is_remote: true, deadline: null }],
+    ["events", { slug: "test-event", title: "Testing", summary: "Useful summary", description: "Useful description", city: null, country: null, is_online: true, starts_at: "2026-10-01T00:00:00Z", ends_at: null }],
+    ["businesses", { slug: "test-business", name: "N/A", short_description: "Useful summary", description: "Useful description", category: "Services", city: null, country: null }],
+    ["organizations", { slug: "test-organization", name: "NA", short_description: "Useful summary", description: "Useful description", organization_type: "nonprofit", city: null, country: null }],
+  ];
+
+  for (const [kind, row] of fixtures) {
+    const result = await loadContent({ data: [row] }).load(kind);
+    assert.equal(result.unavailable, false);
+    assert.equal(result.items.length, 0);
+  }
+});
+
 test("discovery excludes expired opportunities and past event starts", async () => {
   const app = loadContent();
   await app.load("opportunities");
