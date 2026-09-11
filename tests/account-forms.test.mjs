@@ -1,0 +1,46 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import test from "node:test";
+import vm from "node:vm";
+import ts from "typescript";
+import * as jsx from "react/jsx-runtime";
+
+function load(path, dependencies) {
+  const exports = {};
+  vm.runInNewContext(ts.transpileModule(fs.readFileSync(new URL(path, import.meta.url), "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX } }).outputText, {
+    exports, require(name) {
+      if (name === "react/jsx-runtime") return jsx;
+      assert.ok(name in dependencies, `Unexpected dependency ${name}`);
+      return dependencies[name];
+    },
+  });
+  return exports;
+}
+function elements(node, type) {
+  if (!node || typeof node !== "object") return [];
+  if (Array.isArray(node)) return node.flatMap(child => elements(child, type));
+  return [...(node.type === type ? [node] : []), ...elements(node.props?.children, type)];
+}
+test("login accepts an existing password while signup enforces the new-password minimum", async () => {
+  const login = () => {}, signup = () => {};
+  const page = load("../src/app/login/page.tsx", { "next/link": {}, "./actions": { login, signup }, "@/components/auth/submit-button": { SubmitButton: "submit-control" } }).default;
+  for (const joining of [false, true]) {
+    const tree = await page({ searchParams: Promise.resolve({ mode: joining ? "join" : undefined, error: "Try again", message: "Check your email" }) });
+    const password = elements(tree, "input").find(el => el.props.name === "password");
+    assert.equal(password.props.minLength, joining ? 8 : undefined);
+    assert.equal(password.props.autoComplete, joining ? "new-password" : "current-password");
+    assert.equal(elements(tree, "form")[0].props.action, joining ? signup : login);
+    assert.ok(elements(tree, "div").some(el => el.props.role === "alert"));
+    assert.ok(elements(tree, "div").some(el => el.props.role === "status"));
+  }
+});
+test("submit control disables repeat submissions and announces progress only while pending", () => {
+  for (const pending of [false, true]) {
+    const { SubmitButton } = load("../src/components/auth/submit-button.tsx", { "react-dom": { useFormStatus: () => ({ pending }) } });
+    const button = SubmitButton({ children: "Sign in", pendingLabel: "Signing in…" });
+    assert.equal(button.props.disabled, pending);
+    assert.equal(button.props.type, "submit");
+    assert.equal(button.props.children.props.children, pending ? "Signing in…" : "Sign in");
+    assert.equal(button.props.children.props.role, "status");
+  }
+});

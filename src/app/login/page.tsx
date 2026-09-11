@@ -1,3 +1,4 @@
+import { SubmitButton } from "@/components/auth/submit-button";
 import Link from "next/link";
 import { login, signup } from "./actions";
 
@@ -37,18 +38,18 @@ export default async function LoginPage({
         </p>
 
         {error ? (
-          <div className="mt-6 rounded-xl border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">
+          <div role="alert" className="mt-6 rounded-xl border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">
             {error}
           </div>
         ) : null}
 
         {message ? (
-          <div className="mt-6 rounded-xl border border-primary/15 bg-primary/[0.06] p-3 text-sm text-primary">
+          <div role="status" className="mt-6 rounded-xl border border-primary/15 bg-primary/[0.06] p-3 text-sm text-primary">
             {message}
           </div>
         ) : null}
 
-        <form id="join" className="mt-7 space-y-5">
+        <form id="join" action={joining ? signup : login} className="mt-7 space-y-5">
           <div>
             <label htmlFor="email" className="mb-2 block text-sm font-medium">
               Email address
@@ -81,19 +82,14 @@ export default async function LoginPage({
               name="password"
               type="password"
               required
-              minLength={8}
+              minLength={joining ? 8 : undefined}
               autoComplete={joining ? "new-password" : "current-password"}
-              placeholder="Minimum 8 characters"
+              placeholder={joining ? "Minimum 8 characters" : "Your password"}
               className={fieldClassName}
             />
           </div>
 
-          <button
-            formAction={joining ? signup : login}
-            className="w-full rounded-xl bg-primary px-4 py-3 font-semibold text-primary-foreground transition hover:opacity-90"
-          >
-            {joining ? "Create account" : "Sign in"}
-          </button>
+          <SubmitButton pendingLabel={joining ? "Creating account…" : "Signing in…"}>{joining ? "Create account" : "Sign in"}</SubmitButton>
 
           <p className="text-center text-sm text-muted-foreground">
             {joining ? "Already a member? " : "New to Afghan Hub? "}
