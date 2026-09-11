@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ExternalImage } from "@/components/ui/external-image";
@@ -16,6 +17,7 @@ type UploadMessage = {
 } | null;
 
 export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadProps) {
+  const router = useRouter();
   const supabase = createClient();
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<UploadMessage>(null);
@@ -54,7 +56,7 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
 
     setMessage({ text: "Profile photo updated successfully.", kind: "success" });
     setUploading(false);
-    window.location.reload();
+    router.refresh();
   }
 
   return (
