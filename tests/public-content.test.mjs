@@ -14,7 +14,7 @@ function loadContent({ data = [], error = null, configured = true } = {}) {
   const exports = {};
   const source = fs.readFileSync(new URL("../src/lib/public-content.ts", import.meta.url), "utf8");
   vm.runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, {
-    exports, AbortSignal, Date, fetch: () => {},
+    exports, AbortSignal, Date, fetch: () => {}, Set,
     process: { env: configured ? { NEXT_PUBLIC_SUPABASE_URL: "https://public.example", NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "publishable-test-key" } : {} },
     require(name) {
       if (name === "server-only") return {};
@@ -24,7 +24,7 @@ function loadContent({ data = [], error = null, configured = true } = {}) {
       throw new Error(`Unexpected dependency (public reads must not import a session client): ${name}`);
     },
   });
-  return { load: exports.getPublicListings, calls, config: () => config };
+  return { load: exports.getPublicListings, clean: exports.cleanPublicText, calls, config: () => config };
 }
 
 for (const kind of ["opportunities", "events", "businesses", "organizations"]) {
@@ -41,6 +41,13 @@ for (const kind of ["opportunities", "events", "businesses", "organizations"]) {
     assert.equal(app.config().options.cookies, undefined);
   });
 }
+
+test("public copy hides exact placeholder values without mutating real content", () => {
+  const app = loadContent();
+  for (const value of [null, "", "   ", "N/A", " n/a ", "NA", "Test", " testing "]) assert.equal(app.clean(value), null);
+  assert.equal(app.clean(" Testing community workshop "), "Testing community workshop");
+  assert.equal(app.clean("Test-driven mentoring program"), "Test-driven mentoring program");
+});
 
 test("discovery excludes expired opportunities and past event starts", async () => {
   const app = loadContent();
