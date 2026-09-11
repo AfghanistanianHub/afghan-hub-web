@@ -14,7 +14,7 @@ import {
 export const dashboardNavigation = [
   {
     label: "Home",
-    href: "/",
+    href: "/dashboard",
     icon: House,
   },
   {

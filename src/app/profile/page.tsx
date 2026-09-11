@@ -32,7 +32,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
   return (
     <main className="min-h-screen bg-background px-6 py-12 text-foreground">
       <div className="mx-auto w-full max-w-2xl">
-        <Link href="/" className="text-sm text-muted-foreground transition hover:text-primary">← Back</Link>
+        <Link href="/dashboard" className="text-sm text-muted-foreground transition hover:text-primary">← Back</Link>
 
         <div className="surface-panel mt-6 rounded-3xl p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.25em] text-primary">Afghan Hub</p>

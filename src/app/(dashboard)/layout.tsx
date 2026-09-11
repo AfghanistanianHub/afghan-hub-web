@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/dashboard/header";
 import type { NotificationSummary } from "@/components/dashboard/notification-bell";
@@ -5,6 +6,8 @@ import { Sidebar } from "@/components/dashboard/sidebar";
 import { RealtimeMessageRefresh } from "@/components/messages/realtime-message-refresh";
 import { getTotalUnreadMessageCount } from "@/lib/messages";
 import { createClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 type DashboardLayoutProps = {
   children: React.ReactNode;

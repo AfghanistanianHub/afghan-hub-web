@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   ArrowRight,
   BriefcaseBusiness,
@@ -62,6 +63,8 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) redirect("/login");
+
   const now = new Date().toISOString();
   const today = getUtcDateKey(new Date());
   const [
@@ -72,7 +75,7 @@ export default async function DashboardPage() {
     supabase
       .from("profiles")
       .select("display_name,first_name,headline,city,country")
-      .eq("id", user!.id)
+      .eq("id", user.id)
       .single(),
     supabase
       .from("opportunities")

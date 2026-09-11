@@ -57,7 +57,7 @@ export function MobileNavigation({
         >
           <div className="flex h-20 shrink-0 items-center justify-between border-b border-border px-5">
             <Link
-              href="/"
+              href="/dashboard"
               onClick={() => setIsOpen(false)}
               className="text-sm font-bold tracking-[0.18em] text-primary"
             >

@@ -5,13 +5,15 @@ type LoginPageProps = {
   searchParams: Promise<{
     error?: string;
     message?: string;
+    mode?: string;
   }>;
 };
 
 export default async function LoginPage({
   searchParams,
 }: LoginPageProps) {
-  const { error, message } = await searchParams;
+  const { error, message, mode } = await searchParams;
+  const joining = mode === "join";
 
   const fieldClassName =
     "w-full rounded-xl border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10";
@@ -25,13 +27,13 @@ export default async function LoginPage({
 
       <div className="surface-panel relative w-full max-w-md rounded-3xl p-8 md:p-9">
         <p className="text-sm font-semibold uppercase tracking-[0.25em] text-primary">
-          Afghan Hub
+          <Link href="/">Afghan Hub</Link>
         </p>
 
-        <h1 className="mt-3 text-3xl font-bold tracking-tight">Welcome back</h1>
+        <h1 className="mt-3 text-3xl font-bold tracking-tight">{joining ? "Join Afghan Hub" : "Welcome back"}</h1>
 
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Sign in to continue, or create a new account to join the community.
+          {joining ? "Create your account and find your place in the community." : "Sign in to connect with your community."}
         </p>
 
         {error ? (
@@ -46,7 +48,7 @@ export default async function LoginPage({
           </div>
         ) : null}
 
-        <form className="mt-7 space-y-5">
+        <form id="join" className="mt-7 space-y-5">
           <div>
             <label htmlFor="email" className="mb-2 block text-sm font-medium">
               Email address
@@ -80,25 +82,25 @@ export default async function LoginPage({
               type="password"
               required
               minLength={8}
-              autoComplete="current-password"
+              autoComplete={joining ? "new-password" : "current-password"}
               placeholder="Minimum 8 characters"
               className={fieldClassName}
             />
           </div>
 
           <button
-            formAction={login}
+            formAction={joining ? signup : login}
             className="w-full rounded-xl bg-primary px-4 py-3 font-semibold text-primary-foreground transition hover:opacity-90"
           >
-            Sign in
+            {joining ? "Create account" : "Sign in"}
           </button>
 
-          <button
-            formAction={signup}
-            className="w-full rounded-xl border border-border bg-background px-4 py-3 font-semibold transition hover:bg-muted"
-          >
-            Create account
-          </button>
+          <p className="text-center text-sm text-muted-foreground">
+            {joining ? "Already a member? " : "New to Afghan Hub? "}
+            <Link href={joining ? "/login" : "/login?mode=join"} className="font-semibold text-primary underline">
+              {joining ? "Sign in" : "Create an account"}
+            </Link>
+          </p>
         </form>
       </div>
     </main>

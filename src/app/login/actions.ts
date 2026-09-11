@@ -18,7 +18,7 @@ export async function login(formData: FormData) {
     redirect(`/login?error=${encodeURIComponent(error.message)}`);
   }
 
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function signup(formData: FormData) {
@@ -29,7 +29,7 @@ export async function signup(formData: FormData) {
 
   if (password.length < 8) {
     redirect(
-      `/login?error=${encodeURIComponent(
+      `/login?mode=join&error=${encodeURIComponent(
         "Password must be at least 8 characters."
       )}`
     );
@@ -41,7 +41,7 @@ export async function signup(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/login?error=${encodeURIComponent(error.message)}`);
+    redirect(`/login?mode=join&error=${encodeURIComponent(error.message)}`);
   }
 
   redirect(

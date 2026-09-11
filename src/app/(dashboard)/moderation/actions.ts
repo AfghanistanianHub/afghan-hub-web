@@ -103,5 +103,7 @@ export async function moderateContent(formData: FormData) {
   revalidatePath("/organizations");
   revalidatePath("/submissions");
   revalidatePath("/");
+  revalidatePath("/dashboard");
+  revalidatePath("/explore", "layout");
   redirect(`/moderation?success=${decision === "approve" ? "approved" : "rejected"}`);
 }
