@@ -1,35 +1,55 @@
 # Afghan Hub launch review
 
-Reviewed 2026-09-11 against main `91dd40c3e3d98ba526993da5251c3da3ef72d2bf` (PR #51 merged). No open PRs at audit start. The local source tree matches main. Main Node CI run 34559927021 passed; production deployment and public landing were verified in the preceding release check.
+Reviewed 2026-09-11 against main `fe2194ce4c0d6e664c1eb0cef149f08a687e6a79` after launch-hardening PRs through #65. Recent PR heads were merged only after Node 22/24 CI and Vercel passed. No production schema, RLS or content write was performed during this hardening sequence.
 
 ## Implemented and verified to a defined extent
 
-| Area | Evidence | Remaining acceptance work |
+| Area | Evidence now on main | Remaining acceptance work |
 | --- | --- | --- |
-| Public website | Landing, mission, categories/search/pagination/details; desktop/mobile/tablet review; published-only anonymous queries | Content review and broader mobile/accessibility testing |
-| Public SEO | Titles/canonicals, search noindex, member layout noindex, six-entry sitemap and robots | Social preview image, published-detail sitemap, auth-page indexability review |
-| Authentication | Login/signup/recovery actions and callback exist; member-entry regression tests | Real confirmation email, expired-link recovery, session expiry and sign-out across tabs |
+| Public website | Landing, mission, category discovery/search/pagination/details; mobile/public interaction polish; accessible loading state; branded global 404 | Editorial review and broader accessibility/intermediate-width QA |
+| Public SEO | Titles/canonicals, search noindex, member/auth/recovery noindex, Open Graph image, robots, static + published-detail sitemap | Final production crawl/index review |
+| Authentication | Login/signup/recovery actions; pending-state protection; explicit signup confirmation callback; allowlisted callback destinations; flow-specific expired-link recovery; regression coverage | Real confirmation/reset email delivery, session expiry and cross-tab sign-out acceptance |
+| Operational recovery | App/global error boundaries, retry path, route loading states, global not-found recovery, repeatable anonymous smoke script | Error-monitoring/support ownership and production failure drills |
+| Content presentation | Public queries remain published-only/anonymous/field-allowlisted; exact `N/A`/`NA`/`Test`/`Testing` summary/description placeholders are hidden at render mapping without production edits | Owner/editor must correct or unpublish disposable real records |
 | Member application | Dashboard, profile, settings, network, messaging, notifications, saved content and search routes exist | Multi-account end-to-end acceptance; route presence is not proof of completion |
-| Contribution | Create/edit/moderation flows for four listing types; event RSVP/calendar/attendees | Owner/unrelated-member/moderator/admin tests, capacity concurrency, upload failures |
-| Security | Hardening migrations for roles, identity, URLs, contact fields, storage, conversations and message history | Reconcile applied migration history and test each authorization persona against production-compatible staging |
-| Delivery | CI runs lint, type checking, all regression tests and builds on Node 20/22 | Repeat exact-main CI + production verification after each merge |
+| Contribution | Create/edit/moderation flows for four listing types; event RSVP/calendar/attendees | Owner/unrelated-member/moderator/admin tests, capacity concurrency and upload-failure acceptance |
+| Security/privacy | Existing hardening migrations; public catalog excludes member profiles; auth callback next destinations are allowlisted | Confirmed profile-column exposure for authenticated users must be fixed before profile visibility is expanded; migration/persona testing still required |
+| Delivery | CI runs install, lint, typecheck, regression tests, syntax check and production build on supported Node 22/24; GitHub Actions upgraded from deprecated Node-20-backed versions | Exact-main release rehearsal and production smoke verification at final candidate |
+
+## Confirmed profile privacy finding
+
+A read-only production audit on 2026-09-11 inspected only schema, grants, policies and aggregate counts; no profile values were read.
+
+- `public.profiles` has RLS enabled.
+- Table-level `SELECT` is granted to both `anon` and `authenticated`.
+- Policy `profiles_select_public_or_owner` applies to `{anon,authenticated}` and allows rows when `is_public=true`, or the row belongs to the current user, or `is_admin()` returns true.
+- `profiles` contains fields including `email`, `role`, `onboarding_completed`, timestamps, URLs, skills and other profile data.
+- Under role `authenticated`, aggregate-only verification confirmed that public profile rows containing non-null email are selectable. Therefore UI field selection is not a privacy boundary: an authenticated client can potentially query profile email directly through the API for rows made public.
+- Under role `anon`, the same profile SELECT currently errors because the policy references `is_admin()` while `anon` does not have execute permission on `is_admin()`. This makes anonymous public-profile access inconsistent/broken rather than safely field-limited.
+
+Do not enable public/anonymous member discovery and do not rely on `is_public` alone until a reviewed database fix defines an explicit safe field contract. Preferred remediation should be designed and tested in an isolated/staging database first—e.g. a privacy-safe view/RPC or deliberate column-privilege/policy design—without exposing `email` or internal metadata. Because this changes production authorization/privacy behavior, no RLS/grant migration was applied during this audit.
 
 ## Priority work remaining
 
-1. **Account-entry acceptance:** test registration/confirmation and reset delivery with a designated test account. This branch improves pending states, screen-reader notices and compatibility with existing passwords. No real account credentials were entered and no reset emails were sent during this audit.
-2. **Member journey:** execute discovery → connection → conversation → unread/read updates → contribution → moderation with at least two test members and moderator/admin personas. Include hidden profiles and unrelated-member denial. Existing unit coverage does not replace this.
-3. **Operational reliability:** add route error/loading recovery where absent; verify failure states instead of blank/default framework errors. Define error monitoring and an operational contact without exposing message contents or personal data.
-4. **Content readiness:** public records still include `Test`/`N/A` descriptions. Owner/editor should identify real records and correct or unpublish disposable entries; no automatic deletion or invented content.
-5. **Policies and support:** privacy/terms/contact surfaces are absent from the route inventory. Need the operator identity, support contact, retention/deletion process and applicable terms before publishing factual policy text. Account deletion/export and abuse reporting/blocking need product decisions and implementation scope; no implementation was found in the targeted audit.
-6. **Privacy-safe member discovery:** current public catalog deliberately excludes members. Inspect exact profile field visibility and consent before adding anonymous member pages; `is_public` currently appears in member settings and is not sufficient evidence that every profile field may be exposed.
-7. **Accessibility/responsiveness:** keyboard navigation, focus restoration, form errors, long labels/content, contrast and intermediate widths across remaining member flows. Earlier QA covered selected surfaces, not the entire product.
-8. **Final release rehearsal:** run above scenarios on a production-compatible test environment, verify backup/recovery arrangements and document known limitations. Do not assign an arbitrary completion percentage or describe launch as fully ready yet.
+1. **Real account-entry acceptance:** use a designated test account to verify registration, confirmation delivery, confirmed login, password reset delivery, expired confirmation/reset links, session expiry and sign-out behavior. Code paths are hardened, but no synthetic unit test can prove external email delivery or provider configuration.
+2. **Profile privacy remediation:** design a field-level safe profile contract, implement it through a reviewed migration in isolated/staging first, and prove anon/authenticated/owner/moderator/admin personas cannot retrieve fields outside that contract. Do not expand public member discovery before this is complete.
+3. **Multi-account member journey:** execute discovery → connection → accept/decline → conversation → unread/read updates → contribution → moderation using at least two ordinary members plus moderator/admin personas. Include hidden profiles and unrelated-member denial.
+4. **Authorization and migration rehearsal:** reconstruct a reviewed migration baseline and test a fresh isolated/staging database before any production schema operation. Production applied history and repository migration history were previously observed to differ; do not blindly `db push`, repair versions or replay migrations against production.
+5. **Editorial readiness:** identify real published records with disposable/test content and correct or unpublish them. The public placeholder guard prevents exact placeholder descriptions from being shown but intentionally does not delete, rewrite or invent production content.
+6. **Policies/support/product decisions:** privacy, terms and contact/support surfaces need factual operator identity, support contact, retention/deletion process and applicable terms. Account deletion/export and abuse reporting/blocking require product decisions and implementation scope.
+7. **Accessibility/responsive acceptance:** keyboard navigation, focus restoration, form errors, long labels/content, contrast, reduced motion and intermediate widths across remaining authenticated flows.
+8. **Operational ownership:** define error monitoring, incident/support contact and backup/recovery procedure without exposing message contents or personal data.
+9. **Final release rehearsal:** run the accepted scenarios on a production-compatible environment, verify backup/recovery, run exact-main CI and anonymous smoke checks, deploy, then document any known limitations. Do not claim full launch readiness before these dependencies are resolved.
 
 ## Security advisor follow-up
 
-Read-only Supabase security advisors reported warnings, not a demonstrated exploit:
-- `pg_trgm` is installed in public: [extension guidance](https://supabase.com/docs/guides/database/database-linter?lint=0014_extension_in_public). Check dependencies before relocating it through a migration.
-- 18 authenticated-callable SECURITY DEFINER functions: [function guidance](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable). Many are deliberate application RPCs. Review their authorization/search paths and grants individually; blanket revocation would break core flows.
-- Leaked password protection disabled: [password guidance](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). Check availability and any plan cost before changing configuration. No paid service or setting was enabled.
+Earlier read-only Supabase advisor results were warnings, not demonstrated exploits:
+- `pg_trgm` installed in public. Check dependency use before relocating it through a reviewed migration.
+- 18 authenticated-callable `SECURITY DEFINER` functions. Many may be deliberate application RPCs; review authorization, grants and `search_path` individually rather than blanket revocation.
+- Leaked-password protection was disabled. Confirm feature availability and cost before changing configuration; do not enable a paid setting without explicit approval.
 
-No schema, RLS, production data or authentication configuration was changed in this audit.
+A previous read-only audit also found no anonymous-callable public `SECURITY DEFINER` functions, no ordinary/partitioned public tables with RLS disabled, no `CREATE` privilege for anon/authenticated in public, and direct authenticated `INSERT` revoked on conversation membership tables. Those findings reduce some attack surface but do not resolve the confirmed profile-column exposure described above.
+
+## Cost and change-control constraints
+
+Use deterministic CI/tests/builds and existing free infrastructure first. Do not trigger token-consuming Autopilot, buy credits or add paid services without explicit approval. Do not alter production schema/RLS/data, secrets, auth-provider policy or public member visibility without a reviewed plan and an explicit risk decision.

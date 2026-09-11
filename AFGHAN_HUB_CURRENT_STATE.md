@@ -1,13 +1,32 @@
 # Afghan Hub current state
 
 ## Stage
-Public website shipped in merged PR #51. Current main is `91dd40c3e3d98ba526993da5251c3da3ef72d2bf`; exact-main CI and Vercel production passed. Public landing was verified in-browser.
+Public website and discovery are shipped. Main now includes launch-hardening through merged PR #65 (`fe2194ce4c0d6e664c1eb0cef149f08a687e6a79`). Recent exact PR heads passed Node 22/24 CI and Vercel before merge.
 
-## Active work
-`feature/account-entry-polish`: pending submit feedback and repeat-submit protection in login/signup/password recovery; accessible status/errors; signup password length no longer applied to existing-account login. No authentication action, database or RLS changes.
+## Recently completed
+- Account forms: pending feedback, repeat-submit protection, accessible status/errors, login compatibility with existing shorter passwords (#52).
+- App recovery: standard Next.js error boundaries and repeatable anonymous smoke verification (#57).
+- Public/mobile polish and reduced-motion/focus improvements (#56).
+- SEO: auth/recovery noindex, Open Graph image, published detail URLs in sitemap (#58, #59).
+- Delivery: CI aligned to supported Node 22/24 runtimes and current GitHub actions (#60).
+- Content guardrail: exact placeholder public copy such as `N/A`/`Test` is treated as missing without editing production data (#61).
+- Auth callback hardening: explicit signup confirmation callback, allowlisted callback destinations, flow-specific expired-link recovery, regression coverage (#62).
+- Route UX: accessible loading states for member workspace/public discovery and branded global 404 recovery (#64, #65).
 
 ## Readiness
-See `AFGHAN_HUB_LAUNCH_REVIEW.md` for evidence, acceptance gaps and security advisor follow-up. Public routes and 23 previous regression tests were verified; full authenticated end-to-end acceptance is still outstanding. No arbitrary completion percentage is claimed.
+The repository now has stronger public SEO, failure/loading recovery, auth callback handling, content presentation guardrails and release verification. Full authenticated end-to-end acceptance is still outstanding. Do not describe the product as fully launch-ready until the remaining acceptance and policy dependencies below are resolved.
 
-## Next
-Verify the active branch and publish a focused PR. Continue multi-account acceptance, failure-state recovery, content review and accessibility. Policy text requires operator/contact/retention details. Do not publish member data without field-level privacy review. No production content was edited or deleted.
+## Confirmed privacy blocker
+A read-only production metadata/role audit on 2026-09-11 confirmed that `profiles` has RLS enabled, but authenticated users have table-level `SELECT` and the `profiles_select_public_or_owner` policy permits rows with `is_public=true`. Aggregate-only verification under the `authenticated` role confirmed that public profile rows with non-null email are selectable; no personal values were read. Anonymous profile access currently errors because the same policy references `is_admin()` while `anon` lacks execute permission on that function. Do not add anonymous/public member discovery or assume UI field selection protects profile email. A reviewed database policy/column-exposure fix is required before expanding profile visibility.
+
+## Remaining launch dependencies
+1. Real registration/confirmation/password-reset delivery with a designated test account, including expired links, session expiry and sign-out behavior.
+2. Multi-account member journey: discovery → connection → conversation → unread/read → contribution → moderation, with unrelated-member denial and moderator/admin personas.
+3. Fix profile column exposure for authenticated users and the broken anonymous public-profile policy through a reviewed migration; verify with persona tests before enabling any public member discovery.
+4. Production-compatible authorization/persona testing and migration-baseline reconciliation in an isolated/staging database. Never replay/repair production migration history blindly.
+5. Editorial cleanup or unpublishing of disposable test records. Public guardrails hide exact placeholder descriptions but do not delete or invent content.
+6. Privacy/terms/contact and support surfaces require factual operator identity, support contact, retention/deletion process and product decisions for account deletion/export and abuse/blocking.
+7. Broader accessibility/responsive QA across remaining member flows and final release rehearsal/backup-recovery verification.
+
+## Cost and safety constraints
+Prefer deterministic CI/tests/builds and existing free infrastructure. Do not trigger token-consuming Autopilot or add paid services without explicit approval. Do not modify production schema/RLS/data or expose member data without a reviewed plan and field-level privacy evidence.
