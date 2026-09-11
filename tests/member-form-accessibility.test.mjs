@@ -50,4 +50,7 @@ test("avatar upload stays keyboard focusable and announces upload results", () =
   assert.match(avatarSource, /aria-busy=\{uploading\}/);
   assert.match(avatarSource, /role=\{message\.kind === "error" \? "alert" : "status"\}/);
   assert.match(avatarSource, /aria-describedby=\{message \? "avatar-upload-message" : undefined\}/);
+  assert.match(avatarSource, /useRouter/);
+  assert.match(avatarSource, /router\.refresh\(\)/);
+  assert.doesNotMatch(avatarSource, /window\.location\.reload/);
 });
