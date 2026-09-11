@@ -8,13 +8,24 @@ Reviewed 2026-09-11 against main `c887e3346f7ad1a1a42c381136c7997536de0783` afte
 | --- | --- | --- |
 | Public website | Landing, mission, category discovery/search/pagination/details; mobile/public interaction polish; accessible loading state; branded global 404 | Editorial review and broader accessibility/intermediate-width QA |
 | Public SEO | Titles/canonicals, search noindex, member/auth/recovery noindex, Open Graph image, robots, static + published-detail sitemap | Final production crawl/index review |
-| Authentication | Login/signup/recovery actions; pending-state protection; explicit signup confirmation callback; allowlisted callback destinations; flow-specific expired-link recovery; regression coverage | Real confirmation/reset email delivery, session expiry and cross-tab sign-out acceptance |
+| Authentication | Login/signup/recovery actions; pending-state protection; explicit signup confirmation callback; allowlisted callback destinations; flow-specific expired-link recovery; regression coverage; production aggregate shows all 3 current auth users are confirmed and have signed in | Current confirmation/reset email delivery, expired-link behavior, session expiry and cross-tab sign-out acceptance still require a designated test account |
 | Operational recovery | App/global error boundaries, retry path, route loading states, global not-found recovery, repeatable anonymous smoke script | Error-monitoring/support ownership and production failure drills |
 | Content presentation | Public queries remain published-only/anonymous/field-allowlisted; exact `N/A`/`NA`/`Test`/`Testing` summary/description placeholders are hidden at render mapping without production edits | Owner/editor must correct or unpublish disposable real records |
 | Member application | Dashboard, profile, settings, network, messaging, notifications, saved content and search routes exist | Multi-account end-to-end acceptance; route presence is not proof of completion |
 | Contribution | Create/edit/moderation flows for four listing types; event RSVP/calendar/attendees | Owner/unrelated-member/moderator/admin tests, capacity concurrency and upload-failure acceptance |
 | Security/privacy | Existing hardening migrations; public catalog excludes member profiles; Settings no longer reads `profiles.email`; remediation architecture/draft/persona matrix documented; search has application-side privacy guard (#69–#72) | Confirmed database profile-column exposure still requires isolated implementation/persona testing and reviewed production migration |
 | Delivery | CI runs install, lint, typecheck, regression tests, syntax check and production build on supported Node 22/24; GitHub Actions upgraded from deprecated Node-20-backed versions | Exact-main release rehearsal and production smoke verification at final candidate |
+
+## Authentication evidence
+
+A read-only aggregate query against production `auth.users` on 2026-09-11 returned:
+
+- 3 total users;
+- 3 with `email_confirmed_at` set;
+- 3 with `last_sign_in_at` set;
+- 3 both confirmed and signed in.
+
+No email address, user ID, name, token or other account value was read. This proves that confirmation and sign-in have worked historically for the current production accounts. It does **not** prove current outbound email delivery, password-reset delivery, expired-link recovery, session expiry or cross-tab sign-out; those remain acceptance items for a designated disposable test account.
 
 ## Confirmed profile privacy finding
 
@@ -65,7 +76,7 @@ These primitives should be reused rather than weakening profile column access me
 
 ## Priority work remaining
 
-1. **Real account-entry acceptance:** use a designated test account to verify registration, confirmation delivery, confirmed login, password reset delivery, expired confirmation/reset links, session expiry and sign-out behavior. Code paths are hardened, but synthetic tests cannot prove external email delivery/provider configuration.
+1. **Real account-entry acceptance:** use a designated test account to verify current registration/confirmation delivery, password reset delivery, expired confirmation/reset links, session expiry and sign-out behavior. Historical production aggregates prove confirmation/sign-in worked for the three current accounts, but do not replace this current acceptance run.
 2. **Profile privacy implementation in isolation:** implement the reviewed safe-column/private-RPC/search changes in a production-compatible isolated environment and pass the direct API persona matrix. Do not change production authorization yet.
 3. **Multi-account member journey:** execute discovery → connection → accept/decline → conversation → unread/read updates → contribution → moderation using at least two ordinary members plus moderator/admin personas. Include hidden profiles and unrelated-member denial.
 4. **Production-specific migration/rollback:** reconcile enough of the migration baseline to generate the final privacy migration from current production metadata and prepare an exact rollback. Never replay repository history blindly.
