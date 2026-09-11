@@ -5,14 +5,17 @@ import vm from "node:vm";
 import ts from "typescript";
 function actions(error = null) {
   const exports = {};
+  let signupInput;
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(new URL("../src/app/login/actions.ts", import.meta.url), "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, {
     exports,
     require(name) {
       if (name === "next/navigation") return { redirect: path => { throw new Error(path); } };
-      if (name === "@/lib/supabase/server") return { createClient: async () => ({ auth: { signInWithPassword: async () => ({ error }), signUp: async () => ({ error }) } }) };
+      if (name === "@/lib/site-url") return { getSiteUrl: () => "https://app.apnbc.ca" };
+      if (name === "@/lib/supabase/server") return { createClient: async () => ({ auth: { signInWithPassword: async () => ({ error }), signUp: async input => { signupInput = input; return { error }; } } }) };
       throw new Error(name);
     },
   });
+  exports.getSignupInput = () => signupInput;
   return exports;
 }
 const form = password => new Map([["email", "member@example.com"], ["password", password]]);
@@ -24,6 +27,11 @@ test("failed login remains on sign-in page", async () => {
 });
 test("signup validation preserves the join flow", async () => {
   await assert.rejects(actions().signup(form("short")), { message: "/login?mode=join&error=Password%20must%20be%20at%20least%208%20characters." });
+});
+test("signup confirmation returns through the controlled app callback", async () => {
+  const app = actions();
+  await assert.rejects(app.signup(form("test-password")), { message: "/login?message=Account%20created.%20Check%20your%20email%20if%20confirmation%20is%20required." });
+  assert.equal(app.getSignupInput().options.emailRedirectTo, "https://app.apnbc.ca/auth/callback?next=/dashboard&flow=signup");
 });
 
 test("dashboard redirects signed-out requests before starting member queries", async () => {
