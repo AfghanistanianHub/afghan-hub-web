@@ -1,3 +1,4 @@
+import { SubmitButton } from "@/components/auth/submit-button";
 import Link from "next/link";
 import { requestPasswordReset } from "./actions";
 
@@ -30,18 +31,18 @@ export default async function ForgotPasswordPage({
         </p>
 
         {error ? (
-          <div className="mt-6 rounded-xl border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">
+          <div role="alert" className="mt-6 rounded-xl border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">
             {error}
           </div>
         ) : null}
 
         {message ? (
-          <div className="mt-6 rounded-xl border border-primary/15 bg-primary/[0.06] p-3 text-sm text-primary">
+          <div role="status" className="mt-6 rounded-xl border border-primary/15 bg-primary/[0.06] p-3 text-sm text-primary">
             {message}
           </div>
         ) : null}
 
-        <form className="mt-7 space-y-5">
+        <form action={requestPasswordReset} className="mt-7 space-y-5">
           <div>
             <label htmlFor="email" className="mb-2 block text-sm font-medium">
               Email address
@@ -57,12 +58,7 @@ export default async function ForgotPasswordPage({
             />
           </div>
 
-          <button
-            formAction={requestPasswordReset}
-            className="w-full rounded-xl bg-primary px-4 py-3 font-semibold text-primary-foreground transition hover:opacity-90"
-          >
-            Send reset link
-          </button>
+          <SubmitButton pendingLabel="Sending reset link…">Send reset link</SubmitButton>
         </form>
 
         <Link
