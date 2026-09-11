@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { updateAccountSettings } from "@/app/(dashboard)/settings/actions";
+import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import { createClient } from "@/lib/supabase/server";
 
 type SettingsPageProps = {
@@ -53,13 +54,13 @@ export default async function SettingsPage({
         </section>
 
         {formError ? (
-          <div className="mt-8 rounded-2xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
+          <div role="alert" aria-live="assertive" className="mt-8 rounded-2xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
             {formError}
           </div>
         ) : null}
 
         {saved === "1" ? (
-          <div className="mt-8 rounded-2xl border border-primary/20 bg-primary/8 p-4 text-sm text-primary">
+          <div role="status" aria-live="polite" className="mt-8 rounded-2xl border border-primary/20 bg-primary/8 p-4 text-sm text-primary">
             Your settings have been saved.
           </div>
         ) : null}
@@ -85,7 +86,7 @@ export default async function SettingsPage({
 
           <Link
             href="/profile"
-            className="mt-6 inline-flex rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-secondary"
+            className="mt-6 inline-flex rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
             Edit profile details
           </Link>
@@ -103,7 +104,7 @@ export default async function SettingsPage({
             other Afghan Hub members.
           </p>
 
-          <label className="mt-6 flex cursor-pointer items-start gap-4 rounded-2xl border border-border bg-secondary/45 p-4 transition hover:border-primary/25">
+          <label className="mt-6 flex cursor-pointer items-start gap-4 rounded-2xl border border-border bg-secondary/45 p-4 transition hover:border-primary/25 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15">
             <input
               name="is_public"
               type="checkbox"
@@ -121,12 +122,12 @@ export default async function SettingsPage({
           </label>
 
           <div className="mt-6 flex justify-end">
-            <button
-              type="submit"
-              className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:opacity-90"
+            <PendingSubmitButton
+              pendingLabel="Saving settings…"
+              className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               Save settings
-            </button>
+            </PendingSubmitButton>
           </div>
         </form>
       </div>
