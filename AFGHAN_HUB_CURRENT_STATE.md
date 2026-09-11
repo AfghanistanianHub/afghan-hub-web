@@ -16,13 +16,17 @@ Public website and discovery are shipped. Main now includes launch-hardening thr
 ## Readiness
 The repository now has stronger public SEO, failure/loading recovery, auth callback handling, content presentation guardrails and release verification. Full authenticated end-to-end acceptance is still outstanding. Do not describe the product as fully launch-ready until the remaining acceptance and policy dependencies below are resolved.
 
+## Confirmed privacy blocker
+A read-only production metadata/role audit on 2026-09-11 confirmed that `profiles` has RLS enabled, but authenticated users have table-level `SELECT` and the `profiles_select_public_or_owner` policy permits rows with `is_public=true`. Aggregate-only verification under the `authenticated` role confirmed that public profile rows with non-null email are selectable; no personal values were read. Anonymous profile access currently errors because the same policy references `is_admin()` while `anon` lacks execute permission on that function. Do not add anonymous/public member discovery or assume UI field selection protects profile email. A reviewed database policy/column-exposure fix is required before expanding profile visibility.
+
 ## Remaining launch dependencies
 1. Real registration/confirmation/password-reset delivery with a designated test account, including expired links, session expiry and sign-out behavior.
 2. Multi-account member journey: discovery → connection → conversation → unread/read → contribution → moderation, with unrelated-member denial and moderator/admin personas.
-3. Production-compatible authorization/persona testing and migration-baseline reconciliation in an isolated/staging database. Never replay/repair production migration history blindly.
-4. Editorial cleanup or unpublishing of disposable test records. Public guardrails hide exact placeholder descriptions but do not delete or invent content.
-5. Privacy/terms/contact and support surfaces require factual operator identity, support contact, retention/deletion process and product decisions for account deletion/export and abuse/blocking.
-6. Broader accessibility/responsive QA across remaining member flows and final release rehearsal/backup-recovery verification.
+3. Fix profile column exposure for authenticated users and the broken anonymous public-profile policy through a reviewed migration; verify with persona tests before enabling any public member discovery.
+4. Production-compatible authorization/persona testing and migration-baseline reconciliation in an isolated/staging database. Never replay/repair production migration history blindly.
+5. Editorial cleanup or unpublishing of disposable test records. Public guardrails hide exact placeholder descriptions but do not delete or invent content.
+6. Privacy/terms/contact and support surfaces require factual operator identity, support contact, retention/deletion process and product decisions for account deletion/export and abuse/blocking.
+7. Broader accessibility/responsive QA across remaining member flows and final release rehearsal/backup-recovery verification.
 
 ## Cost and safety constraints
 Prefer deterministic CI/tests/builds and existing free infrastructure. Do not trigger token-consuming Autopilot or add paid services without explicit approval. Do not modify production schema/RLS/data or expose member data without a reviewed plan and field-level privacy evidence.
