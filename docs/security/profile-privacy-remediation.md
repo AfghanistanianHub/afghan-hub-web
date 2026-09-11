@@ -34,6 +34,16 @@ Private/privileged profile uses include:
 
 A blanket table-SELECT revoke or a simple removal of `email`/`role` privileges would therefore risk breaking self/admin and relationship joins unless those flows are migrated deliberately.
 
+## Existing authorization primitives
+
+Read-only production metadata inspection confirmed:
+
+- `public.is_admin()` is `SECURITY DEFINER`, has an explicit empty `search_path`, and is executable by `authenticated` but not `anon`.
+- `public.set_profile_role(target_profile_id, target_role)` is `SECURITY DEFINER`, authenticated-only, calls `is_admin()` internally, rejects self-role changes, then updates the target profile. This means role mutation is enforced in the database rather than relying only on the admin UI.
+- There is no equivalent dedicated moderator/capability function in the current database metadata reviewed. The dashboard currently reads the signed-in user's `role` to distinguish admin/moderator behavior.
+
+Remediation should reuse the proven admin authorization primitive and introduce a narrowly scoped capability check for moderation if needed, rather than restoring broad row-level access to the `role` column.
+
 ## Recommended architecture
 
 ### 1. Define a safe member-profile contract
@@ -57,8 +67,8 @@ Do not rely on frontend `.select(...)` lists as an authorization mechanism.
 ### 3. Separate self/admin private reads
 
 - **Self:** prefer Auth for account email (`user.email`) and use owner-scoped profile reads for editable profile state.
-- **Role checks:** use an existing narrowly scoped authorization function or a dedicated `get_my_role`/capability RPC rather than granting every authenticated user access to every row's `role` column.
-- **Admin team:** expose a deliberately admin-only RPC/view for member email/role management. Authorization must be enforced in the database, not only by the page redirect.
+- **Role/capability checks:** reuse `is_admin()` for admin checks and prefer a narrow capability/RPC for moderator state rather than granting every authenticated user access to every row's `role` column.
+- **Admin team:** expose a deliberately admin-only RPC/view for member email/role management. Authorization must be enforced in the database; the existing `set_profile_role` function already enforces admin-only mutation and self-role protection.
 
 ### 4. Fix the anonymous policy coherently
 
@@ -93,7 +103,7 @@ Production migration history and repository migration history are not currently 
 2. Inventory every `profiles` query/join and classify fields as self-private, admin-private or member-visible.
 3. Add the safe profile database surface and database-level persona tests in a non-production environment.
 4. Switch directory/member/connection/notification consumers to the safe surface where necessary.
-5. Add self/admin-only access paths for private columns.
+5. Add self/admin-only access paths for private columns, reusing `is_admin()`/`set_profile_role` where appropriate and introducing only narrowly scoped additional capability functions.
 6. Restrict base-table direct SELECT so an unrelated authenticated role cannot retrieve private columns/rows.
 7. Re-run all application CI plus persona/security tests.
 8. Only after explicit review, apply the production migration and repeat the read-only aggregate verification.
