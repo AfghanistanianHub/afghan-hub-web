@@ -29,6 +29,18 @@ type SearchResult = {
   rank: number;
 };
 
+function isMemberResult(result: SearchResult) {
+  return result.entity_type === "profile" || result.entity_type === "member";
+}
+
+function getSafeResultTitle(result: SearchResult) {
+  if (isMemberResult(result) && /\S+@\S+\.\S+/.test(result.title)) {
+    return "Afghan Hub member";
+  }
+
+  return result.title;
+}
+
 function getResultHref(result: SearchResult) {
   switch (result.entity_type) {
     case "profile":
@@ -101,39 +113,56 @@ export default async function SearchPage({
   const rawResults = ((data ?? []) as SearchResult[]).filter(
     (result) => getResultHref(result) !== null,
   );
+  const memberIds = rawResults
+    .filter(isMemberResult)
+    .map((result) => result.entity_id);
   const opportunityIds = rawResults
     .filter((result) => result.entity_type === "opportunity")
     .map((result) => result.entity_id);
   const eventIds = rawResults
     .filter((result) => result.entity_type === "event")
     .map((result) => result.entity_id);
-  const [{ data: visibleOpportunities }, { data: visibleEvents }] =
-    await Promise.all([
-      opportunityIds.length > 0
-        ? supabase
-            .from("opportunities")
-            .select("id,deadline")
-            .in("id", opportunityIds)
-            .eq("status", "published")
-        : Promise.resolve({
-            data: [] as { id: string; deadline: string | null }[],
-          }),
-      eventIds.length > 0
-        ? supabase
-            .from("events")
-            .select("id,starts_at,ends_at")
-            .in("id", eventIds)
-            .eq("status", "published")
-        : Promise.resolve({
-            data: [] as {
-              id: string;
-              starts_at: string;
-              ends_at: string | null;
-            }[],
-          }),
-    ]);
+  const [
+    { data: visibleMembers },
+    { data: visibleOpportunities },
+    { data: visibleEvents },
+  ] = await Promise.all([
+    memberIds.length > 0
+      ? supabase
+          .from("profiles")
+          .select("id")
+          .in("id", memberIds)
+          .eq("is_public", true)
+          .eq("onboarding_completed", true)
+      : Promise.resolve({ data: [] as { id: string }[] }),
+    opportunityIds.length > 0
+      ? supabase
+          .from("opportunities")
+          .select("id,deadline")
+          .in("id", opportunityIds)
+          .eq("status", "published")
+      : Promise.resolve({
+          data: [] as { id: string; deadline: string | null }[],
+        }),
+    eventIds.length > 0
+      ? supabase
+          .from("events")
+          .select("id,starts_at,ends_at")
+          .in("id", eventIds)
+          .eq("status", "published")
+      : Promise.resolve({
+          data: [] as {
+            id: string;
+            starts_at: string;
+            ends_at: string | null;
+          }[],
+        }),
+  ]);
   const today = new Date().toISOString().slice(0, 10);
   const now = new Date().getTime();
+  const visibleMemberIds = new Set(
+    (visibleMembers ?? []).map((item) => item.id),
+  );
   const visibleOpportunityIds = new Set(
     (visibleOpportunities ?? [])
       .filter(
@@ -151,6 +180,10 @@ export default async function SearchPage({
       .map((item) => item.id),
   );
   const results = rawResults.filter((result) => {
+    if (isMemberResult(result)) {
+      return visibleMemberIds.has(result.entity_id);
+    }
+
     if (result.entity_type === "opportunity") {
       return visibleOpportunityIds.has(result.entity_id);
     }
@@ -245,7 +278,7 @@ export default async function SearchPage({
                           {getTypeLabel(result.entity_type)}
                         </span>
                         <h2 className="mt-1 truncate font-bold text-foreground">
-                          {result.title}
+                          {getSafeResultTitle(result)}
                         </h2>
                         {result.subtitle ? (
                           <p className="mt-1 line-clamp-2 text-sm leading-6 text-muted-foreground">
