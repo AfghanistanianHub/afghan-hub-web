@@ -17,20 +17,32 @@ test("category and pagination inputs reject prototype names and malformed pages"
   assert.equal(exports.publicHref("events", "a/b?next=bad"), "/explore/events/a%2Fb%3Fnext%3Dbad");
 });
 
-test("sitemap contains canonical public categories without member or search URLs", () => {
+test("sitemap contains canonical public categories and published detail URLs without private/search URLs", async () => {
   const sitemapExports = {};
   const source = fs.readFileSync(new URL("../src/app/sitemap.ts", import.meta.url), "utf8");
+  const published = [
+    { kind: "events", slug: "community-night" },
+    { kind: "businesses", slug: "kabul-bakery" },
+  ];
   vm.runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, {
     exports: sitemapExports,
-    require: (name) => { assert.equal(name, "@/lib/public-catalog"); return exports; },
+    require: (name) => {
+      if (name === "@/lib/public-catalog") return exports;
+      if (name === "@/lib/public-sitemap") return { getPublicSitemapItems: async () => published };
+      throw new Error(`Unexpected dependency: ${name}`);
+    },
   });
-  const urls = Array.from(sitemapExports.default(), entry => entry.url);
-  assert.equal(new Set(urls).size, 6);
+  const urls = Array.from(await sitemapExports.default(), entry => entry.url);
+  assert.equal(new Set(urls).size, 8);
+  assert.ok(urls.includes("https://app.apnbc.ca/explore/events/community-night"));
+  assert.ok(urls.includes("https://app.apnbc.ca/explore/businesses/kabul-bakery"));
   for (const url of urls) {
     const parsed = new URL(url);
     assert.equal(parsed.origin, "https://app.apnbc.ca");
-    assert.ok(["/", "/about", "/explore"].includes(parsed.pathname));
     assert.equal(parsed.searchParams.has("q"), false);
+    assert.equal(parsed.pathname.startsWith("/members"), false);
+    assert.equal(parsed.pathname.startsWith("/dashboard"), false);
+    assert.equal(parsed.pathname.startsWith("/login"), false);
     if (parsed.pathname === "/explore") assert.ok(exports.isPublicKind(parsed.searchParams.get("type")));
   }
 });

@@ -28,8 +28,8 @@ for (const [path, status, pattern] of checks) {
       const body = await response.text();
       assert.match(body, pattern, "Expected page content was missing");
       if (path === "/sitemap.xml") {
-        assert.equal((body.match(/<loc>/g) || []).length, 6);
-        assert.ok(!/<loc>[^<]*(?:\/members|\/dashboard|[?&]q=)/.test(body));
+        assert.ok((body.match(/<loc>/g) || []).length >= 6, "Expected the six static sitemap entries");
+        assert.ok(!/<loc>[^<]*(?:\/members|\/dashboard|\/login|\/forgot-password|\/update-password|[?&]q=)/.test(body));
       }
     }
     console.log(`PASS ${path}`);

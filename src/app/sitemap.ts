@@ -1,9 +1,16 @@
 import type { MetadataRoute } from "next";
-import { publicKinds } from "@/lib/public-catalog";
+import { publicHref, publicKinds } from "@/lib/public-catalog";
+import { getPublicSitemapItems } from "@/lib/public-sitemap";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  // Keep discovery independent of database availability and member sessions.
-  // Published detail pages are reachable through these category pages.
-  return ["/", "/about", ...publicKinds.map(kind => `/explore?type=${kind}`)]
-    .map(path => ({ url: `https://app.apnbc.ca${path}` }));
+const origin = "https://app.apnbc.ca";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // Static discovery must remain available even if the public data source is temporarily unavailable.
+  const staticEntries = ["/", "/about", ...publicKinds.map(kind => `/explore?type=${kind}`)]
+    .map(path => ({ url: `${origin}${path}` }));
+
+  const detailEntries = (await getPublicSitemapItems())
+    .map(({ kind, slug }) => ({ url: `${origin}${publicHref(kind, slug)}` }));
+
+  return [...staticEntries, ...detailEntries];
 }
