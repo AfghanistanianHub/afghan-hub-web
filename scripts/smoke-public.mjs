@@ -12,6 +12,7 @@ const checks = [
   ["/robots.txt", 200, /Sitemap: https:\/\/app\.apnbc\.ca\/sitemap\.xml/],
   ["/sitemap.xml", 200, /https:\/\/app\.apnbc\.ca\/about/],
   ["/explore/profiles/smoke-check", 404, /noindex/],
+  ["/definitely-not-a-real-page", 404, /This page isn’t available/],
   ["/dashboard", 307],
   ["/messages", 307],
 ];
