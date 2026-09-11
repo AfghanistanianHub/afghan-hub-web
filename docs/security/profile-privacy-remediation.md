@@ -12,6 +12,18 @@ Read-only aggregate verification on 2026-09-11 confirmed that an authenticated r
 
 The application UI already selects explicit display fields for member directory/profile views, but an authenticated client can bypass UI projections and query PostgREST directly. Therefore the database must enforce the field contract.
 
+## Confirmed member-search exposure
+
+Read-only inspection of production `public.search_afghan_hub(search_query, result_limit)` found an additional field-boundary problem:
+
+- The function is `SECURITY INVOKER` and executable by both `authenticated` and `anon`.
+- Its profile branch filters `p.is_public = true`, but does **not** require `p.onboarding_completed = true`.
+- Profile result titles use `coalesce(p.display_name, p.email)`, so a visible profile with no display name can return the profile email as a search result title.
+- The application search page consumes the RPC result directly and therefore cannot be considered a database privacy boundary.
+- Because the function is security-invoker, RLS still applies. The current broken anonymous profiles policy may cause anonymous profile search evaluation to fail rather than safely limit fields; this must not be treated as protection.
+
+The search remediation must remove email from result construction and apply the same visibility/onboarding contract as member discovery. Direct RPC execution must be covered by persona tests.
+
 ## Existing application dependencies
 
 Public/member-facing profile reads currently need fields such as:
@@ -31,6 +43,7 @@ Private/privileged profile uses include:
 - Dashboard layout reads the signed-in user's `role` and `onboarding_completed`.
 - Admin moderation-team UI intentionally reads member `email`, `role`, onboarding state and creation time.
 - Several connection/notification queries join `profiles` for safe identity/display fields.
+- Member search uses `search_afghan_hub`, which must be migrated to the same safe profile contract rather than returning base-table private fallbacks.
 
 A blanket table-SELECT revoke or a simple removal of `email`/`role` privileges would therefore risk breaking self/admin and relationship joins unless those flows are migrated deliberately.
 
@@ -70,7 +83,11 @@ Do not rely on frontend `.select(...)` lists as an authorization mechanism.
 - **Role/capability checks:** reuse `is_admin()` for admin checks and prefer a narrow capability/RPC for moderator state rather than granting every authenticated user access to every row's `role` column.
 - **Admin team:** expose a deliberately admin-only RPC/view for member email/role management. Authorization must be enforced in the database; the existing `set_profile_role` function already enforces admin-only mutation and self-role protection.
 
-### 4. Fix the anonymous policy coherently
+### 4. Fix search at the same boundary
+
+Replace the profile branch of `search_afghan_hub` so it reads only the approved safe member fields, never uses email as a title/subtitle fallback, and requires the same visibility/onboarding conditions as directory/member detail discovery. If anonymous member search is not an approved product requirement, remove anonymous execution rather than relying on a failing RLS expression.
+
+### 5. Fix the anonymous policy coherently
 
 Do not solve the current anonymous `is_admin()` permission error by merely granting `anon` EXECUTE on `is_admin()`. If anonymous member profiles are not a launch requirement, keep anonymous profile access closed. If public member discovery is later approved, expose it only through the same explicit safe field contract.
 
@@ -82,14 +99,16 @@ In an isolated production-compatible database, prove all of the following with d
 2. Unrelated `authenticated` member can retrieve only the approved safe fields for visible members.
 3. Unrelated member cannot retrieve another profile's `email`, `role` or internal metadata even by requesting those columns directly.
 4. A member with `is_public=false` is absent from discovery and cannot be fetched through the safe discovery surface by unrelated members.
-5. Owner can read/update their allowed self fields but cannot self-promote role.
-6. Moderator receives only capabilities intended for moderators.
-7. Admin can access the intentionally privileged moderation-team data and role-management path.
-8. Connection/notification joins still return the safe display identity fields required by the UI.
+5. A profile with incomplete onboarding is absent from directory/detail/search discovery where the product requires onboarding completion.
+6. Direct `search_afghan_hub` calls never return email or private profile metadata and respect the approved visibility contract.
+7. Owner can read/update their allowed self fields but cannot self-promote role.
+8. Moderator receives only capabilities intended for moderators.
+9. Admin can access the intentionally privileged moderation-team data and role-management path.
+10. Connection/notification joins still return the safe display identity fields required by the UI.
 
 ## Migration safety
 
-Production migration history and repository migration history are not currently a trustworthy one-to-one baseline. Therefore:
+Production migration history and repository migration history are not currently a trustworthy one-to-one baseline. Production currently reports 45 applied migrations, including a July baseline absent from the repository and later same-name migrations whose applied timestamp versions differ from repository filenames. Therefore:
 
 - Do not run `db push` against production.
 - Do not repair migration history blindly.
@@ -102,7 +121,7 @@ Production migration history and repository migration history are not currently 
 1. Keep Settings account email sourced from Auth rather than `profiles.email` (completed in #69).
 2. Inventory every `profiles` query/join and classify fields as self-private, admin-private or member-visible.
 3. Add the safe profile database surface and database-level persona tests in a non-production environment.
-4. Switch directory/member/connection/notification consumers to the safe surface where necessary.
+4. Migrate `search_afghan_hub` and directory/member/connection/notification consumers to the safe surface where necessary.
 5. Add self/admin-only access paths for private columns, reusing `is_admin()`/`set_profile_role` where appropriate and introducing only narrowly scoped additional capability functions.
 6. Restrict base-table direct SELECT so an unrelated authenticated role cannot retrieve private columns/rows.
 7. Re-run all application CI plus persona/security tests.
