@@ -19,5 +19,5 @@ export function publicPageNumber(value?: string | string[]) {
 }
 
 export function isPublicPath(pathname: string) {
-  return pathname === "/" || pathname === "/about" || pathname === "/explore" || pathname.startsWith("/explore/");
+  return pathname === "/robots.txt" || pathname === "/sitemap.xml" || pathname === "/" || pathname === "/about" || pathname === "/explore" || pathname.startsWith("/explore/");
 }
