@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useTransition } from "react";
 
 export type RecoveryProps = { reset: () => void };
@@ -16,7 +17,7 @@ export function PageRecovery({ reset }: RecoveryProps) {
           <button type="button" disabled={pending} onClick={() => startTransition(reset)} className="min-h-11 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary disabled:cursor-wait disabled:opacity-60">
             <span role="status">{pending ? "Trying again…" : "Try again"}</span>
           </button>
-          <a href="/" className="min-h-11 rounded-xl border border-border px-5 py-3 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Go to home</a>
+          <Link href="/" className="min-h-11 rounded-xl border border-border px-5 py-3 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Go to home</Link>
         </div>
       </section>
     </main>
