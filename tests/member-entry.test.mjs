@@ -3,6 +3,7 @@ import fs from "node:fs";
 import test from "node:test";
 import vm from "node:vm";
 import ts from "typescript";
+
 function actions(error = null) {
   const exports = {};
   let signupInput;
@@ -18,20 +19,46 @@ function actions(error = null) {
   exports.getSignupInput = () => signupInput;
   return exports;
 }
+
+function dashboardActions() {
+  const exports = {};
+  let signOutCalls = 0;
+  vm.runInNewContext(ts.transpileModule(fs.readFileSync(new URL("../src/app/(dashboard)/actions.ts", import.meta.url), "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, {
+    exports,
+    require(name) {
+      if (name === "next/navigation") return { redirect: path => { throw new Error(path); } };
+      if (name === "@/lib/supabase/server") return { createClient: async () => ({ auth: { signOut: async () => { signOutCalls += 1; return { error: null }; } } }) };
+      throw new Error(name);
+    },
+  });
+  exports.getSignOutCalls = () => signOutCalls;
+  return exports;
+}
+
 const form = password => new Map([["email", "member@example.com"], ["password", password]]);
+
 test("successful login enters member dashboard instead of public landing", async () => {
   await assert.rejects(actions().login(form("test-password")), { message: "/dashboard" });
 });
+
 test("failed login remains on sign-in page", async () => {
   await assert.rejects(actions({ message: "Invalid login" }).login(form("test-password")), { message: "/login?error=Invalid%20login" });
 });
+
 test("signup validation preserves the join flow", async () => {
   await assert.rejects(actions().signup(form("short")), { message: "/login?mode=join&error=Password%20must%20be%20at%20least%208%20characters." });
 });
+
 test("signup confirmation returns through the controlled app callback", async () => {
   const app = actions();
   await assert.rejects(app.signup(form("test-password")), { message: "/login?message=Account%20created.%20Check%20your%20email%20if%20confirmation%20is%20required." });
   assert.equal(app.getSignupInput().options.emailRedirectTo, "https://app.apnbc.ca/auth/callback?next=/dashboard&flow=signup");
+});
+
+test("logout clears the server session before returning to sign in", async () => {
+  const app = dashboardActions();
+  await assert.rejects(app.logout(), { message: "/login" });
+  assert.equal(app.getSignOutCalls(), 1);
 });
 
 test("dashboard redirects signed-out requests before starting member queries", async () => {
