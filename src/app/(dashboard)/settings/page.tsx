@@ -27,7 +27,7 @@ export default async function SettingsPage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name, first_name, last_name, email, is_public")
+    .select("display_name, first_name, last_name, is_public")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -35,7 +35,7 @@ export default async function SettingsPage({
     profile?.display_name?.trim() ||
     [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") ||
     "Afghan Hub member";
-  const accountEmail = profile?.email || user.email || "Not available";
+  const accountEmail = user.email || "Not available";
 
   return (
     <main className="px-4 py-8 md:px-8">
