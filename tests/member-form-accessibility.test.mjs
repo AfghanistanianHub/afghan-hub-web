@@ -14,6 +14,10 @@ const submitSource = fs.readFileSync(
   new URL("../src/components/forms/pending-submit-button.tsx", import.meta.url),
   "utf8",
 );
+const avatarSource = fs.readFileSync(
+  new URL("../src/components/profile/avatar-upload.tsx", import.meta.url),
+  "utf8",
+);
 
 test("profile errors are announced and profile submit exposes pending state", () => {
   assert.match(profileSource, /role="alert"/);
@@ -37,4 +41,13 @@ test("pending submit button prevents repeat submission while announcing progress
   assert.match(submitSource, /aria-disabled=\{pending\}/);
   assert.match(submitSource, /role="status"/);
   assert.match(submitSource, /aria-live="polite"/);
+});
+
+test("avatar upload stays keyboard focusable and announces upload results", () => {
+  assert.match(avatarSource, /className="sr-only"/);
+  assert.doesNotMatch(avatarSource, /className="hidden"/);
+  assert.match(avatarSource, /focus-within:outline-2/);
+  assert.match(avatarSource, /aria-busy=\{uploading\}/);
+  assert.match(avatarSource, /role=\{message\.kind === "error" \? "alert" : "status"\}/);
+  assert.match(avatarSource, /aria-describedby=\{message \? "avatar-upload-message" : undefined\}/);
 });
