@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getSiteUrl } from "@/lib/site-url";
 
 export async function login(formData: FormData) {
   const supabase = await createClient();
@@ -35,9 +36,11 @@ export async function signup(formData: FormData) {
     );
   }
 
+  const emailRedirectTo = `${getSiteUrl()}/auth/callback?next=/dashboard&flow=signup`;
   const { error } = await supabase.auth.signUp({
     email,
     password,
+    options: { emailRedirectTo },
   });
 
   if (error) {
