@@ -41,8 +41,14 @@ test("successful login enters member dashboard instead of public landing", async
   await assert.rejects(actions().login(form("test-password")), { message: "/dashboard" });
 });
 
-test("failed login remains on sign-in page", async () => {
-  await assert.rejects(actions({ message: "Invalid login" }).login(form("test-password")), { message: "/login?error=Invalid%20login" });
+test("failed login remains on sign-in page with redacted provider detail", async () => {
+  await assert.rejects(
+    actions({ message: "Invalid login" }).login(form("test-password")),
+    {
+      message:
+        "/login?error=We%20could%20not%20sign%20you%20in.%20Check%20your%20email%20and%20password%20and%20try%20again.",
+    },
+  );
 });
 
 test("signup validation preserves the join flow", async () => {

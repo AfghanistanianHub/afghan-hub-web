@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getSiteUrl } from "@/lib/site-url";
 
+const resetRequestErrorMessage =
+  "We could not send the password reset email right now. Please try again shortly.";
+
 export async function requestPasswordReset(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
 
@@ -24,7 +27,7 @@ export async function requestPasswordReset(formData: FormData) {
 
   if (error) {
     redirect(
-      `/forgot-password?error=${encodeURIComponent(error.message)}`
+      `/forgot-password?error=${encodeURIComponent(resetRequestErrorMessage)}`
     );
   }
 
