@@ -31,6 +31,18 @@ for (const [path, status, pattern] of checks) {
       const body = await response.text();
       assert.match(body, pattern, "Expected page content was missing");
 
+      if (path === "/") {
+        assert.match(
+          body,
+          /<meta[^>]+property=["']og:image["'][^>]+content=["']https:\/\/app\.apnbc\.ca\//i,
+          "Expected the Open Graph image to resolve against the production origin",
+        );
+        assert.ok(
+          !/<meta[^>]+(?:property=["']og:image["']|name=["']twitter:image["'])[^>]+content=["']http:\/\/localhost(?::3000)?\//i.test(body),
+          "Social image metadata must not resolve to localhost",
+        );
+      }
+
       if (path.startsWith("/login") || path === "/forgot-password") {
         assert.match(
           body,
