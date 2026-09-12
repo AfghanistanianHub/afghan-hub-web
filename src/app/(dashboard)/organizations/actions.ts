@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getMyAccessContext } from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
 import { isValidEmail, isValidHttpUrl } from "@/lib/validation";
 
@@ -113,7 +114,7 @@ export async function createOrganization(formData: FormData) {
 
   if (error) {
     redirect(
-      `/organizations/new?error=${encodeURIComponent(error.message)}`,
+      "/organizations/new?error=We%20could%20not%20create%20the%20organization.%20Please%20try%20again.",
     );
   }
 
@@ -188,7 +189,7 @@ export async function updateOrganization(formData: FormData) {
 
   if (error) {
     redirect(
-      `/organizations/${slug}/edit?error=${encodeURIComponent(error.message)}`,
+      `/organizations/${slug}/edit?error=We%20could%20not%20save%20the%20organization.%20Please%20try%20again.`,
     );
   }
 
@@ -216,13 +217,9 @@ export async function setOrganizationVerification(formData: FormData) {
     redirect("/organizations");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { data: accessContext } = await getMyAccessContext(supabase, user.id);
 
-  if (profile?.role !== "admin") {
+  if (accessContext?.role !== "admin") {
     redirect("/");
   }
 
@@ -237,9 +234,7 @@ export async function setOrganizationVerification(formData: FormData) {
 
   if (error || !organization) {
     redirect(
-      `/organizations/${slug}?error=${encodeURIComponent(
-        error?.message ?? "Unable to update verification",
-      )}`,
+      `/organizations/${slug}?error=We%20could%20not%20update%20verification.%20Please%20try%20again.`,
     );
   }
 
