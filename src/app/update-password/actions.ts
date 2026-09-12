@@ -3,6 +3,9 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
+const passwordUpdateErrorMessage =
+  "We could not update your password right now. Request a new reset link and try again.";
+
 export async function updatePassword(formData: FormData) {
   const password = String(formData.get("password") ?? "");
   const passwordConfirmation = String(
@@ -42,7 +45,7 @@ export async function updatePassword(formData: FormData) {
 
   if (error) {
     redirect(
-      `/update-password?error=${encodeURIComponent(error.message)}`
+      `/update-password?error=${encodeURIComponent(passwordUpdateErrorMessage)}`
     );
   }
 
