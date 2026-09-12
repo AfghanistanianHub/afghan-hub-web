@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { moderateContent } from "@/app/(dashboard)/moderation/actions";
+import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import { createClient } from "@/lib/supabase/server";
 
 type ModerationEntityType =
@@ -251,13 +252,21 @@ export default async function ModerationPage({
         </div>
 
         {error ? (
-          <div className="mt-6 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+          <div
+            role="alert"
+            aria-live="assertive"
+            className="mt-6 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive"
+          >
             {error}
           </div>
         ) : null}
 
         {success ? (
-          <div className="mt-6 rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm text-primary">
+          <div
+            role="status"
+            aria-live="polite"
+            className="mt-6 rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm text-primary"
+          >
             The submission was {success}.
           </div>
         ) : null}
@@ -495,12 +504,12 @@ function ModerationButtons({
         <input type="hidden" name="entity_id" value={entityId} />
         <input type="hidden" name="entity_type" value={entityType} />
         <input type="hidden" name="decision" value="approve" />
-        <button
-          type="submit"
-          className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:opacity-90"
+        <PendingSubmitButton
+          pendingLabel="Approving…"
+          className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           <Check className="size-4" /> Approve
-        </button>
+        </PendingSubmitButton>
       </form>
 
       <details className="rounded-xl border border-destructive/20 bg-destructive/5 p-3">
@@ -522,12 +531,12 @@ function ModerationButtons({
               className="mt-2 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-destructive focus:ring-2 focus:ring-destructive/10"
             />
           </label>
-          <button
-            type="submit"
-            className="inline-flex items-center gap-2 rounded-xl border border-destructive/30 px-4 py-2 text-sm font-semibold text-destructive transition hover:bg-destructive/10"
+          <PendingSubmitButton
+            pendingLabel="Rejecting…"
+            className="inline-flex items-center gap-2 rounded-xl border border-destructive/30 px-4 py-2 text-sm font-semibold text-destructive transition hover:bg-destructive/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-destructive"
           >
             <X className="size-4" /> Reject submission
-          </button>
+          </PendingSubmitButton>
         </form>
       </details>
     </div>
