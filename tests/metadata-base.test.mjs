@@ -1,0 +1,18 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import test from "node:test";
+
+const layoutSource = fs.readFileSync(
+  new URL("../src/app/layout.tsx", import.meta.url),
+  "utf8",
+);
+const siteUrlSource = fs.readFileSync(
+  new URL("../src/lib/site-url.ts", import.meta.url),
+  "utf8",
+);
+
+test("root metadata resolves social assets against the configured production site URL", () => {
+  assert.match(layoutSource, /import \{ getSiteUrl \} from "@\/lib\/site-url"/);
+  assert.match(layoutSource, /metadataBase:\s*new URL\(getSiteUrl\(\)\)/);
+  assert.match(siteUrlSource, /https:\/\/app\.apnbc\.ca/);
+});
