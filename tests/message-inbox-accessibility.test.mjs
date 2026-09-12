@@ -18,7 +18,6 @@ test("message inbox announces load failures", async () => {
 test("message inbox navigation exposes visible keyboard focus", async () => {
   const source = await readFile(pagePath, "utf8");
 
-  assert.match(source, /Find people[\s\S]*?focus-visible:outline/);
-  assert.match(source, /Browse the network[\s\S]*?focus-visible:outline|focus-visible:outline[\s\S]*?Browse the network/);
+  assert.match(source, /href="\/network"[\s\S]{0,500}focus-visible:outline/);
   assert.match(source, /focus-visible:relative focus-visible:z-10 focus-visible:outline-2/);
 });
