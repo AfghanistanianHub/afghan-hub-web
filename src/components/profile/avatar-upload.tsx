@@ -34,7 +34,10 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
       .upload(filePath, file, { upsert: true, contentType: file.type });
 
     if (uploadError) {
-      setMessage({ text: uploadError.message, kind: "error" });
+      setMessage({
+        text: "We could not upload your profile photo. Please try again.",
+        kind: "error",
+      });
       setUploading(false);
       return;
     }
@@ -49,7 +52,10 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
       .eq("id", userId);
 
     if (profileError) {
-      setMessage({ text: profileError.message, kind: "error" });
+      setMessage({
+        text: "The photo uploaded, but we could not update your profile. Please try again.",
+        kind: "error",
+      });
       setUploading(false);
       return;
     }
