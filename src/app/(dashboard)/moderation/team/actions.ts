@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { getMyAccessContext } from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
 
 const allowedRoles = ["member", "moderator", "admin"] as const;
@@ -30,13 +31,9 @@ export async function updateMemberRole(formData: FormData) {
     redirect("/moderation/team?error=Invalid%20role%20request");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { data: accessContext } = await getMyAccessContext(supabase, user.id);
 
-  if (profile?.role !== "admin") {
+  if (accessContext?.role !== "admin") {
     redirect("/");
   }
 
@@ -47,9 +44,7 @@ export async function updateMemberRole(formData: FormData) {
 
   if (error || !changed) {
     redirect(
-      `/moderation/team?error=${encodeURIComponent(
-        error?.message ?? "Unable to update member role",
-      )}`,
+      "/moderation/team?error=We%20could%20not%20update%20that%20member%20role.%20Please%20refresh%20and%20try%20again.",
     );
   }
 
