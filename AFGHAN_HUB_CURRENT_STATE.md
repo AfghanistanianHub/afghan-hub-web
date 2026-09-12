@@ -26,6 +26,13 @@ The repository now has stronger public SEO, failure/loading recovery, auth callb
 ## Account-entry evidence
 A read-only aggregate production Auth check on 2026-09-11 found 3 total users; all 3 were email-confirmed and all 3 had at least one successful sign-in. No email, user ID or other personal value was read. This confirms confirmation/login has worked historically in the hosted project, but it does not replace fresh acceptance of current confirmation/reset delivery, expired links, session expiry and cross-tab sign-out.
 
+## Member-journey evidence
+Read-only aggregate production checks on 2026-09-11 found 2 connections and both are accepted, 2 conversations with 4 conversation memberships, 13 messages and 16 notifications. Of the notifications, 13 have `read_at` populated and 3 remain unread; 3 of 4 conversation memberships have a `last_read_at` marker. No member identity, message text, notification content or other personal value was read.
+
+This confirms connection, conversation, messaging, notification and read-state paths have all been exercised in the hosted environment. It does not replace a fresh controlled multi-persona acceptance pass covering unrelated-member denial, connection accept/decline/cancel/disconnect, unread/read synchronization, contribution ownership and moderator/admin behavior.
+
+Aggregate content status on the same read-only pass showed 2 pending opportunities, 5 pending events, 2 published opportunities, 1 published event, 1 published business and 2 published organizations. No production rows were changed.
+
 ## Confirmed privacy blocker
 A read-only production metadata/role audit on 2026-09-11 confirmed that `profiles` has RLS enabled, but authenticated users have table-level `SELECT` and the `profiles_select_public_or_owner` policy permits rows with `is_public=true`. Aggregate-only verification under the `authenticated` role confirmed that public profile rows with non-null email are selectable; no personal values were read. Anonymous profile access currently errors because the same policy references `is_admin()` while `anon` lacks execute permission on that function.
 
@@ -38,7 +45,7 @@ Production currently reports 45 applied migrations. The repository does not cont
 
 ## Remaining launch dependencies
 1. Real registration/confirmation/password-reset delivery with a designated test account, including expired links, session expiry and cross-tab sign-out behavior.
-2. Multi-account member journey: discovery → connection → conversation → unread/read → contribution → moderation, with unrelated-member denial and moderator/admin personas.
+2. Controlled multi-account acceptance: verify the already-exercised connection/messaging/read-state flows plus decline/cancel/disconnect, unrelated-member denial, contribution ownership and moderator/admin personas.
 3. Implement the reviewed profile column/grant/RPC/search remediation in an isolated production-compatible environment and pass the persona test matrix before any production authorization change.
 4. Reconcile enough of the production migration baseline to produce a production-specific, reversible privacy migration without replaying repository history.
 5. Correct or unpublish remaining real published records with disposable placeholder summaries/descriptions. Application guardrails now exclude placeholder titles and hide exact placeholder copy but intentionally do not rewrite production content.
