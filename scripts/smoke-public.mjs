@@ -9,12 +9,14 @@ const checks = [
   ["/about", 200, /<h1[ >]/],
   ["/explore?type=events", 200, /Find your next connection/],
   ["/login?mode=join", 200, /Join Afghan Hub/],
+  ["/forgot-password", 200, /Reset your password/],
   ["/robots.txt", 200, /Sitemap: https:\/\/app\.apnbc\.ca\/sitemap\.xml/],
   ["/sitemap.xml", 200, /https:\/\/app\.apnbc\.ca\/about/],
   ["/explore/profiles/smoke-check", 404, /noindex/],
   ["/definitely-not-a-real-page", 404, /This page isn’t available/],
   ["/dashboard", 307],
   ["/messages", 307],
+  ["/update-password", 307],
 ];
 let failed = 0;
 for (const [path, status, pattern] of checks) {
@@ -28,6 +30,15 @@ for (const [path, status, pattern] of checks) {
     } else {
       const body = await response.text();
       assert.match(body, pattern, "Expected page content was missing");
+
+      if (path.startsWith("/login") || path === "/forgot-password") {
+        assert.match(
+          body,
+          /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i,
+          "Expected auth/recovery page to be noindex",
+        );
+      }
+
       if (path === "/sitemap.xml") {
         assert.ok((body.match(/<loc>/g) || []).length >= 6, "Expected the six static sitemap entries");
         assert.ok(!/<loc>[^<]*(?:\/members|\/dashboard|\/login|\/forgot-password|\/update-password|[?&]q=)/.test(body));
