@@ -1,0 +1,51 @@
+name: Bootstrap residual advisory patches
+
+on:
+  push:
+    branches:
+      - deps/residual-advisory-patches
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+          cache: npm
+
+      - name: Add compatible transitive overrides
+        run: |
+          npm pkg set "overrides.hono=4.13.7"
+          npm pkg set "overrides.js-yaml=4.3.2"
+          npm pkg set "overrides.qs=6.16.0"
+          npm install --package-lock-only --ignore-scripts
+
+      - name: Capture npm audit report
+        run: npm audit --json > residual-advisory-audit.json || true
+
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: residual-advisory-audit
+          path: residual-advisory-audit.json
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Commit generated package files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/residual-advisory-patches.yml
+          git add package.json package-lock.json
+          git commit -m "chore: patch residual transitive advisories"
+          git push origin HEAD:deps/residual-advisory-patches
