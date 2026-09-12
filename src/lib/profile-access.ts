@@ -12,3 +12,14 @@ export async function getMyAccessContext(
     .eq("id", userId)
     .maybeSingle();
 }
+
+export async function getAdminMemberAccounts(
+  supabase: ServerSupabaseClient,
+) {
+  return supabase
+    .from("profiles")
+    .select(
+      "id,display_name,first_name,last_name,email,role,onboarding_completed,created_at",
+    )
+    .order("created_at", { ascending: true });
+}
