@@ -4,6 +4,10 @@ import { ShieldCheck } from "lucide-react";
 
 import { updateMemberRole } from "@/app/(dashboard)/moderation/team/actions";
 import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
+import {
+  getAdminMemberAccounts,
+  getMyAccessContext,
+} from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
 
 type ModerationTeamPageProps = {
@@ -41,22 +45,14 @@ export default async function ModerationTeamPage({
     redirect("/login");
   }
 
-  const { data: viewer } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { data: viewer } = await getMyAccessContext(supabase, user.id);
 
   if (viewer?.role !== "admin") {
     redirect("/moderation");
   }
 
-  const { data: members, error: membersError } = await supabase
-    .from("profiles")
-    .select(
-      "id,display_name,first_name,last_name,email,role,onboarding_completed,created_at",
-    )
-    .order("created_at", { ascending: true });
+  const { data: members, error: membersError } =
+    await getAdminMemberAccounts(supabase);
 
   return (
     <main className="px-4 py-8 md:px-8">
@@ -112,7 +108,7 @@ export default async function ModerationTeamPage({
             aria-live="assertive"
             className="mt-8 rounded-xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive"
           >
-            We could not load members: {membersError.message}
+            We could not load members. Please try again.
           </div>
         ) : (
           <div className="mt-8 space-y-4">
