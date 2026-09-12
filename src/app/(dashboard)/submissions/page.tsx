@@ -49,6 +49,9 @@ function getStatusPresentation(status: string) {
   };
 }
 
+const focusClass =
+  "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary";
+
 export default async function SubmissionsPage() {
   const supabase = await createClient();
   const {
@@ -129,13 +132,13 @@ export default async function SubmissionsPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/opportunities/new"
-                className="rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+                className={`rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 ${focusClass}`}
               >
                 New opportunity
               </Link>
               <Link
                 href="/events/new"
-                className="rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted"
+                className={`rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted ${focusClass}`}
               >
                 New event
               </Link>
@@ -144,7 +147,11 @@ export default async function SubmissionsPage() {
         </section>
 
         {hasError ? (
-          <div className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.08] p-4 text-sm text-destructive">
+          <div
+            role="alert"
+            aria-live="assertive"
+            className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.08] p-4 text-sm text-destructive"
+          >
             We could not load all of your submissions. Please try again.
           </div>
         ) : null}
@@ -307,7 +314,7 @@ function SubmissionCard({
   const StatusIcon = presentation.icon;
 
   return (
-    <article className="surface-panel rounded-2xl p-6 transition hover:-translate-y-0.5 hover:shadow-md">
+    <article className="surface-panel rounded-2xl p-6 transition hover:-translate-y-0.5 hover:shadow-md focus-within:shadow-md">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <span
           className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${presentation.className}`}
@@ -320,7 +327,7 @@ function SubmissionCard({
 
       <Link
         href={detailHref}
-        className="mt-4 block text-xl font-bold text-foreground transition hover:text-primary"
+        className={`mt-4 block text-xl font-bold text-foreground transition hover:text-primary ${focusClass}`}
       >
         {title}
       </Link>
@@ -340,13 +347,13 @@ function SubmissionCard({
       <div className="mt-6 flex gap-3">
         <Link
           href={detailHref}
-          className="rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-muted"
+          className={`rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-muted ${focusClass}`}
         >
           View
         </Link>
         <Link
           href={editHref}
-          className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-muted"
+          className={`inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-muted ${focusClass}`}
         >
           <Pencil className="size-3.5" /> Edit
         </Link>
@@ -369,7 +376,7 @@ function EmptyState({
       <p className="text-sm text-muted-foreground">{text}</p>
       <Link
         href={href}
-        className="mt-4 inline-flex text-sm font-semibold text-primary transition hover:text-primary/80"
+        className={`mt-4 inline-flex text-sm font-semibold text-primary transition hover:text-primary/80 ${focusClass}`}
       >
         {label}
       </Link>
