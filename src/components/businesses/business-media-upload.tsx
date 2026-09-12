@@ -13,6 +13,11 @@ type BusinessMediaUploadProps = {
   currentCoverUrl: string | null;
 };
 
+type UploadMessage = {
+  text: string;
+  kind: "success" | "error";
+} | null;
+
 const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
 export function BusinessMediaUpload({
@@ -24,18 +29,18 @@ export function BusinessMediaUpload({
 }: BusinessMediaUploadProps) {
   const supabase = createClient();
   const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState<UploadMessage>(null);
 
   async function uploadImage(file: File, kind: "logo" | "cover", maxSizeMb: number) {
-    setMessage("");
+    setMessage(null);
 
     if (!allowedTypes.includes(file.type)) {
-      setMessage("Please select a JPG, PNG, or WebP image.");
+      setMessage({ text: "Please select a JPG, PNG, or WebP image.", kind: "error" });
       return;
     }
 
     if (file.size > maxSizeMb * 1024 * 1024) {
-      setMessage(`The image must be smaller than ${maxSizeMb} MB.`);
+      setMessage({ text: `The image must be smaller than ${maxSizeMb} MB.`, kind: "error" });
       return;
     }
 
@@ -48,18 +53,22 @@ export function BusinessMediaUpload({
       .upload(filePath, file, { upsert: true, contentType: file.type });
 
     if (uploadError) {
-      setMessage(uploadError.message);
+      setMessage({
+        text: `We could not upload the business ${kind}. Please try again.`,
+        kind: "error",
+      });
       setUploading(false);
       return;
     }
 
-    const { data: { publicUrl } } = supabase.storage
-      .from("business-media")
-      .getPublicUrl(filePath);
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("business-media").getPublicUrl(filePath);
 
-    const mediaUpdate = kind === "logo"
-      ? { logo_url: publicUrl, updated_at: new Date().toISOString() }
-      : { cover_url: publicUrl, updated_at: new Date().toISOString() };
+    const mediaUpdate =
+      kind === "logo"
+        ? { logo_url: publicUrl, updated_at: new Date().toISOString() }
+        : { cover_url: publicUrl, updated_at: new Date().toISOString() };
 
     const { error: updateError } = await supabase
       .from("businesses")
@@ -68,21 +77,27 @@ export function BusinessMediaUpload({
       .eq("owner_id", userId);
 
     if (updateError) {
-      setMessage(updateError.message);
+      setMessage({
+        text: `The image uploaded, but we could not update the business ${kind}. Please try again.`,
+        kind: "error",
+      });
       setUploading(false);
       return;
     }
 
-    setMessage(`Business ${kind} updated. The listing has been resubmitted for review.`);
+    setMessage({
+      text: `Business ${kind} updated. The listing has been resubmitted for review.`,
+      kind: "success",
+    });
     setUploading(false);
     window.location.reload();
   }
 
   const uploadClass =
-    "inline-flex cursor-pointer rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90";
+    "inline-flex cursor-pointer rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" aria-busy={uploading}>
       <section className="surface-panel rounded-2xl p-6">
         <h2 className="text-xl font-semibold">Business cover</h2>
         <div className="mt-5">
@@ -102,19 +117,24 @@ export function BusinessMediaUpload({
 
           <div className="mt-4">
             <label className={uploadClass}>
-              {uploading ? "Uploading..." : "Upload cover"}
+              <span role="status" aria-live="polite">
+                {uploading ? "Uploading…" : "Upload cover"}
+              </span>
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 disabled={uploading}
-                className="hidden"
+                aria-describedby="business-media-help business-media-message"
+                className="sr-only"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
                   if (file) void uploadImage(file, "cover", 8);
                 }}
               />
             </label>
-            <p className="mt-2 text-xs text-muted-foreground">Recommended ratio: 3:1. Maximum size: 8 MB.</p>
+            <p id="business-media-help" className="mt-2 text-xs text-muted-foreground">
+              Recommended ratio: 3:1. Maximum size: 8 MB.
+            </p>
           </div>
         </div>
       </section>
@@ -138,23 +158,38 @@ export function BusinessMediaUpload({
 
           <div>
             <label className={uploadClass}>
-              {uploading ? "Uploading..." : "Upload logo"}
+              <span role="status" aria-live="polite">
+                {uploading ? "Uploading…" : "Upload logo"}
+              </span>
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 disabled={uploading}
-                className="hidden"
+                aria-describedby="business-logo-help business-media-message"
+                className="sr-only"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
                   if (file) void uploadImage(file, "logo", 5);
                 }}
               />
             </label>
-            <p className="mt-2 text-xs text-muted-foreground">JPG, PNG, or WebP. Maximum size: 5 MB.</p>
-            {message ? <p className="mt-2 text-sm text-foreground/80">{message}</p> : null}
+            <p id="business-logo-help" className="mt-2 text-xs text-muted-foreground">
+              JPG, PNG, or WebP. Maximum size: 5 MB.
+            </p>
           </div>
         </div>
       </section>
+
+      {message ? (
+        <p
+          id="business-media-message"
+          role={message.kind === "error" ? "alert" : "status"}
+          aria-live={message.kind === "error" ? "assertive" : "polite"}
+          className={message.kind === "error" ? "text-sm text-destructive" : "text-sm text-muted-foreground"}
+        >
+          {message.text}
+        </p>
+      ) : null}
     </div>
   );
 }
