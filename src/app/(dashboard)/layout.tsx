@@ -5,6 +5,7 @@ import type { NotificationSummary } from "@/components/dashboard/notification-be
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { RealtimeMessageRefresh } from "@/components/messages/realtime-message-refresh";
 import { getTotalUnreadMessageCount } from "@/lib/messages";
+import { getMyAccessContext } from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
@@ -26,15 +27,17 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
 
   const [
     { data: profile },
+    { data: accessContext },
     { data: notificationRows },
     { count: unreadNotificationCount },
     { data: unreadMessageRows },
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("display_name,first_name,onboarding_completed,role")
+      .select("display_name,first_name")
       .eq("id", user.id)
       .maybeSingle(),
+    getMyAccessContext(supabase, user.id),
     supabase
       .from("notifications")
       .select(`
@@ -66,16 +69,17 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
     supabase.rpc("get_unread_message_counts"),
   ]);
 
-  if (!profile?.onboarding_completed) {
+  if (!accessContext?.onboarding_completed) {
     redirect("/profile");
   }
 
   const displayName =
-    profile.display_name?.trim() ||
-    profile.first_name?.trim() ||
+    profile?.display_name?.trim() ||
+    profile?.first_name?.trim() ||
     user.email?.split("@")[0] ||
     "Member";
-  const canModerate = profile.role === "admin" || profile.role === "moderator";
+  const canModerate =
+    accessContext.role === "admin" || accessContext.role === "moderator";
 
   let pendingModerationCount = 0;
 
