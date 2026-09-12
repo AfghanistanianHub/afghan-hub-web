@@ -13,6 +13,13 @@ type OrganizationLogoUploadProps = {
   currentCoverUrl: string | null;
 };
 
+type UploadMessage = {
+  text: string;
+  kind: "success" | "error";
+} | null;
+
+const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
 export function OrganizationLogoUpload({
   organizationId,
   organizationName,
@@ -22,103 +29,75 @@ export function OrganizationLogoUpload({
 }: OrganizationLogoUploadProps) {
   const supabase = createClient();
   const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState<UploadMessage>(null);
 
-  async function uploadLogo(file: File) {
-    setMessage("");
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-      setMessage("Please select a JPG, PNG, or WebP image.");
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      setMessage("The image must be smaller than 5 MB.");
+  async function uploadImage(file: File, kind: "logo" | "cover", maxSizeMb: number) {
+    setMessage(null);
+
+    if (!allowedTypes.includes(file.type)) {
+      setMessage({ text: "Please select a JPG, PNG, or WebP image.", kind: "error" });
       return;
     }
 
-    setUploading(true);
-    const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
-    const filePath = `${organizationId}/logo.${extension}`;
-    const { error: uploadError } = await supabase.storage
-      .from("organization-media")
-      .upload(filePath, file, { upsert: true, contentType: file.type });
-
-    if (uploadError) {
-      setMessage(uploadError.message);
-      setUploading(false);
-      return;
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from("organization-media")
-      .getPublicUrl(filePath);
-
-    const { error: updateError } = await supabase
-      .from("organizations")
-      .update({ logo_url: publicUrl, updated_at: new Date().toISOString() })
-      .eq("id", organizationId)
-      .eq("owner_id", userId);
-
-    if (updateError) {
-      setMessage(updateError.message);
-      setUploading(false);
-      return;
-    }
-
-    setMessage("Organization logo updated. The listing has been resubmitted for review.");
-    setUploading(false);
-    window.location.reload();
-  }
-
-  async function uploadCover(file: File) {
-    setMessage("");
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-      setMessage("Please select a JPG, PNG, or WebP image.");
-      return;
-    }
-    if (file.size > 8 * 1024 * 1024) {
-      setMessage("The cover image must be smaller than 8 MB.");
+    if (file.size > maxSizeMb * 1024 * 1024) {
+      setMessage({ text: `The image must be smaller than ${maxSizeMb} MB.`, kind: "error" });
       return;
     }
 
     setUploading(true);
     const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
-    const filePath = `${organizationId}/cover.${extension}`;
+    const filePath = `${organizationId}/${kind}.${extension}`;
+
     const { error: uploadError } = await supabase.storage
       .from("organization-media")
       .upload(filePath, file, { upsert: true, contentType: file.type });
 
     if (uploadError) {
-      setMessage(uploadError.message);
+      setMessage({
+        text: `We could not upload the organization ${kind}. Please try again.`,
+        kind: "error",
+      });
       setUploading(false);
       return;
     }
 
-    const { data: { publicUrl } } = supabase.storage
-      .from("organization-media")
-      .getPublicUrl(filePath);
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("organization-media").getPublicUrl(filePath);
+
+    const mediaUpdate =
+      kind === "logo"
+        ? { logo_url: publicUrl, updated_at: new Date().toISOString() }
+        : { cover_url: publicUrl, updated_at: new Date().toISOString() };
 
     const { error: updateError } = await supabase
       .from("organizations")
-      .update({ cover_url: publicUrl, updated_at: new Date().toISOString() })
+      .update(mediaUpdate)
       .eq("id", organizationId)
       .eq("owner_id", userId);
 
     if (updateError) {
-      setMessage(updateError.message);
+      setMessage({
+        text: `The image uploaded, but we could not update the organization ${kind}. Please try again.`,
+        kind: "error",
+      });
       setUploading(false);
       return;
     }
 
-    setMessage("Organization cover updated. The listing has been resubmitted for review.");
+    setMessage({
+      text: `Organization ${kind} updated. The listing has been resubmitted for review.`,
+      kind: "success",
+    });
     setUploading(false);
     window.location.reload();
   }
 
   const uploadClass =
-    "inline-flex cursor-pointer rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:opacity-50";
+    "inline-flex cursor-pointer rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" aria-busy={uploading}>
       <section className="surface-panel rounded-2xl p-6">
         <h2 className="text-xl font-semibold">Organization cover</h2>
         <div className="mt-5">
@@ -138,19 +117,24 @@ export function OrganizationLogoUpload({
 
           <div className="mt-4">
             <label className={uploadClass}>
-              {uploading ? "Uploading..." : "Upload cover"}
+              <span role="status" aria-live="polite">
+                {uploading ? "Uploading…" : "Upload cover"}
+              </span>
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 disabled={uploading}
-                className="hidden"
+                aria-describedby="organization-cover-help organization-media-message"
+                className="sr-only"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
-                  if (file) void uploadCover(file);
+                  if (file) void uploadImage(file, "cover", 8);
                 }}
               />
             </label>
-            <p className="mt-2 text-xs text-muted-foreground">Recommended ratio: 3:1. Maximum size: 8 MB.</p>
+            <p id="organization-cover-help" className="mt-2 text-xs text-muted-foreground">
+              Recommended ratio: 3:1. Maximum size: 8 MB.
+            </p>
           </div>
         </div>
       </section>
@@ -174,23 +158,38 @@ export function OrganizationLogoUpload({
 
           <div>
             <label className={uploadClass}>
-              {uploading ? "Uploading..." : "Upload logo"}
+              <span role="status" aria-live="polite">
+                {uploading ? "Uploading…" : "Upload logo"}
+              </span>
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 disabled={uploading}
-                className="hidden"
+                aria-describedby="organization-logo-help organization-media-message"
+                className="sr-only"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
-                  if (file) void uploadLogo(file);
+                  if (file) void uploadImage(file, "logo", 5);
                 }}
               />
             </label>
-            <p className="mt-2 text-xs text-muted-foreground">JPG, PNG, or WebP. Maximum size: 5 MB.</p>
-            {message ? <p className="mt-2 text-sm text-foreground/80">{message}</p> : null}
+            <p id="organization-logo-help" className="mt-2 text-xs text-muted-foreground">
+              JPG, PNG, or WebP. Maximum size: 5 MB.
+            </p>
           </div>
         </div>
       </section>
+
+      {message ? (
+        <p
+          id="organization-media-message"
+          role={message.kind === "error" ? "alert" : "status"}
+          aria-live={message.kind === "error" ? "assertive" : "polite"}
+          className={message.kind === "error" ? "text-sm text-destructive" : "text-sm text-muted-foreground"}
+        >
+          {message.text}
+        </p>
+      ) : null}
     </div>
   );
 }
