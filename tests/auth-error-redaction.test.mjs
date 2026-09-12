@@ -6,15 +6,18 @@ function read(path) {
   return fs.readFileSync(new URL(path, import.meta.url), "utf8");
 }
 
-test("password recovery actions do not expose provider error messages", () => {
+test("account entry actions do not expose provider error messages", () => {
+  const login = read("../src/app/login/actions.ts");
   const forgotPassword = read("../src/app/forgot-password/actions.ts");
   const updatePassword = read("../src/app/update-password/actions.ts");
 
-  for (const source of [forgotPassword, updatePassword]) {
+  for (const source of [login, forgotPassword, updatePassword]) {
     assert.ok(!source.includes("encodeURIComponent(error.message)"));
     assert.ok(!source.includes("?error=${encodeURIComponent(error.message)}"));
   }
 
+  assert.match(login, /loginErrorMessage/);
+  assert.match(login, /signupErrorMessage/);
   assert.match(forgotPassword, /resetRequestErrorMessage/);
   assert.match(updatePassword, /passwordUpdateErrorMessage/);
 });
