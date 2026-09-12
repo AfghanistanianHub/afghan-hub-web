@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { ShieldCheck } from "lucide-react";
 
 import { updateMemberRole } from "@/app/(dashboard)/moderation/team/actions";
+import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import { createClient } from "@/lib/supabase/server";
 
 type ModerationTeamPageProps = {
@@ -62,7 +63,7 @@ export default async function ModerationTeamPage({
       <div className="mx-auto max-w-5xl">
         <Link
           href="/moderation"
-          className="text-sm font-medium text-primary transition hover:text-primary/80"
+          className="text-sm font-medium text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           ← Back to moderation
         </Link>
@@ -86,19 +87,31 @@ export default async function ModerationTeamPage({
         </div>
 
         {error ? (
-          <div className="mt-6 rounded-xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
+          <div
+            role="alert"
+            aria-live="assertive"
+            className="mt-6 rounded-xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive"
+          >
             {error}
           </div>
         ) : null}
 
         {saved === "1" ? (
-          <div className="mt-6 rounded-xl border border-primary/20 bg-primary/8 p-4 text-sm text-primary">
+          <div
+            role="status"
+            aria-live="polite"
+            className="mt-6 rounded-xl border border-primary/20 bg-primary/8 p-4 text-sm text-primary"
+          >
             Member role updated.
           </div>
         ) : null}
 
         {membersError ? (
-          <div className="mt-8 rounded-xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
+          <div
+            role="alert"
+            aria-live="assertive"
+            className="mt-8 rounded-xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive"
+          >
             We could not load members: {membersError.message}
           </div>
         ) : (
@@ -162,12 +175,12 @@ export default async function ModerationTeamPage({
                           </select>
                         </label>
 
-                        <button
-                          type="submit"
-                          className="rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+                        <PendingSubmitButton
+                          pendingLabel="Saving role…"
+                          className="rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                         >
                           Save role
-                        </button>
+                        </PendingSubmitButton>
                       </form>
                     )}
                   </div>
