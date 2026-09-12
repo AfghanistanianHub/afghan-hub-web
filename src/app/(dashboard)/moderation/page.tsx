@@ -14,6 +14,7 @@ import {
 
 import { moderateContent } from "@/app/(dashboard)/moderation/actions";
 import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
+import { getMyAccessContext } from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
 
 type ModerationEntityType =
@@ -89,13 +90,12 @@ export default async function ModerationPage({
 
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { data: accessContext } = await getMyAccessContext(supabase, user.id);
 
-  if (profile?.role !== "admin" && profile?.role !== "moderator") {
+  if (
+    accessContext?.role !== "admin" &&
+    accessContext?.role !== "moderator"
+  ) {
     redirect("/");
   }
 
@@ -241,7 +241,7 @@ export default async function ModerationPage({
             they become visible to the community.
           </p>
 
-          {profile.role === "admin" ? (
+          {accessContext.role === "admin" ? (
             <Link
               href="/moderation/team"
               className="inline-flex w-fit rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted"
