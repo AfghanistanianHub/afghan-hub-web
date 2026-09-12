@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { getMyAccessContext } from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
 import { isValidEmail, isValidHttpUrl } from "@/lib/validation";
 
@@ -117,7 +118,7 @@ export async function createBusiness(formData: FormData) {
 
     if (error.code !== "23505") {
       redirect(
-        `/businesses/new?error=${encodeURIComponent(error.message)}`,
+        "/businesses/new?error=We%20could%20not%20create%20the%20business.%20Please%20try%20again.",
       );
     }
   }
@@ -221,7 +222,9 @@ export async function updateBusiness(formData: FormData) {
     .maybeSingle();
 
   if (error) {
-    redirect(`${errorPath}${encodeURIComponent(error.message)}`);
+    redirect(
+      `${errorPath}We%20could%20not%20save%20the%20business.%20Please%20try%20again.`,
+    );
   }
 
   if (!updatedBusiness) {
@@ -252,13 +255,9 @@ export async function setBusinessVerification(formData: FormData) {
     redirect("/businesses");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { data: accessContext } = await getMyAccessContext(supabase, user.id);
 
-  if (profile?.role !== "admin") {
+  if (accessContext?.role !== "admin") {
     redirect("/");
   }
 
@@ -273,9 +272,7 @@ export async function setBusinessVerification(formData: FormData) {
 
   if (error || !business) {
     redirect(
-      `/businesses/${slug}?error=${encodeURIComponent(
-        error?.message ?? "Unable to update verification",
-      )}`,
+      `/businesses/${slug}?error=We%20could%20not%20update%20verification.%20Please%20try%20again.`,
     );
   }
 
