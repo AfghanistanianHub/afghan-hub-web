@@ -29,9 +29,9 @@ export async function saveProfile(formData: FormData) {
 
   const firstName = getOptionalString(formData, "first_name");
   const lastName = getOptionalString(formData, "last_name");
-const headline = getOptionalString(formData, "headline");
-const linkedinUrl = getOptionalString(formData, "linkedin_url");
-const websiteUrl = getOptionalString(formData, "website_url");
+  const headline = getOptionalString(formData, "headline");
+  const linkedinUrl = getOptionalString(formData, "linkedin_url");
+  const websiteUrl = getOptionalString(formData, "website_url");
 
   if (linkedinUrl && !isValidHttpUrl(linkedinUrl)) {
     redirect("/profile?error=Enter%20a%20valid%20LinkedIn%20URL");
@@ -41,15 +41,15 @@ const websiteUrl = getOptionalString(formData, "website_url");
     redirect("/profile?error=Enter%20a%20valid%20website%20URL");
   }
 
-const languages = getOptionalString(formData, "languages")
-  ?.split(",")
-  .map((item) => item.trim())
-  .filter(Boolean);
+  const languages = getOptionalString(formData, "languages")
+    ?.split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
 
-const skills = getOptionalString(formData, "skills")
-  ?.split(",")
-  .map((item) => item.trim())
-  .filter(Boolean);
+  const skills = getOptionalString(formData, "skills")
+    ?.split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
   const profession = getOptionalString(formData, "profession");
   const company = getOptionalString(formData, "company");
   const city = getOptionalString(formData, "city");
@@ -58,7 +58,7 @@ const skills = getOptionalString(formData, "skills")
   const bio = getOptionalString(formData, "bio");
 
   const displayName =
-    [firstName, lastName].filter(Boolean).join(" ") || user.email || "Member";
+    [firstName, lastName].filter(Boolean).join(" ") || "Member";
 
   const { error } = await supabase.from("profiles").upsert(
     {
@@ -66,7 +66,7 @@ const skills = getOptionalString(formData, "skills")
       email: user.email ?? null,
       first_name: firstName,
       last_name: lastName,
-	headline,
+      headline,
       display_name: displayName,
       profession,
       company,
@@ -74,10 +74,10 @@ const skills = getOptionalString(formData, "skills")
       province_state: provinceState,
       country,
       bio,
-	linkedin_url: linkedinUrl,
-website_url: websiteUrl,
-languages: languages ?? [],
-skills: skills ?? [],
+      linkedin_url: linkedinUrl,
+      website_url: websiteUrl,
+      languages: languages ?? [],
+      skills: skills ?? [],
       onboarding_completed: true,
       updated_at: new Date().toISOString(),
     },
@@ -87,7 +87,7 @@ skills: skills ?? [],
   );
 
   if (error) {
-    redirect(`/profile?error=${encodeURIComponent(error.message)}`);
+    redirect("/profile?error=We%20could%20not%20save%20your%20profile.%20Please%20try%20again.");
   }
 
   redirect("/dashboard");
