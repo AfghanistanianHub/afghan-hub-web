@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getSiteUrl } from "@/lib/site-url";
 
+const loginErrorMessage = "We could not sign you in. Check your email and password and try again.";
+const signupErrorMessage = "We could not create your account right now. Please try again shortly.";
+
 export async function login(formData: FormData) {
   const supabase = await createClient();
 
@@ -16,7 +19,7 @@ export async function login(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/login?error=${encodeURIComponent(error.message)}`);
+    redirect(`/login?error=${encodeURIComponent(loginErrorMessage)}`);
   }
 
   redirect("/dashboard");
@@ -44,7 +47,7 @@ export async function signup(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/login?mode=join&error=${encodeURIComponent(error.message)}`);
+    redirect(`/login?mode=join&error=${encodeURIComponent(signupErrorMessage)}`);
   }
 
   redirect(
