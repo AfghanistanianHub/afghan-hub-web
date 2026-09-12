@@ -65,14 +65,18 @@ export default async function MessagesPage() {
 
           <Link
             href="/network"
-            className="inline-flex w-fit items-center rounded-2xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm transition hover:border-primary/30 hover:bg-accent"
+            className="inline-flex w-fit items-center rounded-2xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm transition hover:border-primary/30 hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
             Find people
           </Link>
         </section>
 
         {error ? (
-          <div className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <div
+            role="alert"
+            aria-live="assertive"
+            className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+          >
             We could not load your conversations. Please try again.
           </div>
         ) : null}
@@ -88,7 +92,7 @@ export default async function MessagesPage() {
             </p>
             <Link
               href="/network"
-              className="mt-6 inline-flex rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-90"
+              className="mt-6 inline-flex rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               Browse the network
             </Link>
@@ -109,7 +113,7 @@ export default async function MessagesPage() {
                 <Link
                   key={conversation.conversation_id}
                   href={`/messages/${conversation.conversation_id}`}
-                  className={`group flex items-center gap-4 border-b border-border px-5 py-5 transition last:border-b-0 hover:bg-accent/70 ${
+                  className={`group flex items-center gap-4 border-b border-border px-5 py-5 transition last:border-b-0 hover:bg-accent/70 focus-visible:relative focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary ${
                     unreadCount > 0 ? "bg-primary/[0.035]" : ""
                   }`}
                 >
