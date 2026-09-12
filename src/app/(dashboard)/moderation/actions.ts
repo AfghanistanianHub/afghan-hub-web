@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { getMyAccessContext } from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
 
 const entityTypes = ["opportunity", "event", "business", "organization"] as const;
@@ -42,18 +43,17 @@ export async function moderateContent(formData: FormData) {
     );
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { data: accessContext } = await getMyAccessContext(supabase, user.id);
 
-  if (profile?.role !== "admin" && profile?.role !== "moderator") {
+  if (
+    accessContext?.role !== "admin" &&
+    accessContext?.role !== "moderator"
+  ) {
     redirect("/");
   }
 
   let updated = false;
-  let moderationError: string | null = null;
+  let moderationFailed = false;
   const targetNote = decision === "reject" ? note : null;
 
   if (entityType === "opportunity") {
@@ -63,7 +63,7 @@ export async function moderateContent(formData: FormData) {
       target_note: targetNote,
     });
     updated = Boolean(data);
-    moderationError = error?.message ?? null;
+    moderationFailed = Boolean(error);
   } else if (entityType === "event") {
     const { data, error } = await supabase.rpc("moderate_event", {
       target_event_id: entityId,
@@ -71,7 +71,7 @@ export async function moderateContent(formData: FormData) {
       target_note: targetNote,
     });
     updated = Boolean(data);
-    moderationError = error?.message ?? null;
+    moderationFailed = Boolean(error);
   } else if (entityType === "business") {
     const { data, error } = await supabase.rpc("moderate_business", {
       target_business_id: entityId,
@@ -79,7 +79,7 @@ export async function moderateContent(formData: FormData) {
       target_note: targetNote,
     });
     updated = Boolean(data);
-    moderationError = error?.message ?? null;
+    moderationFailed = Boolean(error);
   } else {
     const { data, error } = await supabase.rpc("moderate_organization", {
       target_organization_id: entityId,
@@ -87,13 +87,13 @@ export async function moderateContent(formData: FormData) {
       target_note: targetNote,
     });
     updated = Boolean(data);
-    moderationError = error?.message ?? null;
+    moderationFailed = Boolean(error);
   }
 
-  if (moderationError || !updated) {
-    const message =
-      moderationError ?? "Content is no longer pending review";
-    redirect(`/moderation?error=${encodeURIComponent(message)}`);
+  if (moderationFailed || !updated) {
+    redirect(
+      "/moderation?error=We%20could%20not%20apply%20that%20moderation%20decision.%20Please%20refresh%20and%20try%20again.",
+    );
   }
 
   revalidatePath("/moderation");
