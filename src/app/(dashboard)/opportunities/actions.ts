@@ -161,7 +161,7 @@ export async function createOpportunity(formData: FormData) {
 
   if (error) {
     redirect(
-      `/opportunities/new?error=${encodeURIComponent(error.message)}`,
+      "/opportunities/new?error=We%20could%20not%20create%20the%20opportunity.%20Please%20try%20again.",
     );
   }
 
@@ -289,9 +289,7 @@ export async function updateOpportunity(formData: FormData) {
 
   if (error) {
     redirect(
-      `/opportunities/${originalSlug}/edit?error=${encodeURIComponent(
-        error.message,
-      )}`,
+      `/opportunities/${originalSlug}/edit?error=We%20could%20not%20save%20the%20opportunity.%20Please%20try%20again.`,
     );
   }
 
@@ -337,7 +335,7 @@ export async function deleteOpportunity(formData: FormData) {
 
   if (error) {
     redirect(
-      `/opportunities/${slug}?error=${encodeURIComponent(error.message)}`,
+      `/opportunities/${slug}?error=We%20could%20not%20delete%20the%20opportunity.%20Please%20try%20again.`,
     );
   }
 
@@ -401,9 +399,7 @@ export async function toggleSavedOpportunity(formData: FormData) {
 
   if (error) {
     redirect(
-      `/opportunities/${opportunitySlug}?error=${encodeURIComponent(
-        error.message,
-      )}`,
+      `/opportunities/${opportunitySlug}?error=We%20could%20not%20update%20your%20saved%20opportunities.%20Please%20try%20again.`,
     );
   }
 

@@ -163,7 +163,7 @@ export async function createEvent(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/events/new?error=${encodeURIComponent(error.message)}`);
+    redirect("/events/new?error=We%20could%20not%20create%20the%20event.%20Please%20try%20again.");
   }
 
   redirect(`/events/${slug}`);
@@ -295,9 +295,7 @@ export async function updateEvent(formData: FormData) {
 
   if (error) {
     redirect(
-      `/events/${originalSlug}/edit?error=${encodeURIComponent(
-        error.message,
-      )}`,
+      `/events/${originalSlug}/edit?error=We%20could%20not%20save%20the%20event.%20Please%20try%20again.`,
     );
   }
 
@@ -343,7 +341,7 @@ export async function deleteEvent(formData: FormData) {
 
   if (error) {
     redirect(
-      `/events/${slug}?error=${encodeURIComponent(error.message)}`,
+      `/events/${slug}?error=We%20could%20not%20delete%20the%20event.%20Please%20try%20again.`,
     );
   }
 
