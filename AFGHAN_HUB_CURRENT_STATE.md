@@ -1,97 +1,76 @@
 # Afghan Hub current state
 
 ## Stage
-Public website and discovery are shipped. Main now includes launch-hardening, profile-privacy preparation, member/moderation accessibility hardening, authorization review and production-specific security rollback evidence through merged PR #87 (`cf9317acf218424496eb75865c5ae2db677010ed`). Recent exact PR heads passed Node 22/24 CI and Vercel before merge.
+Public website/discovery and the core member product are shipped. Main is now at `925f1776ac3e880f8644a9638a5924bfaf986507` after launch hardening through merged PR #97. Exact PR heads for #94–#97 passed Node 22/24 CI and Vercel before merge. The main deployment created by #97 is currently blocked only by Vercel free-tier build-rate-limit; the #97 preview itself passed. Do not pay or upgrade to clear this limit.
 
 ## Recently completed
-- Account forms: pending feedback, repeat-submit protection, accessible status/errors, login compatibility with existing shorter passwords (#52).
-- App recovery: standard Next.js error boundaries and repeatable anonymous smoke verification (#57).
-- Public/mobile polish and reduced-motion/focus improvements (#56).
-- SEO: auth/recovery noindex, Open Graph image, published detail URLs in sitemap (#58, #59).
-- Delivery: CI aligned to supported Node 22/24 runtimes and current GitHub actions (#60).
-- Auth callback hardening: explicit signup confirmation callback, allowlisted callback destinations, flow-specific expired-link recovery, regression coverage (#62).
-- Route UX: accessible loading states for member workspace/public discovery and branded global 404 recovery (#64, #65).
-- Settings privacy prep: signed-in account email comes from Supabase Auth rather than `profiles.email` (#69).
-- Profile privacy architecture: confirmed production finding, remediation architecture, review-only SQL/application draft and direct API persona-test matrix (#70, #71; issue #67).
-- Search privacy guard: member search rechecks public/onboarding eligibility and never renders an email-like member title from the current RPC fallback (#72).
-- Sign-out coverage: deterministic regression coverage verifies server sign-out and protected member entry behavior (#74).
-- Public content guard: exact placeholder titles/names are excluded from public listing mapping and sitemap (#75).
-- Member form accessibility: Profile/Settings pending feedback, repeat-submit protection and keyboard-accessible avatar upload (#76).
-- Moderation accessibility and repeat-submit protection (#77, #78).
-- Durable state includes aggregate hosted-auth/member-journey evidence (#79).
-- Public-schema least-privilege finding is tracked in issue #80 and its review-only remediation plan is on main (#81).
-- Authorization/database security audit state was reconciled after connection, messaging, contribution ownership and RSVP review (#82).
-- Dashboard role/onboarding reads are centralized behind `src/lib/profile-access.ts`, creating a single future RPC migration seam (#83).
-- Profile save no longer copies account email into public `display_name` and no longer exposes raw database save errors (#84).
-- Moderation-team viewer/member-account reads are centralized behind the profile access layer and raw member-load DB errors are no longer rendered (#85).
-- Moderation and role-management server actions use the same centralized access layer and stable user-facing failures rather than raw RPC/database errors (#86).
-- Current production profile schema/ACL/policy/function/trigger evidence and rollback reference are captured in `docs/security/profile-privacy-production-snapshot-2026-09-12.md` (#87).
+- Account forms, callback/recovery, stable account error messages and auth route noindex/redirect smoke coverage (#52, #62, #91, #95).
+- Recovery/loading/global 404 and release smoke infrastructure (#57, #64, #65, #95).
+- Public/mobile/SEO/sitemap and placeholder-content guardrails (#56, #58, #59, #61, #75).
+- CI aligned to Node 22/24 and current GitHub Actions (#60).
+- Profile privacy preparation: Settings email from Auth, profile access adapter, privacy/search guards, remediation architecture/drafts/persona tests and production snapshot (#69–#72, #83–#87; issue #67).
+- Profile save no longer copies account email into public `display_name`; current production aggregate shows zero `display_name = email` rows (#84).
+- Member/moderation/submission accessibility and pending/double-submit protection (#76–#78 and related tests).
+- Connection, messaging, contribution ownership and RSVP authorization reviewed against production policies/functions; no ownership bypass found in reviewed paths (#79, #82).
+- Public-schema least-privilege issue documented with a review-only remediation plan (issue #80, #81).
+- Upload hardening: avatar/business/organization media now use stable user-safe provider failures; business/org upload controls are keyboard/focus/aria-live accessible (#94).
+- Contribution error hardening: Business/Organization and Event/Opportunity create/update/delete/save/verification paths no longer expose raw database/provider messages; intentional RSVP semantic mapping for `event_full`/`event_has_started` remains (#96, #97).
+- Business/Organization verification now uses centralized profile access context instead of direct profile-role reads (#96).
 
-## Readiness
-The repository has stronger public SEO, recovery/auth handling, content presentation guardrails, release verification, application-side privacy guards and substantially better form/moderation accessibility. Connection, messaging, contribution ownership and RSVP capacity authorization were reviewed against current production policies/functions and no ownership-bypass defect was found in those reviewed paths. Full controlled end-to-end acceptance and database privilege/privacy remediation are still outstanding. Do not describe the product as fully launch-ready until the remaining dependencies below are resolved.
+## Production evidence — aggregate only
+- Auth: 3 users; all 3 email-confirmed and all 3 have successful sign-in history. No PII was read.
+- Member journey: 2 accepted connections, 2 conversations, 4 memberships, 13 messages, 16 notifications; 13 read / 3 unread; 3 of 4 memberships have `last_read_at`. No message text or identities were read.
+- Content status during the last read-only count: 2 pending opportunities, 5 pending events, 2 published opportunities, 1 published event, 1 published business, 2 published organizations.
+- Current public profiles: 3; aggregate checks found zero email-fallback display names and zero onboarding-incomplete public profiles at the time checked.
 
-## Account-entry evidence
-A read-only aggregate production Auth check on 2026-09-11 found 3 total users; all 3 were email-confirmed and all 3 had at least one successful sign-in. No email, user ID or other personal value was read. This confirms confirmation/login has worked historically in the hosted project, but it does not replace fresh acceptance of current confirmation/reset delivery, expired links, session expiry and cross-tab sign-out.
+## Authorization paths reviewed clean
+- Connection creation validates eligible public/onboarded recipients and duplicate relationships; response is recipient-only/pending-only; deletion is participant-only via RLS with admin exception.
+- Direct conversation creation requires an accepted connection. Conversation/message reads require membership; message insert requires membership and `sender_id = auth.uid()`.
+- Notification/read-state RPCs scope changes to the authenticated recipient/member.
+- Opportunities/events/businesses/organizations enforce creator/author/owner identity through RLS for writes, with intended admin moderation paths.
+- Saved opportunities are self-only.
+- Event RSVP locks the event row `FOR UPDATE` before capacity enforcement and `(event_id, profile_id)` is the primary key; cancellation is self-only.
 
-## Member-journey evidence
-Read-only aggregate production checks found 2 connections and both are accepted, 2 conversations with 4 conversation memberships, 13 messages and 16 notifications. Of the notifications, 13 have `read_at` populated and 3 remain unread; 3 of 4 conversation memberships have a `last_read_at` marker. No member identity, message text, notification content or other personal value was read.
+## Confirmed profile privacy blocker — issue #67
+`public.profiles` has RLS enabled but broad table ACLs and mixes public fields with private/internal fields including `email` and `role`. An authenticated user can directly select public profile rows including private columns; UI projections are not a database boundary. The current DB `search_afghan_hub` profile branch also still contains structural risks (`coalesce(display_name, email)` and no onboarding requirement), although application guards prevent rendering email-like titles and current aggregate data did not trigger that fallback.
 
-Aggregate content status on the same read-only pass showed 2 pending opportunities, 5 pending events, 2 published opportunities, 1 published event, 1 published business and 2 published organizations. No production rows were changed.
+Do not expose anonymous member discovery or apply profile-column/RPC/policy changes directly to production. The reviewed solution requires isolated persona testing and an exact rollback first.
 
-## Authorization audit — reviewed clean paths
-Read-only code and production-policy/function review found:
+## Confirmed least-privilege blocker — issue #80
+Read-only production metadata shows `anon`/`authenticated` have broader table/default privileges than needed on multiple public objects, including privileges such as `TRUNCATE`, `TRIGGER`, `REFERENCES` and `MAINTAIN`. Default ACL exposure applies to both `postgres` and `supabase_admin` owners.
 
-- connection response is recipient-only/pending-only in the DB RPC; connection deletion is participant-only through RLS with explicit admin exception;
-- connection creation rejects self-requests, requires an eligible public/onboarded recipient and prevents duplicate relationships inside the DB RPC;
-- direct conversation creation requires an accepted connection;
-- conversation/message reads require membership; message insert additionally requires `sender_id = auth.uid()`;
-- `is_conversation_member()` is SECURITY DEFINER with empty `search_path` and checks the current authenticated profile only;
-- notification/read-state RPCs limit updates to the authenticated recipient/member;
-- opportunities/events/businesses/organizations enforce author/creator/owner identity for inserts and owner/admin identity for updates/deletes through RLS;
-- saved opportunities are self-only;
-- event RSVP uses `FOR UPDATE` event locking before capacity enforcement and is backed by primary key `(event_id, profile_id)`; cancellation is self-only.
+This is not classified as a demonstrated remote table-wipe exploit: PostgREST does not directly expose TRUNCATE, no arbitrary-SQL application RPC was found, and zero public SECURITY DEFINER functions are executable by `anon`. Eighteen SECURITY DEFINER functions are callable by `authenticated`; seven use an empty `search_path` and eleven older reviewed functions use `search_path=public`. The older definitions inspected largely schema-qualify sensitive references with `public.*`/`auth.*`, making later fixed/empty-search-path hardening more tractable, but production DDL still requires isolated testing.
 
-A follow-up Security Advisor review still reports 18 authenticated-callable public SECURITY DEFINER functions. Reviewed connection/messaging/moderation/RSVP/count/read-state functions enforce current-user or role boundaries in their bodies. Some older reviewed functions still use `search_path=public`; because API roles do not have CREATE on public, no immediate search-path injection exploit was established, but converting appropriate functions to an empty search path remains a hardening task.
+## Draft-media lifecycle blocker — issue #93
+`business-media` and `organization-media` are public buckets with owner-bound writes, configured MIME/size limits, and predictable object paths based on listing UUID. No cross-owner write defect was found. Draft/unpublished media remains public-by-URL if the path becomes known. Decide and test the intended lifecycle before changing bucket visibility/policies.
 
-## Confirmed profile privacy blocker (#67)
-Current production `public.profiles` has RLS enabled but its relation ACL is broad for `anon` and `authenticated` (`arwdDxtm`), and `profiles_select_public_or_owner` permits public rows. The base table mixes public profile fields with private/internal fields including `email`, `role`, timestamps and `search_vector`. Aggregate-only verification under the authenticated role confirmed public profile rows with non-null email are selectable; no personal values were read.
-
-The current DB `search_afghan_hub` profile branch still uses `coalesce(display_name, email)` and does not require `onboarding_completed=true`. Application guards prevent rendering an email-like fallback, and PR #84 prevents new profile saves from copying account email into `display_name`.
-
-Aggregate-only production checks on 2026-09-12 found **0** rows where `display_name = email` and **0** email-like `display_name` values, so no current data cleanup is required for that specific historical fallback risk.
-
-Application migration seams now exist for dashboard access context and moderation-team account data. The server actions for moderation/role management also use the shared access layer. The large `/moderation` page still contains one direct current-user role read; it was intentionally not rewritten through the current connector because only full-file replacement is available and the fetched file is truncated, making a partial manual rewrite unnecessarily risky.
-
-Do not add anonymous/public member discovery or assume UI field selection protects profile email. The reviewed DB column/grant/RPC/search/policy remediation still requires isolated persona testing before production.
-
-## Confirmed least-privilege blocker (#80)
-A read-only production privilege audit found `anon` and/or `authenticated` hold broader table privileges than required on multiple public tables, including `TRUNCATE`, `TRIGGER`, `REFERENCES` and other broad privileges. Public-schema default ACLs also grant broad table privileges (`arwdDxtm`) for future objects.
-
-This is not classified as a demonstrated remote table-wipe exploit: normal PostgREST table endpoints do not directly expose `TRUNCATE`, no anon/authenticated arbitrary-SQL application RPC was found, and production has 0 public SECURITY DEFINER functions executable by `anon`.
-
-The review-only remediation design is in `docs/security/public-schema-privilege-remediation.md`. Do not apply production GRANT/REVOKE changes until an isolated production-compatible test environment, direct API persona tests and deterministic rollback are available.
-
-## Security Advisor notes
-Current Supabase Security Advisor warnings include:
-
-- `pg_trgm` installed in the public schema;
+## Security Advisor
+Current read-only warnings:
+- `pg_trgm` installed in public;
 - 18 authenticated-callable SECURITY DEFINER functions;
 - leaked-password protection disabled.
 
-Do not enable leaked-password protection or another possibly plan-dependent feature without confirming availability/cost under the zero-new-cost constraint. Do not blanket-revoke authenticated function EXECUTE because core flows intentionally use several of these RPCs.
+Performance advisor reports 43 unused indexes as INFO only. Do not remove low-usage indexes merely from that signal. Do not enable leaked-password protection without confirming free-plan availability/cost, and do not blanket-revoke core RPCs.
 
 ## Migration baseline
-Production reports 45 applied migrations. The repository does not contain the original July baseline and some later migrations share names with production but use different version timestamps. Do not run `db push`, blindly repair migration history, or replay the repository migration directory against production. Production security migrations must be generated from current metadata after isolated testing with rollback prepared.
+Production reports 45 applied migrations. Repo migrations are not a one-to-one baseline: the original July baseline is missing and some later logical migrations have different production timestamps. Never run `db push`, blindly repair migration history or replay the repo migration directory against production. Production security changes must be generated from current metadata, tested in isolation and paired with deterministic rollback.
 
-## Remaining launch dependencies
-1. Real registration/confirmation/password-reset delivery with a designated test account, including expired links, session expiry and cross-tab sign-out behavior.
-2. Controlled multi-account acceptance of the already-reviewed connection/messaging/read-state/contribution/moderation paths, including decline/cancel/disconnect and unrelated-user denial.
-3. Finish the remaining safe application dependency removal for profile privacy (notably the `/moderation` page role read), then implement/test the `get_my_access_context`, `admin_list_member_accounts`, search and profile column/policy remediation in an isolated production-compatible environment.
-4. Implement and test public-schema least-privilege remediation (#80), including existing/default grants and reviewed function EXECUTE/search-path exposure, in isolation before production.
-5. Reconcile enough of the production migration baseline to produce production-specific reversible security migrations without replaying repository history.
-6. Correct or unpublish remaining published disposable/test content where appropriate; application guardrails intentionally do not rewrite production content.
-7. Privacy/terms/contact/support surfaces require factual operator identity, support contact, retention/deletion process and product decisions for account deletion/export and abuse/blocking.
-8. Continue accessibility/responsive QA across remaining contribution/submission/messaging flows and complete final release rehearsal/backup-recovery verification.
+## Vercel / delivery state
+- #94–#97 PR heads passed Vercel and Node 22/24 CI before merge.
+- Main `925f1776ac3e880f8644a9638a5924bfaf986507` currently has a Vercel failure whose target is the free-tier build-rate-limit upgrade page, not an application/build error.
+- Do not buy Pro or create no-op deployments. Batch changes into one commit/push, wait for cooldown and use the next meaningful verified deployment to carry current main forward.
+
+## Remaining launch gates
+1. Fresh signup/confirmation/password-reset delivery and expired-link/session/cross-tab sign-out acceptance using a designated disposable test account.
+2. Controlled multi-persona acceptance with at least two ordinary users plus moderator/admin, including deny paths.
+3. Implement/test profile privacy remediation (#67) in a production-compatible isolated environment.
+4. Implement/test least-privilege/default-ACL/function hardening (#80) in isolation before production.
+5. Decide/test draft-media lifecycle (#93).
+6. Reconcile enough production migration baseline to generate reversible security migrations without replaying history.
+7. Correct or unpublish remaining disposable/test production content where appropriate.
+8. Provide factual operator identity/support contact/retention/deletion terms before privacy/terms/contact/account-deletion/export/abuse surfaces can be finalized.
+9. Exact dependency vulnerability audit remains unresolved: CI reports 6 vulnerabilities (2 moderate, 3 high, 1 critical), but available tooling has not exposed the package/advisory identities. Do not guess and do not run `npm audit fix --force`.
+10. Final controlled release rehearsal, backup/recovery verification and exact-main production smoke after the security/product gates above.
 
 ## Cost and safety constraints
-Prefer deterministic CI/tests/builds and existing free infrastructure. Do not trigger token-consuming Autopilot or add paid services without explicit approval. Do not create a potentially billable Supabase branch under the zero-new-cost constraint. The existing second Supabase project could not be queried through the current connector because database authentication failed, so it is not considered a usable staging environment. Do not modify production schema/RLS/grants/data or expose member data without isolated persona evidence, a reviewed rollback and an explicit production risk decision.
+Prefer deterministic CI/tests/builds and current free infrastructure. Do not trigger token-consuming Autopilot, paid agents, Vercel upgrades or a potentially billable Supabase branch. Do not modify production schema/RLS/grants/functions/storage visibility/auth policy/data or expose member data without isolated persona evidence, reviewed rollback and an explicit production risk decision.
