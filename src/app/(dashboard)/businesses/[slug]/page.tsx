@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BadgeCheck } from "lucide-react";
 import { ExternalImage } from "@/components/ui/external-image";
+import { getMyAccessContext } from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
 
 type BusinessPageProps={params:Promise<{slug:string}>;searchParams:Promise<{error?:string}>};
@@ -11,7 +12,7 @@ export default async function BusinessPage({params,searchParams}:BusinessPagePro
  const {data:business,error}=await supabase.from("businesses").select(`id,name,slug,category,short_description,description,services,website_url,email,phone,address_line,city,province_state,country,logo_url,cover_url,is_verified,is_hiring,status,moderation_note,owner_id`).eq("slug",slug).maybeSingle();
  if(error||!business)notFound();
  const {data:{user}}=await supabase.auth.getUser();
- const {data:viewerProfile}=user?await supabase.from("profiles").select("role").eq("id",user.id).maybeSingle():{data:null};
+ const {data:viewerProfile}=user?await getMyAccessContext(supabase,user.id):{data:null};
  const canEdit=user?.id===business.owner_id; const canVerify=viewerProfile?.role==="admin"&&business.status==="published";
  const services=Array.isArray(business.services)?business.services.filter((service:unknown):service is string=>typeof service==="string"):[];
  const location=[business.city,business.province_state,business.country].filter(Boolean).join(", ");
