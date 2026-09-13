@@ -38,7 +38,6 @@ export function OrganizationLogoUpload({
       setMessage({ text: "Please select a JPG, PNG, or WebP image.", kind: "error" });
       return;
     }
-
     if (file.size > maxSizeMb * 1024 * 1024) {
       setMessage({ text: `The image must be smaller than ${maxSizeMb} MB.`, kind: "error" });
       return;
@@ -47,28 +46,20 @@ export function OrganizationLogoUpload({
     setUploading(true);
     const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
     const filePath = `${organizationId}/${kind}.${extension}`;
-
     const { error: uploadError } = await supabase.storage
       .from("organization-media")
       .upload(filePath, file, { upsert: true, contentType: file.type });
 
     if (uploadError) {
-      setMessage({
-        text: `We could not upload the organization ${kind}. Please try again.`,
-        kind: "error",
-      });
+      setMessage({ text: `We could not upload the organization ${kind}. Please try again.`, kind: "error" });
       setUploading(false);
       return;
     }
 
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("organization-media").getPublicUrl(filePath);
-
-    const mediaUpdate =
-      kind === "logo"
-        ? { logo_url: publicUrl, updated_at: new Date().toISOString() }
-        : { cover_url: publicUrl, updated_at: new Date().toISOString() };
+    const storageRef = `supabase://organization-media/${filePath}`;
+    const mediaUpdate = kind === "logo"
+      ? { logo_url: storageRef, updated_at: new Date().toISOString() }
+      : { cover_url: storageRef, updated_at: new Date().toISOString() };
 
     const { error: updateError } = await supabase
       .from("organizations")
@@ -77,119 +68,35 @@ export function OrganizationLogoUpload({
       .eq("owner_id", userId);
 
     if (updateError) {
-      setMessage({
-        text: `The image uploaded, but we could not update the organization ${kind}. Please try again.`,
-        kind: "error",
-      });
+      setMessage({ text: `The image uploaded, but we could not update the organization ${kind}. Please try again.`, kind: "error" });
       setUploading(false);
       return;
     }
 
-    setMessage({
-      text: `Organization ${kind} updated. The listing has been resubmitted for review.`,
-      kind: "success",
-    });
+    setMessage({ text: `Organization ${kind} updated. The listing has been resubmitted for review.`, kind: "success" });
     setUploading(false);
     window.location.reload();
   }
 
-  const uploadClass =
-    "inline-flex cursor-pointer rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary";
+  const uploadClass = "inline-flex cursor-pointer rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary";
 
   return (
     <div className="space-y-6" aria-busy={uploading}>
       <section className="surface-panel rounded-2xl p-6">
         <h2 className="text-xl font-semibold">Organization cover</h2>
         <div className="mt-5">
-          {currentCoverUrl ? (
-            <ExternalImage
-              src={currentCoverUrl}
-              alt={`${organizationName} cover`}
-              width={1200}
-              height={400}
-              className="h-48 w-full rounded-2xl object-cover"
-            />
-          ) : (
-            <div className="flex h-48 w-full items-center justify-center rounded-2xl border border-dashed border-border bg-muted/60 text-sm text-muted-foreground">
-              No cover image
-            </div>
-          )}
-
-          <div className="mt-4">
-            <label className={uploadClass}>
-              <span role="status" aria-live="polite">
-                {uploading ? "Uploading…" : "Upload cover"}
-              </span>
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                disabled={uploading}
-                aria-describedby="organization-cover-help organization-media-message"
-                className="sr-only"
-                onChange={(event) => {
-                  const file = event.target.files?.[0];
-                  if (file) void uploadImage(file, "cover", 8);
-                }}
-              />
-            </label>
-            <p id="organization-cover-help" className="mt-2 text-xs text-muted-foreground">
-              Recommended ratio: 3:1. Maximum size: 8 MB.
-            </p>
-          </div>
+          {currentCoverUrl ? <ExternalImage src={currentCoverUrl} alt={`${organizationName} cover`} width={1200} height={400} className="h-48 w-full rounded-2xl object-cover" /> : <div className="flex h-48 w-full items-center justify-center rounded-2xl border border-dashed border-border bg-muted/60 text-sm text-muted-foreground">No cover image</div>}
+          <div className="mt-4"><label className={uploadClass}><span role="status" aria-live="polite">{uploading ? "Uploading…" : "Upload cover"}</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading} aria-describedby="organization-cover-help organization-media-message" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadImage(file, "cover", 8); }} /></label><p id="organization-cover-help" className="mt-2 text-xs text-muted-foreground">Recommended ratio: 3:1. Maximum size: 8 MB.</p></div>
         </div>
       </section>
-
       <section className="surface-panel rounded-2xl p-6">
         <h2 className="text-xl font-semibold">Organization logo</h2>
         <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
-          {currentLogoUrl ? (
-            <ExternalImage
-              src={currentLogoUrl}
-              alt={`${organizationName} logo`}
-              width={96}
-              height={96}
-              className="h-24 w-24 rounded-2xl object-cover"
-            />
-          ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-2xl border border-border bg-primary/10 text-3xl font-bold text-primary">
-              {organizationName.charAt(0).toUpperCase()}
-            </div>
-          )}
-
-          <div>
-            <label className={uploadClass}>
-              <span role="status" aria-live="polite">
-                {uploading ? "Uploading…" : "Upload logo"}
-              </span>
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                disabled={uploading}
-                aria-describedby="organization-logo-help organization-media-message"
-                className="sr-only"
-                onChange={(event) => {
-                  const file = event.target.files?.[0];
-                  if (file) void uploadImage(file, "logo", 5);
-                }}
-              />
-            </label>
-            <p id="organization-logo-help" className="mt-2 text-xs text-muted-foreground">
-              JPG, PNG, or WebP. Maximum size: 5 MB.
-            </p>
-          </div>
+          {currentLogoUrl ? <ExternalImage src={currentLogoUrl} alt={`${organizationName} logo`} width={96} height={96} className="h-24 w-24 rounded-2xl object-cover" /> : <div className="flex h-24 w-24 items-center justify-center rounded-2xl border border-border bg-primary/10 text-3xl font-bold text-primary">{organizationName.charAt(0).toUpperCase()}</div>}
+          <div><label className={uploadClass}><span role="status" aria-live="polite">{uploading ? "Uploading…" : "Upload logo"}</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading} aria-describedby="organization-logo-help organization-media-message" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadImage(file, "logo", 5); }} /></label><p id="organization-logo-help" className="mt-2 text-xs text-muted-foreground">JPG, PNG, or WebP. Maximum size: 5 MB.</p></div>
         </div>
       </section>
-
-      {message ? (
-        <p
-          id="organization-media-message"
-          role={message.kind === "error" ? "alert" : "status"}
-          aria-live={message.kind === "error" ? "assertive" : "polite"}
-          className={message.kind === "error" ? "text-sm text-destructive" : "text-sm text-muted-foreground"}
-        >
-          {message.text}
-        </p>
-      ) : null}
+      {message ? <p id="organization-media-message" role={message.kind === "error" ? "alert" : "status"} aria-live={message.kind === "error" ? "assertive" : "polite"} className={message.kind === "error" ? "text-sm text-destructive" : "text-sm text-muted-foreground"}>{message.text}</p> : null}
     </div>
   );
 }
