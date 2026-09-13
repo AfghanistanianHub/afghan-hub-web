@@ -1,6 +1,23 @@
 # Afghan Hub current state
 
-## Stage
+## Current delivery checkpoint — 2026-09-13
+
+Live GitHub reconciliation supersedes the historical checkpoint below. At review time, main is `72f3c28bc38dbb4976951bdf2b263d6bcac41fb5`.
+
+- #115 merged: isolated-only SECURITY DEFINER Phase B rehearsal documentation.
+- #116–#118 merged: production smoke semantics and explicit homepage/detail social image metadata.
+- #121 merged: light public homepage and real-listing Community Pulse.
+- #122 merged: Explore category rail, search panel, listing cards and result states.
+- #123 merged: public listing detail hierarchy and next-step sidebar.
+- #124 (`design/public-supporting-states`): mission page, matching Explore loading skeleton and listing not-found polish; this checkpoint ships with that PR.
+- Reviewed UI head `47386f7a19abea445887190b5fb8f25fdc31a270` passed GitHub Actions run 34744935454 on Node 22 and 24 (install, lint, type check, regression tests, agent syntax and build), and Vercel reported success for that exact head.
+- This documentation update requires fresh final-head checks before merge. Verify the resulting main SHA and production deployment after merge; preview success alone does not prove production delivery.
+
+Current milestone: complete delivery of the public visual refresh (#121–#124), with current-head checks and anonymous production smoke. Browser visual acceptance has not been established by CI and remains a separate check.
+
+Next milestone: controlled member/auth acceptance and isolated security rehearsal, subject to the existing launch gates below. UI delivery does not close #67, #80, #93 or #105. Keep zero-cost mode and all production-data/security constraints below.
+
+## Historical security checkpoint (through #108)
 Public website/discovery and the core member product are shipped. Production `main` is currently `50c226460ebea259972b0fb21a2ab5637f2be713` after hardening and security-rehearsal work through PR #108. That exact main commit has a successful Vercel production deployment. Continue in zero-cost mode: do not buy or upgrade infrastructure for routine delivery.
 
 ## Recently completed
