@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BadgeCheck } from "lucide-react";
 import { ExternalImage } from "@/components/ui/external-image";
+import { getMyAccessContext } from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
 
 type OrganizationPageProps={params:Promise<{slug:string}>;searchParams:Promise<{error?:string}>};
@@ -11,7 +12,7 @@ export default async function OrganizationPage({params,searchParams}:Organizatio
  const {data:organization,error}=await supabase.from("organizations").select(`id,name,slug,short_description,description,organization_type,mission,programs,website_url,email,phone,city,province_state,country,logo_url,cover_url,is_verified,is_accepting_volunteers,status,moderation_note,owner_id`).eq("slug",slug).maybeSingle();
  if(error||!organization)notFound();
  const {data:{user}}=await supabase.auth.getUser();
- const {data:viewerProfile}=user?await supabase.from("profiles").select("role").eq("id",user.id).maybeSingle():{data:null};
+ const {data:viewerProfile}=user?await getMyAccessContext(supabase,user.id):{data:null};
  const canEdit=user?.id===organization.owner_id; const canVerify=viewerProfile?.role==="admin"&&organization.status==="published";
  const programs=Array.isArray(organization.programs)?organization.programs.filter((program:unknown):program is string=>typeof program==="string"):[];
  const location=[organization.city,organization.province_state,organization.country].filter(Boolean).join(", ");
