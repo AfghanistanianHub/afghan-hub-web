@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "smoke:public": "node scripts/smoke-public.mjs",
+    "acceptance:auth": "node scripts/member-auth-acceptance.mjs",
+    "security:profile-personas": "node scripts/security-profile-personas.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
