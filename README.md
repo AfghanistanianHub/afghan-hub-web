@@ -50,12 +50,14 @@ Install and run:
 
 ```bash
 npm ci
+cp .env.example .env.local
+# Fill .env.local with non-production development values.
 npm run dev
 ```
 
 Then open `http://localhost:3000`.
 
-Production or shared secrets must not be committed to the repository. Use environment configuration appropriate to the target environment.
+Production or shared secrets must not be committed to the repository. The checked-in `.env.example` contains placeholders only; use `.env.local` for real local values.
 
 ## Verification
 
