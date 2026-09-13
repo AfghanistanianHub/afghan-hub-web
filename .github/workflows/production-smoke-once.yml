@@ -1,0 +1,23 @@
+name: Production Smoke Once
+
+on:
+  push:
+    branches:
+      - audit/production-smoke-20260912
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+      - name: Run anonymous production smoke
+        env:
+          SMOKE_BASE_URL: https://app.apnbc.ca
+        run: node scripts/smoke-public.mjs
