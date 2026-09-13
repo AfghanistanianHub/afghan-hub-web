@@ -16,7 +16,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!item) notFound();
   const description = (item.summary || item.description || `${publicCategories[kind].singular} on Afghan Hub.`).slice(0, 160);
   const url = `https://app.apnbc.ca${publicHref(kind, slug)}`;
-  return { title: item.title, description, alternates: { canonical: url }, openGraph: { title: item.title, description, url, type: "website" } };
+  const socialImage = "/opengraph-image";
+  return {
+    title: item.title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: item.title,
+      description,
+      url,
+      type: "website",
+      images: [{ url: socialImage, width: 1200, height: 630, alt: `${item.title} — Afghan Hub` }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: item.title,
+      description,
+      images: [socialImage],
+    },
+  };
 }
 export default async function PublicDetailPage({ params }: Props) {
   const { kind, slug } = await params;
