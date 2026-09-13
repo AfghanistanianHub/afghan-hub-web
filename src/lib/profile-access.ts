@@ -4,22 +4,13 @@ type ServerSupabaseClient = Awaited<ReturnType<typeof createClient>>;
 
 export async function getMyAccessContext(
   supabase: ServerSupabaseClient,
-  userId: string,
+  _userId: string,
 ) {
-  return supabase
-    .from("profiles")
-    .select("role,onboarding_completed")
-    .eq("id", userId)
-    .maybeSingle();
+  return supabase.rpc("get_my_access_context").maybeSingle();
 }
 
 export async function getAdminMemberAccounts(
   supabase: ServerSupabaseClient,
 ) {
-  return supabase
-    .from("profiles")
-    .select(
-      "id,display_name,first_name,last_name,email,role,onboarding_completed,created_at",
-    )
-    .order("created_at", { ascending: true });
+  return supabase.rpc("admin_list_member_accounts");
 }
