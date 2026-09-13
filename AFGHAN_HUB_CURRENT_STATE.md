@@ -1,6 +1,16 @@
 # Afghan Hub current state
 
-## Current delivery checkpoint — 2026-09-13
+## Active checkpoint — executable security rehearsal
+
+- #124 merged at `fb9b34eae5e167471fc598ca72e7f7f4e90eda91`; CI and Vercel succeeded and all 12 anonymous production smoke checks passed. Desktop public/home/Explore/mission layout was inspected.
+- #125 merged; controlled auth acceptance tooling exists. Do not rebuild it. Execution still needs designated disposable accounts and mailbox access.
+- Current base for this work: `9f35066ec5bc899293874ad73554232c38fa3e77`.
+- Added a disposable PostgreSQL 17 CI rehearsal of the documented #80 Phase A forward/rollback, including exact ACL comparison, future defaults, synthetic RLS/DML behavior and a negative control. See `docs/security/phase-a-executable-rehearsal.md` and the `Isolated security rehearsal` workflow for execution results.
+- The secondary Supabase project still fails authentication as of 2026-09-13. Production access was metadata-only; no production DDL/data/Auth change was made.
+- Next blocking inputs: disposable auth personas/mailbox and a trustworthy full Supabase rehearsal target. The synthetic PostgreSQL test advances Phase A verification but does not close #67/#80 or replace application acceptance.
+- Remaining launch gates and cost constraints below still apply. Treat subsequent sections as historical context, not current deployment SHAs.
+
+## Historical public delivery checkpoint — 2026-09-13
 
 Live GitHub reconciliation supersedes the historical checkpoint below. At review time, main is `72f3c28bc38dbb4976951bdf2b263d6bcac41fb5`.
 
