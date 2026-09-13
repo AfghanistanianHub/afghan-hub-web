@@ -6,7 +6,31 @@ import { publicCategories, publicKinds } from "@/lib/public-catalog";
 import { ListingCard } from "@/components/public/listing-card";
 
 const description = "Find opportunities, events, Afghan businesses, and community organizations. Explore Afghan Hub and connect with your community.";
-export const metadata: Metadata = { title: "A community to belong to. A place to grow.", description, alternates: { canonical: "https://app.apnbc.ca/" }, openGraph: { title: "Afghan Hub — People, possibilities, belonging", description, url: "https://app.apnbc.ca/", type: "website" } };
+export const metadata: Metadata = {
+  title: "A community to belong to. A place to grow.",
+  description,
+  alternates: { canonical: "https://app.apnbc.ca/" },
+  openGraph: {
+    title: "Afghan Hub — People, possibilities, belonging",
+    description,
+    url: "https://app.apnbc.ca/",
+    type: "website",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Afghan Hub — community, opportunities, organizations, businesses, and events",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Afghan Hub — People, possibilities, belonging",
+    description,
+    images: ["/opengraph-image"],
+  },
+};
 const icons = [BriefcaseBusiness, CalendarDays, Building2, UsersRound];
 
 export default async function PublicHome() {
