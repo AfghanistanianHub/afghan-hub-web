@@ -6,6 +6,10 @@ const layoutSource = fs.readFileSync(
   new URL("../src/app/layout.tsx", import.meta.url),
   "utf8",
 );
+const homeSource = fs.readFileSync(
+  new URL("../src/app/(public)/page.tsx", import.meta.url),
+  "utf8",
+);
 const siteUrlSource = fs.readFileSync(
   new URL("../src/lib/site-url.ts", import.meta.url),
   "utf8",
@@ -20,4 +24,12 @@ test("root metadata resolves social assets against the configured production sit
   assert.match(layoutSource, /url:\s*"\/opengraph-image"/);
   assert.match(layoutSource, /images:\s*\["\/opengraph-image"\]/);
   assert.match(layoutSource, /card:\s*"summary_large_image"/);
+});
+
+test("homepage metadata keeps social images after page-level metadata overrides", () => {
+  assert.match(homeSource, /openGraph:\s*\{/);
+  assert.match(homeSource, /url:\s*"\/opengraph-image"/);
+  assert.match(homeSource, /twitter:\s*\{/);
+  assert.match(homeSource, /images:\s*\["\/opengraph-image"\]/);
+  assert.match(homeSource, /card:\s*"summary_large_image"/);
 });
