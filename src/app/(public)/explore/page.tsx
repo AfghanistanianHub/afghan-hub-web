@@ -1,29 +1,180 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import {
+  ArrowLeft,
+  ArrowRight,
+  BriefcaseBusiness,
+  Building2,
+  CalendarDays,
+  Search,
+  Sparkles,
+  UsersRound,
+} from "lucide-react";
 import { getPublicListings } from "@/lib/public-content";
 import { publicCategories, publicKinds, isPublicKind, publicPageNumber } from "@/lib/public-catalog";
 import { ListingCard } from "@/components/public/listing-card";
 
 type Params = { type?: string | string[]; q?: string | string[]; page?: string | string[] };
 type Props = { searchParams: Promise<Params> };
+
+const icons = {
+  opportunities: BriefcaseBusiness,
+  events: CalendarDays,
+  businesses: Building2,
+  organizations: UsersRound,
+};
+
 function filters(params: Params) {
-  return { kind: typeof params.type === "string" && isPublicKind(params.type) ? params.type : "opportunities" as const, search: typeof params.q === "string" ? params.q.trim().slice(0, 100) : "", page: publicPageNumber(params.page) };
+  return {
+    kind: typeof params.type === "string" && isPublicKind(params.type) ? params.type : "opportunities" as const,
+    search: typeof params.q === "string" ? params.q.trim().slice(0, 100) : "",
+    page: publicPageNumber(params.page),
+  };
 }
+
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const { kind, search, page } = filters(await searchParams);
-  return { title: `Explore ${publicCategories[kind].label.toLowerCase()}`, description: publicCategories[kind].description, robots: search ? { index: false, follow: true } : undefined, alternates: { canonical: `https://app.apnbc.ca/explore?type=${kind}${page > 1 ? `&page=${page}` : ""}` } };
+  return {
+    title: `Explore ${publicCategories[kind].label.toLowerCase()}`,
+    description: publicCategories[kind].description,
+    robots: search ? { index: false, follow: true } : undefined,
+    alternates: {
+      canonical: `https://app.apnbc.ca/explore?type=${kind}${page > 1 ? `&page=${page}` : ""}`,
+    },
+  };
 }
+
 export default async function ExplorePage({ searchParams }: Props) {
   const { kind, search, page } = filters(await searchParams);
   const result = await getPublicListings(kind, { search, page });
-  const pageHref = (number: number) => { const query = new URLSearchParams({ type: kind, page: String(number) }); if (search) query.set("q", search); return `/explore?${query}`; };
-  return <main id="main-content" className="mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
-    <p className="text-xs font-semibold uppercase tracking-widest text-primary">Explore Afghan Hub</p><h1 className="mt-3 text-4xl font-semibold tracking-tight">Find your next connection.</h1><p className="mt-4 max-w-2xl leading-7 text-muted-foreground">Browse community listings before you join. Make an account when you’re ready to connect, save, or contribute.</p>
-    <nav aria-label="Listing categories" className="mt-8 flex flex-wrap gap-2">{publicKinds.map(value => <Link key={value} href={`/explore?type=${value}`} aria-current={value === kind ? "page" : undefined} className={`rounded-xl border px-4 py-3 text-sm font-semibold ${value === kind ? "border-primary bg-primary text-primary-foreground" : "border-border hover:bg-muted"}`}>{publicCategories[value].label}</Link>)}</nav>
-    <section aria-labelledby="results-heading" className="mt-10"><h2 id="results-heading" className="text-2xl font-semibold">{publicCategories[kind].label}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{publicCategories[kind].description}</p>
-      <form action="/explore" className="mt-6 flex flex-wrap items-end gap-3"><input type="hidden" name="type" value={kind} /><label className="grid w-full gap-2 text-sm font-medium sm:max-w-md">Search {publicCategories[kind].label.toLowerCase()}<input type="search" name="q" defaultValue={search} maxLength={100} placeholder="Search by name or title" className="min-w-0 rounded-xl border border-input bg-card px-4 py-3 outline-offset-2 focus-visible:outline-2" /></label><button className="rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Search</button>{search && <Link href={`/explore?type=${kind}`} className="px-3 py-3 text-sm text-primary underline">Clear search</Link>}</form>
-      <div className="mt-8">{result.unavailable ? <div role="status" className="rounded-2xl border border-border p-8"><h3 className="font-semibold">Listings are temporarily unavailable.</h3><p className="mt-2 text-sm text-muted-foreground">Please try again in a moment.</p><Link href={pageHref(page)} className="mt-4 inline-block text-sm text-primary underline">Try again</Link></div> : result.items.length ? <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">{result.items.map(item => <ListingCard key={item.slug} item={item} kind={kind} />)}</div> : <div className="rounded-2xl border border-dashed border-border p-8"><h3 className="font-semibold">{search ? "No listings match your search." : "No listings to show here yet."}</h3><p className="mt-2 text-sm text-muted-foreground">{search ? "Try another name or clear your search." : "Check back for new community listings, or explore another category."}</p></div>}</div>
-      {!result.unavailable && (page > 1 || result.hasMore) && <nav aria-label="Pagination" className="mt-8 flex items-center gap-5">{page > 1 && <Link href={pageHref(page - 1)} className="rounded-xl border border-border px-4 py-3 text-sm font-semibold hover:bg-muted">Previous</Link>}<span className="text-sm text-muted-foreground">Page {page}</span>{result.hasMore && <Link href={pageHref(page + 1)} className="rounded-xl border border-border px-4 py-3 text-sm font-semibold hover:bg-muted">Next</Link>}</nav>}
-    </section>
-  </main>;
+  const ActiveIcon = icons[kind];
+  const pageHref = (number: number) => {
+    const query = new URLSearchParams({ type: kind, page: String(number) });
+    if (search) query.set("q", search);
+    return `/explore?${query}`;
+  };
+
+  return (
+    <main id="main-content">
+      <section className="relative overflow-hidden border-b border-border/70">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_82%_18%,color-mix(in_oklab,var(--primary)_10%,transparent),transparent_28%),radial-gradient(circle_at_10%_75%,color-mix(in_oklab,var(--accent)_50%,transparent),transparent_32%)]" />
+        <div className="relative mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-background/80 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary shadow-sm backdrop-blur">
+              <Sparkles aria-hidden="true" className="size-3.5" />
+              Explore Afghan Hub
+            </div>
+            <h1 className="mt-5 text-4xl font-semibold tracking-tight sm:text-5xl">Find your next connection.</h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
+              Browse opportunities, gatherings, businesses, and organizations across the Afghan community before you join.
+            </p>
+          </div>
+
+          <nav aria-label="Listing categories" className="mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {publicKinds.map(value => {
+              const Icon = icons[value];
+              const active = value === kind;
+              return (
+                <Link
+                  key={value}
+                  href={`/explore?type=${value}`}
+                  aria-current={active ? "page" : undefined}
+                  className={`group rounded-2xl border p-4 transition-[border-color,background-color,box-shadow,transform] ${
+                    active
+                      ? "border-primary/45 bg-primary text-primary-foreground shadow-sm"
+                      : "border-border bg-card/85 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-sm"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <span className={`flex size-10 items-center justify-center rounded-xl ${active ? "bg-primary-foreground/12" : "bg-secondary text-primary"}`}>
+                      <Icon aria-hidden="true" className="size-5" />
+                    </span>
+                    <ArrowRight aria-hidden="true" className={`mt-1 size-4 transition-transform group-hover:translate-x-0.5 ${active ? "text-primary-foreground/80" : "text-primary"}`} />
+                  </div>
+                  <p className="mt-4 font-semibold">{publicCategories[value].label}</p>
+                  <p className={`mt-1 text-sm leading-6 ${active ? "text-primary-foreground/78" : "text-muted-foreground"}`}>
+                    {publicCategories[value].description}
+                  </p>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      </section>
+
+      <section aria-labelledby="results-heading" className="mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+          <div>
+            <div className="flex flex-wrap items-end justify-between gap-5">
+              <div>
+                <div className="flex items-center gap-3">
+                  <span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-primary"><ActiveIcon aria-hidden="true" className="size-5" /></span>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Currently browsing</p>
+                    <h2 id="results-heading" className="mt-1 text-3xl font-semibold tracking-tight">{publicCategories[kind].label}</h2>
+                  </div>
+                </div>
+                <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground">{publicCategories[kind].description}</p>
+              </div>
+              {search && <p className="rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground">Search: “{search}”</p>}
+            </div>
+
+            <div className="mt-8">
+              {result.unavailable ? (
+                <div role="status" className="rounded-3xl border border-border bg-card p-8 shadow-sm">
+                  <h3 className="font-semibold">Listings are temporarily unavailable.</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">Please try again in a moment.</p>
+                  <Link href={pageHref(page)} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Try again <ArrowRight aria-hidden="true" className="size-4" /></Link>
+                </div>
+              ) : result.items.length ? (
+                <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                  {result.items.map(item => <ListingCard key={item.slug} item={item} kind={kind} />)}
+                </div>
+              ) : (
+                <div className="rounded-3xl border border-dashed border-border bg-card/60 p-8">
+                  <h3 className="font-semibold">{search ? "No listings match your search." : "No listings to show here yet."}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {search ? "Try another name or clear your search." : "Check back for new community listings, or explore another category."}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {!result.unavailable && (page > 1 || result.hasMore) && (
+              <nav aria-label="Pagination" className="mt-10 flex flex-wrap items-center gap-3">
+                {page > 1 && <Link href={pageHref(page - 1)} className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-semibold hover:bg-muted"><ArrowLeft aria-hidden="true" className="size-4" /> Previous</Link>}
+                <span className="rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">Page {page}</span>
+                {result.hasMore && <Link href={pageHref(page + 1)} className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-semibold hover:bg-muted">Next <ArrowRight aria-hidden="true" className="size-4" /></Link>}
+              </nav>
+            )}
+          </div>
+
+          <aside className="lg:sticky lg:top-24">
+            <form action="/explore" className="rounded-3xl border border-border bg-card p-5 shadow-sm">
+              <input type="hidden" name="type" value={kind} />
+              <div className="flex items-center gap-3">
+                <span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-primary"><Search aria-hidden="true" className="size-5" /></span>
+                <div>
+                  <p className="font-semibold">Search this category</p>
+                  <p className="text-xs text-muted-foreground">Name, title, or keyword</p>
+                </div>
+              </div>
+              <label className="mt-5 grid gap-2 text-sm font-medium">
+                Search {publicCategories[kind].label.toLowerCase()}
+                <input type="search" name="q" defaultValue={search} maxLength={100} placeholder="Type a keyword" className="min-w-0 rounded-xl border border-input bg-background px-4 py-3 outline-offset-2 focus-visible:outline-2" />
+              </label>
+              <button className="mt-3 w-full rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Search</button>
+              {search && <Link href={`/explore?type=${kind}`} className="mt-3 block text-center text-sm font-medium text-primary hover:underline">Clear search</Link>}
+            </form>
+
+            <div className="mt-4 rounded-3xl border border-border bg-muted/35 p-5">
+              <p className="text-sm font-semibold">Want to add something?</p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">Join Afghan Hub to contribute listings and connect with other members.</p>
+              <Link href="/login?mode=join" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Join the community <ArrowRight aria-hidden="true" className="size-4" /></Link>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  );
 }
