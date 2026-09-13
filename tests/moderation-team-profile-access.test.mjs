@@ -8,7 +8,7 @@ const pagePath = new URL(
 );
 const adapterPath = new URL("../src/lib/profile-access.ts", import.meta.url);
 
-test("moderation team routes privileged profile reads through the access adapter", async () => {
+test("moderation team routes privileged profile reads through RPC-backed access adapters", async () => {
   const [pageSource, adapterSource] = await Promise.all([
     readFile(pagePath, "utf8"),
     readFile(adapterPath, "utf8"),
@@ -17,10 +17,9 @@ test("moderation team routes privileged profile reads through the access adapter
   assert.match(pageSource, /getMyAccessContext\(supabase, user\.id\)/);
   assert.match(pageSource, /getAdminMemberAccounts\(supabase\)/);
   assert.doesNotMatch(pageSource, /\.from\(["'`]profiles["'`]\)/);
-  assert.match(
-    adapterSource,
-    /id,display_name,first_name,last_name,email,role,onboarding_completed,created_at/,
-  );
+  assert.match(adapterSource, /get_my_access_context/);
+  assert.match(adapterSource, /admin_list_member_accounts/);
+  assert.doesNotMatch(adapterSource, /\.from\(["'`]profiles["'`]\)/);
 });
 
 test("moderation team does not expose raw database load errors", async () => {
