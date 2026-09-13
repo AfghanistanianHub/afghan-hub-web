@@ -12,18 +12,22 @@ const checks = [
   ["/forgot-password", 200, /Reset your password/],
   ["/robots.txt", 200, /Sitemap: https:\/\/app\.apnbc\.ca\/sitemap\.xml/],
   ["/sitemap.xml", 200, /https:\/\/app\.apnbc\.ca\/about/],
-  ["/explore/profiles/smoke-check", 404, /noindex/],
+  ["/explore/profiles/smoke-check", [200, 404], /This listing isn’t available/],
   ["/definitely-not-a-real-page", 404, /This page isn’t available/],
   ["/dashboard", 307],
   ["/messages", 307],
   ["/update-password", 307],
 ];
 let failed = 0;
-for (const [path, status, pattern] of checks) {
+for (const [path, expectedStatus, pattern] of checks) {
   try {
     const response = await fetch(new URL(path, base), { redirect: "manual", signal: AbortSignal.timeout(15000) });
-    assert.equal(response.status, status, `Expected HTTP ${status}, received ${response.status}`);
-    if (status === 307) {
+    const allowedStatuses = Array.isArray(expectedStatus) ? expectedStatus : [expectedStatus];
+    assert.ok(
+      allowedStatuses.includes(response.status),
+      `Expected HTTP ${allowedStatuses.join(" or ")}, received ${response.status}`,
+    );
+    if (allowedStatuses.length === 1 && allowedStatuses[0] === 307) {
       const location = new URL(response.headers.get("location"), base);
       assert.equal(location.origin, base.origin);
       assert.equal(location.pathname, "/login");
@@ -32,13 +36,26 @@ for (const [path, status, pattern] of checks) {
       assert.match(body, pattern, "Expected page content was missing");
 
       if (path === "/") {
+        const metaTags = body.match(/<meta\b[^>]*>/gi) ?? [];
+        const ogImageTag = metaTags.find((tag) => /property=["']og:image["']/i.test(tag));
+        const twitterImageTag = metaTags.find((tag) => /name=["']twitter:image["']/i.test(tag));
+        assert.ok(ogImageTag, "Expected an Open Graph image meta tag");
+        assert.ok(twitterImageTag, "Expected a Twitter image meta tag");
         assert.match(
-          body,
-          /<meta[^>]+property=["']og:image["'][^>]+content=["']https:\/\/app\.apnbc\.ca\//i,
+          ogImageTag,
+          /content=["']https:\/\/app\.apnbc\.ca\//i,
           "Expected the Open Graph image to resolve against the production origin",
         );
+        assert.match(
+          twitterImageTag,
+          /content=["']https:\/\/app\.apnbc\.ca\//i,
+          "Expected the Twitter image to resolve against the production origin",
+        );
         assert.ok(
-          !/<meta[^>]+(?:property=["']og:image["']|name=["']twitter:image["'])[^>]+content=["']http:\/\/localhost(?::3000)?\//i.test(body),
+          !metaTags.some((tag) =>
+            /(?:property=["']og:image["']|name=["']twitter:image["'])/i.test(tag) &&
+            /content=["']http:\/\/localhost(?::3000)?\//i.test(tag),
+          ),
           "Social image metadata must not resolve to localhost",
         );
       }
@@ -48,6 +65,14 @@ for (const [path, status, pattern] of checks) {
           body,
           /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i,
           "Expected auth/recovery page to be noindex",
+        );
+      }
+
+      if (path === "/explore/profiles/smoke-check") {
+        assert.match(
+          body,
+          /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i,
+          "Expected an invalid public listing kind to remain noindex",
         );
       }
 

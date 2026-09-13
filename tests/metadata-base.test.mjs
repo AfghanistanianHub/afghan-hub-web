@@ -15,4 +15,9 @@ test("root metadata resolves social assets against the configured production sit
   assert.match(layoutSource, /import \{ getSiteUrl \} from "@\/lib\/site-url"/);
   assert.match(layoutSource, /metadataBase:\s*new URL\(getSiteUrl\(\)\)/);
   assert.match(siteUrlSource, /https:\/\/app\.apnbc\.ca/);
+  assert.match(layoutSource, /openGraph:\s*\{/);
+  assert.match(layoutSource, /twitter:\s*\{/);
+  assert.match(layoutSource, /url:\s*"\/opengraph-image"/);
+  assert.match(layoutSource, /images:\s*\["\/opengraph-image"\]/);
+  assert.match(layoutSource, /card:\s*"summary_large_image"/);
 });
