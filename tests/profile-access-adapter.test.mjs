@@ -8,7 +8,7 @@ const layoutPath = new URL(
 );
 const adapterPath = new URL("../src/lib/profile-access.ts", import.meta.url);
 
-test("dashboard layout routes role/onboarding reads through the profile access adapter", async () => {
+test("dashboard layout routes role/onboarding reads through the profile access RPC", async () => {
   const [layoutSource, adapterSource] = await Promise.all([
     readFile(layoutPath, "utf8"),
     readFile(adapterPath, "utf8"),
@@ -19,5 +19,6 @@ test("dashboard layout routes role/onboarding reads through the profile access a
     layoutSource,
     /\.select\(["'`]display_name,first_name,onboarding_completed,role["'`]\)/,
   );
-  assert.match(adapterSource, /\.select\(["'`]role,onboarding_completed["'`]\)/);
+  assert.match(adapterSource, /get_my_access_context/);
+  assert.doesNotMatch(adapterSource, /\.from\(["'`]profiles["'`]\)/);
 });
