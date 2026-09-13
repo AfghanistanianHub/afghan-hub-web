@@ -10,6 +10,10 @@ const homeSource = fs.readFileSync(
   new URL("../src/app/(public)/page.tsx", import.meta.url),
   "utf8",
 );
+const detailSource = fs.readFileSync(
+  new URL("../src/app/(public)/explore/[kind]/[slug]/page.tsx", import.meta.url),
+  "utf8",
+);
 const siteUrlSource = fs.readFileSync(
   new URL("../src/lib/site-url.ts", import.meta.url),
   "utf8",
@@ -32,4 +36,13 @@ test("homepage metadata keeps social images after page-level metadata overrides"
   assert.match(homeSource, /twitter:\s*\{/);
   assert.match(homeSource, /images:\s*\["\/opengraph-image"\]/);
   assert.match(homeSource, /card:\s*"summary_large_image"/);
+});
+
+test("public detail metadata keeps social images after dynamic Open Graph overrides", () => {
+  assert.match(detailSource, /const socialImage = "\/opengraph-image"/);
+  assert.match(detailSource, /openGraph:\s*\{/);
+  assert.match(detailSource, /images:\s*\[\{\s*url:\s*socialImage/);
+  assert.match(detailSource, /twitter:\s*\{/);
+  assert.match(detailSource, /images:\s*\[socialImage\]/);
+  assert.match(detailSource, /card:\s*"summary_large_image"/);
 });
