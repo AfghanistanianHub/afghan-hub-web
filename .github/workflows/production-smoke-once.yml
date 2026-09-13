@@ -18,6 +18,28 @@ jobs:
         with:
           node-version: 24.x
       - name: Run anonymous production smoke
+        continue-on-error: true
         env:
           SMOKE_BASE_URL: https://app.apnbc.ca
         run: node scripts/smoke-public.mjs
+      - name: Diagnose smoke mismatches
+        env:
+          SMOKE_BASE_URL: https://app.apnbc.ca
+        run: |
+          node --input-type=module <<'EOF'
+          const base = new URL(process.env.SMOKE_BASE_URL);
+          for (const path of ['/', '/explore/profiles/smoke-check']) {
+            const response = await fetch(new URL(path, base), { redirect: 'manual', signal: AbortSignal.timeout(15000) });
+            const body = await response.text();
+            console.log(`DIAG ${path} status=${response.status}`);
+            if (path === '/') {
+              const tags = [...body.matchAll(/<meta[^>]+(?:og:image|twitter:image)[^>]*>/gi)].map((m) => m[0]);
+              console.log(`SOCIAL_META ${JSON.stringify(tags)}`);
+            } else {
+              console.log(`HAS_NOINDEX ${/<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(body)}`);
+              console.log(`HAS_NOT_FOUND ${/This page isn.?t available|not found|couldn.?t find/i.test(body)}`);
+              const title = body.match(/<title>([^<]*)<\/title>/i)?.[1] ?? '';
+              console.log(`TITLE ${JSON.stringify(title)}`);
+            }
+          }
+          EOF
