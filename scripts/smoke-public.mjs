@@ -40,7 +40,7 @@ for (const [path, expectedStatus, pattern] of checks) {
 
       if (["/privacy", "/terms", "/support"].includes(path)) {
         assert.match(body, /SAM Azad/, "Expected the confirmed responsible operator");
-        assert.match(body, /href=["\']mailto:info@apnbc\\.ca["\']/, "Expected the confirmed support email link");
+        assert.match(body, /href=["\']mailto:info@apnbc\.ca["\']/, "Expected the confirmed support email link");
         assert.match(body, /id=["\']main-content["\']/, "Expected the public skip-link target");
       }
 
