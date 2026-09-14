@@ -11,6 +11,7 @@
     "acceptance:auth": "node scripts/member-auth-acceptance.mjs",
     "acceptance:member-pair": "node scripts/member-pair-preflight.mjs",
     "acceptance:journey": "node scripts/member-journey-acceptance.mjs",
+    "acceptance:rsvp": "node scripts/event-rsvp-acceptance.mjs",
     "security:qualify-target": "node scripts/qualify-isolated-target.mjs",
     "security:profile-personas": "node scripts/security-profile-personas.mjs"
   },
