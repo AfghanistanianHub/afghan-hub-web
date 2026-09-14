@@ -1,6 +1,10 @@
 import { SupportLinks } from "@/components/public/support-links";
 import { SubmitButton } from "@/components/auth/submit-button";
 import Link from "next/link";
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_POLICY_HINT,
+} from "@/lib/password-policy";
 import { login, signup } from "./actions";
 
 type LoginPageProps = {
@@ -83,11 +87,17 @@ export default async function LoginPage({
               name="password"
               type="password"
               required
-              minLength={joining ? 8 : undefined}
+              minLength={joining ? PASSWORD_MIN_LENGTH : undefined}
               autoComplete={joining ? "new-password" : "current-password"}
-              placeholder={joining ? "Minimum 8 characters" : "Your password"}
+              placeholder={joining ? `Minimum ${PASSWORD_MIN_LENGTH} characters` : "Your password"}
+              aria-describedby={joining ? "password-policy" : undefined}
               className={fieldClassName}
             />
+            {joining ? (
+              <p id="password-policy" className="mt-2 text-xs leading-5 text-muted-foreground">
+                {PASSWORD_POLICY_HINT}
+              </p>
+            ) : null}
           </div>
 
           <SubmitButton pendingLabel={joining ? "Creating account…" : "Signing in…"}>{joining ? "Create account" : "Sign in"}</SubmitButton>
