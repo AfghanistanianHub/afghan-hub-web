@@ -23,22 +23,33 @@ This is the concise continuation checkpoint. Detailed evidence remains in GitHub
   - `npm run acceptance:member-pair` — read-only Member A/B preflight (#143).
   - `npm run acceptance:journey` — guarded connection/messaging/notification/read-state journey with exact cleanup material (#145).
   - `npm run acceptance:rsvp` — self-cleaning non-production RSVP journey, hard-blocked from production write mode (#148).
+  - `npm run acceptance:roles` — publishable-key-only member/moderator/admin role preflight with no application-data write path (#157).
+- Secondary acceptance-target refresh is complete:
+  - #160 locked the exact stale secondary baseline with read-only assertions and rollback-safety checks.
+  - #162 shipped guarded role/moderation/RSVP forward + rollback packages; after Node 22/24, isolated rehearsal and Vercel passed, the forward package was applied to the non-production secondary target and post-forward assertions passed.
+  - Secondary `handle_new_user()` and `rls_auto_enable()` EXECUTE ACLs were aligned with production (`postgres`/`service_role` only), removing anonymous SECURITY DEFINER exposure on those helpers.
+  - #164 shipped guarded messaging acceptance forward + rollback packages. After Node 22/24, isolated rehearsal and Vercel passed, the messaging forward package was applied to secondary and `secondary_messaging_forward_assertions_passed`.
+  - The secondary target now has the launch-critical RLS/RPC/trigger surface for member connections, conversations, messages, notifications/read-state, saves, RSVP, content-owner, moderator and admin acceptance.
+  - Post-sync Secondary Security Advisor no longer reports `rls_enabled_no_policy` findings on the messaging/save tables.
+  - #159 and #163 are closed completed. No production DDL/data mutation occurred during the secondary refresh.
 
 ## Current launch / security gates
 
-1. **#120 hosted acceptance remains the main behavioral gate.** Tooling exists, but full hosted evidence with designated disposable accounts/mailbox is incomplete. Do not use unrelated real members.
+1. **#120 hosted acceptance remains the main behavioral gate.** The secondary target is now schema-compatible, but actual behavioral evidence still requires explicitly designated disposable credentials/personas. Do not repurpose unrelated real accounts. Run Member A/B, messaging, RSVP and role journeys only with designated disposable personas and clean exact fixture IDs.
 2. **#136 / #80 Phase B** remains blocked from production GRANT/REVOKE until the relevant controlled hosted acceptance succeeds.
 3. **#134 search-path production hardening** remains unexecuted. The ten candidate functions are schema-qualified, but persona/member/moderator/admin behavior and deny paths must be verified before production ALTER FUNCTION.
 4. **#135 platform/Auth hardening** remains partially constrained by plan and change control. Leaked-password protection requires Supabase Pro; the Free-plan application password baseline is shipped. `pg_trgm` relocation has a rehearsal but still needs separate production authorization.
 5. **#132 post-launch privacy operations** remains open for retention, deletion lifecycle, response targets, jurisdiction and broader export scope.
-6. **#152 repository hardening** remains open. GitHub API inspection showed `main` is currently unprotected with no required status checks. The current connector cannot safely change branch-protection administration.
+6. **#152 repository hardening** remains open. `main` is not protected; GitHub ruleset/branch-protection administration is unavailable through the current connector and the current private-repo plan path returned a paid/public-repo requirement. No upgrade is being made in zero-cost mode.
 7. Final exact-main browser smoke/release rehearsal and backup/recovery evidence are still required before declaring the entire project complete.
 
-## Acceptance target constraints
+## Acceptance target state
 
-- Afghan Hub Production: `yussznmwjsvfvpabmwdc`.
-- Secondary Supabase project `rurgmyiiytesknsfwjjl` is reachable but not production-compatible: it lacks at least `notifications` and `event_rsvps` and several tables differ from production. Do not treat it as final staging evidence unless deliberately refreshed and re-qualified.
-- Do not mutate the secondary project merely to make a test pass.
+- Afghan Hub Production: `yussznmwjsvfvpabmwdc`. Production remains the source of truth and was not mutated during the secondary refresh.
+- Secondary Supabase project: `rurgmyiiytesknsfwjjl`.
+- Secondary is now deliberately refreshed and schema-compatible for the launch-critical acceptance surface. It is suitable for controlled non-production behavioral acceptance, subject to using explicitly designated disposable credentials.
+- Secondary aggregate role availability was last observed as 1 admin / 1 moderator / 4 members. This is inventory only; identities were not inspected and these accounts are not automatically considered disposable.
+- Known remaining secondary advisor warnings are not refresh blockers: `pg_trgm` in `public`, intentional authenticated SECURITY DEFINER application RPCs, and leaked-password protection unavailable on the current Free plan.
 - Never test production with unrelated real members or inspect unrelated private content.
 
 ## Operating constraints
@@ -49,3 +60,8 @@ This is the concise continuation checkpoint. Detailed evidence remains in GitHub
 - Production mutations require exact scope, applicable acceptance evidence, rollback/cleanup and explicit authorization.
 - Never commit passwords, tokens, cookies, reset/confirmation links or service-role credentials.
 - Keep detailed issue evidence current: #80, #120, #132, #134, #135, #136, #137 and #152.
+
+## Exact main at this checkpoint
+
+- `main`: `58641f803a97d8045d78df743236181ebe7b7e16` (#164 squash merge).
+- Vercel combined status for that exact main SHA: **success**.
