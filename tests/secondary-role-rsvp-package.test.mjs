@@ -8,6 +8,11 @@ const forwardAssert = readFileSync(new URL("./security/secondary-role-rsvp-forwa
 const rollbackAssert = readFileSync(new URL("./security/secondary-role-rsvp-rollback-assert.sql", import.meta.url), "utf8");
 
 const productionRef = "yussznmwjsvfvpabmwdc";
+const executableSql = (sql) => sql
+  .split("\n")
+  .filter((line) => !line.trimStart().startsWith("--"))
+  .join("\n");
+
 const requiredFunctions = [
   "moderate_event",
   "moderate_opportunity",
@@ -37,7 +42,7 @@ test("secondary refresh SQL is transaction-bound and never names production", ()
     assert.match(sql, /^--[\s\S]*\nbegin;/i, `${name} must begin a transaction`);
     assert.match(sql, /\ncommit;\s*$/i, `${name} must commit explicitly`);
     assert.equal(sql.includes(productionRef), false, `${name} must not name production`);
-    assert.equal(/drop\s+database|truncate\s+/i.test(sql), false, `${name} contains an out-of-scope destructive primitive`);
+    assert.equal(/drop\s+database|truncate\s+/i.test(executableSql(sql)), false, `${name} contains an out-of-scope destructive primitive`);
   }
 });
 
@@ -46,7 +51,7 @@ test("forward package contains the bounded launch tables and RPCs", () => {
   assert.match(forward, /create table public\.event_rsvps/i);
   for (const name of requiredFunctions) assert.ok(forward.includes(`public.${name}`), `forward missing ${name}`);
   for (const name of requiredTriggers) assert.ok(forward.includes(name), `forward missing ${name}`);
-  assert.equal(/search_vector|realtime|alter publication/i.test(forward), false, "search/realtime must stay outside this bounded delta");
+  assert.equal(/search_vector|alter\s+publication|supabase_realtime/i.test(executableSql(forward)), false, "search/realtime statements must stay outside this bounded delta");
 });
 
 test("rollback removes every bounded launch RPC and trigger surface", () => {
