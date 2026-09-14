@@ -8,13 +8,13 @@ This runbook is intentionally zero-cost and does not change production data.
 
 ## Backup contents
 
-Use `scripts/backup-free-plan.sh` to create three logical export files:
+Use `npm run backup:free-plan` to create three logical export files:
 
 - `roles.sql` — custom role definitions supported by the Supabase CLI dump flow;
 - `schema.sql` — application schema and database objects exported by `supabase db dump`;
 - `data.sql` — application data using COPY statements.
 
-The script also writes a manifest and SHA-256 checksums when a checksum utility is available.
+The helper also writes a manifest and SHA-256 checksums when a checksum utility is available.
 
 Supabase-managed internal schemas are filtered by the CLI. Storage objects themselves are not contained in a database dump; the database only contains Storage metadata. If Afghan Hub later stores irreplaceable user media, object-storage backup needs a separate procedure.
 
@@ -32,14 +32,14 @@ Run:
 
 ```bash
 export SUPABASE_DB_URL='postgresql://...'
-./scripts/backup-free-plan.sh
+npm run backup:free-plan
 ```
 
 Optional destination override:
 
 ```bash
 BACKUP_OUTPUT_DIR="$HOME/secure-backups/afghan-hub-$(date -u +%Y%m%d)" \
-  ./scripts/backup-free-plan.sh
+  npm run backup:free-plan
 ```
 
 The default output is under `backups/`, which is git-ignored.
