@@ -30,6 +30,12 @@ Do not close #119/#120 based on mocks, static review or historical usage aggrega
 
 This change delivers the public information/support surfaces above. It does not establish legal compliance or deletion/export fulfillment. The confirmed support email is info@apnbc.ca; the earlier Gmail address is superseded. Do not request Gmail again: it was declined. Hosted acceptance can use an operator-controlled manual email workflow, but pass/fail evidence is still needed. Issue #119 was closed externally without recorded acceptance evidence; do not infer a hosted test pass from its closed status.
 
+## Account/profile download — 2026-09-14
+
+Settings now offers a scoped account/profile JSON download via POST /api/account/export. Authentication, exact same-origin checks, explicit field allowlists and private no-store responses protect the route. It reads only the validated user's profile using the existing session/RLS; no service-role key, grant change or mutation is involved. Five behavioral security tests cover deny paths, owner scoping, redaction and missing profile handling. Anonymous hosted smoke now includes the denied download path and cross-origin rejection (16 checks total).
+
+This is not a complete data export: messages/conversations, connections, contributions, saves, RSVPs and file contents remain outside scope. Wider export and deletion handling remain part of #99. No live authenticated download has been claimed without designated test-account evidence.
+
 ## Continuation and constraints
 
 - Prefer fixing concrete regressions and batching meaningful changes over generating more review-only infrastructure.

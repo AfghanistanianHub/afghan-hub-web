@@ -14,7 +14,7 @@ const sections = [
   },
   {
     "title": "Privacy, deletion and export requests",
-    "text": "Email support to ask about your information, request corrections, discuss account deletion or request a copy of your data. Use your account email where possible. There is no self-service deletion or export flow; clarify request scope and timing with support."
+    "text": "Email support to ask about your information, request corrections, discuss account deletion or request a copy of your data. Use your account email where possible. Download your account details and profile from Settings as JSON. Messages, connections, contributions, saved items, RSVPs and uploaded files are outside that download. Contact support for wider requests or account deletion, and clarify scope and timing."
   },
   {
     "title": "Report abuse or misleading content",

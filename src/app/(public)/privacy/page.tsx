@@ -26,7 +26,7 @@ const sections = [
   },
   {
     "title": "Corrections, deletion and data export",
-    "text": "Edit your profile and visibility through your account. Contact support for information questions, corrections, account deletion or a copy of your data. Self-service account deletion and export are not currently available. Share only the minimum personal information needed to explain your request."
+    "text": "Edit your profile and visibility through your account. Contact support for information questions, corrections, account deletion or a copy of your data. Settings provides a JSON download of your account details and profile. Conversations, messages, connections, listings, saved items, RSVPs and file contents are outside that download. Account deletion and wider data exports still require contacting support. Share only the minimum personal information needed to explain your request."
   },
   {
     "title": "Retention and request scope",
