@@ -1,0 +1,29 @@
+name: Production release smoke
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run read-only public smoke against production
+        env:
+          SMOKE_BASE_URL: https://app.apnbc.ca
+        run: npm run smoke:public
