@@ -10,6 +10,7 @@
     "smoke:public": "node scripts/smoke-public.mjs",
     "acceptance:auth": "node scripts/member-auth-acceptance.mjs",
     "acceptance:member-pair": "node scripts/member-pair-preflight.mjs",
+    "acceptance:journey": "node scripts/member-journey-acceptance.mjs",
     "security:qualify-target": "node scripts/qualify-isolated-target.mjs",
     "security:profile-personas": "node scripts/security-profile-personas.mjs"
   },
