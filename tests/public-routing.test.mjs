@@ -6,8 +6,8 @@ import ts from "typescript";
 const exports = {};
 vm.runInNewContext(ts.transpileModule(fs.readFileSync(new URL("../src/lib/public-catalog.ts", import.meta.url), "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, { exports });
 test("public route matching does not include member routes or similar prefixes", () => {
-  for (const path of ["/robots.txt", "/sitemap.xml", "/", "/about", "/explore", "/explore/events/test"]) assert.equal(exports.isPublicPath(path), true);
-  for (const path of ["/robots.txt/private", "/sitemap.xml/private", "/dashboard", "/members/member", "/messages", "/events/test", "/explorer", "/about-private", "/moderation"]) assert.equal(exports.isPublicPath(path), false);
+  for (const path of ["/robots.txt", "/sitemap.xml", "/", "/about", "/privacy", "/terms", "/support", "/explore", "/explore/events/test"]) assert.equal(exports.isPublicPath(path), true);
+  for (const path of ["/robots.txt/private", "/sitemap.xml/private", "/dashboard", "/members/member", "/messages", "/events/test", "/explorer", "/about-private", "/privacy/private", "/privacy-settings", "/terms/private", "/terms-private", "/support/private", "/support-admin", "/moderation"]) assert.equal(exports.isPublicPath(path), false);
 });
 test("category and pagination inputs reject prototype names and malformed pages", () => {
   assert.equal(exports.isPublicKind("events"), true);
@@ -90,7 +90,10 @@ test("sitemap contains canonical public categories and published detail URLs wit
     },
   });
   const urls = Array.from(await sitemapExports.default(), entry => entry.url);
-  assert.equal(new Set(urls).size, 8);
+  assert.equal(new Set(urls).size, 11);
+  for (const page of ["privacy", "terms", "support"]) {
+    assert.ok(urls.includes(`https://app.apnbc.ca/${page}`));
+  }
   assert.ok(urls.includes("https://app.apnbc.ca/explore/events/community-night"));
   assert.ok(urls.includes("https://app.apnbc.ca/explore/businesses/kabul-bakery"));
   for (const url of urls) {
