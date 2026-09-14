@@ -23,7 +23,11 @@ test("free-plan backup helper fails closed and keeps credentials out of output",
   assert.match(backup, /supabase db dump --db-url "\$SUPABASE_DB_URL"/);
   assert.match(backup, /--role-only/);
   assert.match(backup, /--data-only --use-copy/);
-  assert.equal(/echo\s+.*SUPABASE_DB_URL|printf\s+.*SUPABASE_DB_URL/.test(backup), false, "backup helper must not print the connection string");
+  assert.equal(
+    /(?:echo|printf)[^\n]*\$\{?SUPABASE_DB_URL\}?/.test(backup),
+    false,
+    "backup helper must not print the connection-string value",
+  );
   assert.match(gitignore, /^\/backups\/$/m);
 });
 
