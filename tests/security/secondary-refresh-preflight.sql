@@ -91,6 +91,23 @@ BEGIN
     RAISE EXCEPTION 'Secondary baseline changed: launch mutation/RSVP RPC already exists';
   END IF;
 
+  -- Forward-only trigger/helper functions must also be absent so rollback cannot
+  -- accidentally remove pre-existing secondary behavior.
+  IF EXISTS (
+    SELECT 1
+    FROM pg_proc p
+    JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public'
+      AND p.proname IN (
+        'preserve_listing_identity', 'enforce_profile_role',
+        'enforce_business_verification', 'enforce_organization_verification',
+        'enforce_event_moderation', 'enforce_opportunity_moderation',
+        'enforce_business_moderation', 'enforce_organization_moderation'
+      )
+  ) THEN
+    RAISE EXCEPTION 'Secondary baseline changed: forward-only helper already exists';
+  END IF;
+
   -- Known missing moderation/search columns. If any appear, stop and re-diff.
   IF EXISTS (
     SELECT 1
