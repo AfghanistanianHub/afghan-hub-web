@@ -1,3 +1,4 @@
+import { AccountExportButton } from "@/components/account/account-export-button";
 import { SupportLinks } from "@/components/public/support-links";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -131,6 +132,15 @@ export default async function SettingsPage({
             </PendingSubmitButton>
           </div>
         </form>
+        <section className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-xl font-semibold">Your data</h2>
+          <p className="mb-5 mt-2 text-sm leading-6 text-muted-foreground">
+            Download your account details and profile as a JSON file. Messages, connections,
+            contributions, saved items, RSVPs and uploaded files are outside this download.
+            For a wider data request or account deletion, <Link href="/support" className="text-primary underline underline-offset-4">contact support</Link>.
+          </p>
+          <AccountExportButton />
+        </section>
         <div className="mt-8 rounded-2xl border border-border p-6"><SupportLinks /></div>
       </div>
     </main>

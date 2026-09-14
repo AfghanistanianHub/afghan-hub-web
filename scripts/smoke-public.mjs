@@ -20,11 +20,12 @@ const checks = [
   ["/dashboard", 307],
   ["/messages", 307],
   ["/update-password", 307],
+  ["/api/account/export", 401, /Sign in again to download your data/, "POST"],
 ];
 let failed = 0;
-for (const [path, expectedStatus, pattern] of checks) {
+for (const [path, expectedStatus, pattern, method = "GET"] of checks) {
   try {
-    const response = await fetch(new URL(path, base), { redirect: "manual", signal: AbortSignal.timeout(15000) });
+    const response = await fetch(new URL(path, base), { method, headers: method === "POST" ? { Origin: base.origin } : undefined, redirect: "manual", signal: AbortSignal.timeout(15000) });
     const allowedStatuses = Array.isArray(expectedStatus) ? expectedStatus : [expectedStatus];
     assert.ok(
       allowedStatuses.includes(response.status),
@@ -37,6 +38,19 @@ for (const [path, expectedStatus, pattern] of checks) {
     } else {
       const body = await response.text();
       assert.match(body, pattern, "Expected page content was missing");
+
+      if (path === "/api/account/export") {
+        assert.match(response.headers.get("cache-control") || "", /private.*no-store/);
+        assert.equal(response.headers.get("content-disposition"), null);
+        const foreign = await fetch(new URL(path, base), {
+          method: "POST",
+          headers: { Origin: "https://foreign.example.test" },
+          redirect: "manual",
+          signal: AbortSignal.timeout(15000),
+        });
+        assert.equal(foreign.status, 403, "Expected cross-origin download rejection");
+        assert.match(foreign.headers.get("cache-control") || "", /no-store/);
+      }
 
       if (["/privacy", "/terms", "/support"].includes(path)) {
         assert.match(body, /SAM Azad/, "Expected the confirmed responsible operator");
@@ -90,7 +104,7 @@ for (const [path, expectedStatus, pattern] of checks) {
           assert.ok(body.includes(`https://app.apnbc.ca/${page}</loc>`), `Missing ${page} sitemap entry`);
         }
         assert.ok((body.match(/<loc>/g) || []).length >= 9, "Expected the nine static sitemap entries");
-        assert.ok(!/<loc>[^<]*(?:\/members|\/dashboard|\/login|\/forgot-password|\/update-password|[?&]q=)/.test(body));
+        assert.ok(!/<loc>[^<]*(?:\/api|\/members|\/dashboard|\/login|\/forgot-password|\/update-password|[?&]q=)/.test(body));
       }
     }
     console.log(`PASS ${path}`);
