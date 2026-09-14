@@ -1,6 +1,10 @@
 import { SubmitButton } from "@/components/auth/submit-button";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_POLICY_HINT,
+} from "@/lib/password-policy";
 import { updatePassword } from "./actions";
 
 type UpdatePasswordPageProps = {
@@ -42,7 +46,7 @@ export default async function UpdatePasswordPage({
         </p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight">Choose a new password</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Use at least 8 characters and enter the same password twice.
+          {PASSWORD_POLICY_HINT} Enter the same password twice.
         </p>
 
         {error ? (
@@ -61,11 +65,15 @@ export default async function UpdatePasswordPage({
               name="password"
               type="password"
               required
-              minLength={8}
+              minLength={PASSWORD_MIN_LENGTH}
               autoComplete="new-password"
-              placeholder="Minimum 8 characters"
+              placeholder={`Minimum ${PASSWORD_MIN_LENGTH} characters`}
+              aria-describedby="password-policy"
               className={fieldClassName}
             />
+            <p id="password-policy" className="mt-2 text-xs leading-5 text-muted-foreground">
+              {PASSWORD_POLICY_HINT}
+            </p>
           </div>
 
           <div>
@@ -80,7 +88,7 @@ export default async function UpdatePasswordPage({
               name="passwordConfirmation"
               type="password"
               required
-              minLength={8}
+              minLength={PASSWORD_MIN_LENGTH}
               autoComplete="new-password"
               placeholder="Enter the new password again"
               className={fieldClassName}

@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getPasswordPolicyError } from "@/lib/password-policy";
 
 const passwordUpdateErrorMessage =
   "We could not update your password right now. Request a new reset link and try again.";
@@ -11,12 +12,11 @@ export async function updatePassword(formData: FormData) {
   const passwordConfirmation = String(
     formData.get("passwordConfirmation") ?? ""
   );
+  const passwordPolicyError = getPasswordPolicyError(password);
 
-  if (password.length < 8) {
+  if (passwordPolicyError) {
     redirect(
-      `/update-password?error=${encodeURIComponent(
-        "Password must be at least 8 characters."
-      )}`
+      `/update-password?error=${encodeURIComponent(passwordPolicyError)}`
     );
   }
 
