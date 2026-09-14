@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "smoke:public": "node scripts/smoke-public.mjs",
+    "backup:free-plan": "bash scripts/backup-free-plan.sh",
     "acceptance:auth": "node scripts/member-auth-acceptance.mjs",
     "acceptance:member-pair": "node scripts/member-pair-preflight.mjs",
     "acceptance:journey": "node scripts/member-journey-acceptance.mjs",
