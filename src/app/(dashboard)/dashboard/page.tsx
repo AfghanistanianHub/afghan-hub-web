@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   ArrowRight,
+  ArrowUpRight,
   BriefcaseBusiness,
   Building2,
   CalendarDays,
@@ -32,25 +33,29 @@ function formatEventDate(value: string) {
 const quickActions = [
   {
     title: "Explore members",
-    description: "Discover professionals and community members.",
+    kicker: "People",
+    description: "Find people to learn from, collaborate with, or simply say hello to.",
     href: "/network",
     icon: UsersRound,
   },
   {
     title: "Find opportunities",
-    description: "Browse jobs, volunteer roles, grants, and programs.",
+    kicker: "Next step",
+    description: "Jobs, grants, volunteer roles, and programs.",
     href: "/opportunities",
     icon: BriefcaseBusiness,
   },
   {
     title: "Discover businesses",
-    description: "Support Afghan-owned businesses and services.",
+    kicker: "Support local",
+    description: "Afghan-owned services and businesses.",
     href: "/businesses",
     icon: Building2,
   },
   {
     title: "Community events",
-    description: "Find upcoming cultural and professional events.",
+    kicker: "Show up",
+    description: "Cultural, social, and professional gatherings.",
     href: "/events",
     icon: CalendarDays,
   },
@@ -124,38 +129,42 @@ export default async function DashboardPage() {
     .filter(Boolean)
     .join(", ");
 
+  const opportunityCount = suggestedOpportunities?.length ?? 0;
+  const eventCount = upcomingEvents?.length ?? 0;
+
   return (
     <main className="px-4 py-7 md:px-8 md:py-10">
-      <div className="mx-auto max-w-7xl space-y-8">
-        <section className="surface-panel relative overflow-hidden rounded-[2rem] px-6 py-8 md:px-10 md:py-10">
-          <div className="pointer-events-none absolute -right-16 -top-24 size-72 rounded-full bg-primary/10 blur-3xl" />
-          <ConnectionThread className="pointer-events-none absolute -right-8 top-3 hidden h-52 w-[32rem] text-primary/55 lg:block" />
+      <div className="mx-auto max-w-7xl space-y-9">
+        <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card shadow-[0_20px_60px_rgb(15_23_42/0.06)]">
+          <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_80%_8%,color-mix(in_oklab,var(--primary)_13%,transparent),transparent_28%),radial-gradient(circle_at_18%_90%,color-mix(in_oklab,var(--accent)_60%,transparent),transparent_30%)]" />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.02] [background-image:linear-gradient(to_right,var(--foreground)_1px,transparent_1px),linear-gradient(to_bottom,var(--foreground)_1px,transparent_1px)] [background-size:36px_36px]" />
+          <ConnectionThread className="pointer-events-none absolute -right-10 top-0 hidden h-56 w-[34rem] text-primary/45 xl:block" />
 
-          <div className="relative flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
+          <div className="relative grid gap-8 px-6 py-8 md:px-9 md:py-10 xl:grid-cols-[1fr_390px] xl:items-end">
             <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary">
-                <Sparkles className="size-3.5" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-background/70 px-3 py-1.5 text-xs font-semibold text-primary backdrop-blur">
+                <Sparkles aria-hidden="true" className="size-3.5" />
                 Your community, connected
               </div>
 
-              <h1 className="mt-5 text-3xl font-extrabold tracking-[-0.035em] text-foreground md:text-5xl">
+              <h1 className="mt-5 text-3xl font-extrabold tracking-[-0.04em] text-foreground md:text-5xl">
                 Welcome back, {displayName}
               </h1>
 
-              <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">
-                Discover people, organizations, opportunities, businesses, and events across the Afghan community.
+              <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground md:text-lg">
+                See what is moving, find someone new, and keep your next step close.
               </p>
 
               {profile?.headline || location ? (
                 <div className="mt-5 flex flex-wrap gap-2 text-sm">
                   {profile?.headline ? (
-                    <span className="rounded-full border border-border bg-card px-3 py-1.5 text-foreground shadow-sm">
+                    <span className="rounded-full border border-border bg-background/85 px-3 py-1.5 text-foreground shadow-sm">
                       {profile.headline}
                     </span>
                   ) : null}
 
                   {location ? (
-                    <span className="rounded-full border border-border bg-card px-3 py-1.5 text-muted-foreground shadow-sm">
+                    <span className="rounded-full border border-border bg-background/85 px-3 py-1.5 text-muted-foreground shadow-sm">
                       {location}
                     </span>
                   ) : null}
@@ -163,49 +172,90 @@ export default async function DashboardPage() {
               ) : null}
             </div>
 
-            <Link
-              href="/network"
-              className="inline-flex w-fit items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-            >
-              Explore the network
-              <ArrowRight className="size-4" />
-            </Link>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-2">
+              <Link
+                href="/opportunities"
+                className="group rounded-2xl border border-border/80 bg-background/88 p-4 backdrop-blur transition hover:-translate-y-0.5 hover:border-primary/30"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary">
+                    <BriefcaseBusiness aria-hidden="true" className="size-4.5" />
+                  </span>
+                  <ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground group-hover:text-primary" />
+                </div>
+                <p className="mt-5 text-2xl font-bold tracking-tight">{opportunityCount}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">fresh opportunities</p>
+              </Link>
+
+              <Link
+                href="/events"
+                className="group rounded-2xl border border-border/80 bg-background/88 p-4 backdrop-blur transition hover:-translate-y-0.5 hover:border-primary/30"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary">
+                    <CalendarDays aria-hidden="true" className="size-4.5" />
+                  </span>
+                  <ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground group-hover:text-primary" />
+                </div>
+                <p className="mt-5 text-2xl font-bold tracking-tight">{eventCount}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">upcoming events</p>
+              </Link>
+
+              <Link
+                href="/network"
+                className="group col-span-2 flex items-center justify-between gap-4 rounded-2xl bg-primary px-5 py-4 text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 sm:col-span-1 xl:col-span-2"
+              >
+                <div>
+                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] opacity-70">Network</p>
+                  <p className="mt-1 font-semibold">Meet someone new</p>
+                </div>
+                <ArrowRight aria-hidden="true" className="size-4" />
+              </Link>
+            </div>
           </div>
         </section>
 
-        <section>
+        <section aria-labelledby="dashboard-explore-heading">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold text-primary">Start here</p>
-              <h2 className="mt-1 text-2xl font-bold tracking-[-0.02em] text-foreground">
-                Explore Afghan Hub
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Start here</p>
+              <h2 id="dashboard-explore-heading" className="mt-2 text-2xl font-bold tracking-[-0.025em] text-foreground">
+                Move through Afghan Hub
               </h2>
             </div>
           </div>
 
-          <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {quickActions.map((action) => {
+          <div className="mt-5 grid auto-rows-[170px] gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {quickActions.map((action, index) => {
               const Icon = action.icon;
+              const featured = index === 0;
 
               return (
                 <Link
                   key={action.href}
                   href={action.href}
-                  className="group surface-panel rounded-[1.5rem] p-5 transition duration-200 hover:-translate-y-1 hover:border-primary/30"
+                  className={`group relative overflow-hidden rounded-[1.65rem] border border-border/80 p-5 transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md ${featured ? "bg-foreground text-background md:row-span-2 xl:col-span-2" : "bg-card"}`}
                 >
-                  <div className="flex size-11 items-center justify-center rounded-2xl bg-primary/[0.08] text-primary">
-                    <Icon className="size-5" />
-                  </div>
+                  <div aria-hidden="true" className={`absolute -right-8 -top-8 size-28 rounded-full border ${featured ? "border-background/10" : "border-primary/10"}`} />
+                  <div aria-hidden="true" className={`absolute right-5 top-10 size-12 rounded-full border ${featured ? "border-background/10" : "border-primary/10"}`} />
 
-                  <h3 className="mt-5 font-bold text-foreground">{action.title}</h3>
+                  <div className="relative flex h-full flex-col justify-between">
+                    <div className="flex items-start justify-between gap-4">
+                      <span className={`flex size-11 items-center justify-center rounded-2xl ${featured ? "bg-background/10" : "bg-secondary text-primary"}`}>
+                        <Icon aria-hidden="true" className="size-5" />
+                      </span>
+                      <ArrowUpRight aria-hidden="true" className={`size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 ${featured ? "opacity-65" : "text-muted-foreground group-hover:text-primary"}`} />
+                    </div>
 
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {action.description}
-                  </p>
-
-                  <div className="mt-5 flex items-center gap-2 text-sm font-semibold text-primary">
-                    Explore
-                    <ArrowRight className="size-4 transition group-hover:translate-x-1" />
+                    <div>
+                      <p className={`text-[0.64rem] font-semibold uppercase tracking-[0.18em] ${featured ? "opacity-60" : "text-primary"}`}>{action.kicker}</p>
+                      <h3 className={`${featured ? "mt-2 max-w-md text-3xl md:text-4xl" : "mt-1 text-lg"} font-bold leading-tight tracking-[-0.025em]`}>
+                        {action.title}
+                      </h3>
+                      <p className={`${featured ? "mt-3 max-w-md text-sm leading-6 opacity-70" : "mt-2 line-clamp-2 text-sm leading-5 text-muted-foreground"}`}>
+                        {action.description}
+                      </p>
+                    </div>
                   </div>
                 </Link>
               );
@@ -214,11 +264,11 @@ export default async function DashboardPage() {
         </section>
 
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-          <section className="surface-panel rounded-[1.75rem] p-6 md:p-7">
+          <section className="rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_12px_38px_rgb(15_23_42/0.04)] md:p-7">
             <div className="flex items-end justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold text-primary">Recommended for you</p>
-                <h2 className="mt-1 text-xl font-bold tracking-[-0.015em] text-foreground">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Recommended for you</p>
+                <h2 className="mt-2 text-xl font-bold tracking-[-0.02em] text-foreground">
                   Suggested opportunities
                 </h2>
               </div>
@@ -228,13 +278,13 @@ export default async function DashboardPage() {
                 className="hidden items-center gap-2 text-sm font-semibold text-primary sm:inline-flex"
               >
                 View all
-                <ArrowRight className="size-4" />
+                <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
             </div>
 
             {suggestedOpportunities?.length ? (
-              <div className="mt-5 divide-y divide-border">
-                {suggestedOpportunities.map((opportunity) => {
+              <div className="mt-6 grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
+                {suggestedOpportunities.map((opportunity, index) => {
                   const organizationName = getOrganizationName(opportunity.organization);
                   const opportunityLocation = [opportunity.city, opportunity.country]
                     .filter(Boolean)
@@ -244,33 +294,33 @@ export default async function DashboardPage() {
                     <Link
                       key={opportunity.id}
                       href={`/opportunities/${opportunity.slug}`}
-                      className="group block py-5 first:pt-0 last:pb-0"
+                      className={`group relative overflow-hidden rounded-2xl border border-border bg-background p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm ${index === 0 ? "md:col-span-2 2xl:col-span-1" : ""}`}
                     >
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full bg-primary/[0.08] px-2.5 py-1 text-xs font-semibold capitalize text-primary">
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="rounded-full bg-primary/[0.08] px-2.5 py-1 text-[0.68rem] font-semibold capitalize text-primary">
                           {opportunity.type}
                         </span>
-                        {organizationName ? (
-                          <span className="text-xs text-muted-foreground">
-                            {organizationName}
-                          </span>
-                        ) : null}
+                        <ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground group-hover:text-primary" />
                       </div>
 
-                      <h3 className="mt-3 font-bold text-foreground transition group-hover:text-primary">
+                      <h3 className="mt-5 line-clamp-2 text-lg font-bold leading-snug text-foreground transition group-hover:text-primary">
                         {opportunity.title}
                       </h3>
 
+                      {organizationName ? (
+                        <p className="mt-2 text-xs font-medium text-foreground/70">{organizationName}</p>
+                      ) : null}
+
                       {opportunity.summary ? (
-                        <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">
+                        <p className="mt-3 line-clamp-2 text-sm leading-6 text-muted-foreground">
                           {opportunity.summary}
                         </p>
                       ) : null}
 
                       {opportunityLocation ? (
-                        <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-                          <MapPin className="size-3.5" />
-                          {opportunityLocation}
+                        <p className="mt-5 flex items-center gap-2 border-t border-border/70 pt-4 text-xs text-muted-foreground">
+                          <MapPin aria-hidden="true" className="size-3.5 text-primary" />
+                          <span className="truncate">{opportunityLocation}</span>
                         </p>
                       ) : null}
                     </Link>
@@ -278,10 +328,11 @@ export default async function DashboardPage() {
                 })}
               </div>
             ) : (
-              <div className="mt-5 rounded-2xl border border-dashed border-border bg-muted/45 px-5 py-10 text-center">
-                <BriefcaseBusiness className="mx-auto size-9 text-muted-foreground" />
-                <h3 className="mt-3 font-semibold text-foreground">No active opportunities yet</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
+              <div className="relative mt-6 overflow-hidden rounded-2xl border border-dashed border-border bg-muted/40 px-5 py-10 text-center">
+                <div aria-hidden="true" className="absolute -right-8 -top-8 size-28 rounded-full border border-primary/10" />
+                <BriefcaseBusiness aria-hidden="true" className="relative mx-auto size-9 text-muted-foreground" />
+                <h3 className="relative mt-3 font-semibold text-foreground">No active opportunities yet</h3>
+                <p className="relative mt-2 text-sm text-muted-foreground">
                   New opportunities will appear here when they are published.
                 </p>
               </div>
@@ -289,28 +340,45 @@ export default async function DashboardPage() {
           </section>
 
           <aside className="space-y-6">
-            <section className="surface-panel rounded-[1.75rem] p-6">
-              <p className="text-sm font-semibold text-primary">Your profile</p>
-              <h2 className="mt-1 text-xl font-bold text-foreground">Build your presence</h2>
+            <section className="relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-muted/45 p-6">
+              <div aria-hidden="true" className="absolute -right-10 -top-10 size-32 rounded-full border border-primary/10" />
+              <span className="relative flex size-10 items-center justify-center rounded-2xl bg-secondary text-primary">
+                <UsersRound aria-hidden="true" className="size-4.5" />
+              </span>
+              <p className="relative mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-primary">Your profile</p>
+              <h2 className="relative mt-1 text-xl font-bold text-foreground">Make it easier to find you</h2>
 
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                Add your headline, skills, languages, website, and LinkedIn profile to help others discover you.
-              </p>
+              <div className="relative mt-5 flex flex-wrap gap-2 text-xs">
+                <span className={`rounded-full border px-3 py-1.5 ${profile?.headline ? "border-primary/20 bg-primary/5 text-primary" : "border-border bg-background text-muted-foreground"}`}>
+                  {profile?.headline ? "Headline added" : "Add headline"}
+                </span>
+                <span className={`rounded-full border px-3 py-1.5 ${location ? "border-primary/20 bg-primary/5 text-primary" : "border-border bg-background text-muted-foreground"}`}>
+                  {location ? "Location added" : "Add location"}
+                </span>
+              </div>
 
               <Link
                 href="/profile"
-                className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary"
+                className="relative mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary"
               >
                 Edit profile
-                <ArrowRight className="size-4" />
+                <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
             </section>
 
-            <section className="surface-panel rounded-[1.75rem] p-6">
-              <p className="text-sm font-semibold text-primary">Upcoming events</p>
+            <section className="rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_12px_38px_rgb(15_23_42/0.04)]">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Coming up</p>
+                  <h2 className="mt-1 text-lg font-bold text-foreground">Events</h2>
+                </div>
+                <span className="flex size-10 items-center justify-center rounded-2xl bg-secondary text-primary">
+                  <CalendarDays aria-hidden="true" className="size-4.5" />
+                </span>
+              </div>
 
               {upcomingEvents?.length ? (
-                <div className="mt-4 space-y-3">
+                <div className="relative mt-5 space-y-1 before:absolute before:bottom-4 before:left-[5px] before:top-4 before:w-px before:bg-border">
                   {upcomingEvents.map((event) => {
                     const eventLocation = event.is_online
                       ? "Online"
@@ -322,16 +390,17 @@ export default async function DashboardPage() {
                       <Link
                         key={event.id}
                         href={`/events/${event.slug}`}
-                        className="block rounded-2xl border border-border bg-card p-4 transition hover:border-primary/30 hover:shadow-sm"
+                        className="group relative block py-3 pl-7"
                       >
-                        <p className="text-xs font-semibold text-primary">
+                        <span aria-hidden="true" className="absolute left-0 top-[1.15rem] size-[11px] rounded-full border-2 border-card bg-primary" />
+                        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-primary">
                           {formatEventDate(event.starts_at)}
                         </p>
-                        <h3 className="mt-2 font-semibold text-foreground">{event.title}</h3>
+                        <h3 className="mt-1 line-clamp-2 font-semibold leading-5 text-foreground group-hover:text-primary">{event.title}</h3>
                         {eventLocation ? (
-                          <p className="mt-2 flex items-start gap-2 text-xs leading-5 text-muted-foreground">
-                            <MapPin className="mt-0.5 size-3.5 shrink-0" />
-                            {eventLocation}
+                          <p className="mt-1.5 flex items-start gap-1.5 text-xs leading-5 text-muted-foreground">
+                            <MapPin aria-hidden="true" className="mt-0.5 size-3 shrink-0" />
+                            <span className="line-clamp-1">{eventLocation}</span>
                           </p>
                         ) : null}
                       </Link>
@@ -339,9 +408,9 @@ export default async function DashboardPage() {
                   })}
                 </div>
               ) : (
-                <div className="mt-4 rounded-2xl border border-dashed border-border bg-muted/45 px-4 py-8 text-center">
-                  <CalendarDays className="mx-auto size-8 text-muted-foreground" />
-                  <h2 className="mt-3 font-semibold text-foreground">Nothing scheduled yet</h2>
+                <div className="mt-5 rounded-2xl border border-dashed border-border bg-muted/35 px-4 py-8 text-center">
+                  <CalendarDays aria-hidden="true" className="mx-auto size-8 text-muted-foreground" />
+                  <h3 className="mt-3 font-semibold text-foreground">Nothing scheduled yet</h3>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
                     Upcoming community events will appear here.
                   </p>
@@ -353,7 +422,7 @@ export default async function DashboardPage() {
                 className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary"
               >
                 Browse events
-                <ArrowRight className="size-4" />
+                <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
             </section>
           </aside>
