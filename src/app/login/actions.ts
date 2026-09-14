@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getSiteUrl } from "@/lib/site-url";
+import { getPasswordPolicyError } from "@/lib/password-policy";
 
 const loginErrorMessage = "We could not sign you in. Check your email and password and try again.";
 const signupErrorMessage = "We could not create your account right now. Please try again shortly.";
@@ -30,12 +31,11 @@ export async function signup(formData: FormData) {
 
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+  const passwordPolicyError = getPasswordPolicyError(password);
 
-  if (password.length < 8) {
+  if (passwordPolicyError) {
     redirect(
-      `/login?mode=join&error=${encodeURIComponent(
-        "Password must be at least 8 characters."
-      )}`
+      `/login?mode=join&error=${encodeURIComponent(passwordPolicyError)}`
     );
   }
 
