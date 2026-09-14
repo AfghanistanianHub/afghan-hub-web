@@ -30,10 +30,12 @@ begin
   end loop;
 
   -- RSVP and notifications were already created with narrow grants.
-  if has_table_privilege('anon','public.event_rsvps','SELECT,INSERT,UPDATE,DELETE')
-     or has_table_privilege('anon','public.notifications','SELECT,INSERT,UPDATE,DELETE') then
-    raise exception 'secondary Phase B baseline mismatch: anon unexpectedly has RSVP/notification DML';
-  end if;
+  foreach p in array array['SELECT','INSERT','UPDATE','DELETE'] loop
+    if has_table_privilege('anon','public.event_rsvps',p)
+       or has_table_privilege('anon','public.notifications',p) then
+      raise exception 'secondary Phase B baseline mismatch: anon unexpectedly has % on RSVP/notifications', p;
+    end if;
+  end loop;
 
   if not has_table_privilege('authenticated','public.event_rsvps','SELECT')
      or not has_table_privilege('authenticated','public.event_rsvps','DELETE')
