@@ -2,47 +2,53 @@
 
 ## Authoritative checkpoint — 2026-09-14
 
-This checkpoint supersedes the obsolete pre-rollout checkpoint previously in this file. Reconciliation used live main, the current profile-access adapter, open issues and their rollout evidence. Main at the start of this work was `a62e156bfd7714169b5afdabbfd48820a3826509`. Do not treat that SHA as the resulting head of this change.
+This file is the concise continuation checkpoint. Detailed evidence lives in the linked GitHub issues/PRs and security runbooks. Verify live `main`, CI and deployments when resuming; do not infer completion from historical checkpoints alone.
 
 ## Delivered
 
-- Public visual refresh: homepage, Explore, listing details, mission page and supporting loading/not-found states are shipped.
-- #67 profile privacy: production now uses narrow access-context/admin RPCs; ordinary members cannot directly SELECT private role/email columns. The isolated synthetic persona rehearsal preceded rollout.
-- #80 current-table structural grants: production has zero remaining TRUNCATE/TRIGGER/REFERENCES/MAINTAIN grants for anon/authenticated; postgres-owned future-table defaults were narrowed. The owner-specific residual below remains open.
-- #93 draft media privacy is closed. Production business-media and organization-media buckets are private, with published-or-owner SELECT policies. Uploads store supabase:// references; the existing published organization logo was migrated with its moderation state preserved. Application images resolve signed URLs.
-- Issue #93 rollout evidence records successful Node 22/24 CI and Vercel for application commit a62e156.
-- Auth acceptance infrastructure exists, but its old direct profiles.role read conflicted with #67. This change replaces it with get_my_access_context and guarantees local sign-out in finally. Three synthetic behavioral regression tests cover success with direct reads forbidden, role mismatch and RPC failure.
+- Public visual refresh is shipped across homepage, Explore, listing detail, mission and supporting states.
+- #67 profile privacy is closed. Production uses narrowed profile access and safe access-context/admin RPCs; ordinary members cannot directly select private profile email/role data.
+- #93 media privacy is closed. Business/organization media uses the intended private storage/access boundary.
+- #99 launch privacy/terms/support dependency is closed. `/privacy`, `/terms` and `/support` are published with confirmed operator `SAM Azad` and `info@apnbc.ca`; links exist in public/footer/auth/settings surfaces.
+- Scoped account/profile JSON self-export is shipped via the protected same-origin account export route. Broader export/deletion policy remains post-launch work in #132.
+- #80 Phase A structural privilege hardening is in the target production state: the 12 application tables no longer expose `TRUNCATE`, `REFERENCES`, `TRIGGER` or `MAINTAIN` to `anon`/`authenticated`, and the isolated PostgreSQL 17 forward/rollback rehearsal is merged.
+- #80 Phase B direct-DML forward/rollback rehearsal is merged (#138). Production Phase B authorization has **not** been executed.
+- #134 SECURITY DEFINER review classified the 20 authenticated-callable functions. All are closed to `anon` and contain identity/role/ownership boundaries. Ten already use an empty search path; the remaining ten `search_path=public` functions now have a narrow reversible hardening rehearsal merged in #146. No production function alteration has been executed from that rehearsal.
+- Acceptance tooling is substantially expanded:
+  - `npm run acceptance:auth` — guarded account/session checks.
+  - `npm run acceptance:member-pair` — read-only Member A/B safe-discovery/privacy/isolation preflight, merged in #143.
+  - `npm run acceptance:journey` — guarded connection/messaging/notification/read-state journey, merged in #145. It defaults to plan mode; write mode requires explicit acknowledgements and generates exact assertion-guarded cleanup material.
+- Production connection/message notification trigger behavior was re-verified read-only: connection request, connection accepted and new-message notifications are created by dedicated trigger functions with empty search paths.
 
-Synthetic regression tests do not establish hosted account, mailbox or browser acceptance. Fresh final-head CI/Vercel and resulting-main checks must be verified separately.
+## Current launch / security gates
 
-## Remaining launch gates
+1. **#120 hosted acceptance remains open.** The harnesses are shipped, but the production write journey has not been executed. Required evidence still includes designated disposable accounts, reviewed cleanup after any write run, browser/mailbox signup-reset-session checks, and the remaining moderator/admin/content/RSVP portions.
+2. **#136 / #80 Phase B** remains blocked from production authorization until the relevant controlled hosted acceptance succeeds. Do not apply the prepared direct-DML REVOKEs merely because the rehearsal docs exist.
+3. **#134 search-path production hardening** remains unexecuted. The forward/rollback package for the ten legacy `search_path=public` SECURITY DEFINER RPCs is prepared; run persona behavior/deny checks before any authorized production ALTER FUNCTION.
+4. **#135 platform/Auth hardening** remains open: leaked-password protection is disabled and `pg_trgm` is installed in `public`. Do not move/recreate the extension or change Auth configuration without impact verification.
+5. **#105 production content hygiene** remains open. Previously identified placeholder/test records must not be deleted or unpublished until their disposable status is deliberately confirmed.
+6. **#132 post-launch privacy operations** remains open for retention schedules, deletion lifecycle, request SLAs, governing jurisdiction and broader export scope. It is not the old #99 launch blocker.
+7. Final exact-main browser smoke/release rehearsal and recovery/backup evidence are still required before declaring the entire project complete.
 
-1. #119: real disposable-account signup/confirmation/reset delivery, expired-link, session and cross-tab acceptance. A controllable mailbox and designated credentials are required. No Gmail tool is exposed in the current session.
-2. #120: controlled hosted multi-account member/moderator/admin journey, including success and deny paths. Do not test with unrelated real users.
-3. #80 residual: supabase_admin-owned future-table default ACL. The project migration role previously returned permission denied; use only a supported authorized owner/platform route. Current tables are already hardened.
-4. #105: eight previously identified test-content rows need deliberate disposable-content approval before deletion/unpublishing. Existing placeholder guards suppress published test opportunities from public catalog and sitemap.
-5. #99 partial delivery: SAM Azad and info@apnbc.ca are operator-confirmed. /privacy, /terms and /support now provide current service facts, email request/reporting routes and explicit limitations; links are in the public footer, sign-in/join and Settings, and all three are in the sitemap and 15-route smoke harness. Jurisdiction/contractual terms, retention and deletion/export fulfillment including backups/shared content remain undecided. Keep #99 open until those processes and decisions are confirmed.
-6. Final release rehearsal, backup/recovery verification, browser acceptance and exact-main production smoke after the remaining gates.
+## Acceptance target constraints
 
-Do not close #119/#120 based on mocks, static review or historical usage aggregates.
+- Afghan Hub Production project: `yussznmwjsvfvpabmwdc`.
+- The secondary Supabase project `rurgmyiiytesknsfwjjl` is reachable and healthy but is **not production-compatible**. It lacks at least `notifications` and `event_rsvps`, and several shared tables have fewer columns than production. Do not treat it as final staging evidence unless it is deliberately refreshed and re-qualified.
+- Do not mutate the secondary project simply to make a test pass without a deliberate schema plan.
+- Do not test production using unrelated real members or inspect unrelated private content.
 
-## Support/contact delivery — 2026-09-14
+## In-progress / next work
 
-This change delivers the public information/support surfaces above. It does not establish legal compliance or deletion/export fulfillment. The confirmed support email is info@apnbc.ca; the earlier Gmail address is superseded. Do not request Gmail again: it was declined. Hosted acceptance can use an operator-controlled manual email workflow, but pass/fail evidence is still needed. Issue #119 was closed externally without recorded acceptance evidence; do not infer a hosted test pass from its closed status.
+- #147 is preparing a disposable event/RSVP acceptance harness. Its write mode is intentionally hard-blocked on production and should be exercised only on a production-compatible isolated target. At the time of this checkpoint its PR may still be pending CI/merge; verify live status before continuing.
+- After the RSVP harness, the next remaining #120 automation surface is controlled content-owner/moderator/admin acceptance. Keep role-changing/admin-positive tests isolated from real accounts.
+- Continue reducing review-only work by turning accepted designs into executable, guarded tests where a safe target exists.
 
-## Account/profile download — 2026-09-14
+## Operating constraints
 
-Settings now offers a scoped account/profile JSON download via POST /api/account/export. Authentication, exact same-origin checks, explicit field allowlists and private no-store responses protect the route. It reads only the validated user's profile using the existing session/RLS; no service-role key, grant change or mutation is involved. Five behavioral security tests cover deny paths, owner scoping, redaction and missing profile handling. Anonymous hosted smoke now includes the denied download path and cross-origin rejection (16 checks total).
-
-This is not a complete data export: messages/conversations, connections, contributions, saves, RSVPs and file contents remain outside scope. Wider export and deletion handling remain part of #99. No live authenticated download has been claimed without designated test-account evidence.
-
-## Continuation and constraints
-
-- Prefer fixing concrete regressions and batching meaningful changes over generating more review-only infrastructure.
-- Zero-cost mode: no paid agents/Autopilot, upgrades, purchased credits or potentially billable Supabase branches.
-- The existing separate Supabase project was used for isolated rehearsal on 2026-09-13. Old statements that no staging target exists are superseded.
-- Do not blindly replay repo migrations or run db push against production. Production history does not align one-to-one with repo files; current metadata and same-window rollback evidence govern security work.
-- Preserve the existing profile privacy and draft-media boundaries. No broad grant, blanket function revocation, Auth weakening or production reset for test convenience.
-- Production mutations require the applicable isolated evidence, rollback and explicit risk decision. Continuing work does not automatically authorize deleting real/test production content.
-- Never commit credentials, tokens, session cookies or confirmation/reset links. Record only non-sensitive acceptance evidence.
-- Keep issue evidence as the detailed record: #67, #80, #93, #99, #105, #119 and #120. Verify live main and deployments on the next continuation.
+- Zero-cost mode: no paid branches, purchased credits or unnecessary paid infrastructure.
+- Do not blindly replay repository migrations, run `db push` against production, repair the production ledger by guesswork, or assume repository migration history exactly matches production.
+- Current production metadata and same-window rollback evidence govern security changes.
+- Preserve profile privacy, media privacy, RLS and explicit authorization boundaries. No blanket grant, blanket function revoke, Auth weakening, production reset or service-role exposure for test convenience.
+- Production mutations require the applicable acceptance evidence, exact scope, rollback/cleanup plan and explicit risk decision.
+- Never commit passwords, tokens, cookies, reset/confirmation links or service-role credentials. Acceptance logs/issues should contain persona labels and non-sensitive pass/fail evidence only.
+- Keep detailed issue evidence current: #80, #105, #120, #132, #134, #135, #136, #137 and #147.
