@@ -51,7 +51,15 @@ After a successful write run, it writes two mode-0600 files to the operating sys
 - a JSON manifest containing only the exact disposable fixture IDs;
 - assertion-guarded SQL that removes only those identified notifications, message, conversation memberships, conversation, and connection.
 
-The generated cleanup SQL first verifies the connection, conversation and message identities against Member A/B before any delete. If the identities no longer match exactly, cleanup aborts.
+Before deleting anything, the generated SQL verifies all of these exact fixture properties:
+
+- one A→B connection with the captured connection ID;
+- one conversation created by Member A with the captured conversation ID;
+- exactly one message in that conversation, matching the captured message ID and Member A sender;
+- exactly two conversation memberships, belonging to Member A and Member B;
+- exactly the three captured notification IDs (request, accepted, new message).
+
+Cleanup deletes only those exact three notification IDs; it does not delete arbitrary notifications merely because they share a conversation ID. If any identity or cardinality differs, cleanup aborts before destructive statements run.
 
 The operator must review the generated IDs and SQL before running cleanup with an authorized database operator context. Never paste credentials, tokens, or unrelated member data into the manifest or issue tracker.
 
