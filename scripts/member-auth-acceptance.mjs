@@ -92,50 +92,50 @@ function createAcceptanceClient() {
 for (const persona of personas) {
   await check(`${persona.name}: password sign-in and own access state`, async () => {
     const client = createAcceptanceClient();
-    const signIn = await client.auth.signInWithPassword({
-      email: persona.email,
-      password: persona.password,
-    });
+    try {
+      const signIn = await client.auth.signInWithPassword({
+        email: persona.email,
+        password: persona.password,
+      });
 
-    assert.ifError(signIn.error);
-    assert.ok(signIn.data.session?.access_token, "sign-in returned no access token");
-    assert.ok(signIn.data.user?.id, "sign-in returned no user id");
-    assert.ok(signIn.data.user?.email_confirmed_at, "test account is not email-confirmed");
+      assert.ifError(signIn.error);
+      assert.ok(signIn.data.session?.access_token, "sign-in returned no access token");
+      assert.ok(signIn.data.user?.id, "sign-in returned no user id");
+      assert.ok(signIn.data.user?.email_confirmed_at, "test account is not email-confirmed");
 
-    const userCheck = await client.auth.getUser();
-    assert.ifError(userCheck.error);
-    assert.equal(userCheck.data.user?.id, signIn.data.user.id, "getUser returned a different user");
+      const userCheck = await client.auth.getUser();
+      assert.ifError(userCheck.error);
+      assert.equal(userCheck.data.user?.id, signIn.data.user.id, "getUser returned a different user");
 
-    const ownProfile = await client
-      .from("profiles")
-      .select("id,role,onboarding_completed")
-      .eq("id", signIn.data.user.id)
-      .maybeSingle();
+      const accessResult = await client.rpc("get_my_access_context");
+      const ownProfile = { data: accessResult.data?.[0] ?? null, error: accessResult.error };
 
-    assert.ifError(ownProfile.error);
-    assert.ok(ownProfile.data, "own profile row is missing");
-    assert.ok(ALLOWED_ROLES.has(ownProfile.data.role), `unexpected role ${ownProfile.data.role}`);
-    assert.equal(
-      ownProfile.data.role,
-      persona.expectedRole,
-      `${persona.name} role differs from the expected acceptance persona`,
-    );
-    assert.equal(
-      ownProfile.data.onboarding_completed,
-      true,
-      `${persona.name} has not completed onboarding`,
-    );
+      assert.ifError(ownProfile.error);
+      assert.ok(ownProfile.data, "own profile row is missing");
+      assert.ok(ALLOWED_ROLES.has(ownProfile.data.role), `unexpected role ${ownProfile.data.role}`);
+      assert.equal(
+        ownProfile.data.role,
+        persona.expectedRole,
+        `${persona.name} role differs from the expected acceptance persona`,
+      );
+      assert.equal(
+        ownProfile.data.onboarding_completed,
+        true,
+        `${persona.name} has not completed onboarding`,
+      );
 
-    const refresh = await client.auth.refreshSession();
-    assert.ifError(refresh.error);
-    assert.ok(refresh.data.session?.access_token, "refreshSession returned no access token");
+      const refresh = await client.auth.refreshSession();
+      assert.ifError(refresh.error);
+      assert.ok(refresh.data.session?.access_token, "refreshSession returned no access token");
 
-    const signOut = await client.auth.signOut({ scope: "local" });
-    assert.ifError(signOut.error);
+    } finally {
+      const signOut = await client.auth.signOut({ scope: "local" });
+      assert.ifError(signOut.error);
 
-    const afterSignOut = await client.auth.getSession();
-    assert.ifError(afterSignOut.error);
-    assert.equal(afterSignOut.data.session, null, "local sign-out left a session behind");
+      const afterSignOut = await client.auth.getSession();
+      assert.ifError(afterSignOut.error);
+      assert.equal(afterSignOut.data.session, null, "local sign-out left a session behind");
+    }
   });
 }
 
