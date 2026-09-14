@@ -11,7 +11,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { ListingCard } from "@/components/public/listing-card";
-import { publicCategories, publicKinds, publicHref } from "@/lib/public-catalog";
+import { publicCategories, publicKinds, publicHref, type PublicKind } from "@/lib/public-catalog";
 import { getPublicListings } from "@/lib/public-content";
 
 const description =
@@ -50,6 +50,20 @@ const icons = {
   organizations: UsersRound,
 };
 
+const categoryPosition: Record<PublicKind, string> = {
+  opportunities: "left-[4%] top-[8%] sm:left-[7%] sm:top-[10%]",
+  events: "right-[2%] top-[18%] sm:right-[4%] sm:top-[14%]",
+  businesses: "bottom-[12%] left-[2%] sm:bottom-[10%] sm:left-[6%]",
+  organizations: "bottom-[5%] right-[3%] sm:bottom-[8%] sm:right-[5%]",
+};
+
+const categoryKicker: Record<PublicKind, string> = {
+  opportunities: "Move forward",
+  events: "Come together",
+  businesses: "Shop local",
+  organizations: "Find your people",
+};
+
 export default async function PublicHome() {
   const feeds = await Promise.all(
     publicKinds.map(kind => getPublicListings(kind, { limit: 3 })),
@@ -64,20 +78,22 @@ export default async function PublicHome() {
       <section className="relative overflow-hidden border-b border-border/70">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,color-mix(in_oklab,var(--primary)_12%,transparent),transparent_28%),radial-gradient(circle_at_18%_85%,color-mix(in_oklab,var(--accent)_58%,transparent),transparent_32%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_82%_12%,color-mix(in_oklab,var(--primary)_14%,transparent),transparent_28%),radial-gradient(circle_at_12%_88%,color-mix(in_oklab,var(--accent)_65%,transparent),transparent_32%)]"
         />
-        <div className="relative mx-auto grid max-w-7xl gap-14 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:gap-20 lg:py-28">
-          <div>
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.025] [background-image:linear-gradient(to_right,var(--foreground)_1px,transparent_1px),linear-gradient(to_bottom,var(--foreground)_1px,transparent_1px)] [background-size:42px_42px]" />
+
+        <div className="relative mx-auto grid max-w-7xl gap-14 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[0.93fr_1.07fr] lg:items-center lg:gap-20 lg:py-28">
+          <div className="relative z-10">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary">
               <Sparkles aria-hidden="true" className="size-3.5" />
               People. Possibilities. Belonging.
             </div>
-            <h1 className="mt-6 max-w-3xl text-4xl font-semibold leading-[1.04] tracking-[-0.035em] sm:text-6xl lg:text-7xl">
+            <h1 className="mt-6 max-w-3xl text-4xl font-semibold leading-[1.02] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
               Rooted in community.
               <span className="mt-1 block text-primary">Growing together.</span>
             </h1>
-            <p className="mt-7 max-w-xl text-lg leading-8 text-muted-foreground">
-              Discover the people, businesses, events, and opportunities shaping our Afghan community. Find your next step, make a connection, or bring something of your own.
+            <p className="mt-7 max-w-lg text-lg leading-8 text-muted-foreground">
+              One place to discover people, opportunities, gatherings, and Afghan-led work around you.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -89,164 +105,228 @@ export default async function PublicHome() {
               </Link>
               <Link
                 href="/login?mode=join"
-                className="rounded-xl border border-border bg-background/70 px-6 py-3.5 font-semibold backdrop-blur hover:bg-muted"
+                className="rounded-xl border border-border bg-background/72 px-6 py-3.5 font-semibold backdrop-blur hover:bg-muted"
               >
                 Join Afghan Hub
               </Link>
             </div>
-            <p className="mt-4 text-xs text-muted-foreground">Start exploring. No account needed.</p>
+            <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium text-muted-foreground">
+              <span>No account needed to explore</span>
+              <span aria-hidden="true">•</span>
+              <span>Built for Afghan community connections</span>
+            </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-xl lg:mx-0">
-            <div aria-hidden="true" className="absolute -inset-6 rounded-[2.5rem] bg-primary/5 blur-2xl" />
-            <div className="surface-panel relative overflow-hidden rounded-[2rem] bg-background/82 p-4 backdrop-blur sm:p-5">
-              <div className="flex items-center justify-between gap-4 border-b border-border/70 px-1 pb-4">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Community pulse</p>
-                  <p className="mt-1 text-sm text-muted-foreground">A glimpse of what is happening now</p>
-                </div>
-                <Link href="/explore" className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
-                  View all
-                  <ArrowUpRight aria-hidden="true" className="size-3.5" />
+          <div className="relative mx-auto w-full max-w-2xl lg:mx-0" aria-label="Explore Afghan Hub categories">
+            <div aria-hidden="true" className="absolute -inset-8 rounded-[3rem] bg-primary/5 blur-3xl" />
+            <div className="relative min-h-[410px] overflow-hidden rounded-[2.25rem] border border-border/80 bg-card/82 p-5 shadow-[0_24px_70px_rgb(15_23_42/0.09)] backdrop-blur sm:min-h-[500px] sm:p-7">
+              <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_50%_47%,color-mix(in_oklab,var(--primary)_11%,transparent),transparent_24%),radial-gradient(circle_at_23%_18%,color-mix(in_oklab,var(--accent)_75%,transparent),transparent_23%)]" />
+              <div aria-hidden="true" className="absolute left-1/2 top-1/2 size-[250px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/10 sm:size-[330px]" />
+              <div aria-hidden="true" className="absolute left-1/2 top-1/2 size-[150px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-primary/20 sm:size-[205px]" />
+              <div aria-hidden="true" className="absolute left-1/2 top-1/2 h-px w-[72%] -translate-x-1/2 -rotate-[24deg] bg-gradient-to-r from-transparent via-primary/15 to-transparent" />
+              <div aria-hidden="true" className="absolute left-1/2 top-1/2 h-px w-[72%] -translate-x-1/2 rotate-[31deg] bg-gradient-to-r from-transparent via-primary/15 to-transparent" />
+
+              <Link
+                href="/explore"
+                className="group absolute left-1/2 top-1/2 z-10 flex size-32 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-primary/15 bg-background/95 text-center shadow-[0_16px_50px_rgb(15_23_42/0.12)] transition-transform hover:scale-[1.03] sm:size-40"
+              >
+                <span className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-primary">Afghan</span>
+                <span className="mt-0.5 text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Hub</span>
+                <span className="mt-2 inline-flex items-center gap-1 text-[0.65rem] font-medium text-muted-foreground group-hover:text-primary">
+                  Explore <ArrowUpRight aria-hidden="true" className="size-3" />
+                </span>
+              </Link>
+
+              {publicKinds.map(kind => {
+                const Icon = icons[kind];
+                return (
+                  <Link
+                    key={kind}
+                    href={`/explore?type=${kind}`}
+                    className={`group absolute z-20 w-[42%] max-w-[190px] rounded-2xl border border-border/80 bg-background/92 p-3.5 shadow-[0_10px_35px_rgb(15_23_42/0.07)] backdrop-blur transition-[transform,border-color,box-shadow] hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_14px_38px_rgb(15_23_42/0.11)] sm:p-4 ${categoryPosition[kind]}`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
+                        <Icon aria-hidden="true" className="size-4.5" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate text-xs font-semibold">{publicCategories[kind].label}</p>
+                        <p className="mt-0.5 truncate text-[0.65rem] text-muted-foreground">{categoryKicker[kind]}</p>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+
+              {pulseItems[0] ? (
+                <Link
+                  href={publicHref(pulseItems[0].kind, pulseItems[0].item.slug)}
+                  className="absolute inset-x-5 bottom-5 z-30 flex items-center justify-between gap-4 rounded-2xl border border-border/80 bg-foreground px-4 py-3.5 text-background shadow-lg sm:inset-x-7 sm:px-5"
+                >
+                  <div className="min-w-0">
+                    <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] opacity-65">From the community</p>
+                    <p className="mt-1 truncate text-sm font-semibold">{pulseItems[0].item.title}</p>
+                  </div>
+                  <ArrowUpRight aria-hidden="true" className="size-4 shrink-0 opacity-70" />
                 </Link>
-              </div>
-
-              {pulseItems.length ? (
-                <div className="grid gap-3 pt-4 sm:grid-cols-2">
-                  {pulseItems.map(({ kind, item }) => {
-                    const Icon = icons[kind];
-                    return (
-                      <Link
-                        key={`${kind}-${item.slug}`}
-                        href={publicHref(kind, item.slug)}
-                        className="group min-w-0 rounded-2xl border border-border/80 bg-card/90 p-4 transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-sm"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
-                            <Icon aria-hidden="true" className="size-4.5" />
-                          </span>
-                          <ArrowUpRight aria-hidden="true" className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
-                        </div>
-                        <p className="mt-4 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-primary">
-                          {publicCategories[kind].label}
-                        </p>
-                        <h2 className="mt-1 line-clamp-2 text-sm font-semibold leading-5">{item.title}</h2>
-                        <p className="mt-3 flex items-start gap-1.5 text-xs leading-5 text-muted-foreground">
-                          <MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
-                          <span className="line-clamp-1">{item.location}</span>
-                        </p>
-                      </Link>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="grid gap-3 pt-4 sm:grid-cols-2">
-                  {publicKinds.map(kind => {
-                    const Icon = icons[kind];
-                    return (
-                      <Link
-                        key={kind}
-                        href={`/explore?type=${kind}`}
-                        className="group rounded-2xl border border-border/80 bg-card/90 p-4 hover:border-primary/35"
-                      >
-                        <span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary">
-                          <Icon aria-hidden="true" className="size-4.5" />
-                        </span>
-                        <h2 className="mt-4 font-semibold">{publicCategories[kind].label}</h2>
-                        <p className="mt-1 text-xs leading-5 text-muted-foreground">{publicCategories[kind].description}</p>
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-
-              <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                {publicKinds.map(kind => {
-                  const Icon = icons[kind];
-                  return (
-                    <Link
-                      key={kind}
-                      href={`/explore?type=${kind}`}
-                      className="flex min-w-0 items-center gap-2 rounded-xl bg-muted/65 px-3 py-2.5 text-xs font-medium text-muted-foreground hover:text-primary"
-                    >
-                      <Icon aria-hidden="true" className="size-3.5 shrink-0" />
-                      <span className="truncate">{publicCategories[kind].label}</span>
-                    </Link>
-                  );
-                })}
-              </div>
+              ) : null}
             </div>
           </div>
         </div>
       </section>
 
-      <div className="border-b border-border bg-card/70">
-        <div className="mx-auto max-w-7xl px-5 py-7 sm:px-8">
-          <p className="text-sm leading-7 text-muted-foreground">
-            <span className="font-semibold text-foreground">A shared place, wherever you are.</span>{" "}
-            From a first introduction to a new opportunity, community starts with showing up for one another.
-          </p>
-        </div>
-      </div>
-
-      <div className="mx-auto max-w-7xl space-y-16 px-5 py-16 sm:px-8 sm:py-20">
-        {publicKinds.map((kind, index) => (
-          <section key={kind} aria-labelledby={`${kind}-heading`}>
-            <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-                  {kind === "events" ? "Coming together" : kind === "opportunities" ? "Your next chapter" : "Meet the community"}
-                </p>
-                <h2 id={`${kind}-heading`} className="mt-2 text-3xl font-semibold tracking-tight">
-                  {publicCategories[kind].label}
-                </h2>
-              </div>
+      <section className="relative border-b border-border bg-card/65" aria-label="Browse community categories">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-px overflow-hidden border-x border-border bg-border sm:grid-cols-4">
+          {publicKinds.map(kind => {
+            const Icon = icons[kind];
+            return (
               <Link
+                key={kind}
                 href={`/explore?type=${kind}`}
-                className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+                className="group flex min-h-36 flex-col justify-between bg-background px-5 py-5 transition-colors hover:bg-secondary/55 sm:min-h-40 sm:px-6"
               >
-                Explore {publicCategories[kind].label.toLowerCase()}
-                <ArrowRight aria-hidden="true" className="size-4" />
+                <div className="flex items-start justify-between gap-3">
+                  <span className="flex size-10 items-center justify-center rounded-2xl bg-secondary text-primary transition-transform group-hover:scale-105">
+                    <Icon aria-hidden="true" className="size-5" />
+                  </span>
+                  <ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                </div>
+                <div>
+                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-primary">{categoryKicker[kind]}</p>
+                  <h2 className="mt-1 text-lg font-semibold tracking-tight">{publicCategories[kind].label}</h2>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      {pulseItems.length > 1 ? (
+        <section className="overflow-hidden border-b border-border/70 bg-muted/35">
+          <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-16">
+            <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Community pulse</p>
+                <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">What is moving right now</h2>
+              </div>
+              <Link href="/explore" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+                See everything <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
             </div>
 
-            {feeds[index].unavailable ? (
-              <p role="status" className="rounded-2xl border border-border p-6 text-sm text-muted-foreground">
-                We couldn’t load these listings right now. Please try again shortly.
-              </p>
-            ) : feeds[index].items.length ? (
-              <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-                {feeds[index].items.map(item => (
-                  <ListingCard key={item.slug} item={item} kind={kind} />
-                ))}
+            <div className="grid auto-rows-[150px] gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {pulseItems.map(({ kind, item }, index) => {
+                const Icon = icons[kind];
+                const featured = index === 0;
+                return (
+                  <Link
+                    key={`${kind}-${item.slug}`}
+                    href={publicHref(kind, item.slug)}
+                    className={`group relative overflow-hidden rounded-3xl border border-border/80 p-5 transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md ${featured ? "bg-primary text-primary-foreground sm:row-span-2 lg:col-span-2" : "bg-card"}`}
+                  >
+                    <div aria-hidden="true" className={`absolute -right-10 -top-10 size-32 rounded-full border ${featured ? "border-primary-foreground/15" : "border-primary/10"}`} />
+                    <div aria-hidden="true" className={`absolute -right-2 top-6 size-16 rounded-full border ${featured ? "border-primary-foreground/10" : "border-primary/8"}`} />
+                    <div className="relative flex h-full flex-col justify-between">
+                      <div className="flex items-start justify-between gap-4">
+                        <span className={`flex size-9 items-center justify-center rounded-xl ${featured ? "bg-primary-foreground/12" : "bg-secondary text-primary"}`}>
+                          <Icon aria-hidden="true" className="size-4.5" />
+                        </span>
+                        <ArrowUpRight aria-hidden="true" className={`size-4 ${featured ? "opacity-70" : "text-muted-foreground group-hover:text-primary"}`} />
+                      </div>
+                      <div>
+                        <p className={`text-[0.64rem] font-semibold uppercase tracking-[0.18em] ${featured ? "opacity-70" : "text-primary"}`}>
+                          {publicCategories[kind].label}
+                        </p>
+                        <h3 className={`${featured ? "mt-2 max-w-md text-2xl sm:text-3xl" : "mt-1 line-clamp-2 text-base"} font-semibold leading-tight tracking-tight`}>
+                          {item.title}
+                        </h3>
+                        {featured ? (
+                          <p className="mt-3 flex items-center gap-1.5 text-xs opacity-75">
+                            <MapPin aria-hidden="true" className="size-3.5" />
+                            <span className="truncate">{item.location}</span>
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      <div className="mx-auto max-w-7xl space-y-20 px-5 py-16 sm:px-8 sm:py-20">
+        {publicKinds.map((kind, index) => (
+          <section key={kind} aria-labelledby={`${kind}-heading`} className="relative">
+            <div className={`grid gap-7 lg:grid-cols-[0.28fr_0.72fr] lg:gap-10 ${index % 2 ? "lg:grid-cols-[0.72fr_0.28fr]" : ""}`}>
+              <div className={index % 2 ? "lg:order-2" : ""}>
+                <div className="sticky top-24 rounded-3xl border border-border/80 bg-muted/45 p-6 sm:p-7">
+                  <span className="flex size-12 items-center justify-center rounded-2xl bg-secondary text-primary">
+                    {(() => {
+                      const Icon = icons[kind];
+                      return <Icon aria-hidden="true" className="size-5.5" />;
+                    })()}
+                  </span>
+                  <p className="mt-6 text-xs font-semibold uppercase tracking-[0.18em] text-primary">{categoryKicker[kind]}</p>
+                  <h2 id={`${kind}-heading`} className="mt-2 text-2xl font-semibold tracking-tight">
+                    {publicCategories[kind].label}
+                  </h2>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">{publicCategories[kind].description}</p>
+                  <Link
+                    href={`/explore?type=${kind}`}
+                    className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+                  >
+                    Explore all <ArrowRight aria-hidden="true" className="size-4" />
+                  </Link>
+                </div>
               </div>
-            ) : (
-              <div className="rounded-2xl border border-dashed border-border p-8">
-                <p className="font-medium">
-                  {kind === "events"
-                    ? "New gatherings are on the horizon."
-                    : kind === "opportunities"
-                      ? "The next opportunity starts with someone sharing it."
-                      : "Help this part of our community grow."}
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {kind === "events" ? "No upcoming events are listed right now." : "No current listings yet. Check back soon or join to contribute."}
-                </p>
-                <Link href="/login?mode=join" className="mt-4 inline-block text-sm font-semibold text-primary hover:underline">
-                  Join and contribute →
-                </Link>
+
+              <div className={index % 2 ? "lg:order-1" : ""}>
+                {feeds[index].unavailable ? (
+                  <p role="status" className="rounded-3xl border border-border p-6 text-sm text-muted-foreground">
+                    We couldn’t load these listings right now. Please try again shortly.
+                  </p>
+                ) : feeds[index].items.length ? (
+                  <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                    {feeds[index].items.map(item => (
+                      <ListingCard key={item.slug} item={item} kind={kind} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="relative overflow-hidden rounded-3xl border border-dashed border-border bg-card p-8 sm:p-10">
+                    <div aria-hidden="true" className="absolute -right-12 -top-12 size-40 rounded-full border border-primary/10" />
+                    <div aria-hidden="true" className="absolute right-8 top-8 size-16 rounded-full border border-primary/10" />
+                    <p className="relative text-lg font-semibold">
+                      {kind === "events"
+                        ? "New gatherings are on the horizon."
+                        : kind === "opportunities"
+                          ? "The next opportunity starts with someone sharing it."
+                          : "Help this part of our community grow."}
+                    </p>
+                    <p className="relative mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
+                      {kind === "events" ? "No upcoming events are listed right now." : "No current listings yet. Check back soon or join to contribute."}
+                    </p>
+                    <Link href="/login?mode=join" className="relative mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+                      Join and contribute <ArrowRight aria-hidden="true" className="size-4" />
+                    </Link>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </section>
         ))}
       </div>
 
-      <section className="border-t border-primary/10 bg-primary text-primary-foreground">
-        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 px-5 py-14 sm:px-8 md:flex-row md:items-center">
+      <section className="relative overflow-hidden border-t border-primary/10 bg-primary text-primary-foreground">
+        <div aria-hidden="true" className="absolute -right-20 -top-32 size-80 rounded-full border border-primary-foreground/10" />
+        <div aria-hidden="true" className="absolute -right-4 -top-8 size-48 rounded-full border border-primary-foreground/10" />
+        <div className="relative mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 px-5 py-14 sm:px-8 md:flex-row md:items-center">
           <div>
-            <h2 className="text-3xl font-semibold tracking-tight">You have a place here.</h2>
-            <p className="mt-3 max-w-xl leading-7 opacity-90">
-              Build your profile, connect with members, and share what’s happening in your corner of the community.
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] opacity-70">Your community, your corner</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight">You have a place here.</h2>
+            <p className="mt-3 max-w-xl leading-7 opacity-85">
+              Build your profile, connect with members, and add what is happening around you.
             </p>
           </div>
           <Link
