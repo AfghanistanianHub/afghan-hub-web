@@ -1,3 +1,4 @@
+import { SupportLinks } from "@/components/public/support-links";
 import { SubmitButton } from "@/components/auth/submit-button";
 import Link from "next/link";
 import { login, signup } from "./actions";
@@ -98,6 +99,7 @@ export default async function LoginPage({
             </Link>
           </p>
         </form>
+        <div className="mt-6 border-t border-border pt-5"><SupportLinks /></div>
       </div>
     </main>
   );

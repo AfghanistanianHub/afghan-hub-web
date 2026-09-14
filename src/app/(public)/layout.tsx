@@ -1,3 +1,4 @@
+import { SupportLinks } from "@/components/public/support-links";
 import Link from "next/link";
 import { publicCategories, publicKinds } from "@/lib/public-catalog";
 
@@ -85,6 +86,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             <Link href="/dashboard" className="text-muted-foreground hover:text-primary">Member home</Link>
           </nav>
         </div>
+        <div className="mx-auto max-w-7xl border-t border-border px-5 py-6 sm:px-8"><SupportLinks /></div>
       </footer>
     </div>
   );

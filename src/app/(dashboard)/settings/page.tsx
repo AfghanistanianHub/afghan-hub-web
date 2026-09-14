@@ -1,3 +1,4 @@
+import { SupportLinks } from "@/components/public/support-links";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -130,6 +131,7 @@ export default async function SettingsPage({
             </PendingSubmitButton>
           </div>
         </form>
+        <div className="mt-8 rounded-2xl border border-border p-6"><SupportLinks /></div>
       </div>
     </main>
   );
