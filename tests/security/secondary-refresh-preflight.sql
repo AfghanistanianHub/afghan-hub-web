@@ -5,15 +5,60 @@
 DO $$
 DECLARE
   missing_count integer;
+  enum_values text[];
 BEGIN
-  -- Core tables that must already exist on the secondary baseline.
+  -- Core tables and launch dependencies that must already exist.
   SELECT count(*) INTO missing_count
   FROM (VALUES
-    ('profiles'), ('businesses'), ('events'), ('opportunities'), ('organizations')
+    ('profiles'), ('businesses'), ('events'), ('opportunities'), ('organizations'),
+    ('connections'), ('conversations'), ('conversation_members'), ('messages')
   ) AS required(name)
   WHERE to_regclass('public.' || required.name) IS NULL;
   IF missing_count <> 0 THEN
-    RAISE EXCEPTION 'Secondary baseline mismatch: one or more required core tables are missing';
+    RAISE EXCEPTION 'Secondary baseline mismatch: one or more required dependency tables are missing';
+  END IF;
+
+  -- RLS must already be enabled on the shared application surface.
+  IF EXISTS (
+    SELECT 1
+    FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public'
+      AND c.relname IN (
+        'profiles','businesses','events','opportunities','organizations',
+        'connections','conversations','conversation_members','messages'
+      )
+      AND NOT c.relrowsecurity
+  ) THEN
+    RAISE EXCEPTION 'Secondary baseline mismatch: expected RLS is disabled on a dependency table';
+  END IF;
+
+  -- Enum contracts used by the refresh must match production semantics.
+  SELECT array_agg(e.enumlabel ORDER BY e.enumsortorder) INTO enum_values
+  FROM pg_type t
+  JOIN pg_namespace n ON n.oid = t.typnamespace
+  JOIN pg_enum e ON e.enumtypid = t.oid
+  WHERE n.nspname = 'public' AND t.typname = 'user_role';
+  IF enum_values IS DISTINCT FROM ARRAY['member','moderator','admin']::text[] THEN
+    RAISE EXCEPTION 'Secondary baseline mismatch: user_role enum differs';
+  END IF;
+
+  SELECT array_agg(e.enumlabel ORDER BY e.enumsortorder) INTO enum_values
+  FROM pg_type t
+  JOIN pg_namespace n ON n.oid = t.typnamespace
+  JOIN pg_enum e ON e.enumtypid = t.oid
+  WHERE n.nspname = 'public' AND t.typname = 'entity_status';
+  IF enum_values IS DISTINCT FROM ARRAY['draft','published','suspended']::text[] THEN
+    RAISE EXCEPTION 'Secondary baseline mismatch: entity_status enum differs';
+  END IF;
+
+  SELECT array_agg(e.enumlabel ORDER BY e.enumsortorder) INTO enum_values
+  FROM pg_type t
+  JOIN pg_namespace n ON n.oid = t.typnamespace
+  JOIN pg_enum e ON e.enumtypid = t.oid
+  WHERE n.nspname = 'public' AND t.typname = 'opportunity_status';
+  IF enum_values IS DISTINCT FROM ARRAY['draft','published','closed','expired']::text[] THEN
+    RAISE EXCEPTION 'Secondary baseline mismatch: opportunity_status enum differs';
   END IF;
 
   -- These launch surfaces are expected to be absent before this refresh.
@@ -79,8 +124,7 @@ BEGIN
     RAISE EXCEPTION 'Secondary baseline changed: unexpected application trigger exists on a core table';
   END IF;
 
-  -- The baseline currently exposes only the known read policies on businesses/orgs
-  -- plus profile self/safe access; event/opportunity moderation/owner policies are absent.
+  -- Event/opportunity policies are expected to be absent on the known baseline.
   IF EXISTS (
     SELECT 1
     FROM pg_policies
