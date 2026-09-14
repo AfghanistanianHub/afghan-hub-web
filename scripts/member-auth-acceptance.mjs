@@ -73,9 +73,10 @@ async function check(name, fn) {
     await fn();
     passes += 1;
     console.log(`PASS ${name}`);
-  } catch (error) {
+  } catch {
     failures += 1;
-    console.error(`FAIL ${name}: ${error instanceof Error ? error.message : String(error)}`);
+    // Provider errors may contain account identifiers, credentials or session details.
+    console.error(`FAIL ${name}: acceptance check failed; sensitive error details withheld`);
   }
 }
 
