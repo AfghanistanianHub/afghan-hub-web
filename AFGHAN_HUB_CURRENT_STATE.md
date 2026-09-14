@@ -21,10 +21,14 @@ Synthetic regression tests do not establish hosted account, mailbox or browser a
 2. #120: controlled hosted multi-account member/moderator/admin journey, including success and deny paths. Do not test with unrelated real users.
 3. #80 residual: supabase_admin-owned future-table default ACL. The project migration role previously returned permission denied; use only a supported authorized owner/platform route. Current tables are already hardened.
 4. #105: eight previously identified test-content rows need deliberate disposable-content approval before deletion/unpublishing. Existing placeholder guards suppress published test opportunities from public catalog and sitemap.
-5. #99: factual operator identity, monitored support contact, jurisdiction and deletion/export/retention/reporting decisions are still needed. Do not invent legal claims or promises.
+5. #99 partial delivery: SAM Azad and info@apnbc.ca are operator-confirmed. /privacy, /terms and /support now provide current service facts, email request/reporting routes and explicit limitations; links are in the public footer, sign-in/join and Settings, and all three are in the sitemap and 15-route smoke harness. Jurisdiction/contractual terms, retention and deletion/export fulfillment including backups/shared content remain undecided. Keep #99 open until those processes and decisions are confirmed.
 6. Final release rehearsal, backup/recovery verification, browser acceptance and exact-main production smoke after the remaining gates.
 
 Do not close #119/#120 based on mocks, static review or historical usage aggregates.
+
+## Support/contact delivery — 2026-09-14
+
+This change delivers the public information/support surfaces above. It does not establish legal compliance or deletion/export fulfillment. The confirmed support email is info@apnbc.ca; the earlier Gmail address is superseded. Do not request Gmail again: it was declined. Hosted acceptance can use an operator-controlled manual email workflow, but pass/fail evidence is still needed. Issue #119 was closed externally without recorded acceptance evidence; do not infer a hosted test pass from its closed status.
 
 ## Continuation and constraints
 
