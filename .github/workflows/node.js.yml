@@ -39,6 +39,9 @@ jobs:
       - name: Messaging regression tests
         run: node --test tests/*.test.mjs
 
+      - name: Explicit Data API grant guard
+        run: npm run security:migration-grants
+
       - name: Agent runtime syntax check
         run: node --check agents/orchestrator.mjs
 
