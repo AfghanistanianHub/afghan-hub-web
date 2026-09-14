@@ -23,7 +23,7 @@ function elements(node, type) {
 }
 test("login accepts an existing password while signup enforces the new-password minimum", async () => {
   const login = () => {}, signup = () => {};
-  const page = load("../src/app/login/page.tsx", { "next/link": {}, "./actions": { login, signup }, "@/components/auth/submit-button": { SubmitButton: "submit-control" } }).default;
+  const page = load("../src/app/login/page.tsx", { "next/link": {}, "@/components/public/support-links": { SupportLinks: "support-links" }, "./actions": { login, signup }, "@/components/auth/submit-button": { SubmitButton: "submit-control" } }).default;
   for (const joining of [false, true]) {
     const tree = await page({ searchParams: Promise.resolve({ mode: joining ? "join" : undefined, error: "Try again", message: "Check your email" }) });
     const password = elements(tree, "input").find(el => el.props.name === "password");

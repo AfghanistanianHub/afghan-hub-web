@@ -7,6 +7,9 @@ assert.ok(!base.username && !base.password, "Do not put credentials in the base 
 const checks = [
   ["/", 200, /Rooted in community/],
   ["/about", 200, /<h1[ >]/],
+  ["/privacy", 200, /info@apnbc\.ca/],
+  ["/terms", 200, /info@apnbc\.ca/],
+  ["/support", 200, /info@apnbc\.ca/],
   ["/explore?type=events", 200, /Find your next connection/],
   ["/login?mode=join", 200, /Join Afghan Hub/],
   ["/forgot-password", 200, /Reset your password/],
@@ -34,6 +37,12 @@ for (const [path, expectedStatus, pattern] of checks) {
     } else {
       const body = await response.text();
       assert.match(body, pattern, "Expected page content was missing");
+
+      if (["/privacy", "/terms", "/support"].includes(path)) {
+        assert.match(body, /SAM Azad/, "Expected the confirmed responsible operator");
+        assert.match(body, /href=["\']mailto:info@apnbc\\.ca["\']/, "Expected the confirmed support email link");
+        assert.match(body, /id=["\']main-content["\']/, "Expected the public skip-link target");
+      }
 
       if (path === "/") {
         const metaTags = body.match(/<meta\b[^>]*>/gi) ?? [];
@@ -77,7 +86,10 @@ for (const [path, expectedStatus, pattern] of checks) {
       }
 
       if (path === "/sitemap.xml") {
-        assert.ok((body.match(/<loc>/g) || []).length >= 6, "Expected the six static sitemap entries");
+        for (const page of ["privacy", "terms", "support"]) {
+          assert.ok(body.includes(`https://app.apnbc.ca/${page}</loc>`), `Missing ${page} sitemap entry`);
+        }
+        assert.ok((body.match(/<loc>/g) || []).length >= 9, "Expected the nine static sitemap entries");
         assert.ok(!/<loc>[^<]*(?:\/members|\/dashboard|\/login|\/forgot-password|\/update-password|[?&]q=)/.test(body));
       }
     }
