@@ -1,0 +1,61 @@
+name: Isolated security rehearsal
+on:
+  pull_request:
+    paths:
+      - 'tests/security/**'
+      - 'scripts/build-structural-rehearsal.mjs'
+      - 'docs/security/public-schema-structural-privilege-*-rehearsal-2026-09-12.md'
+      - '.github/workflows/security-rehearsal.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tests/security/**'
+      - 'scripts/build-structural-rehearsal.mjs'
+      - 'docs/security/public-schema-structural-privilege-*-rehearsal-2026-09-12.md'
+      - '.github/workflows/security-rehearsal.yml'
+permissions:
+  contents: read
+jobs:
+  phase-a:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: disposable-fixture-only
+          POSTGRES_DB: ah_security_fixture
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Generate exact documented forward and rollback rehearsal
+        run: node scripts/build-structural-rehearsal.mjs > /tmp/rehearsal.sql
+      - name: Execute PostgreSQL 17 assertions
+        env:
+          FIXTURE_CONTAINER: ${{ job.services.postgres.id }}
+        run: docker exec -i "$FIXTURE_CONTAINER" psql -X -U postgres -d ah_security_fixture < /tmp/rehearsal.sql
+      - name: Reset disposable database and roles for negative control
+        env:
+          FIXTURE_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          docker exec "$FIXTURE_CONTAINER" dropdb -U postgres ah_security_fixture
+          docker exec "$FIXTURE_CONTAINER" psql -X -U postgres -c 'DROP ROLE anon, authenticated, service_role, supabase_admin'
+          docker exec "$FIXTURE_CONTAINER" createdb -U postgres ah_security_fixture
+      - name: Prove unchanged broad grants fail the assertions
+        env:
+          FIXTURE_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          node scripts/build-structural-rehearsal.mjs --negative-control > /tmp/negative.sql
+          if docker exec -i "$FIXTURE_CONTAINER" psql -X -U postgres -d ah_security_fixture < /tmp/negative.sql > /tmp/negative.log 2>&1; then
+            echo 'ERROR: negative control unexpectedly passed'
+            exit 1
+          fi
+          grep -F 'Structural privilege remains:' /tmp/negative.log
+          echo 'PASS: missing forward remediation is detected'
