@@ -80,7 +80,7 @@ Structural/environment readiness is complete enough for the controlled hosted ma
 
 Until that succeeds, do not treat #134 or #136 as cleared for production merely because secondary structural parity is good.
 
-## Migration reproducibility — #199
+## Migration reproducibility — #199 CLOSED
 
 The earlier repository-history gap has been substantially repaired.
 
@@ -101,9 +101,19 @@ CI protection now includes:
 
 #207 is closed completed.
 
-#199 remains OPEN for one reason only: its closure condition requires an actual fresh isolated non-production replay from repository history. Static CI and secondary manual alignment are not being represented as substitutes for a clean replay.
+#199 is CLOSED following actual fresh isolated replay [35005042328](https://github.com/loadsnft/afghan-hub-web/actions/runs/35005042328) on main `bff0b27528e70785d2bbf879d916823784d7014b`.
 
-Do not create a paid Supabase branch solely to close #199. A free/local isolated Postgres/Supabase replay is preferred when an appropriate environment is available.
+- local Supabase startup passed;
+- `supabase db reset --local --no-seed` passed;
+- launch-critical verifier passed (`fresh migration replay invariants passed`);
+- local stack cleanup passed;
+- exact-main Node 22/24 CI and Vercel passed.
+
+Replay-driven repairs: #214 SQL terminators; #215 predecessor/recovery read-receipt replacement; #216/#217 optional event-helper ACL portability and complete dollar delimiters. Independent native parsing also passed for 60 SQL files and 56 PL/pgSQL statements.
+
+Under the user's explicit test-execution authorization, #217 automatically runs the isolated local replay after relevant migration/config/verifier/tooling changes on main. Manual dispatch remains available. No hosted secrets/project selector or remote database commands; concurrency queues rather than cancelling cleanup. The separate hosted persona acceptance workflow remains manual-only.
+
+This clears repository reproducibility only. #120/#198 behavioral acceptance and the separate production authorization/evidence gates remain unchanged.
 
 ## Storage parity — #198
 
@@ -179,8 +189,9 @@ Current self-export intentionally contains only account/profile data. Production
 
 ## Verified checkpoint before this documentation update
 
-- Application/replay-guard main SHA before this docs change: `12348ac33c4149a0a4a4084f87cbbd8b6236f726` (#211).
-- #211: Node 22 + Node 24 + regression tests + Data API grant guard + build passed; PR-head Vercel passed.
-- #206 exact-main Vercel passed before #211.
-- Exact-main Vercel for `12348ac...` was still pending at the moment this documentation branch was prepared; verify it live rather than assuming completion.
-- This documentation update will naturally create a newer SHA if merged; do not treat any SHA in this file as a permanent branch-head pointer.
+- main: `bff0b27528e70785d2bbf879d916823784d7014b` (#217);
+- exact-main Node 22/24 CI and Vercel succeeded;
+- automatic isolated replay 35005042328 succeeded, including reset, all verifier assertions and cleanup;
+- #199 closed completed;
+- #120 remains the next behavioral launch gate, requiring explicitly designated disposable secondary personas;
+- documentation updates naturally create newer SHAs; verify live main on continuation.
