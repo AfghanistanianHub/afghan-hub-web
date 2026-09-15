@@ -63,8 +63,9 @@ test("fresh replay verifier covers launch-critical schema surfaces", () => {
     "storage_organization_media_select_status_aware",
     "supabase_realtime",
     "supabase_migrations.schema_migrations",
+    "information_schema.role_table_grants",
   ]) {
-    assert.ok(verifier.includes(required), `Fresh replay verifier is missing invariant: ${required}`);
+    assert.ok(verifier.includes(required), `Fresh replay verifier is missing invariant/evidence surface: ${required}`);
   }
 });
 
