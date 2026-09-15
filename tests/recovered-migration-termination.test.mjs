@@ -33,16 +33,17 @@ function validateStatementBlocks(sql, filename) {
   let dollarTag = null;
   let singleQuoted = false;
   let doubleQuoted = false;
+  let terminated = false;
 
   const validateBlock = () => {
     const text = block.join('\n').trim();
     block = [];
     if (!text || text.split('\n').every((line) => line.trim().startsWith('--'))) return;
-    assert.match(
-      text,
-      /;\s*$/,
+    assert.ok(
+      terminated,
       `${filename} contains a top-level SQL statement block without a terminating semicolon:\n${text.slice(0, 240)}`,
     );
+    terminated = false;
   };
 
   for (const line of lines) {
@@ -66,6 +67,10 @@ function validateStatementBlocks(sql, filename) {
       }
 
       if (!singleQuoted && !doubleQuoted && char === '-' && next === '-') break;
+
+      if (!singleQuoted && !doubleQuoted && !/\s/.test(char)) {
+        terminated = char === ';' && parenDepth === 0;
+      }
 
       if (!singleQuoted && !doubleQuoted && char === '$') {
         const match = line.slice(i).match(/^\$[A-Za-z_]*\$/);
@@ -113,4 +118,14 @@ test('recovered migration statement blocks remain SQL-terminated', () => {
     const path = resolve('supabase/migrations', filename);
     validateStatementBlocks(readFileSync(path, 'utf8'), filename);
   }
+});
+
+test('comment punctuation cannot satisfy a missing SQL terminator', () => {
+  assert.throws(() => validateStatementBlocks('select 1 -- pretend terminator ;', 'fixture.sql'), /without a terminating semicolon/);
+  assert.throws(() => validateStatementBlocks("select ';' -- pretend terminator ;", 'fixture.sql'), /without a terminating semicolon/);
+});
+
+test('terminated SQL may end with a line comment', () => {
+  validateStatementBlocks('select 1; -- explanation', 'fixture.sql');
+  validateStatementBlocks("select '-- still a string'; -- explanation", 'fixture.sql');
 });
