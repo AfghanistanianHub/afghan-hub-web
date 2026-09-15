@@ -14,6 +14,7 @@
     "acceptance:journey": "node scripts/member-journey-acceptance.mjs",
     "acceptance:rsvp": "node scripts/event-rsvp-acceptance.mjs",
     "acceptance:roles": "node scripts/role-persona-acceptance.mjs",
+    "acceptance:avatar-storage": "node scripts/avatar-storage-acceptance.mjs",
     "security:migration-grants": "node scripts/check-migration-api-grants.mjs",
     "security:qualify-target": "node scripts/qualify-isolated-target.mjs",
     "security:profile-personas": "node scripts/security-profile-personas.mjs"
