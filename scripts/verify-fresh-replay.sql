@@ -61,13 +61,13 @@ BEGIN
     VALUES
       ('profiles_username_format'),
       ('organizations_short_description_length'),
-      ('businesses_website_url_scheme_check'),
-      ('organizations_website_url_scheme_check'),
-      ('opportunities_external_url_scheme_check'),
-      ('events_external_url_scheme_check'),
-      ('businesses_contact_email_format_check'),
-      ('organizations_contact_email_format_check'),
-      ('opportunities_contact_email_format_check')
+      ('businesses_website_url_http'),
+      ('organizations_website_url_http'),
+      ('opportunities_external_url_http'),
+      ('events_online_url_http'),
+      ('businesses_email_format'),
+      ('organizations_email_format'),
+      ('opportunities_contact_email_format')
   ) AS required(name)
   WHERE NOT EXISTS (
     SELECT 1 FROM pg_constraint c WHERE c.conname = required.name
