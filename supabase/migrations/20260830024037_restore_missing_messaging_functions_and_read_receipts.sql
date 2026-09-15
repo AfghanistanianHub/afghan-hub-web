@@ -222,7 +222,7 @@ grant execute on function public.start_direct_conversation(uuid) to authenticate
 
 drop function if exists public.mark_conversation_read(uuid);
 
-create function public.mark_conversation_read(
+create or replace function public.mark_conversation_read(
   target_conversation_id uuid,
   read_through_message_id uuid
 )
