@@ -1,11 +1,11 @@
 drop policy if exists connections_update_participant
-on public.connections
+on public.connections;
 
 drop policy if exists connections_update_recipient
-on public.connections
+on public.connections;
 
 revoke update on table public.connections
-from public, anon, authenticated
+from public, anon, authenticated;
 
 create or replace function public.respond_connection_request(
   target_connection_id uuid,
@@ -42,10 +42,10 @@ begin
   get diagnostics affected_rows = row_count;
   return affected_rows = 1;
 end;
-$$
+$$;
 
 revoke all on function public.respond_connection_request(uuid, text)
-from public, anon, authenticated
+from public, anon, authenticated;
 
 grant execute on function public.respond_connection_request(uuid, text)
-to authenticated
+to authenticated;
