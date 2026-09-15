@@ -15,6 +15,12 @@ for (const name of required) assert.ok(process.env[name]?.trim(), `Missing ${nam
 
 const mode = process.env.RSVP_ACCEPTANCE_MODE?.trim() || "plan";
 assert.ok(["plan", "write"].includes(mode), "RSVP_ACCEPTANCE_MODE must be plan or write");
+if (mode === "write") {
+  for (const name of ["AUTH_ACCEPTANCE_MODERATOR_EMAIL", "AUTH_ACCEPTANCE_MODERATOR_PASSWORD"]) {
+    assert.ok(process.env[name]?.trim(), `Missing ${name}`);
+  }
+}
+
 const supabaseUrl = process.env.AUTH_ACCEPTANCE_SUPABASE_URL.trim().replace(/\/+$/, "");
 const publishableKey = process.env.AUTH_ACCEPTANCE_PUBLISHABLE_KEY.trim();
 const isProduction = new URL(supabaseUrl).hostname.includes(PRODUCTION_PROJECT_REF);
@@ -40,7 +46,7 @@ function makeClient() {
   });
 }
 
-async function signIn([label, email, password]) {
+async function signIn([label, email, password], expectedRoles = ["member"]) {
   const supabase = makeClient();
   const auth = await supabase.auth.signInWithPassword({ email, password });
   assert.ifError(auth.error);
@@ -49,12 +55,13 @@ async function signIn([label, email, password]) {
   const access = await supabase.rpc("get_my_access_context");
   assert.ifError(access.error);
   const state = access.data?.[0];
-  assert.equal(state?.role, "member", `${label} must be an ordinary member`);
+  assert.ok(expectedRoles.includes(state?.role), `${label} must have one of these roles: ${expectedRoles.join(", ")}`);
   assert.equal(state?.onboarding_completed, true, `${label} onboarding incomplete`);
-  return { label, supabase, id: auth.data.user.id };
+  return { label, supabase, id: auth.data.user.id, role: state.role };
 }
 
 const people = [];
+let moderator = null;
 let eventId = null;
 let cleanupFailure = null;
 try {
@@ -68,6 +75,17 @@ try {
     console.log(`Target: ${isProduction ? "production" : "non-production"}`);
     console.log("Plan mode passed. No event or RSVP was created.");
   } else {
+    moderator = await signIn(
+      [
+        "Moderator",
+        process.env.AUTH_ACCEPTANCE_MODERATOR_EMAIL.trim(),
+        process.env.AUTH_ACCEPTANCE_MODERATOR_PASSWORD,
+      ],
+      ["moderator", "admin"],
+    );
+    assert.ok(!people.some((person) => person.id === moderator.id), "Moderator must be distinct from member personas");
+    console.log(`PASS disposable ${moderator.role} persona authenticates for event approval`);
+
     const marker = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
     const startsAt = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
     const created = await a.supabase
@@ -88,11 +106,31 @@ try {
       .single();
     assert.ifError(created.error);
     eventId = created.data.id;
-    console.log("PASS Member A created one disposable capacity-1 event");
+    assert.equal(created.data.status, "draft", "Ordinary-member event should enter moderation as draft");
+    console.log("PASS Member A created one disposable capacity-1 event in moderation");
+
+    const approved = await moderator.supabase.rpc("moderate_event", {
+      target_event_id: eventId,
+      target_decision: "approve",
+      target_note: null,
+    });
+    assert.ifError(approved.error);
+    assert.equal(approved.data, true, "Moderator did not approve the disposable RSVP event");
+
+    const published = await a.supabase
+      .from("events")
+      .select("status")
+      .eq("id", eventId)
+      .single();
+    assert.ifError(published.error);
+    assert.equal(published.data?.status, "published", "Approved RSVP fixture is not published");
+    console.log("PASS moderator approved the disposable RSVP event");
 
     const creatorAttempt = await a.supabase.rpc("rsvp_to_event", { target_event_id: eventId });
     assert.ok(creatorAttempt.error, "Event creator unexpectedly RSVP'd to own event");
-    console.log("PASS event creator RSVP is denied");
+    assert.equal(creatorAttempt.error.code, "P0001");
+    assert.equal(creatorAttempt.error.message, "event_creator_cannot_rsvp");
+    console.log("PASS event creator RSVP is denied for the intended reason");
 
     const first = await b.supabase.rpc("rsvp_to_event", { target_event_id: eventId });
     assert.ifError(first.error);
@@ -106,7 +144,9 @@ try {
     if (c) {
       const full = await c.supabase.rpc("rsvp_to_event", { target_event_id: eventId });
       assert.ok(full.error, "Capacity-1 event unexpectedly accepted Member C");
-      console.log("PASS capacity-full path denies optional Member C");
+      assert.equal(full.error.code, "P0001");
+      assert.equal(full.error.message, "event_full");
+      console.log("PASS capacity-full path denies optional Member C for the intended reason");
     }
 
     const cancelled = await b.supabase
@@ -134,7 +174,7 @@ try {
       cleanupFailure = error;
     }
   }
-  for (const person of people) {
+  for (const person of [...people, ...(moderator ? [moderator] : [])]) {
     const result = await person.supabase.auth.signOut({ scope: "local" });
     if (result.error && !cleanupFailure) cleanupFailure = result.error;
   }
