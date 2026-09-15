@@ -228,3 +228,20 @@ END
 $$;
 
 SELECT 'fresh migration replay invariants passed' AS result;
+
+-- Evidence-only ACL snapshot. Do not fail against the current production matrix here:
+-- #136/#80 intentionally own the transition away from legacy broad Data API grants.
+SELECT
+  table_name,
+  grantee,
+  string_agg(privilege_type, ',' ORDER BY privilege_type) AS privileges
+FROM information_schema.role_table_grants
+WHERE table_schema = 'public'
+  AND table_name = ANY (ARRAY[
+    'profiles','businesses','organizations','opportunities','events','connections',
+    'conversations','conversation_members','messages','notifications',
+    'saved_opportunities','event_rsvps'
+  ])
+  AND grantee IN ('anon','authenticated')
+GROUP BY table_name, grantee
+ORDER BY table_name, grantee;
