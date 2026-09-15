@@ -11,9 +11,19 @@ const verifier = await readFile(
   "utf8",
 );
 
-test("fresh replay workflow is manual-only, local-only, and toolchain-pinned", () => {
+test("fresh replay workflow is main-change-triggered, local-only, and toolchain-pinned", () => {
   assert.match(workflow, /workflow_dispatch:/);
-  assert.doesNotMatch(workflow, /^\s*push:/m);
+  assert.match(workflow, /push:\s+branches: \[main\]\s+paths:/);
+  for (const path of [
+    "supabase/migrations/**",
+    "supabase/config.toml",
+    "scripts/verify-fresh-replay.sql",
+    ".github/workflows/fresh-migration-replay.yml",
+    "tests/fresh-migration-replay-workflow.test.mjs",
+  ]) assert.ok(workflow.includes("'" + path + "'"));
+  assert.match(workflow, /cancel-in-progress: false/);
+  assert.match(workflow, /permissions:\s+contents: read/);
+  assert.doesNotMatch(workflow, /secrets\./);
   assert.doesNotMatch(workflow, /^\s*pull_request:/m);
   assert.doesNotMatch(workflow, /^\s*schedule:/m);
 

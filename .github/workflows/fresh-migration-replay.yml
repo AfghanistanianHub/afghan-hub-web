@@ -2,6 +2,18 @@ name: Fresh migration replay (local Supabase)
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/config.toml'
+      - 'scripts/verify-fresh-replay.sql'
+      - '.github/workflows/fresh-migration-replay.yml'
+      - 'tests/fresh-migration-replay-workflow.test.mjs'
+
+concurrency:
+  group: fresh-migration-replay-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
