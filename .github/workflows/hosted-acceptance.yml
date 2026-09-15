@@ -18,10 +18,6 @@ on:
         required: true
         default: false
         type: boolean
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/hosted-acceptance.yml"
 
 permissions:
   contents: read
@@ -50,6 +46,7 @@ jobs:
       AUTH_ACCEPTANCE_ADMIN_PASSWORD: ${{ secrets.ACCEPTANCE_ADMIN_PASSWORD }}
       SECURITY_TEST_SUPABASE_URL: https://rurgmyiiytesknsfwjjl.supabase.co
       SECURITY_TEST_PUBLISHABLE_KEY: ${{ secrets.ACCEPTANCE_SECONDARY_PUBLISHABLE_KEY }}
+
 
     steps:
       - uses: actions/checkout@v5
@@ -80,6 +77,7 @@ jobs:
       - name: Qualify non-production target
         run: npm run security:qualify-target
 
+
   acceptance:
     needs: qualify
     runs-on: ubuntu-latest
@@ -104,6 +102,7 @@ jobs:
       SECURITY_TEST_SUPABASE_URL: https://rurgmyiiytesknsfwjjl.supabase.co
       SECURITY_TEST_PUBLISHABLE_KEY: ${{ secrets.ACCEPTANCE_SECONDARY_PUBLISHABLE_KEY }}
 
+
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -119,20 +118,20 @@ jobs:
         run: npm run acceptance:roles
 
       - name: Member A/B journey plan
-        if: ${{ matrix.suite == 'journey' && github.event_name != 'push' && !inputs.member_journey_write }}
+        if: ${{ matrix.suite == 'journey' && !inputs.member_journey_write }}
         env:
           JOURNEY_ACCEPTANCE_MODE: plan
         run: npm run acceptance:journey
 
       - name: Member A/B journey write
-        if: ${{ matrix.suite == 'journey' && (github.event_name == 'push' || inputs.member_journey_write) }}
+        if: ${{ matrix.suite == 'journey' && inputs.member_journey_write }}
         env:
           JOURNEY_ACCEPTANCE_MODE: write
           JOURNEY_ACCEPTANCE_ALLOW_WRITES: I_UNDERSTAND_THIS_CREATES_DISPOSABLE_PRODUCTION_FIXTURES
         run: npm run acceptance:journey
 
       - name: Collect member-journey cleanup material
-        if: ${{ matrix.suite == 'journey' && (github.event_name == 'push' || inputs.member_journey_write) && always() }}
+        if: ${{ matrix.suite == 'journey' && inputs.member_journey_write && always() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -146,7 +145,7 @@ jobs:
           cp "${files[@]}" acceptance-artifacts/
 
       - name: Upload member-journey cleanup material
-        if: ${{ matrix.suite == 'journey' && (github.event_name == 'push' || inputs.member_journey_write) && always() }}
+        if: ${{ matrix.suite == 'journey' && inputs.member_journey_write && always() }}
         uses: actions/upload-artifact@v4
         with:
           name: secondary-member-journey-cleanup
@@ -155,25 +154,25 @@ jobs:
           if-no-files-found: error
 
       - name: RSVP acceptance plan
-        if: ${{ matrix.suite == 'rsvp' && github.event_name != 'push' && !inputs.rsvp_write }}
+        if: ${{ matrix.suite == 'rsvp' && !inputs.rsvp_write }}
         env:
           RSVP_ACCEPTANCE_MODE: plan
         run: npm run acceptance:rsvp
 
       - name: RSVP acceptance write
-        if: ${{ matrix.suite == 'rsvp' && (github.event_name == 'push' || inputs.rsvp_write) }}
+        if: ${{ matrix.suite == 'rsvp' && inputs.rsvp_write }}
         env:
           RSVP_ACCEPTANCE_MODE: write
         run: npm run acceptance:rsvp
 
       - name: Avatar Storage acceptance plan
-        if: ${{ matrix.suite == 'avatar' && github.event_name != 'push' && !inputs.avatar_storage_write }}
+        if: ${{ matrix.suite == 'avatar' && !inputs.avatar_storage_write }}
         env:
           AVATAR_ACCEPTANCE_MODE: plan
         run: npm run acceptance:avatar-storage
 
       - name: Avatar Storage acceptance write
-        if: ${{ matrix.suite == 'avatar' && (github.event_name == 'push' || inputs.avatar_storage_write) }}
+        if: ${{ matrix.suite == 'avatar' && inputs.avatar_storage_write }}
         env:
           AVATAR_ACCEPTANCE_MODE: write
           AVATAR_ACCEPTANCE_ALLOW_WRITES: I_UNDERSTAND_THIS_TOUCHES_ONLY_DISPOSABLE_SECONDARY_PERSONAS
