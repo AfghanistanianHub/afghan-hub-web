@@ -13,3 +13,7 @@ test("application helper ACL hardening remains unconditional", () => {
   assert.match(outside, /revoke execute on function public\.is_admin\(\)\s+from public, anon;/i);
   assert.match(outside, /revoke execute on function public\.is_conversation_member\(uuid\)\s+from public, anon;/i);
 });
+test("optional helper guard retains complete SQL dollar delimiters", () => {
+  assert.match(sql, /do \$\$\s+begin/i);
+  assert.match(sql, /end\s+\$\$;/i);
+});
