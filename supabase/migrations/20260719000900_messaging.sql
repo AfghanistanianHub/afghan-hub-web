@@ -3,11 +3,11 @@ create table public.conversations (
   created_by uuid not null references public.profiles(id) on delete cascade,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
-)
+);
 
 create trigger conversations_set_updated_at
 before update on public.conversations
-for each row execute function public.set_updated_at()
+for each row execute function public.set_updated_at();
 
 create table public.conversation_members (
   conversation_id uuid not null references public.conversations(id) on delete cascade,
@@ -15,7 +15,7 @@ create table public.conversation_members (
   joined_at timestamptz not null default now(),
   last_read_at timestamptz,
   primary key (conversation_id, profile_id)
-)
+);
 
 create table public.messages (
   id uuid primary key default gen_random_uuid(),
@@ -27,7 +27,7 @@ create table public.messages (
   deleted_at timestamptz,
 
   constraint messages_body_length check (char_length(body) between 1 and 5000)
-)
+);
 
 create or replace function public.is_conversation_member(target_conversation_id uuid)
 returns boolean
@@ -42,8 +42,8 @@ as $$
     where cm.conversation_id = target_conversation_id
       and cm.profile_id = (select auth.uid())
   );
-$$
+$$;
 
-revoke all on function public.is_conversation_member(uuid) from public
+revoke all on function public.is_conversation_member(uuid) from public;
 
-grant execute on function public.is_conversation_member(uuid) to authenticated
+grant execute on function public.is_conversation_member(uuid) to authenticated;

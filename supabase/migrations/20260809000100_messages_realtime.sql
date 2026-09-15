@@ -11,4 +11,4 @@ begin
     add table public.messages;
   end if;
 end
-$$
+$$;

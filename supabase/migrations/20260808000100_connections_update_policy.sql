@@ -1,8 +1,8 @@
 drop policy if exists connections_update_participant
-on public.connections
+on public.connections;
 
 drop policy if exists connections_update_recipient
-on public.connections
+on public.connections;
 
 create policy connections_update_recipient
 on public.connections for update
@@ -14,4 +14,4 @@ using (
 with check (
   recipient_id = (select auth.uid())
   or public.is_admin()
-)
+);

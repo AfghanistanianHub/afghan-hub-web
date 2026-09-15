@@ -35,11 +35,11 @@ create table public.profiles (
 
   constraint profiles_headline_length
     check (headline is null or char_length(headline) <= 120)
-)
+);
 
 create trigger profiles_set_updated_at
 before update on public.profiles
-for each row execute function public.set_updated_at()
+for each row execute function public.set_updated_at();
 
 create or replace function public.handle_new_user()
 returns trigger
@@ -69,10 +69,10 @@ begin
 
   return new;
 end;
-$$
+$$;
 
-revoke all on function public.handle_new_user() from public
+revoke all on function public.handle_new_user() from public;
 
 create trigger on_auth_user_created
 after insert on auth.users
-for each row execute function public.handle_new_user()
+for each row execute function public.handle_new_user();
