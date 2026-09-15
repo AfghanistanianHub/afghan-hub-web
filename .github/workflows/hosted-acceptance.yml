@@ -13,6 +13,11 @@ on:
         required: true
         default: false
         type: boolean
+      avatar_storage_write:
+        description: "Run self-cleaning disposable avatar Storage write acceptance"
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -112,3 +117,16 @@ jobs:
         env:
           RSVP_ACCEPTANCE_MODE: write
         run: npm run acceptance:rsvp
+
+      - name: Avatar Storage acceptance plan
+        if: ${{ !inputs.avatar_storage_write }}
+        env:
+          AVATAR_ACCEPTANCE_MODE: plan
+        run: npm run acceptance:avatar-storage
+
+      - name: Avatar Storage acceptance write
+        if: ${{ inputs.avatar_storage_write }}
+        env:
+          AVATAR_ACCEPTANCE_MODE: write
+          AVATAR_ACCEPTANCE_ALLOW_WRITES: I_UNDERSTAND_THIS_TOUCHES_ONLY_DISPOSABLE_SECONDARY_PERSONAS
+        run: npm run acceptance:avatar-storage
