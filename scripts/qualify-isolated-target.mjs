@@ -43,9 +43,13 @@ function assertRpcExists(result) {
 
 await check("REST endpoint is reachable", "core", async () => {
   const response = await fetch(`${supabaseUrl}/rest/v1/`, {
-    headers: { apikey: publishableKey, Authorization: `Bearer ${publishableKey}` },
+    headers: { apikey: publishableKey },
   });
-  assert.ok(response.ok, `REST root returned HTTP ${response.status}`);
+
+  // Any non-5xx HTTP response proves the PostgREST endpoint is reachable.
+  // Credential/schema compatibility is verified by the table and RPC checks below,
+  // so a publishable-key 401 at the OpenAPI root must not create a false negative.
+  assert.ok(response.status < 500, `REST root returned HTTP ${response.status}`);
 });
 
 const tableGroups = {
