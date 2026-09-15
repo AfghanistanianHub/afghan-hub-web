@@ -1,0 +1,50 @@
+name: Fresh migration replay (local Supabase)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Show local tool versions
+        run: |
+          set -euo pipefail
+          supabase --version
+          docker --version
+
+      - name: Start fresh local Supabase database
+        run: |
+          set -euo pipefail
+          supabase db start
+
+      - name: Replay repository migrations from scratch
+        run: |
+          set -euo pipefail
+          supabase db reset --local --no-seed
+
+      - name: Verify launch-critical replay invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          db_container="$(docker ps --filter 'name=supabase_db_' --format '{{.ID}}' | head -n 1)"
+          if [[ -z "$db_container" ]]; then
+            echo "Could not locate the local Supabase Postgres container." >&2
+            exit 1
+          fi
+          docker exec -i "$db_container" psql -U postgres -d postgres -v ON_ERROR_STOP=1 < scripts/verify-fresh-replay.sql
+
+      - name: Stop local Supabase
+        if: always()
+        run: supabase stop --no-backup || true
