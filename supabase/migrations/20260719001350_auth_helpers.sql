@@ -11,8 +11,8 @@ as $$
     where p.id = (select auth.uid())
       and p.role = 'admin'
   );
-$$
+$$;
 
-revoke all on function public.is_admin() from public
+revoke all on function public.is_admin() from public;
 
-grant execute on function public.is_admin() to authenticated
+grant execute on function public.is_admin() to authenticated;
