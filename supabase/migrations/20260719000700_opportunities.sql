@@ -25,15 +25,15 @@ create table public.opportunities (
     check (summary is null or char_length(summary) <= 240),
   constraint opportunities_single_source
     check (not (business_id is not null and organization_id is not null))
-)
+);
 
 create trigger opportunities_set_updated_at
 before update on public.opportunities
-for each row execute function public.set_updated_at()
+for each row execute function public.set_updated_at();
 
 create table public.saved_opportunities (
   profile_id uuid not null references public.profiles(id) on delete cascade,
   opportunity_id uuid not null references public.opportunities(id) on delete cascade,
   created_at timestamptz not null default now(),
   primary key (profile_id, opportunity_id)
-)
+);

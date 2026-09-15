@@ -26,8 +26,8 @@ create table public.businesses (
   constraint businesses_slug_format check (slug ~ '^[a-z0-9]+(?:-[a-z0-9]+)*$'),
   constraint businesses_short_description_length
     check (short_description is null or char_length(short_description) <= 200)
-)
+);
 
 create trigger businesses_set_updated_at
 before update on public.businesses
-for each row execute function public.set_updated_at()
+for each row execute function public.set_updated_at();

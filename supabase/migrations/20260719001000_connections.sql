@@ -8,8 +8,8 @@ create table public.connections (
 
   constraint connections_no_self check (requester_id <> recipient_id),
   constraint connections_unique_direction unique (requester_id, recipient_id)
-)
+);
 
 create trigger connections_set_updated_at
 before update on public.connections
-for each row execute function public.set_updated_at()
+for each row execute function public.set_updated_at();

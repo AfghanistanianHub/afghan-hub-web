@@ -1,14 +1,14 @@
 alter table public.profiles
-add column if not exists search_vector tsvector
+add column if not exists search_vector tsvector;
 
 alter table public.businesses
-add column if not exists search_vector tsvector
+add column if not exists search_vector tsvector;
 
 alter table public.organizations
-add column if not exists search_vector tsvector
+add column if not exists search_vector tsvector;
 
 alter table public.opportunities
-add column if not exists search_vector tsvector
+add column if not exists search_vector tsvector;
 
 create or replace function public.update_profile_search_vector()
 returns trigger
@@ -31,7 +31,7 @@ begin
 
   return new;
 end;
-$$
+$$;
 
 create or replace function public.update_business_search_vector()
 returns trigger
@@ -53,7 +53,7 @@ begin
 
   return new;
 end;
-$$
+$$;
 
 create or replace function public.update_organization_search_vector()
 returns trigger
@@ -75,7 +75,7 @@ begin
 
   return new;
 end;
-$$
+$$;
 
 create or replace function public.update_opportunity_search_vector()
 returns trigger
@@ -95,10 +95,10 @@ begin
 
   return new;
 end;
-$$
+$$;
 
 drop trigger if exists profiles_search_vector_trigger
-on public.profiles
+on public.profiles;
 
 create trigger profiles_search_vector_trigger
 before insert or update of
@@ -112,10 +112,10 @@ before insert or update of
   languages
 on public.profiles
 for each row
-execute function public.update_profile_search_vector()
+execute function public.update_profile_search_vector();
 
 drop trigger if exists businesses_search_vector_trigger
-on public.businesses
+on public.businesses;
 
 create trigger businesses_search_vector_trigger
 before insert or update of
@@ -128,10 +128,10 @@ before insert or update of
   services
 on public.businesses
 for each row
-execute function public.update_business_search_vector()
+execute function public.update_business_search_vector();
 
 drop trigger if exists organizations_search_vector_trigger
-on public.organizations
+on public.organizations;
 
 create trigger organizations_search_vector_trigger
 before insert or update of
@@ -144,10 +144,10 @@ before insert or update of
   country
 on public.organizations
 for each row
-execute function public.update_organization_search_vector()
+execute function public.update_organization_search_vector();
 
 drop trigger if exists opportunities_search_vector_trigger
-on public.opportunities
+on public.opportunities;
 
 create trigger opportunities_search_vector_trigger
 before insert or update of
@@ -158,7 +158,7 @@ before insert or update of
   country
 on public.opportunities
 for each row
-execute function public.update_opportunity_search_vector()
+execute function public.update_opportunity_search_vector();
 
 update public.profiles
 set search_vector =
@@ -172,7 +172,7 @@ set search_vector =
     coalesce(country, '') || ' ' ||
     coalesce(array_to_string(skills, ' '), '') || ' ' ||
     coalesce(array_to_string(languages, ' '), '')
-  )
+  );
 
 update public.businesses
 set search_vector =
@@ -185,7 +185,7 @@ set search_vector =
     coalesce(city, '') || ' ' ||
     coalesce(country, '') || ' ' ||
     coalesce(array_to_string(services, ' '), '')
-  )
+  );
 
 update public.organizations
 set search_vector =
@@ -198,7 +198,7 @@ set search_vector =
     coalesce(mission, '') || ' ' ||
     coalesce(city, '') || ' ' ||
     coalesce(country, '')
-  )
+  );
 
 update public.opportunities
 set search_vector =
@@ -209,19 +209,19 @@ set search_vector =
     coalesce(description, '') || ' ' ||
     coalesce(city, '') || ' ' ||
     coalesce(country, '')
-  )
+  );
 
 create index if not exists profiles_search_vector_idx
-on public.profiles using gin(search_vector)
+on public.profiles using gin(search_vector);
 
 create index if not exists businesses_search_vector_idx
-on public.businesses using gin(search_vector)
+on public.businesses using gin(search_vector);
 
 create index if not exists organizations_search_vector_idx
-on public.organizations using gin(search_vector)
+on public.organizations using gin(search_vector);
 
 create index if not exists opportunities_search_vector_idx
-on public.opportunities using gin(search_vector)
+on public.opportunities using gin(search_vector);
 
 create or replace function public.search_afghan_hub(
   search_query text,
@@ -316,8 +316,8 @@ as $$
   ) results
   order by rank desc
   limit greatest(1, least(result_limit, 100));
-$$
+$$;
 
 grant execute
 on function public.search_afghan_hub(text, integer)
-to anon, authenticated
+to anon, authenticated;

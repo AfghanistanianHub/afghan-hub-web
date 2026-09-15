@@ -27,8 +27,8 @@ create table public.events (
   constraint events_valid_time check (ends_at is null or ends_at >= starts_at),
   constraint events_single_source
     check (not (business_id is not null and organization_id is not null))
-)
+);
 
 create trigger events_set_updated_at
 before update on public.events
-for each row execute function public.set_updated_at()
+for each row execute function public.set_updated_at();
