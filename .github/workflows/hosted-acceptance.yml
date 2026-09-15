@@ -22,10 +22,15 @@ on:
 permissions:
   contents: read
 
+# Shared disposable personas: queue whole runs so fixture restoration cannot overlap.
+concurrency:
+  group: secondary-hosted-acceptance
+  cancel-in-progress: false
+
 jobs:
-  acceptance:
+  qualify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     env:
       AUTH_ACCEPTANCE_SUPABASE_URL: https://rurgmyiiytesknsfwjjl.supabase.co
       AUTH_ACCEPTANCE_PUBLISHABLE_KEY: ${{ secrets.ACCEPTANCE_SECONDARY_PUBLISHABLE_KEY }}
@@ -42,18 +47,16 @@ jobs:
       SECURITY_TEST_SUPABASE_URL: https://rurgmyiiytesknsfwjjl.supabase.co
       SECURITY_TEST_PUBLISHABLE_KEY: ${{ secrets.ACCEPTANCE_SECONDARY_PUBLISHABLE_KEY }}
 
+
     steps:
       - uses: actions/checkout@v5
-
       - uses: actions/setup-node@v5
         with:
           node-version: 24.x
           cache: npm
-
       - name: Install dependencies
         run: npm ci
-
-      - name: Guard secondary target and required secrets
+      - name: Guard secondary target and complete disposable persona secrets
         shell: bash
         run: |
           set -euo pipefail
@@ -63,28 +66,72 @@ jobs:
           [[ -n "$AUTH_ACCEPTANCE_MEMBER_A_PASSWORD" ]]
           [[ -n "$AUTH_ACCEPTANCE_MEMBER_B_EMAIL" ]]
           [[ -n "$AUTH_ACCEPTANCE_MEMBER_B_PASSWORD" ]]
+          for persona in MODERATOR ADMIN; do
+            email_var="AUTH_ACCEPTANCE_${persona}_EMAIL"
+            password_var="AUTH_ACCEPTANCE_${persona}_PASSWORD"
+            [[ -n "${!email_var}" && -n "${!password_var}" ]]
+          done
+          [[ -z "$AUTH_ACCEPTANCE_MEMBER_C_EMAIL" && -z "$AUTH_ACCEPTANCE_MEMBER_C_PASSWORD" ]] ||
+            [[ -n "$AUTH_ACCEPTANCE_MEMBER_C_EMAIL" && -n "$AUTH_ACCEPTANCE_MEMBER_C_PASSWORD" ]]
 
       - name: Qualify non-production target
         run: npm run security:qualify-target
 
+
+  acceptance:
+    needs: qualify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [roles, journey, rsvp, avatar]
+    env:
+      AUTH_ACCEPTANCE_SUPABASE_URL: https://rurgmyiiytesknsfwjjl.supabase.co
+      AUTH_ACCEPTANCE_PUBLISHABLE_KEY: ${{ secrets.ACCEPTANCE_SECONDARY_PUBLISHABLE_KEY }}
+      AUTH_ACCEPTANCE_MEMBER_A_EMAIL: ${{ secrets.ACCEPTANCE_MEMBER_A_EMAIL }}
+      AUTH_ACCEPTANCE_MEMBER_A_PASSWORD: ${{ secrets.ACCEPTANCE_MEMBER_A_PASSWORD }}
+      AUTH_ACCEPTANCE_MEMBER_B_EMAIL: ${{ secrets.ACCEPTANCE_MEMBER_B_EMAIL }}
+      AUTH_ACCEPTANCE_MEMBER_B_PASSWORD: ${{ secrets.ACCEPTANCE_MEMBER_B_PASSWORD }}
+      AUTH_ACCEPTANCE_MEMBER_C_EMAIL: ${{ secrets.ACCEPTANCE_MEMBER_C_EMAIL }}
+      AUTH_ACCEPTANCE_MEMBER_C_PASSWORD: ${{ secrets.ACCEPTANCE_MEMBER_C_PASSWORD }}
+      AUTH_ACCEPTANCE_MODERATOR_EMAIL: ${{ secrets.ACCEPTANCE_MODERATOR_EMAIL }}
+      AUTH_ACCEPTANCE_MODERATOR_PASSWORD: ${{ secrets.ACCEPTANCE_MODERATOR_PASSWORD }}
+      AUTH_ACCEPTANCE_ADMIN_EMAIL: ${{ secrets.ACCEPTANCE_ADMIN_EMAIL }}
+      AUTH_ACCEPTANCE_ADMIN_PASSWORD: ${{ secrets.ACCEPTANCE_ADMIN_PASSWORD }}
+      SECURITY_TEST_SUPABASE_URL: https://rurgmyiiytesknsfwjjl.supabase.co
+      SECURITY_TEST_PUBLISHABLE_KEY: ${{ secrets.ACCEPTANCE_SECONDARY_PUBLISHABLE_KEY }}
+
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
       - name: Role persona preflight
+        if: ${{ matrix.suite == 'roles' }}
+        env:
+          ROLE_ACCEPTANCE_REQUIRE_ALL_PERSONAS: "true"
         run: npm run acceptance:roles
 
       - name: Member A/B journey plan
-        if: ${{ !inputs.member_journey_write }}
+        if: ${{ matrix.suite == 'journey' && !inputs.member_journey_write }}
         env:
           JOURNEY_ACCEPTANCE_MODE: plan
         run: npm run acceptance:journey
 
       - name: Member A/B journey write
-        if: ${{ inputs.member_journey_write }}
+        if: ${{ matrix.suite == 'journey' && inputs.member_journey_write }}
         env:
           JOURNEY_ACCEPTANCE_MODE: write
           JOURNEY_ACCEPTANCE_ALLOW_WRITES: I_UNDERSTAND_THIS_CREATES_DISPOSABLE_PRODUCTION_FIXTURES
         run: npm run acceptance:journey
 
       - name: Collect member-journey cleanup material
-        if: ${{ inputs.member_journey_write && always() }}
+        if: ${{ matrix.suite == 'journey' && inputs.member_journey_write && always() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -98,7 +145,7 @@ jobs:
           cp "${files[@]}" acceptance-artifacts/
 
       - name: Upload member-journey cleanup material
-        if: ${{ inputs.member_journey_write && always() }}
+        if: ${{ matrix.suite == 'journey' && inputs.member_journey_write && always() }}
         uses: actions/upload-artifact@v4
         with:
           name: secondary-member-journey-cleanup
@@ -107,25 +154,25 @@ jobs:
           if-no-files-found: error
 
       - name: RSVP acceptance plan
-        if: ${{ !inputs.rsvp_write }}
+        if: ${{ matrix.suite == 'rsvp' && !inputs.rsvp_write }}
         env:
           RSVP_ACCEPTANCE_MODE: plan
         run: npm run acceptance:rsvp
 
       - name: RSVP acceptance write
-        if: ${{ inputs.rsvp_write }}
+        if: ${{ matrix.suite == 'rsvp' && inputs.rsvp_write }}
         env:
           RSVP_ACCEPTANCE_MODE: write
         run: npm run acceptance:rsvp
 
       - name: Avatar Storage acceptance plan
-        if: ${{ !inputs.avatar_storage_write }}
+        if: ${{ matrix.suite == 'avatar' && !inputs.avatar_storage_write }}
         env:
           AVATAR_ACCEPTANCE_MODE: plan
         run: npm run acceptance:avatar-storage
 
       - name: Avatar Storage acceptance write
-        if: ${{ inputs.avatar_storage_write }}
+        if: ${{ matrix.suite == 'avatar' && inputs.avatar_storage_write }}
         env:
           AVATAR_ACCEPTANCE_MODE: write
           AVATAR_ACCEPTANCE_ALLOW_WRITES: I_UNDERSTAND_THIS_TOUCHES_ONLY_DISPOSABLE_SECONDARY_PERSONAS

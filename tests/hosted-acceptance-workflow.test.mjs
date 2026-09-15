@@ -35,10 +35,14 @@ test("write journey preserves short-lived exact cleanup material", () => {
   assert.match(workflow, /if-no-files-found: error/);
 });
 
-test("target qualification and persona preflight happen before write acceptance", () => {
-  const qualify = workflow.indexOf("npm run security:qualify-target");
-  const roles = workflow.indexOf("npm run acceptance:roles");
-  const journey = workflow.indexOf("JOURNEY_ACCEPTANCE_MODE: write");
-  const rsvp = workflow.indexOf("RSVP_ACCEPTANCE_MODE: write");
-  assert.ok(qualify >= 0 && roles > qualify && journey > roles && rsvp > roles);
+test("all suites depend on qualification and failures do not cancel sibling suites", () => {
+  assert.match(workflow, /needs: qualify/);
+  assert.match(workflow, /fail-fast: false/);
+  assert.match(workflow, /suite: \[roles, journey, rsvp, avatar\]/);
+  assert.match(workflow, /group: secondary-hosted-acceptance/);
+  assert.match(workflow, /cancel-in-progress: false/);
+  assert.match(workflow, /ROLE_ACCEPTANCE_REQUIRE_ALL_PERSONAS: "true"/);
+  for (const suite of ["roles", "journey", "rsvp", "avatar"]) {
+    assert.ok(workflow.includes(`matrix.suite == '${suite}'`));
+  }
 });

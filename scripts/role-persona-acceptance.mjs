@@ -28,6 +28,8 @@ if (isProduction) {
   );
 }
 
+const requireAllPersonas = process.env.ROLE_ACCEPTANCE_REQUIRE_ALL_PERSONAS === "true";
+
 const personas = [
   {
     label: "Member",
@@ -41,14 +43,14 @@ const personas = [
     expectedRole: "moderator",
     email: process.env.AUTH_ACCEPTANCE_MODERATOR_EMAIL,
     password: process.env.AUTH_ACCEPTANCE_MODERATOR_PASSWORD,
-    required: false,
+    required: requireAllPersonas,
   },
   {
     label: "Admin",
     expectedRole: "admin",
     email: process.env.AUTH_ACCEPTANCE_ADMIN_EMAIL,
     password: process.env.AUTH_ACCEPTANCE_ADMIN_PASSWORD,
-    required: false,
+    required: requireAllPersonas,
   },
 ];
 
@@ -78,9 +80,11 @@ async function signIn(persona) {
   return { ...persona, supabase, userId: auth.data.user.id };
 }
 
-async function expectDenied(promise, label) {
+async function expectDenied(promise, label, expectedMessage) {
   const result = await promise;
   assert.ok(result.error, `${label}: expected denial but call returned without error`);
+  assert.equal(result.error.code, "P0001", `${label}: unexpected error code`);
+  assert.equal(result.error.message, expectedMessage, `${label}: unexpected denial reason`);
 }
 
 let member;
@@ -98,6 +102,7 @@ try {
       target_note: null,
     }),
     "ordinary member moderation deny",
+    "Not authorized to moderate content",
   );
   console.log("PASS ordinary member cannot invoke moderator content action");
 
@@ -107,6 +112,7 @@ try {
       target_role: "moderator",
     }),
     "ordinary member admin-role deny",
+    "Only admins can manage member roles",
   );
   console.log("PASS ordinary member cannot invoke admin role-management action");
 
@@ -141,6 +147,7 @@ try {
         target_role: "member",
       }),
       "admin self-role-change deny",
+      "Admins cannot change their own role",
     );
     console.log("PASS admin persona is recognized and cannot change its own role");
   } else {
