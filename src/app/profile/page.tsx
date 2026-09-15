@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import AvatarUpload from "@/components/profile/avatar-upload";
+import { ProfileStrength } from "@/components/profile/profile-strength";
 import { createClient } from "@/lib/supabase/server";
 import { saveProfile } from "./actions";
 
@@ -79,56 +80,60 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
             </div>
           </aside>
 
-          <section className="rounded-[2rem] border border-border/80 bg-card p-6 shadow-[0_12px_38px_rgb(15_23_42/0.045)] md:p-8">
-            <div className="max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Profile builder</p>
-              <h2 className="mt-2 text-3xl font-bold tracking-[-0.03em]">Tell the community who you are</h2>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">Use the sections below to shape how other members discover and understand your work, experience, and interests.</p>
-            </div>
+          <div className="space-y-6">
+            <ProfileStrength profile={profile} showAction={false} />
 
-            {error ? (
-              <div role="alert" aria-live="assertive" className="mt-6 rounded-xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">{error}</div>
-            ) : null}
-
-            <form action={saveProfile} className="mt-8 space-y-9">
-              <fieldset className="space-y-6">
-                <legend className="flex items-center gap-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"><UserRound aria-hidden="true" className="size-4" /></span>Identity</legend>
-                <div className="grid gap-6 sm:grid-cols-2">
-                  <label className="block"><span className="text-sm font-medium">First name</span><input name="first_name" defaultValue={profile?.first_name ?? ""} required className={fieldClassName} /></label>
-                  <label className="block"><span className="text-sm font-medium">Last name</span><input name="last_name" defaultValue={profile?.last_name ?? ""} required className={fieldClassName} /></label>
-                </div>
-                <label className="block"><span className="text-sm font-medium">Headline</span><input name="headline" defaultValue={profile?.headline ?? ""} placeholder="Computer Technician | Founder of BC Computers" className={fieldClassName} /></label>
-                <label className="block"><span className="text-sm font-medium">About you</span><textarea name="bio" defaultValue={profile?.bio ?? ""} rows={5} placeholder="Tell the community a little about yourself..." className={`${fieldClassName} resize-none`} /></label>
-              </fieldset>
-
-              <fieldset className="space-y-6 border-t border-border/70 pt-8">
-                <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"><BriefcaseBusiness aria-hidden="true" className="size-4" /></span>Work and skills</legend>
-                <div className="grid gap-6 sm:grid-cols-2">
-                  <label className="block"><span className="text-sm font-medium">Profession</span><input name="profession" defaultValue={profile?.profession ?? ""} placeholder="Computer technician" className={fieldClassName} /></label>
-                  <label className="block"><span className="text-sm font-medium">Company</span><input name="company" defaultValue={profile?.company ?? ""} placeholder="BC Computers" className={fieldClassName} /></label>
-                </div>
-                <label className="block"><span className="text-sm font-medium">Skills</span><input name="skills" defaultValue={profile?.skills?.join(", ") ?? ""} placeholder="Computer repair, Filmmaking, Community organizing" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each skill with a comma.</span></label>
-                <label className="block"><span className="text-sm font-medium">Languages</span><input name="languages" defaultValue={profile?.languages?.join(", ") ?? ""} placeholder="Dari, English, Persian" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each language with a comma.</span></label>
-              </fieldset>
-
-              <fieldset className="space-y-6 border-t border-border/70 pt-8">
-                <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"><Globe2 aria-hidden="true" className="size-4" /></span>Location and links</legend>
-                <div className="grid gap-6 sm:grid-cols-3">
-                  <label className="block"><span className="text-sm font-medium">City</span><input name="city" defaultValue={profile?.city ?? ""} placeholder="Vancouver" className={fieldClassName} /></label>
-                  <label className="block"><span className="text-sm font-medium">Province/State</span><input name="province_state" defaultValue={profile?.province_state ?? ""} placeholder="British Columbia" className={fieldClassName} /></label>
-                  <label className="block"><span className="text-sm font-medium">Country</span><input name="country" defaultValue={profile?.country ?? ""} placeholder="Canada" className={fieldClassName} /></label>
-                </div>
-                <div className="grid gap-6 sm:grid-cols-2">
-                  <label className="block"><span className="text-sm font-medium">LinkedIn</span><input name="linkedin_url" type="url" defaultValue={profile?.linkedin_url ?? ""} placeholder="https://www.linkedin.com/in/yourname" className={fieldClassName} /></label>
-                  <label className="block"><span className="text-sm font-medium">Website</span><input name="website_url" type="url" defaultValue={profile?.website_url ?? ""} placeholder="https://yourwebsite.com" className={fieldClassName} /></label>
-                </div>
-              </fieldset>
-
-              <div className="sticky bottom-4 z-10 rounded-2xl border border-border/80 bg-card/92 p-3 shadow-lg backdrop-blur">
-                <PendingSubmitButton pendingLabel="Saving profile…" className="w-full rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Save profile</PendingSubmitButton>
+            <section className="rounded-[2rem] border border-border/80 bg-card p-6 shadow-[0_12px_38px_rgb(15_23_42/0.045)] md:p-8">
+              <div className="max-w-2xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Profile builder</p>
+                <h2 className="mt-2 text-3xl font-bold tracking-[-0.03em]">Tell the community who you are</h2>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">Use the sections below to shape how other members discover and understand your work, experience, and interests.</p>
               </div>
-            </form>
-          </section>
+
+              {error ? (
+                <div role="alert" aria-live="assertive" className="mt-6 rounded-xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">{error}</div>
+              ) : null}
+
+              <form action={saveProfile} className="mt-8 space-y-9">
+                <fieldset className="space-y-6">
+                  <legend className="flex items-center gap-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"><UserRound aria-hidden="true" className="size-4" /></span>Identity</legend>
+                  <div className="grid gap-6 sm:grid-cols-2">
+                    <label className="block"><span className="text-sm font-medium">First name</span><input name="first_name" defaultValue={profile?.first_name ?? ""} required className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Last name</span><input name="last_name" defaultValue={profile?.last_name ?? ""} required className={fieldClassName} /></label>
+                  </div>
+                  <label className="block"><span className="text-sm font-medium">Headline</span><input name="headline" defaultValue={profile?.headline ?? ""} placeholder="Computer Technician | Founder of BC Computers" className={fieldClassName} /></label>
+                  <label className="block"><span className="text-sm font-medium">About you</span><textarea name="bio" defaultValue={profile?.bio ?? ""} rows={5} placeholder="Tell the community a little about yourself..." className={`${fieldClassName} resize-none`} /></label>
+                </fieldset>
+
+                <fieldset className="space-y-6 border-t border-border/70 pt-8">
+                  <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"><BriefcaseBusiness aria-hidden="true" className="size-4" /></span>Work and skills</legend>
+                  <div className="grid gap-6 sm:grid-cols-2">
+                    <label className="block"><span className="text-sm font-medium">Profession</span><input name="profession" defaultValue={profile?.profession ?? ""} placeholder="Computer technician" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Company</span><input name="company" defaultValue={profile?.company ?? ""} placeholder="BC Computers" className={fieldClassName} /></label>
+                  </div>
+                  <label className="block"><span className="text-sm font-medium">Skills</span><input name="skills" defaultValue={profile?.skills?.join(", ") ?? ""} placeholder="Computer repair, Filmmaking, Community organizing" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each skill with a comma.</span></label>
+                  <label className="block"><span className="text-sm font-medium">Languages</span><input name="languages" defaultValue={profile?.languages?.join(", ") ?? ""} placeholder="Dari, English, Persian" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each language with a comma.</span></label>
+                </fieldset>
+
+                <fieldset className="space-y-6 border-t border-border/70 pt-8">
+                  <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"><Globe2 aria-hidden="true" className="size-4" /></span>Location and links</legend>
+                  <div className="grid gap-6 sm:grid-cols-3">
+                    <label className="block"><span className="text-sm font-medium">City</span><input name="city" defaultValue={profile?.city ?? ""} placeholder="Vancouver" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Province/State</span><input name="province_state" defaultValue={profile?.province_state ?? ""} placeholder="British Columbia" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Country</span><input name="country" defaultValue={profile?.country ?? ""} placeholder="Canada" className={fieldClassName} /></label>
+                  </div>
+                  <div className="grid gap-6 sm:grid-cols-2">
+                    <label className="block"><span className="text-sm font-medium">LinkedIn</span><input name="linkedin_url" type="url" defaultValue={profile?.linkedin_url ?? ""} placeholder="https://www.linkedin.com/in/yourname" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Website</span><input name="website_url" type="url" defaultValue={profile?.website_url ?? ""} placeholder="https://yourwebsite.com" className={fieldClassName} /></label>
+                  </div>
+                </fieldset>
+
+                <div className="sticky bottom-4 z-10 rounded-2xl border border-border/80 bg-card/92 p-3 shadow-lg backdrop-blur">
+                  <PendingSubmitButton pendingLabel="Saving profile…" className="w-full rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Save profile</PendingSubmitButton>
+                </div>
+              </form>
+            </section>
+          </div>
         </div>
       </div>
     </main>
