@@ -59,18 +59,22 @@ BEGIN
   INTO missing_constraints
   FROM (
     VALUES
-      ('profiles_username_format'),
-      ('organizations_short_description_length'),
-      ('businesses_website_url_http'),
-      ('organizations_website_url_http'),
-      ('opportunities_external_url_http'),
-      ('events_online_url_http'),
-      ('businesses_email_format'),
-      ('organizations_email_format'),
-      ('opportunities_contact_email_format')
-  ) AS required(name)
+      ('profiles', 'profiles_username_format'),
+      ('organizations', 'organizations_short_description_length'),
+      ('businesses', 'businesses_website_url_http'),
+      ('organizations', 'organizations_website_url_http'),
+      ('opportunities', 'opportunities_external_url_http'),
+      ('events', 'events_online_url_http'),
+      ('businesses', 'businesses_email_format'),
+      ('organizations', 'organizations_email_format'),
+      ('opportunities', 'opportunities_contact_email_format')
+  ) AS required(table_name, name)
   WHERE NOT EXISTS (
-    SELECT 1 FROM pg_constraint c WHERE c.conname = required.name
+    SELECT 1 FROM pg_constraint c
+    WHERE c.conname = required.name
+      AND c.conrelid = to_regclass('public.' || required.table_name)
+      AND c.contype = 'c'
+      AND c.convalidated
   );
 
   IF missing_constraints IS NOT NULL THEN

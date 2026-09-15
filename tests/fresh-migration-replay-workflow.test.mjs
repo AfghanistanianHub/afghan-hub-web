@@ -82,3 +82,10 @@ test("fresh replay verifier does not use stale synthetic constraint names", () =
     assert.ok(!verifier.includes(staleName), `Fresh replay verifier still references stale constraint name: ${staleName}`);
   }
 });
+
+test("fresh replay integrity checks require the correct table and a validated CHECK", () => {
+  assert.match(verifier, /AS required\(table_name, name\)/);
+  assert.match(verifier, /c\.conrelid = to_regclass\('public\.' \|\| required\.table_name\)/);
+  assert.match(verifier, /c\.contype = 'c'/);
+  assert.match(verifier, /AND c\.convalidated/);
+});
