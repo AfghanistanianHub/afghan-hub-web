@@ -34,33 +34,33 @@ create table public.notifications (
       and message_id is not null
     )
   )
-)
+);
 
 create index notifications_recipient_created_at_idx
-  on public.notifications(recipient_id, created_at desc)
+  on public.notifications(recipient_id, created_at desc);
 
 create index notifications_recipient_unread_idx
   on public.notifications(recipient_id, created_at desc)
-  where read_at is null
+  where read_at is null;
 
 create unique index notifications_connection_event_unique_idx
   on public.notifications(recipient_id, type, connection_id)
-  where connection_id is not null
+  where connection_id is not null;
 
 create unique index notifications_message_event_unique_idx
   on public.notifications(recipient_id, type, message_id)
-  where message_id is not null
+  where message_id is not null;
 
-revoke all on table public.notifications from anon, authenticated
+revoke all on table public.notifications from anon, authenticated;
 
-grant select on table public.notifications to authenticated
+grant select on table public.notifications to authenticated;
 
-alter table public.notifications enable row level security
+alter table public.notifications enable row level security;
 
 create policy notifications_select_recipient
 on public.notifications for select
 to authenticated
-using (recipient_id = (select auth.uid()))
+using (recipient_id = (select auth.uid()));
 
 create or replace function public.mark_notification_read(
   target_notification_id uuid
@@ -79,12 +79,12 @@ begin
 
   return found;
 end;
-$$
+$$;
 
 revoke all on function public.mark_notification_read(uuid)
-from public, anon, authenticated
+from public, anon, authenticated;
 
-grant execute on function public.mark_notification_read(uuid) to authenticated
+grant execute on function public.mark_notification_read(uuid) to authenticated;
 
 create or replace function public.mark_all_notifications_read()
 returns integer
@@ -103,12 +103,12 @@ begin
   get diagnostics updated_count = row_count;
   return updated_count;
 end;
-$$
+$$;
 
 revoke all on function public.mark_all_notifications_read()
-from public, anon, authenticated
+from public, anon, authenticated;
 
-grant execute on function public.mark_all_notifications_read() to authenticated
+grant execute on function public.mark_all_notifications_read() to authenticated;
 
 create or replace function public.create_connection_request_notification()
 returns trigger
@@ -135,14 +135,14 @@ begin
 
   return new;
 end;
-$$
+$$;
 
 revoke all on function public.create_connection_request_notification()
-from public, anon, authenticated
+from public, anon, authenticated;
 
 create trigger connections_create_request_notification
 after insert on public.connections
-for each row execute function public.create_connection_request_notification()
+for each row execute function public.create_connection_request_notification();
 
 create or replace function public.create_connection_accepted_notification()
 returns trigger
@@ -169,14 +169,14 @@ begin
 
   return new;
 end;
-$$
+$$;
 
 revoke all on function public.create_connection_accepted_notification()
-from public, anon, authenticated
+from public, anon, authenticated;
 
 create trigger connections_create_accepted_notification
 after update of status on public.connections
-for each row execute function public.create_connection_accepted_notification()
+for each row execute function public.create_connection_accepted_notification();
 
 create or replace function public.create_new_message_notifications()
 returns trigger
@@ -207,14 +207,14 @@ begin
 
   return new;
 end;
-$$
+$$;
 
 revoke all on function public.create_new_message_notifications()
-from public, anon, authenticated
+from public, anon, authenticated;
 
 create trigger messages_create_notifications
 after insert on public.messages
-for each row execute function public.create_new_message_notifications()
+for each row execute function public.create_new_message_notifications();
 
 do $$
 begin
@@ -229,4 +229,4 @@ begin
     add table public.notifications;
   end if;
 end
-$$
+$$;
