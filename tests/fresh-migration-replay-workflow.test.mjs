@@ -11,13 +11,15 @@ const verifier = await readFile(
   "utf8",
 );
 
-test("fresh replay workflow is manual-only and local-only", () => {
+test("fresh replay workflow is manual-only, local-only, and toolchain-pinned", () => {
   assert.match(workflow, /workflow_dispatch:/);
   assert.doesNotMatch(workflow, /^\s*push:/m);
   assert.doesNotMatch(workflow, /^\s*pull_request:/m);
   assert.doesNotMatch(workflow, /^\s*schedule:/m);
 
   assert.match(workflow, /supabase\/setup-cli@v1/);
+  assert.match(workflow, /version:\s*2\.117\.0/);
+  assert.doesNotMatch(workflow, /version:\s*latest/);
   assert.match(workflow, /supabase db start/);
   assert.match(workflow, /supabase db reset --local --no-seed/);
   assert.match(workflow, /scripts\/verify-fresh-replay\.sql/);
