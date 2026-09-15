@@ -53,6 +53,10 @@ Available commands:
 
 The manual-only hosted acceptance workflow is hard-pinned to secondary and uses GitHub Secrets for designated disposable personas. It does not expose a production target selector.
 
+A single dispatch qualifies the target, then runs roles, member journey, RSVP and avatar suites as four independent matrix jobs with fail-fast disabled. A failure in one suite cannot hide the others. Whole runs queue to avoid overlapping fixture restoration on shared personas. Moderator/admin credentials are mandatory for this combined matrix; standalone role preflight still supports partial diagnostics. Role deny checks require the exact expected database exception and reason, so transport/schema/missing-record errors cannot count as permission evidence.
+
+This is execution tooling, not new hosted acceptance evidence. Journey cleanup still requires the exact generated SQL; RSVP/avatar restore their own scoped fixtures. The listing/moderation/admin mutation and protected-UI parts of #120 remain outside these four scripts.
+
 Avatar Storage acceptance shipped in #206:
 
 - generated synthetic 1x1 PNG fixture only;
