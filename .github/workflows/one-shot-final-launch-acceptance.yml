@@ -34,6 +34,7 @@ jobs:
       OWNER_ACCEPTANCE_ALLOW_WRITES: I_UNDERSTAND_THIS_TOUCHES_ONLY_DISPOSABLE_SECONDARY_PERSONAS
       UNRELATED_RESPONDER_ACCEPTANCE_ALLOW_WRITES: I_UNDERSTAND_THIS_TOUCHES_ONLY_DISPOSABLE_SECONDARY_PERSONAS
       LISTING_VERIFICATION_ACCEPTANCE_ALLOW_WRITES: I_UNDERSTAND_THIS_TOUCHES_ONLY_DISPOSABLE_SECONDARY_PERSONAS
+      SMOKE_BASE_URL: https://app.apnbc.ca
 
     steps:
       - uses: actions/checkout@v5
@@ -56,6 +57,10 @@ jobs:
           done
       - name: Qualify non-production target
         run: npm run security:qualify-target
+      - name: Disposable persona auth and sign-out acceptance
+        run: npm run acceptance:auth
+      - name: Production anonymous protected-route smoke
+        run: npm run smoke:public
       - name: Owner submission acceptance
         run: npm run acceptance:owner-submissions
       - name: Incomplete discovery and unrelated responder acceptance
