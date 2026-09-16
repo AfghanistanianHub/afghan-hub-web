@@ -13,6 +13,10 @@ import {
 import { RecommendedMembers } from "@/components/dashboard/recommended-members";
 import { ProfileStrength } from "@/components/profile/profile-strength";
 import { ConnectionThread } from "@/components/ui/connection-thread";
+import {
+  rankEventRecommendations,
+  rankOpportunityRecommendations,
+} from "@/lib/listing-recommendations";
 import { rankMemberRecommendations } from "@/lib/member-recommendations";
 import { getUtcDateKey } from "@/lib/opportunities";
 import { getProfileCompleteness } from "@/lib/profile-completeness";
@@ -78,8 +82,8 @@ export default async function DashboardPage() {
   const today = getUtcDateKey(new Date());
   const [
     { data: profile },
-    { data: suggestedOpportunities },
-    { data: upcomingEvents },
+    { data: opportunityCandidates },
+    { data: eventCandidates },
     { data: memberCandidates },
   ] = await Promise.all([
     supabase
@@ -98,8 +102,11 @@ export default async function DashboardPage() {
         summary,
         type,
         city,
+        province_state,
         country,
+        is_remote,
         deadline,
+        created_at,
         organization:organizations (
           name
         )
@@ -107,15 +114,17 @@ export default async function DashboardPage() {
       .eq("status", "published")
       .or(`deadline.is.null,deadline.gte.${today}`)
       .order("created_at", { ascending: false })
-      .limit(3),
+      .limit(18),
     supabase
       .from("events")
       .select(`
         id,
         title,
         slug,
+        summary,
         starts_at,
         city,
+        province_state,
         country,
         venue_name,
         is_online
@@ -123,7 +132,7 @@ export default async function DashboardPage() {
       .eq("status", "published")
       .gte("starts_at", now)
       .order("starts_at", { ascending: true })
-      .limit(3),
+      .limit(12),
     supabase
       .from("profiles")
       .select(`
@@ -156,8 +165,16 @@ export default async function DashboardPage() {
     .filter(Boolean)
     .join(", ");
 
-  const opportunityCount = suggestedOpportunities?.length ?? 0;
-  const eventCount = upcomingEvents?.length ?? 0;
+  const suggestedOpportunities = rankOpportunityRecommendations(
+    profile,
+    opportunityCandidates ?? [],
+  );
+  const upcomingEvents = rankEventRecommendations(
+    profile,
+    eventCandidates ?? [],
+  );
+  const opportunityCount = suggestedOpportunities.length;
+  const eventCount = upcomingEvents.length;
   const profileStrength = getProfileCompleteness(profile);
   const recommendedMembers = rankMemberRecommendations(
     profile,
@@ -227,7 +244,7 @@ export default async function DashboardPage() {
                   <ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground group-hover:text-primary" />
                 </div>
                 <p className="mt-5 text-2xl font-bold tracking-tight">{opportunityCount}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">fresh opportunities</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">relevant opportunities</p>
               </Link>
 
               <Link
@@ -241,7 +258,7 @@ export default async function DashboardPage() {
                   <ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground group-hover:text-primary" />
                 </div>
                 <p className="mt-5 text-2xl font-bold tracking-tight">{eventCount}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">upcoming events</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">events for you</p>
               </Link>
 
               <Link
@@ -327,13 +344,15 @@ export default async function DashboardPage() {
               </Link>
             </div>
 
-            {suggestedOpportunities?.length ? (
+            {suggestedOpportunities.length ? (
               <div className="mt-6 grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
                 {suggestedOpportunities.map((opportunity, index) => {
                   const organizationName = getOrganizationName(opportunity.organization);
-                  const opportunityLocation = [opportunity.city, opportunity.country]
-                    .filter(Boolean)
-                    .join(", ");
+                  const opportunityLocation = opportunity.is_remote
+                    ? "Remote"
+                    : [opportunity.city, opportunity.country]
+                        .filter(Boolean)
+                        .join(", ");
 
                   return (
                     <Link
@@ -390,7 +409,7 @@ export default async function DashboardPage() {
             <section className="rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_12px_38px_rgb(15_23_42/0.04)]">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Coming up</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">For you</p>
                   <h2 className="mt-1 text-lg font-bold text-foreground">Events</h2>
                 </div>
                 <span className="flex size-10 items-center justify-center rounded-2xl bg-secondary text-primary">
@@ -398,7 +417,7 @@ export default async function DashboardPage() {
                 </span>
               </div>
 
-              {upcomingEvents?.length ? (
+              {upcomingEvents.length ? (
                 <div className="relative mt-5 space-y-1 before:absolute before:bottom-4 before:left-[5px] before:top-4 before:w-px before:bg-border">
                   {upcomingEvents.map((event) => {
                     const eventLocation = event.is_online
