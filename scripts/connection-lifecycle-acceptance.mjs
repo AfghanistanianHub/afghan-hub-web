@@ -85,10 +85,15 @@ async function signIn(persona) {
     .eq("id", auth.data.user.id)
     .single();
   assert.ifError(profile.error);
-  assert.equal(profile.data.is_public, true, `${persona.label} must be public for request eligibility`);
+  assert.equal(profile.data.is_public, true, `${persona.label} must start public for request eligibility`);
   assert.equal(profile.data.onboarding_completed, true);
 
-  return { ...persona, supabase, userId: auth.data.user.id };
+  return {
+    ...persona,
+    supabase,
+    userId: auth.data.user.id,
+    originalIsPublic: profile.data.is_public,
+  };
 }
 
 async function findPairConnections(a, b) {
@@ -147,8 +152,20 @@ async function createRequest(a, b) {
   return result.data;
 }
 
+async function setOwnVisibility(persona, isPublic) {
+  const result = await persona.supabase
+    .from("profiles")
+    .update({ is_public: isPublic })
+    .eq("id", persona.userId)
+    .select("id,is_public")
+    .single();
+  assert.ifError(result.error);
+  assert.equal(result.data.is_public, isPublic);
+}
+
 let a;
 let b;
+let bVisibilityChanged = false;
 try {
   a = await signIn(configured[0]);
   b = await signIn(configured[1]);
@@ -157,9 +174,42 @@ try {
   await assertNoPairState(a, b, "Preflight");
   console.log("PASS Member A/B start with no relationship state");
 
+  const unrelatedConversation = await a.supabase.rpc("start_direct_conversation", {
+    target_member_id: b.userId,
+  });
+  assert.ok(unrelatedConversation.error, "Unrelated members unexpectedly opened a direct conversation");
+  assert.equal(unrelatedConversation.error.code, "P0001");
+  assert.equal(unrelatedConversation.error.message, "An accepted connection is required");
+  console.log("PASS unrelated members cannot start a direct conversation");
+
   if (mode === "plan") {
-    console.log("Plan mode passed. No connection data was written.");
+    console.log("Plan mode passed. No connection or profile data was written.");
   } else {
+    // Hidden recipient eligibility: temporarily hide only the designated disposable Member B,
+    // verify Member A cannot discover/read or request that profile, then restore immediately.
+    await setOwnVisibility(b, false);
+    bVisibilityChanged = true;
+
+    const hiddenProfile = await a.supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", b.userId)
+      .maybeSingle();
+    assert.ifError(hiddenProfile.error);
+    assert.equal(hiddenProfile.data, null, "Member A can still read hidden Member B profile");
+
+    const hiddenRequest = await a.supabase.rpc("send_connection_request", {
+      target_recipient_id: b.userId,
+    });
+    assert.ok(hiddenRequest.error, "Hidden Member B unexpectedly accepted a connection request");
+    assert.equal(hiddenRequest.error.code, "P0001");
+    assert.equal(hiddenRequest.error.message, "Recipient is not available for connection requests");
+    await assertNoPairState(a, b, "Hidden recipient eligibility");
+
+    await setOwnVisibility(b, b.originalIsPublic);
+    bVisibilityChanged = false;
+    console.log("PASS hidden disposable member is not readable/request-eligible and visibility is restored");
+
     // Decline: recipient declines the request through the same RPC used by the app.
     const declineId = await createRequest(a, b);
     const declineRequestNotice = await requestNotification(b, declineId);
@@ -216,6 +266,13 @@ try {
     const disconnectAcceptedNotice = await acceptedNotification(a, disconnectId);
     assert.ok(disconnectAcceptedNotice, "Accepted relationship did not notify requester");
 
+    const directConversation = await a.supabase.rpc("start_direct_conversation", {
+      target_member_id: b.userId,
+    });
+    assert.ifError(directConversation.error);
+    assert.ok(directConversation.data, "Accepted members could not open a direct conversation");
+    console.log("PASS accepted relationship enables a direct conversation");
+
     const disconnected = await b.supabase
       .from("connections")
       .delete()
@@ -228,12 +285,28 @@ try {
     await assertNoPairState(a, b, "Disconnect");
     await assertNoConnectionNotifications(a, disconnectId, "Disconnect requester view");
     await assertNoConnectionNotifications(b, disconnectId, "Disconnect recipient view");
-    console.log("PASS disconnect removes accepted relationship and all connection notification residue");
+
+    const postDisconnectConversation = await a.supabase.rpc("start_direct_conversation", {
+      target_member_id: b.userId,
+    });
+    assert.ok(postDisconnectConversation.error, "Disconnected members unexpectedly opened a new direct conversation");
+    assert.equal(postDisconnectConversation.error.code, "P0001");
+    assert.equal(postDisconnectConversation.error.message, "An accepted connection is required");
+    console.log("PASS disconnect removes relationship eligibility and connection notification residue");
 
     await assertNoPairState(a, b, "Final cleanup");
     console.log("PASS connection lifecycle acceptance finished with a clean Member A/B pair state");
   }
 } finally {
+  if (bVisibilityChanged && b?.supabase) {
+    try {
+      await setOwnVisibility(b, b.originalIsPublic);
+      console.log("PASS restored Member B visibility during cleanup");
+    } catch (error) {
+      console.error(`WARN Member B visibility restore failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
   for (const persona of [a, b]) {
     if (!persona?.supabase) continue;
     const result = await persona.supabase.auth.signOut({ scope: "local" });
