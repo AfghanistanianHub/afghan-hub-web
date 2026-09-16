@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
-  BadgeCheck,
   ExternalLink,
   HandHeart,
   Mail,
@@ -13,6 +12,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { ExternalImage } from "@/components/ui/external-image";
+import { VerificationBadge, VerificationNote } from "@/components/ui/verification-badge";
 import { getMyAccessContext } from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
 
@@ -38,11 +38,12 @@ export default async function OrganizationPage({params,searchParams}:Organizatio
     <div className="-mt-14 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
      <div className="flex flex-col gap-5 sm:flex-row sm:items-end">
       {organization.logo_url?<ExternalImage src={organization.logo_url} alt={`${organization.name} logo`} width={112} height={112} className="size-28 rounded-[1.65rem] border-4 border-card object-cover shadow-md"/>:<div className="flex size-28 items-center justify-center rounded-[1.65rem] border-4 border-card bg-primary/10 text-4xl font-bold text-primary shadow-md">{organization.name.charAt(0).toUpperCase()}</div>}
-      <div className="pb-1"><div className="flex flex-wrap items-center gap-2">{organization.organization_type?<span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{organization.organization_type}</span>:null}{organization.is_verified?<span className="inline-flex items-center gap-1 rounded-full border border-primary/15 bg-background/90 px-3 py-1 text-xs font-semibold text-primary"><BadgeCheck aria-hidden="true" className="size-4"/>Verified</span>:null}{organization.is_accepting_volunteers?<span className="inline-flex items-center gap-1 rounded-full bg-accent/60 px-3 py-1 text-xs font-semibold text-accent-foreground"><HandHeart aria-hidden="true" className="size-3.5"/>Volunteers welcome</span>:null}</div><h1 className="mt-3 text-3xl font-bold tracking-[-0.03em] text-foreground md:text-5xl">{organization.name}</h1>{location?<p className="mt-2 inline-flex items-center gap-2 text-sm text-muted-foreground"><MapPin aria-hidden="true" className="size-4 text-primary"/>{location}</p>:null}</div>
+      <div className="pb-1"><div className="flex flex-wrap items-center gap-2">{organization.organization_type?<span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{organization.organization_type}</span>:null}{organization.is_verified?<VerificationBadge/>:null}{organization.is_accepting_volunteers?<span className="inline-flex items-center gap-1 rounded-full bg-accent/60 px-3 py-1 text-xs font-semibold text-accent-foreground"><HandHeart aria-hidden="true" className="size-3.5"/>Volunteers welcome</span>:null}</div><h1 className="mt-3 text-3xl font-bold tracking-[-0.03em] text-foreground md:text-5xl">{organization.name}</h1>{location?<p className="mt-2 inline-flex items-center gap-2 text-sm text-muted-foreground"><MapPin aria-hidden="true" className="size-4 text-primary"/>{location}</p>:null}</div>
      </div>
      {canEdit||canVerify?<div className="flex flex-wrap gap-3 pb-1">{canEdit?<Link href={`/organizations/${organization.slug}/edit`} className="inline-flex rounded-xl border border-border bg-background px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-muted">Edit organization</Link>:null}{canVerify?<form action={setOrganizationVerification}><input type="hidden" name="organization_id" value={organization.id}/><input type="hidden" name="slug" value={organization.slug}/><input type="hidden" name="verified" value={organization.is_verified?"false":"true"}/><button type="submit" className="inline-flex rounded-xl border border-primary/25 bg-primary/5 px-5 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10">{organization.is_verified?"Remove verification":"Verify organization"}</button></form>:null}</div>:null}
     </div>
     {organization.short_description?<p className="mt-7 max-w-3xl text-lg leading-8 text-muted-foreground">{organization.short_description}</p>:null}
+    {organization.is_verified?<VerificationNote/>:null}
    </div>
 
    <div className="grid border-t border-border/70 lg:grid-cols-[minmax(0,1fr)_340px]">
