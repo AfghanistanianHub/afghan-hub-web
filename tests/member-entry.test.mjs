@@ -96,6 +96,7 @@ test("dashboard redirects signed-out requests before starting member queries", a
         "@/components/dashboard/recommended-members",
         "@/components/profile/profile-strength",
         "@/components/ui/connection-thread",
+        "@/lib/listing-recommendations",
         "@/lib/member-recommendations",
         "@/lib/opportunities",
         "@/lib/profile-completeness",
