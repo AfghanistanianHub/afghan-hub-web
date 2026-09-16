@@ -256,10 +256,10 @@ export default async function PublicHome() {
         </section>
       ) : null}
 
-      <div className="mx-auto max-w-7xl space-y-20 px-5 py-16 sm:px-8 sm:py-20">
+      <div className="mx-auto max-w-7xl space-y-12 px-5 py-16 sm:space-y-14 sm:px-8 sm:py-20">
         {publicKinds.map((kind, index) => (
           <section key={kind} aria-labelledby={`${kind}-heading`} className="relative">
-            <div className={`grid gap-7 lg:grid-cols-[0.28fr_0.72fr] lg:gap-10 ${index % 2 ? "lg:grid-cols-[0.72fr_0.28fr]" : ""}`}>
+            <div className={`grid gap-7 lg:items-start lg:grid-cols-[0.28fr_0.72fr] lg:gap-10 ${index % 2 ? "lg:grid-cols-[0.72fr_0.28fr]" : ""}`}>
               <div className={index % 2 ? "lg:order-2" : ""}>
                 <div className="sticky top-24 rounded-3xl border border-border/80 bg-muted/45 p-6 sm:p-7">
                   <span className="flex size-12 items-center justify-center rounded-2xl bg-secondary text-primary">
@@ -288,9 +288,26 @@ export default async function PublicHome() {
                     We couldn’t load these listings right now. Please try again shortly.
                   </p>
                 ) : feeds[index].items.length ? (
-                  <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                  <div
+                    className={`grid gap-5 ${
+                      feeds[index].items.length === 1
+                        ? "grid-cols-1"
+                        : feeds[index].items.length === 2
+                          ? "md:grid-cols-2"
+                          : "md:grid-cols-2 xl:grid-cols-3"
+                    }`}
+                  >
                     {feeds[index].items.map(item => (
-                      <ListingCard key={item.slug} item={item} kind={kind} />
+                      <div
+                        key={item.slug}
+                        className={
+                          feeds[index].items.length === 1
+                            ? `w-full max-w-md ${index % 2 ? "lg:ml-auto" : "lg:mr-auto"}`
+                            : ""
+                        }
+                      >
+                        <ListingCard item={item} kind={kind} />
+                      </div>
                     ))}
                   </div>
                 ) : (
