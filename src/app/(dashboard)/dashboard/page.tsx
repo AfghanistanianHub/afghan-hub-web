@@ -10,8 +10,12 @@ import {
   Sparkles,
   UsersRound,
 } from "lucide-react";
+import { RecommendedMembers } from "@/components/dashboard/recommended-members";
+import { ProfileStrength } from "@/components/profile/profile-strength";
 import { ConnectionThread } from "@/components/ui/connection-thread";
+import { rankMemberRecommendations } from "@/lib/member-recommendations";
 import { getUtcDateKey } from "@/lib/opportunities";
+import { getProfileCompleteness } from "@/lib/profile-completeness";
 import { createClient } from "@/lib/supabase/server";
 
 function getOrganizationName(
@@ -76,10 +80,13 @@ export default async function DashboardPage() {
     { data: profile },
     { data: suggestedOpportunities },
     { data: upcomingEvents },
+    { data: memberCandidates },
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("display_name,first_name,headline,city,country")
+      .select(
+        "display_name,first_name,last_name,headline,bio,profession,company,city,province_state,country,skills,languages,avatar_url,linkedin_url,website_url",
+      )
       .eq("id", user.id)
       .single(),
     supabase
@@ -117,6 +124,26 @@ export default async function DashboardPage() {
       .gte("starts_at", now)
       .order("starts_at", { ascending: true })
       .limit(3),
+    supabase
+      .from("profiles")
+      .select(`
+        id,
+        display_name,
+        first_name,
+        last_name,
+        headline,
+        profession,
+        company,
+        city,
+        country,
+        avatar_url,
+        skills
+      `)
+      .eq("is_public", true)
+      .eq("onboarding_completed", true)
+      .neq("id", user.id)
+      .order("display_name", { ascending: true })
+      .limit(24),
   ]);
 
   const displayName =
@@ -131,6 +158,22 @@ export default async function DashboardPage() {
 
   const opportunityCount = suggestedOpportunities?.length ?? 0;
   const eventCount = upcomingEvents?.length ?? 0;
+  const profileStrength = getProfileCompleteness(profile);
+  const recommendedMembers = rankMemberRecommendations(
+    profile,
+    memberCandidates ?? [],
+  );
+  const nextStep = profileStrength.complete
+    ? {
+        kicker: "Next best step",
+        title: "Grow your network",
+        href: "/network",
+      }
+    : {
+        kicker: "Next best step",
+        title: profileStrength.missing[0]?.label ?? "Complete your profile",
+        href: "/profile",
+      };
 
   return (
     <main className="px-4 py-7 md:px-8 md:py-10">
@@ -152,7 +195,7 @@ export default async function DashboardPage() {
               </h1>
 
               <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground md:text-lg">
-                See what is moving, find someone new, and keep your next step close.
+                See what is moving, meet people relevant to you, and keep your next step close.
               </p>
 
               {profile?.headline || location ? (
@@ -202,12 +245,12 @@ export default async function DashboardPage() {
               </Link>
 
               <Link
-                href="/network"
+                href={nextStep.href}
                 className="group col-span-2 flex items-center justify-between gap-4 rounded-2xl bg-primary px-5 py-4 text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 sm:col-span-1 xl:col-span-2"
               >
                 <div>
-                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] opacity-70">Network</p>
-                  <p className="mt-1 font-semibold">Meet someone new</p>
+                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] opacity-70">{nextStep.kicker}</p>
+                  <p className="mt-1 font-semibold">{nextStep.title}</p>
                 </div>
                 <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
@@ -262,6 +305,8 @@ export default async function DashboardPage() {
             })}
           </div>
         </section>
+
+        <RecommendedMembers members={recommendedMembers} />
 
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
           <section className="rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_12px_38px_rgb(15_23_42/0.04)] md:p-7">
@@ -340,31 +385,7 @@ export default async function DashboardPage() {
           </section>
 
           <aside className="space-y-6">
-            <section className="relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-muted/45 p-6">
-              <div aria-hidden="true" className="absolute -right-10 -top-10 size-32 rounded-full border border-primary/10" />
-              <span className="relative flex size-10 items-center justify-center rounded-2xl bg-secondary text-primary">
-                <UsersRound aria-hidden="true" className="size-4.5" />
-              </span>
-              <p className="relative mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-primary">Your profile</p>
-              <h2 className="relative mt-1 text-xl font-bold text-foreground">Make it easier to find you</h2>
-
-              <div className="relative mt-5 flex flex-wrap gap-2 text-xs">
-                <span className={`rounded-full border px-3 py-1.5 ${profile?.headline ? "border-primary/20 bg-primary/5 text-primary" : "border-border bg-background text-muted-foreground"}`}>
-                  {profile?.headline ? "Headline added" : "Add headline"}
-                </span>
-                <span className={`rounded-full border px-3 py-1.5 ${location ? "border-primary/20 bg-primary/5 text-primary" : "border-border bg-background text-muted-foreground"}`}>
-                  {location ? "Location added" : "Add location"}
-                </span>
-              </div>
-
-              <Link
-                href="/profile"
-                className="relative mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary"
-              >
-                Edit profile
-                <ArrowRight aria-hidden="true" className="size-4" />
-              </Link>
-            </section>
+            <ProfileStrength profile={profile} compact />
 
             <section className="rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_12px_38px_rgb(15_23_42/0.04)]">
               <div className="flex items-center justify-between gap-4">
