@@ -13,6 +13,7 @@
     "acceptance:member-pair": "node scripts/member-pair-preflight.mjs",
     "acceptance:journey": "node scripts/member-journey-acceptance.mjs",
     "acceptance:connection-lifecycle": "node scripts/connection-lifecycle-acceptance.mjs",
+    "acceptance:owner-submissions": "node scripts/owner-submission-acceptance.mjs",
     "acceptance:rsvp": "node scripts/event-rsvp-acceptance.mjs",
     "acceptance:roles": "node scripts/role-persona-acceptance.mjs",
     "acceptance:avatar-storage": "node scripts/avatar-storage-acceptance.mjs",
