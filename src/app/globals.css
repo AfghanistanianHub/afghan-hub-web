@@ -127,6 +127,36 @@
   }
 }
 
+/* Keep the public-home catalogue dense and aligned on desktop. The page used
+   to alternate category/content columns and constrain single listing cards,
+   which created large empty areas when a feed contained only zero or one item. */
+@media (min-width: 1024px) {
+  main#main-content section[aria-labelledby$="-heading"] + section[aria-labelledby$="-heading"] {
+    margin-top: 2rem !important;
+  }
+
+  main#main-content section[aria-labelledby$="-heading"] > div {
+    grid-template-columns: minmax(15rem, 0.3fr) minmax(0, 0.7fr) !important;
+    align-items: stretch !important;
+    gap: 2rem !important;
+  }
+
+  main#main-content section[aria-labelledby$="-heading"] > div > div {
+    min-width: 0;
+    order: 0 !important;
+  }
+
+  main#main-content section[aria-labelledby$="-heading"] > div > div:first-child > div {
+    position: static !important;
+    height: 100%;
+  }
+
+  main#main-content section[aria-labelledby$="-heading"] > div > div:nth-child(2) > div.grid > div {
+    width: 100%;
+    max-width: none !important;
+  }
+}
+
 /* Keep form text readable and avoid focus zoom on narrow touch screens. */
 @media (max-width: 767px) {
   :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
