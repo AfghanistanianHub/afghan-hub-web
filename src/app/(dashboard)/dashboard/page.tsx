@@ -10,6 +10,7 @@ import {
   Sparkles,
   UsersRound,
 } from "lucide-react";
+import { ProfileStrength } from "@/components/profile/profile-strength";
 import { ConnectionThread } from "@/components/ui/connection-thread";
 import { getUtcDateKey } from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
@@ -79,7 +80,7 @@ export default async function DashboardPage() {
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("display_name,first_name,headline,city,country")
+      .select("display_name,first_name,last_name,headline,bio,profession,company,city,province_state,country,skills,languages,avatar_url,linkedin_url,website_url")
       .eq("id", user.id)
       .single(),
     supabase
@@ -340,31 +341,7 @@ export default async function DashboardPage() {
           </section>
 
           <aside className="space-y-6">
-            <section className="relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-muted/45 p-6">
-              <div aria-hidden="true" className="absolute -right-10 -top-10 size-32 rounded-full border border-primary/10" />
-              <span className="relative flex size-10 items-center justify-center rounded-2xl bg-secondary text-primary">
-                <UsersRound aria-hidden="true" className="size-4.5" />
-              </span>
-              <p className="relative mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-primary">Your profile</p>
-              <h2 className="relative mt-1 text-xl font-bold text-foreground">Make it easier to find you</h2>
-
-              <div className="relative mt-5 flex flex-wrap gap-2 text-xs">
-                <span className={`rounded-full border px-3 py-1.5 ${profile?.headline ? "border-primary/20 bg-primary/5 text-primary" : "border-border bg-background text-muted-foreground"}`}>
-                  {profile?.headline ? "Headline added" : "Add headline"}
-                </span>
-                <span className={`rounded-full border px-3 py-1.5 ${location ? "border-primary/20 bg-primary/5 text-primary" : "border-border bg-background text-muted-foreground"}`}>
-                  {location ? "Location added" : "Add location"}
-                </span>
-              </div>
-
-              <Link
-                href="/profile"
-                className="relative mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary"
-              >
-                Edit profile
-                <ArrowRight aria-hidden="true" className="size-4" />
-              </Link>
-            </section>
+            <ProfileStrength profile={profile} compact />
 
             <section className="rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_12px_38px_rgb(15_23_42/0.04)]">
               <div className="flex items-center justify-between gap-4">
