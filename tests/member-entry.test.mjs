@@ -89,7 +89,7 @@ test("dashboard redirects signed-out requests before starting member queries", a
     require(name) {
       if (name === "next/navigation") return { redirect: path => { throw new Error(path); } };
       if (name === "@/lib/supabase/server") return { createClient: async () => ({ auth: { getUser: async () => ({ data: { user: null } }) }, from: () => { throw new Error("Member query ran without a user"); } }) };
-      if (["react/jsx-runtime", "next/link", "lucide-react", "@/components/ui/connection-thread", "@/lib/opportunities"].includes(name)) return {};
+      if (["react/jsx-runtime", "next/link", "lucide-react", "@/components/profile/profile-strength", "@/components/ui/connection-thread", "@/lib/opportunities"].includes(name)) return {};
       throw new Error(name);
     },
   });
