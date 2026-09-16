@@ -71,9 +71,13 @@ export function rankMemberRecommendations(
       else if (sameCity && candidate.city) reason = `Also in ${candidate.city}`;
       else if (sameCountry && candidate.country) reason = `Also in ${candidate.country}`;
 
-      return { ...candidate, relevanceScore, reason, index };
+      return { candidate, relevanceScore, reason, index };
     })
     .sort((a, b) => b.relevanceScore - a.relevanceScore || a.index - b.index)
     .slice(0, limit)
-    .map(({ index: _index, ...candidate }) => candidate);
+    .map(({ candidate, relevanceScore, reason }) => ({
+      ...candidate,
+      relevanceScore,
+      reason,
+    }));
 }
