@@ -16,39 +16,39 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       </a>
 
       <header className="sticky top-0 z-40 border-b border-border/80 bg-background/88 backdrop-blur-xl supports-[backdrop-filter]:bg-background/76">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-3.5 sm:px-8">
-          <Link href="/" aria-label="Afghan Hub home" className="group inline-flex items-center gap-3">
-            <span className="relative flex size-9 items-center justify-center overflow-hidden rounded-xl bg-primary text-primary-foreground shadow-sm">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2.5 sm:gap-x-6 sm:gap-y-3 sm:px-8 sm:py-3.5">
+          <Link href="/" aria-label="Afghan Hub home" className="group inline-flex min-w-0 items-center gap-2.5 sm:gap-3">
+            <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-[0.7rem] bg-primary text-primary-foreground shadow-sm sm:size-9 sm:rounded-xl">
               <span aria-hidden="true" className="absolute inset-x-1.5 bottom-1.5 h-1 rounded-full bg-primary-foreground/35" />
-              <span aria-hidden="true" className="text-sm font-black tracking-[-0.08em]">AH</span>
+              <span aria-hidden="true" className="text-[0.78rem] font-black tracking-[-0.08em] sm:text-sm">AH</span>
             </span>
-            <span className="text-sm font-extrabold tracking-[0.15em] text-foreground transition-colors group-hover:text-primary">
+            <span className="truncate text-[0.72rem] font-extrabold tracking-[0.13em] text-foreground transition-colors group-hover:text-primary sm:text-sm sm:tracking-[0.15em]">
               AFGHAN HUB
             </span>
           </Link>
 
           <nav
             aria-label="Public navigation"
-            className="order-3 flex w-full flex-wrap gap-x-1 gap-y-1 text-sm font-medium md:order-none md:w-auto"
+            className="order-3 grid w-full grid-cols-3 gap-1 rounded-xl border border-border/70 bg-muted/35 p-1 text-xs font-semibold sm:flex sm:flex-wrap sm:border-0 sm:bg-transparent sm:p-0 sm:text-sm sm:font-medium md:order-none md:w-auto"
           >
-            <Link href="/explore" className="inline-flex min-h-10 items-center rounded-lg px-3 hover:bg-muted hover:text-primary">
+            <Link href="/explore" className="inline-flex min-h-9 items-center justify-center rounded-lg px-2 text-center hover:bg-background hover:text-primary sm:min-h-10 sm:px-3 sm:hover:bg-muted">
               Explore
             </Link>
-            <Link href="/about" className="inline-flex min-h-10 items-center rounded-lg px-3 hover:bg-muted hover:text-primary">
+            <Link href="/about" className="inline-flex min-h-9 items-center justify-center rounded-lg px-2 text-center hover:bg-background hover:text-primary sm:min-h-10 sm:px-3 sm:hover:bg-muted">
               Our mission
             </Link>
-            <Link href="/dashboard" className="inline-flex min-h-10 items-center rounded-lg px-3 hover:bg-muted hover:text-primary">
+            <Link href="/dashboard" className="inline-flex min-h-9 items-center justify-center rounded-lg px-2 text-center hover:bg-background hover:text-primary sm:min-h-10 sm:px-3 sm:hover:bg-muted">
               Member home
             </Link>
           </nav>
 
-          <div className="flex items-center gap-2 text-sm font-semibold">
-            <Link href="/login" className="inline-flex min-h-10 items-center rounded-lg px-3 hover:bg-muted">
+          <div className="flex shrink-0 items-center gap-1 text-xs font-semibold sm:gap-2 sm:text-sm">
+            <Link href="/login" className="inline-flex min-h-9 items-center rounded-lg px-2.5 hover:bg-muted sm:min-h-10 sm:px-3">
               Sign in
             </Link>
             <Link
               href="/login?mode=join"
-              className="rounded-xl bg-primary px-4 py-2.5 text-primary-foreground shadow-sm hover:bg-primary/90"
+              className="rounded-lg bg-primary px-3 py-2 text-primary-foreground shadow-sm hover:bg-primary/90 sm:rounded-xl sm:px-4 sm:py-2.5"
             >
               Join us
             </Link>
