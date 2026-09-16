@@ -2,11 +2,11 @@
 
 ## Authoritative checkpoint — 2026-09-16
 
-This is the concise continuation checkpoint for Afghan Hub. Detailed evidence lives in GitHub issues/PRs, workflow runs, and Supabase records. On every continuation, verify live `main`, open PRs, CI and Vercel before mutating anything.
+This is the concise continuation checkpoint for Afghan Hub. Detailed evidence lives in GitHub issues/PRs, workflow runs, and Supabase records. On every continuation, verify live `main`, open PRs, CI and Vercel before mutating anything. Do not treat a hard-coded commit SHA in documentation as a permanent source of truth because the documentation merge itself advances `main`.
 
-## Current main / operational state
+## Current operational state
 
-- Current `main`: `d5f5318e6bcffea4c66833a9e7e2a0c603f7157e` (`Run final secondary launch acceptance once (#236)`).
+- Verify the live `main` branch at the start of each continuation; #241 refreshed this checkpoint and later commits may advance it.
 - `main` is still unprotected; #152 remains open.
 - Vercel previews are working.
 - GitHub Actions is currently the active operational blocker: several unrelated jobs terminate before checkout/setup with no workflow steps (`steps: []` / `steps: null`). This is tracked in #239.
@@ -31,9 +31,10 @@ Major shipped product/visual work includes:
 
 Dashboard now uses the reusable `ProfileStrength` component and full completeness fields. Member, opportunity and event recommendations use existing profile/location/skill signals with deterministic fallbacks.
 
-Open product PR:
+Open product work:
 
 - #237 clarifies business/organization trust semantics: `Verified listing`, reusable badge/note, and an explicit statement that verification is not an endorsement or guarantee. It intentionally does not claim member identity verification. Manual review found its regression test is included by the existing `node --test tests/*.test.mjs` CI step. Keep it unmerged until executable CI returns.
+- #243 adds zero-schema related opportunities/events on detail pages using existing type/topic/location/online signals. Vercel build is green; GitHub Actions is blocked by #239, so keep it unmerged until executable CI returns.
 
 Messages, Member Directory, Saved Opportunities, Search, Moderation and My Submissions have already received substantial passes. Avoid redesign churn without a specific UX gap.
 
@@ -132,21 +133,21 @@ Remaining execution evidence:
 5. hosted anonymous protected-route smoke (`/dashboard`, `/messages`, `/update-password` → `/login`);
 6. exact cleanup/restore evidence for any remaining write fixtures.
 
-PR #238 extends the temporary one-shot workflow to run the remaining auth/protected-route evidence alongside owner/discovery/admin suites. Vercel for #238 is successful. Its Node CI is blocked by #239 pre-step GitHub Actions failures; keep #238 open until CI can actually execute.
+PR #242 is the current fresh-main acceptance PR. It extends the temporary one-shot workflow to run auth/sign-out and protected-route smoke alongside owner/discovery/admin suites. It supersedes closed PR #238. Vercel is green; Node CI is blocked by #239 pre-step GitHub Actions failures. Keep #242 unmerged until CI can actually execute.
 
 Do not treat #134 or #136 as cleared for production until #120 evidence is complete and separate production authorization is given.
 
 ## GitHub Actions blocker — #239
 
-Observed on PR #238, the one-shot acceptance workflow and unrelated PRs:
+Observed across #242/#243 and earlier #238, the one-shot acceptance workflow and unrelated PRs:
 
 - jobs fail/cancel before checkout/setup;
 - job step lists are empty;
 - reruns reproduce the same pattern;
-- Vercel succeeds;
+- Vercel succeeds independently;
 - public GitHub status reports Actions operational.
 
-This suggests a repository/account/runner-specific operational problem rather than an application regression, but do not guess the exact cause without evidence. Once jobs can start normally, rerun a representative Node 22/24 matrix first, then run the #120 one-shot acceptance.
+This suggests a repository/account/runner-specific operational problem rather than an application regression, but do not claim an exact billing/entitlement cause without account evidence. Zero-cost-first checks are documented in #239. Once jobs can start normally, rerun a representative Node 22/24 matrix first, then run the #120 one-shot acceptance.
 
 ## Migration reproducibility — #199 CLOSED
 
@@ -222,21 +223,23 @@ Current self-export intentionally contains account/profile data only. Production
 ## Immediate continuation order
 
 1. Check #239 / GitHub Actions runner health.
-2. When Actions can execute steps, get green Node 22/24 CI for #238 and merge it.
+2. When Actions can execute steps, get green Node 22/24 CI for #242 and merge it.
 3. Run the final one-shot #120 acceptance and capture exact cleanup/restore evidence.
 4. Remove the temporary one-shot workflow after evidence is captured.
 5. Close #120 only when all remaining boxes are proven.
 6. Then review #134/#136 production change-control separately; do not auto-apply them.
-7. Merge product PR #237 only after executable CI + Vercel are green.
+7. Merge product PRs #237 and #243 only after executable CI + Vercel are green.
 8. Continue product roadmap with existing-profile-signal personalization/related-content improvements before adding new preference schema.
 
 ## Verified checkpoint
 
-- `main`: `d5f5318e6bcffea4c66833a9e7e2a0c603f7157e`;
+- live `main` must be verified at continuation time rather than trusted from this file;
 - #120 open with majority of behavioral acceptance already passed;
 - #198 closed;
 - #199 closed;
 - PR #237 open (verification trust semantics);
-- PR #238 open (final acceptance evidence consolidation), Vercel green, CI blocked by #239;
+- PR #242 open (final acceptance evidence consolidation), Vercel green, CI blocked by #239;
+- PR #243 open (related opportunities/events), Vercel green, CI blocked by #239;
 - #239 open for pre-checkout Actions failures;
-- production unchanged by the remaining acceptance work.
+- #238 closed/superseded;
+- production unchanged by the remaining acceptance and product work.
