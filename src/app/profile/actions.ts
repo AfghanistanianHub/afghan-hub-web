@@ -26,7 +26,7 @@ function getCommaSeparatedValues(formData: FormData, field: string) {
     const item = rawItem.trim();
     if (!item) continue;
 
-    const normalized = item.toLocaleLowerCase();
+    const normalized = item.toLowerCase();
     if (seen.has(normalized)) continue;
 
     seen.add(normalized);
