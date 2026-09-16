@@ -58,6 +58,10 @@ function opportunityTerms(opportunity: OpportunityCandidate) {
   ]);
 }
 
+function eventTerms(event: EventCandidate) {
+  return termsFromValues([event.title, event.summary]);
+}
+
 function textMatchScore(text: string, terms: string[]) {
   const haystack = normalize(text);
   if (!haystack) return 0;
@@ -108,6 +112,23 @@ function opportunityLocationScore(
   }
   if (sourceCountry && sourceCountry === normalize(candidate.country)) return 2;
   if (source.is_remote && candidate.is_remote) return 1;
+  return 0;
+}
+
+function eventLocationScore(source: EventCandidate, candidate: EventCandidate) {
+  const sourceCity = normalize(source.city);
+  const sourceProvince = normalize(source.province_state);
+  const sourceCountry = normalize(source.country);
+
+  if (sourceCity && sourceCity === normalize(candidate.city)) return 4;
+  if (
+    sourceProvince &&
+    sourceProvince === normalize(candidate.province_state)
+  ) {
+    return 3;
+  }
+  if (sourceCountry && sourceCountry === normalize(candidate.country)) return 2;
+  if (source.is_online && candidate.is_online) return 1;
   return 0;
 }
 
@@ -179,6 +200,35 @@ export function rankEventRecommendations<T extends EventCandidate>(
         titleMatches * 3 +
         summaryMatches * 2 +
         (event.is_online ? 1 : 0);
+
+      return { event, score, index };
+    })
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      const byTime =
+        new Date(a.event.starts_at).getTime() -
+        new Date(b.event.starts_at).getTime();
+      return byTime || a.index - b.index;
+    })
+    .slice(0, limit)
+    .map(({ event }) => event);
+}
+
+export function rankRelatedEvents<T extends EventCandidate>(
+  source: EventCandidate,
+  events: T[],
+  limit = 3,
+) {
+  const terms = eventTerms(source);
+
+  return events
+    .map((event, index) => {
+      const titleMatches = textMatchScore(event.title, terms);
+      const summaryMatches = textMatchScore(event.summary ?? "", terms);
+      const score =
+        eventLocationScore(source, event) +
+        titleMatches * 3 +
+        summaryMatches * 2;
 
       return { event, score, index };
     })
