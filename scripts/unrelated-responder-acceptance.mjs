@@ -40,10 +40,22 @@ async function signIn(label, email, password, expectedRole) {
   return { label, supabase, id: auth.data.user.id };
 }
 
+async function setOnboarding(persona, value) {
+  const result = await persona.supabase
+    .from("profiles")
+    .update({ onboarding_completed: value })
+    .eq("id", persona.id)
+    .select("id,onboarding_completed")
+    .single();
+  assert.ifError(result.error);
+  assert.equal(result.data.onboarding_completed, value);
+}
+
 let a;
 let b;
 let thirdParty;
 let connectionId = null;
+let bOnboardingChanged = false;
 try {
   a = await signIn("Member A", process.env.AUTH_ACCEPTANCE_MEMBER_A_EMAIL.trim(), process.env.AUTH_ACCEPTANCE_MEMBER_A_PASSWORD, "member");
   b = await signIn("Member B", process.env.AUTH_ACCEPTANCE_MEMBER_B_EMAIL.trim(), process.env.AUTH_ACCEPTANCE_MEMBER_B_PASSWORD, "member");
@@ -56,6 +68,28 @@ try {
     .or(`and(requester_id.eq.${a.id},recipient_id.eq.${b.id}),and(requester_id.eq.${b.id},recipient_id.eq.${a.id})`);
   assert.ifError(before.error);
   assert.equal(before.data?.length ?? 0, 0, "Member A/B pair must start clean");
+
+  await setOnboarding(b, false);
+  bOnboardingChanged = true;
+
+  const directoryEligibility = await a.supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", b.id)
+    .eq("is_public", true)
+    .eq("onboarding_completed", true)
+    .maybeSingle();
+  assert.ifError(directoryEligibility.error);
+  assert.equal(directoryEligibility.data, null, "Incomplete Member B unexpectedly appears in the eligible directory query");
+
+  const incompleteRequest = await a.supabase.rpc("send_connection_request", { target_recipient_id: b.id });
+  assert.ok(incompleteRequest.error, "Incomplete Member B unexpectedly accepted a connection request");
+  assert.equal(incompleteRequest.error.code, "P0001");
+  assert.equal(incompleteRequest.error.message, "Recipient is not available for connection requests");
+
+  await setOnboarding(b, true);
+  bOnboardingChanged = false;
+  console.log("PASS incomplete disposable member is excluded from eligible discovery/request flow and onboarding is restored");
 
   const request = await a.supabase.rpc("send_connection_request", { target_recipient_id: b.id });
   assert.ifError(request.error);
@@ -106,6 +140,15 @@ try {
   assert.equal(notificationResidue.data?.length ?? 0, 0, "Request notification residue remains");
   console.log("PASS exact requester cleanup removed connection and notification residue");
 } finally {
+  if (bOnboardingChanged && b?.supabase) {
+    try {
+      await setOnboarding(b, true);
+      console.log("PASS restored Member B onboarding during cleanup");
+    } catch (error) {
+      console.error(`ERROR Member B onboarding restore failed: ${error instanceof Error ? error.message : String(error)}`);
+      process.exitCode = 1;
+    }
+  }
   if (connectionId && a?.supabase) {
     const cleanup = await a.supabase.from("connections").delete().eq("id", connectionId).eq("requester_id", a.id);
     if (cleanup.error) {
