@@ -56,9 +56,15 @@ jobs:
           done
       - name: Qualify non-production target
         run: npm run security:qualify-target
+      - name: Disposable persona auth and sign-out acceptance
+        run: npm run acceptance:auth
       - name: Owner submission acceptance
         run: npm run acceptance:owner-submissions
       - name: Incomplete discovery and unrelated responder acceptance
         run: npm run acceptance:unrelated-responder
       - name: Admin-only listing verification acceptance
         run: npm run acceptance:listing-verification
+      - name: Read-only production protected-route smoke
+        env:
+          SMOKE_BASE_URL: https://app.apnbc.ca
+        run: npm run smoke:public
