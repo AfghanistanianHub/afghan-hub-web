@@ -15,6 +15,12 @@ test("related opportunity ranking is implemented without a new persistence depen
   assert.match(source, /summaryMatches \* 2/);
 });
 
-test("related ranking preserves deterministic source order as the final tie-break", () => {
+test("related event ranking uses topic and location signals with chronological tie-breaking", () => {
+  assert.match(source, /export function rankRelatedEvents/);
+  assert.match(source, /eventLocationScore/);
+  assert.match(source, /new Date\(a\.event\.starts_at\)/);
+});
+
+test("related opportunity ranking preserves deterministic source order as the final tie-break", () => {
   assert.match(source, /b\.score - a\.score \|\| a\.index - b\.index/);
 });
