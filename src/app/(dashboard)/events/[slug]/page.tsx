@@ -2,9 +2,12 @@ import { cancelEventRsvp, rsvpEvent } from "@/app/(dashboard)/events/actions";
 import { DeleteEventButton } from "@/components/events/delete-event-button";
 import Link from "next/link";
 import { buildGoogleCalendarUrl } from "@/lib/calendar";
+import { rankRelatedEvents } from "@/lib/listing-recommendations";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
   CalendarDays,
   ExternalLink,
   MapPin,
@@ -40,13 +43,25 @@ export default async function EventPage({ params, searchParams }: Props) {
   ]) : [{ data: 0 }, { data: null }];
   const rsvpCount = Number(rsvpCountData ?? 0);
   const hasRsvp = Boolean(viewerRsvp);
-  const hasStarted = new Date(event.starts_at) <= new Date();
+  const now = new Date();
+  const hasStarted = new Date(event.starts_at) <= now;
   const isFull = event.capacity !== null && rsvpCount >= event.capacity;
   const location = [event.city,event.province_state,event.country].filter(Boolean).join(", ");
   const calendarLocation = event.is_online ? event.online_url : [event.venue_name,event.address_line,location].filter(Boolean).join(", ");
   const eventUrl = `https://app.apnbc.ca/events/${event.slug}`;
   const googleCalendarUrl = buildGoogleCalendarUrl({ title:event.title, startsAt:event.starts_at, endsAt:event.ends_at, description:event.summary, location:calendarLocation, url:eventUrl });
   const dateParts = formatDateParts(event.starts_at);
+  const { data: relatedCandidates } = event.status === "published"
+    ? await supabase
+        .from("events")
+        .select("id,title,slug,summary,starts_at,city,province_state,country,venue_name,is_online")
+        .eq("status", "published")
+        .neq("id", event.id)
+        .gte("starts_at", now.toISOString())
+        .order("starts_at", { ascending: true })
+        .limit(12)
+    : { data: [] };
+  const relatedEvents = rankRelatedEvents(event, relatedCandidates ?? [], 3);
 
   return <main className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10">
     <Link href="/events" className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition hover:opacity-75"><ArrowLeft aria-hidden="true" className="size-4"/>Back to events</Link>
@@ -117,5 +132,18 @@ export default async function EventPage({ params, searchParams }: Props) {
         </aside>
       </div>
     </section>
+
+    {relatedEvents.length ? <section className="mt-10" aria-labelledby="related-events-heading">
+      <div className="flex items-end justify-between gap-4">
+        <div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Keep exploring</p><h2 id="related-events-heading" className="mt-2 text-2xl font-bold tracking-[-0.025em] text-foreground">Related events</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Upcoming events with similar topics or locations.</p></div>
+        <Link href="/events" className="hidden items-center gap-2 text-sm font-semibold text-primary sm:inline-flex">View all<ArrowRight aria-hidden="true" className="size-4"/></Link>
+      </div>
+      <div className="mt-5 grid gap-4 md:grid-cols-3">{relatedEvents.map((related)=>{const relatedParts=formatDateParts(related.starts_at);const relatedLocation=related.is_online?"Online":[related.venue_name,related.city,related.country].filter(Boolean).join(", ");return <Link key={related.id} href={`/events/${related.slug}`} className="group rounded-[1.5rem] border border-border/80 bg-card p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md">
+        <div className="flex items-start justify-between gap-3"><span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-primary"><CalendarDays aria-hidden="true" className="size-3.5"/>{relatedParts.month} {relatedParts.day}</span><ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground transition group-hover:text-primary"/></div>
+        <h3 className="mt-4 line-clamp-2 text-lg font-bold leading-snug text-foreground group-hover:text-primary">{related.title}</h3>
+        {related.summary?<p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">{related.summary}</p>:null}
+        {relatedLocation?<p className="mt-5 inline-flex items-center gap-1.5 text-xs text-muted-foreground">{related.is_online?<Monitor aria-hidden="true" className="size-3.5 text-primary"/>:<MapPin aria-hidden="true" className="size-3.5 text-primary"/>}{relatedLocation}</p>:null}
+      </Link>})}</div>
+    </section>:null}
   </main>;
 }
