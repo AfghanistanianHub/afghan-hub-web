@@ -157,6 +157,116 @@
   }
 }
 
+/* Make the public-home hero feel native on phones: the desktop orbit remains
+   expressive on larger screens, while mobile uses a compact, readable grid
+   with a separate community feature card instead of overlapping layers. */
+@media (max-width: 639px) {
+  main#main-content > section:first-child > div.relative.mx-auto.grid {
+    gap: 2rem;
+    padding-top: 2.5rem;
+    padding-bottom: 2.75rem;
+  }
+
+  main#main-content > section:first-child > div.relative.mx-auto.grid > div:first-child > div.mt-7.flex.flex-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    line-height: 1.45;
+  }
+
+  main#main-content > section:first-child > div.relative.mx-auto.grid > div:first-child > div.mt-7.flex.flex-wrap > span[aria-hidden="true"] {
+    display: none;
+  }
+
+  main#main-content [aria-label="Explore Afghan Hub categories"] {
+    max-width: 100%;
+  }
+
+  main#main-content [aria-label="Explore Afghan Hub categories"] > div.relative {
+    display: grid;
+    min-height: 0 !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    overflow: hidden;
+    padding: 1rem;
+    border-radius: 1.75rem;
+  }
+
+  main#main-content [aria-label="Explore Afghan Hub categories"] > div.relative > div[aria-hidden="true"] {
+    opacity: 0.42;
+  }
+
+  main#main-content [aria-label="Explore Afghan Hub categories"] > div.relative > a[href="/explore"] {
+    position: relative !important;
+    inset: auto !important;
+    grid-column: 1 / -1;
+    justify-self: center;
+    order: 1;
+    width: 7rem;
+    height: 7rem;
+    transform: none !important;
+    margin: 0.25rem 0 0.5rem;
+  }
+
+  main#main-content [aria-label="Explore Afghan Hub categories"] > div.relative > a[href^="/explore?type="] {
+    position: relative !important;
+    inset: auto !important;
+    order: 2;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0;
+    padding: 0.8rem;
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
+    transform: none !important;
+  }
+
+  main#main-content [aria-label="Explore Afghan Hub categories"] > div.relative > a[href^="/explore?type="] > div {
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  main#main-content [aria-label="Explore Afghan Hub categories"] > div.relative > a[href^="/explore?type="] span.flex {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.7rem;
+  }
+
+  main#main-content [aria-label="Explore Afghan Hub categories"] > div.relative > a[href^="/explore?type="] p.truncate {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    line-height: 1.2;
+  }
+
+  main#main-content [aria-label="Explore Afghan Hub categories"] > div.relative > a[href^="/explore?type="] p:first-child {
+    font-size: 0.72rem;
+  }
+
+  main#main-content [aria-label="Explore Afghan Hub categories"] > div.relative > a[href^="/explore?type="] p:last-child {
+    font-size: 0.61rem;
+  }
+
+  main#main-content [aria-label="Explore Afghan Hub categories"] > div.relative > a.bg-foreground {
+    position: relative !important;
+    inset: auto !important;
+    grid-column: 1 / -1;
+    order: 3;
+    width: 100%;
+    margin-top: 0.15rem;
+    border-radius: 1rem;
+    padding: 0.9rem 1rem;
+    box-shadow: 0 10px 28px rgb(15 23 42 / 0.14);
+  }
+
+  main#main-content [aria-label="Explore Afghan Hub categories"] > div.relative > a.bg-foreground p.truncate {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+}
+
 /* Keep form text readable and avoid focus zoom on narrow touch screens. */
 @media (max-width: 767px) {
   :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
