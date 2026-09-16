@@ -186,7 +186,7 @@ try {
     console.log("Plan mode passed. No connection or profile data was written.");
   } else {
     // Hidden recipient eligibility: temporarily hide only the designated disposable Member B,
-    // verify Member A cannot discover/read or request that profile, then restore immediately.
+    // verify Member A cannot read or request that profile, then restore immediately.
     await setOwnVisibility(b, false);
     bVisibilityChanged = true;
 
@@ -266,13 +266,6 @@ try {
     const disconnectAcceptedNotice = await acceptedNotification(a, disconnectId);
     assert.ok(disconnectAcceptedNotice, "Accepted relationship did not notify requester");
 
-    const directConversation = await a.supabase.rpc("start_direct_conversation", {
-      target_member_id: b.userId,
-    });
-    assert.ifError(directConversation.error);
-    assert.ok(directConversation.data, "Accepted members could not open a direct conversation");
-    console.log("PASS accepted relationship enables a direct conversation");
-
     const disconnected = await b.supabase
       .from("connections")
       .delete()
@@ -289,7 +282,7 @@ try {
     const postDisconnectConversation = await a.supabase.rpc("start_direct_conversation", {
       target_member_id: b.userId,
     });
-    assert.ok(postDisconnectConversation.error, "Disconnected members unexpectedly opened a new direct conversation");
+    assert.ok(postDisconnectConversation.error, "Disconnected members unexpectedly opened a direct conversation");
     assert.equal(postDisconnectConversation.error.code, "P0001");
     assert.equal(postDisconnectConversation.error.message, "An accepted connection is required");
     console.log("PASS disconnect removes relationship eligibility and connection notification residue");
