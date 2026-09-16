@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
-  BadgeCheck,
   BriefcaseBusiness,
   ExternalLink,
   Mail,
@@ -12,6 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { ExternalImage } from "@/components/ui/external-image";
+import { VerificationBadge, VerificationNote } from "@/components/ui/verification-badge";
 import { getMyAccessContext } from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
 
@@ -37,11 +37,12 @@ export default async function BusinessPage({params,searchParams}:BusinessPagePro
     <div className="-mt-14 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
      <div className="flex flex-col gap-5 sm:flex-row sm:items-end">
       {business.logo_url?<ExternalImage src={business.logo_url} alt={`${business.name} logo`} width={112} height={112} className="size-28 rounded-[1.65rem] border-4 border-card object-cover shadow-md"/>:<div className="flex size-28 items-center justify-center rounded-[1.65rem] border-4 border-card bg-primary/10 text-4xl font-bold text-primary shadow-md">{business.name.charAt(0).toUpperCase()}</div>}
-      <div className="pb-1"><div className="flex flex-wrap items-center gap-2">{business.category?<span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{business.category}</span>:null}{business.is_verified?<span className="inline-flex items-center gap-1 rounded-full border border-primary/15 bg-background/90 px-3 py-1 text-xs font-semibold text-primary"><BadgeCheck aria-hidden="true" className="size-4"/>Verified</span>:null}{business.is_hiring?<span className="inline-flex items-center gap-1 rounded-full bg-accent/60 px-3 py-1 text-xs font-semibold text-accent-foreground"><BriefcaseBusiness aria-hidden="true" className="size-3.5"/>Hiring</span>:null}</div><h1 className="mt-3 text-3xl font-bold tracking-[-0.03em] text-foreground md:text-5xl">{business.name}</h1>{location?<p className="mt-2 inline-flex items-center gap-2 text-sm text-muted-foreground"><MapPin aria-hidden="true" className="size-4 text-primary"/>{location}</p>:null}</div>
+      <div className="pb-1"><div className="flex flex-wrap items-center gap-2">{business.category?<span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{business.category}</span>:null}{business.is_verified?<VerificationBadge/>:null}{business.is_hiring?<span className="inline-flex items-center gap-1 rounded-full bg-accent/60 px-3 py-1 text-xs font-semibold text-accent-foreground"><BriefcaseBusiness aria-hidden="true" className="size-3.5"/>Hiring</span>:null}</div><h1 className="mt-3 text-3xl font-bold tracking-[-0.03em] text-foreground md:text-5xl">{business.name}</h1>{location?<p className="mt-2 inline-flex items-center gap-2 text-sm text-muted-foreground"><MapPin aria-hidden="true" className="size-4 text-primary"/>{location}</p>:null}</div>
      </div>
      {canEdit||canVerify?<div className="flex flex-wrap gap-3 pb-1">{canEdit?<Link href={`/businesses/${business.slug}/edit`} className="inline-flex rounded-xl border border-border bg-background px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-muted">Edit business</Link>:null}{canVerify?<form action={setBusinessVerification}><input type="hidden" name="business_id" value={business.id}/><input type="hidden" name="slug" value={business.slug}/><input type="hidden" name="verified" value={business.is_verified?"false":"true"}/><button type="submit" className="inline-flex rounded-xl border border-primary/25 bg-primary/5 px-5 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10">{business.is_verified?"Remove verification":"Verify business"}</button></form>:null}</div>:null}
     </div>
     {business.short_description?<p className="mt-7 max-w-3xl text-lg leading-8 text-muted-foreground">{business.short_description}</p>:null}
+    {business.is_verified?<VerificationNote/>:null}
    </div>
 
    <div className="grid border-t border-border/70 lg:grid-cols-[minmax(0,1fr)_340px]">
