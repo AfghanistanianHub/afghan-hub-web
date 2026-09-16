@@ -6,6 +6,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
   Bookmark,
   BriefcaseBusiness,
   CalendarDays,
@@ -13,6 +15,7 @@ import {
   MapPin,
   Sparkles,
 } from "lucide-react";
+import { rankRelatedOpportunities } from "@/lib/listing-recommendations";
 import {
   formatOpportunityDeadline,
   getUtcDateKey,
@@ -71,16 +74,36 @@ export default async function OpportunityPage({
   const today = getUtcDateKey(new Date());
   const isExpired = hasOpportunityDeadlinePassed(opportunity.deadline, today);
 
-  const { data: savedOpportunity } = user
-    ? await supabase
-        .from("saved_opportunities")
-        .select("opportunity_id")
-        .eq("profile_id", user.id)
-        .eq("opportunity_id", opportunity.id)
-        .maybeSingle()
-    : { data: null };
+  const [{ data: savedOpportunity }, { data: relatedCandidates }] = await Promise.all([
+    user
+      ? supabase
+          .from("saved_opportunities")
+          .select("opportunity_id")
+          .eq("profile_id", user.id)
+          .eq("opportunity_id", opportunity.id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+    opportunity.status === "published"
+      ? supabase
+          .from("opportunities")
+          .select(
+            "id,title,slug,summary,type,city,province_state,country,is_remote,created_at,deadline",
+          )
+          .eq("status", "published")
+          .neq("id", opportunity.id)
+          .or(`deadline.is.null,deadline.gte.${today}`)
+          .order("created_at", { ascending: false })
+          .limit(12)
+      : Promise.resolve({ data: [] }),
+  ]);
+
   const isSaved = Boolean(savedOpportunity);
   const location = [opportunity.city, opportunity.country].filter(Boolean).join(", ");
+  const relatedOpportunities = rankRelatedOpportunities(
+    opportunity,
+    relatedCandidates ?? [],
+    3,
+  );
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10">
@@ -271,6 +294,68 @@ export default async function OpportunityPage({
           </aside>
         </div>
       </section>
+
+      {relatedOpportunities.length ? (
+        <section className="mt-10" aria-labelledby="related-opportunities-heading">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Keep exploring</p>
+              <h2 id="related-opportunities-heading" className="mt-2 text-2xl font-bold tracking-[-0.025em] text-foreground">
+                Related opportunities
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                Similar active opportunities based on type, topic, and location.
+              </p>
+            </div>
+            <Link href="/opportunities" className="hidden items-center gap-2 text-sm font-semibold text-primary sm:inline-flex">
+              View all
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+          </div>
+
+          <div className="mt-5 grid gap-4 md:grid-cols-3">
+            {relatedOpportunities.map((related) => {
+              const relatedLocation = related.is_remote
+                ? "Remote"
+                : [related.city, related.country].filter(Boolean).join(", ");
+
+              return (
+                <Link
+                  key={related.id}
+                  href={`/opportunities/${related.slug}`}
+                  className="group rounded-[1.5rem] border border-border/80 bg-card p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="rounded-full bg-primary/[0.08] px-2.5 py-1 text-[0.68rem] font-semibold capitalize text-primary">
+                      {related.type}
+                    </span>
+                    <ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground transition group-hover:text-primary" />
+                  </div>
+                  <h3 className="mt-4 line-clamp-2 text-lg font-bold leading-snug text-foreground group-hover:text-primary">
+                    {related.title}
+                  </h3>
+                  {related.summary ? (
+                    <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">
+                      {related.summary}
+                    </p>
+                  ) : null}
+                  <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                    {relatedLocation ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <MapPin aria-hidden="true" className="size-3.5 text-primary" />
+                        {relatedLocation}
+                      </span>
+                    ) : null}
+                    {related.deadline ? (
+                      <span>Apply by {formatOpportunityDeadline(related.deadline)}</span>
+                    ) : null}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
     </main>
   );
 }

@@ -32,20 +32,34 @@ function normalize(value?: string | null) {
   return value?.trim().toLocaleLowerCase() ?? "";
 }
 
-function profileTerms(profile: ProfileSignals | null | undefined) {
-  const values = [
-    profile?.profession,
-    profile?.headline,
-    ...(profile?.skills ?? []),
-  ];
-
+function termsFromValues(values: Array<string | null | undefined>, limit = 16) {
   return Array.from(
     new Set(
       values
         .flatMap((value) => normalize(value).split(/[^\p{L}\p{N}+#.]+/u))
         .filter((term) => term.length >= 3),
     ),
-  ).slice(0, 16);
+  ).slice(0, limit);
+}
+
+function profileTerms(profile: ProfileSignals | null | undefined) {
+  return termsFromValues([
+    profile?.profession,
+    profile?.headline,
+    ...(profile?.skills ?? []),
+  ]);
+}
+
+function opportunityTerms(opportunity: OpportunityCandidate) {
+  return termsFromValues([
+    opportunity.title,
+    opportunity.summary,
+    opportunity.type,
+  ]);
+}
+
+function eventTerms(event: EventCandidate) {
+  return termsFromValues([event.title, event.summary]);
 }
 
 function textMatchScore(text: string, terms: string[]) {
@@ -81,6 +95,43 @@ function locationScore(
   return 0;
 }
 
+function opportunityLocationScore(
+  source: OpportunityCandidate,
+  candidate: OpportunityCandidate,
+) {
+  const sourceCity = normalize(source.city);
+  const sourceProvince = normalize(source.province_state);
+  const sourceCountry = normalize(source.country);
+
+  if (sourceCity && sourceCity === normalize(candidate.city)) return 4;
+  if (
+    sourceProvince &&
+    sourceProvince === normalize(candidate.province_state)
+  ) {
+    return 3;
+  }
+  if (sourceCountry && sourceCountry === normalize(candidate.country)) return 2;
+  if (source.is_remote && candidate.is_remote) return 1;
+  return 0;
+}
+
+function eventLocationScore(source: EventCandidate, candidate: EventCandidate) {
+  const sourceCity = normalize(source.city);
+  const sourceProvince = normalize(source.province_state);
+  const sourceCountry = normalize(source.country);
+
+  if (sourceCity && sourceCity === normalize(candidate.city)) return 4;
+  if (
+    sourceProvince &&
+    sourceProvince === normalize(candidate.province_state)
+  ) {
+    return 3;
+  }
+  if (sourceCountry && sourceCountry === normalize(candidate.country)) return 2;
+  if (source.is_online && candidate.is_online) return 1;
+  return 0;
+}
+
 export function rankOpportunityRecommendations<T extends OpportunityCandidate>(
   profile: ProfileSignals | null | undefined,
   opportunities: T[],
@@ -107,6 +158,32 @@ export function rankOpportunityRecommendations<T extends OpportunityCandidate>(
     .map(({ opportunity }) => opportunity);
 }
 
+export function rankRelatedOpportunities<T extends OpportunityCandidate>(
+  source: OpportunityCandidate,
+  opportunities: T[],
+  limit = 3,
+) {
+  const terms = opportunityTerms(source);
+  const sourceType = normalize(source.type);
+
+  return opportunities
+    .map((opportunity, index) => {
+      const titleMatches = textMatchScore(opportunity.title, terms);
+      const summaryMatches = textMatchScore(opportunity.summary ?? "", terms);
+      const sameType = sourceType && sourceType === normalize(opportunity.type) ? 1 : 0;
+      const score =
+        sameType * 6 +
+        opportunityLocationScore(source, opportunity) +
+        titleMatches * 3 +
+        summaryMatches * 2;
+
+      return { opportunity, score, index };
+    })
+    .sort((a, b) => b.score - a.score || a.index - b.index)
+    .slice(0, limit)
+    .map(({ opportunity }) => opportunity);
+}
+
 export function rankEventRecommendations<T extends EventCandidate>(
   profile: ProfileSignals | null | undefined,
   events: T[],
@@ -123,6 +200,35 @@ export function rankEventRecommendations<T extends EventCandidate>(
         titleMatches * 3 +
         summaryMatches * 2 +
         (event.is_online ? 1 : 0);
+
+      return { event, score, index };
+    })
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      const byTime =
+        new Date(a.event.starts_at).getTime() -
+        new Date(b.event.starts_at).getTime();
+      return byTime || a.index - b.index;
+    })
+    .slice(0, limit)
+    .map(({ event }) => event);
+}
+
+export function rankRelatedEvents<T extends EventCandidate>(
+  source: EventCandidate,
+  events: T[],
+  limit = 3,
+) {
+  const terms = eventTerms(source);
+
+  return events
+    .map((event, index) => {
+      const titleMatches = textMatchScore(event.title, terms);
+      const summaryMatches = textMatchScore(event.summary ?? "", terms);
+      const score =
+        eventLocationScore(source, event) +
+        titleMatches * 3 +
+        summaryMatches * 2;
 
       return { event, score, index };
     })
