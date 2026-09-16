@@ -15,25 +15,25 @@ function getOptionalString(formData: FormData, field: string) {
   return cleanedValue.length > 0 ? cleanedValue : null;
 }
 
-function getCommaSeparatedValues(formData: FormData, field: string) {
-  const value = getOptionalString(formData, field);
+function getMentorshipTopics(formData: FormData) {
+  const value = getOptionalString(formData, "mentorship_topics");
   if (!value) return [];
 
   const seen = new Set<string>();
-  const values: string[] = [];
+  const topics: string[] = [];
 
-  for (const rawItem of value.split(",")) {
-    const item = rawItem.trim();
-    if (!item) continue;
+  for (const rawTopic of value.split(",")) {
+    const topic = rawTopic.trim();
+    if (!topic) continue;
 
-    const normalized = item.toLowerCase();
+    const normalized = topic.toLowerCase();
     if (seen.has(normalized)) continue;
 
     seen.add(normalized);
-    values.push(item);
+    topics.push(topic);
   }
 
-  return values;
+  return topics;
 }
 
 export async function saveProfile(formData: FormData) {
@@ -62,9 +62,17 @@ export async function saveProfile(formData: FormData) {
     redirect("/profile?error=Enter%20a%20valid%20website%20URL");
   }
 
-  const languages = getCommaSeparatedValues(formData, "languages");
-  const skills = getCommaSeparatedValues(formData, "skills");
-  const mentorshipTopics = getCommaSeparatedValues(formData, "mentorship_topics");
+  const languages = getOptionalString(formData, "languages")
+    ?.split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  const skills = getOptionalString(formData, "skills")
+    ?.split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  const mentorshipTopics = getMentorshipTopics(formData);
 
   if (mentorshipTopics.length > 12 || mentorshipTopics.some((topic) => topic.length > 60)) {
     redirect("/profile?error=Add%20up%20to%2012%20mentorship%20topics%2C%20each%2060%20characters%20or%20less.");
@@ -97,8 +105,8 @@ export async function saveProfile(formData: FormData) {
     bio,
     linkedin_url: linkedinUrl,
     website_url: websiteUrl,
-    languages,
-    skills,
+    languages: languages ?? [],
+    skills: skills ?? [],
     open_to_mentoring: openToMentoring,
     looking_for_mentor: lookingForMentor,
     mentorship_topics: mentorshipTopics,
