@@ -15,6 +15,7 @@
     "acceptance:connection-lifecycle": "node scripts/connection-lifecycle-acceptance.mjs",
     "acceptance:owner-submissions": "node scripts/owner-submission-acceptance.mjs",
     "acceptance:unrelated-responder": "node scripts/unrelated-responder-acceptance.mjs",
+    "acceptance:listing-verification": "node scripts/listing-verification-acceptance.mjs",
     "acceptance:rsvp": "node scripts/event-rsvp-acceptance.mjs",
     "acceptance:roles": "node scripts/role-persona-acceptance.mjs",
     "acceptance:avatar-storage": "node scripts/avatar-storage-acceptance.mjs",
