@@ -15,7 +15,17 @@ test("Explore listing grid sizes cards from available container width", () => {
   assert.doesNotMatch(source, /md:grid-cols-2 xl:grid-cols-3/);
 });
 
-test("Explore result and sidebar grid children may shrink without overflowing", () => {
-  assert.match(source, /<div className="min-w-0">/);
-  assert.match(source, /<aside className="min-w-0 lg:sticky lg:top-24">/);
+test("Explore search and results stay in normal document flow", () => {
+  assert.doesNotMatch(source, /lg:sticky/);
+  assert.doesNotMatch(source, /lg:grid-cols-\[minmax\(0,1fr\)_20rem\] lg:items-start/);
+  assert.match(source, /<div className="mt-10 min-w-0">/);
+  assert.ok(
+    source.indexOf('Search this category') < source.indexOf('id="results-heading"'),
+    "search controls should render before the results heading",
+  );
+});
+
+test("Explore search controls remain responsive without squeezing result cards", () => {
+  assert.match(source, /sm:grid-cols-\[minmax\(0,1fr\)_auto\]/);
+  assert.match(source, /lg:grid-cols-\[minmax\(0,1fr\)_20rem\]/);
 });

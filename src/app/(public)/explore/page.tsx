@@ -103,76 +103,76 @@ export default async function ExplorePage({ searchParams }: Props) {
       </section>
 
       <section aria-labelledby="results-heading" className="mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-end justify-between gap-5">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
+          <form action="/explore" className="rounded-3xl border border-border bg-card p-5 shadow-sm">
+            <input type="hidden" name="type" value={kind} />
+            <div className="flex items-center gap-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary"><Search aria-hidden="true" className="size-5" /></span>
               <div>
-                <div className="flex items-center gap-3">
-                  <span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-primary"><ActiveIcon aria-hidden="true" className="size-5" /></span>
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Currently browsing</p>
-                    <h2 id="results-heading" className="mt-1 text-3xl font-semibold tracking-tight">{publicCategories[kind].label}</h2>
-                  </div>
-                </div>
-                <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground">{publicCategories[kind].description}</p>
+                <p className="font-semibold">Search this category</p>
+                <p className="text-xs text-muted-foreground">Name, title, or keyword</p>
               </div>
-              {search && <p className="rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground">Search: “{search}”</p>}
             </div>
-
-            <div className="mt-8">
-              {result.unavailable ? (
-                <div role="status" className="rounded-3xl border border-border bg-card p-8 shadow-sm">
-                  <h3 className="font-semibold">Listings are temporarily unavailable.</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">Please try again in a moment.</p>
-                  <Link href={pageHref(page)} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Try again <ArrowRight aria-hidden="true" className="size-4" /></Link>
-                </div>
-              ) : result.items.length ? (
-                <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr))]">
-                  {result.items.map(item => <ListingCard key={item.slug} item={item} kind={kind} />)}
-                </div>
-              ) : (
-                <div className="rounded-3xl border border-dashed border-border bg-card/60 p-8">
-                  <h3 className="font-semibold">{search ? "No listings match your search." : "No listings to show here yet."}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {search ? "Try another name or clear your search." : "Check back for new community listings, or explore another category."}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {!result.unavailable && (page > 1 || result.hasMore) && (
-              <nav aria-label="Pagination" className="mt-10 flex flex-wrap items-center gap-3">
-                {page > 1 && <Link href={pageHref(page - 1)} className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-semibold hover:bg-muted"><ArrowLeft aria-hidden="true" className="size-4" /> Previous</Link>}
-                <span className="rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">Page {page}</span>
-                {result.hasMore && <Link href={pageHref(page + 1)} className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-semibold hover:bg-muted">Next <ArrowRight aria-hidden="true" className="size-4" /></Link>}
-              </nav>
-            )}
-          </div>
-
-          <aside className="min-w-0 lg:sticky lg:top-24">
-            <form action="/explore" className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-              <input type="hidden" name="type" value={kind} />
-              <div className="flex items-center gap-3">
-                <span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-primary"><Search aria-hidden="true" className="size-5" /></span>
-                <div>
-                  <p className="font-semibold">Search this category</p>
-                  <p className="text-xs text-muted-foreground">Name, title, or keyword</p>
-                </div>
-              </div>
-              <label className="mt-5 grid gap-2 text-sm font-medium">
+            <div className="mt-5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+              <label className="grid min-w-0 gap-2 text-sm font-medium">
                 Search {publicCategories[kind].label.toLowerCase()}
                 <input type="search" name="q" defaultValue={search} maxLength={100} placeholder="Type a keyword" className="min-w-0 rounded-xl border border-input bg-background px-4 py-3 outline-offset-2 focus-visible:outline-2" />
               </label>
-              <button className="mt-3 w-full rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Search</button>
-              {search && <Link href={`/explore?type=${kind}`} className="mt-3 block text-center text-sm font-medium text-primary hover:underline">Clear search</Link>}
-            </form>
-
-            <div className="mt-4 rounded-3xl border border-border bg-muted/35 p-5">
-              <p className="text-sm font-semibold">Want to add something?</p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">Join Afghan Hub to contribute listings and connect with other members.</p>
-              <Link href="/login?mode=join" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Join the community <ArrowRight aria-hidden="true" className="size-4" /></Link>
+              <button className="rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Search</button>
             </div>
-          </aside>
+            {search && <Link href={`/explore?type=${kind}`} className="mt-3 inline-flex text-sm font-medium text-primary hover:underline">Clear search</Link>}
+          </form>
+
+          <div className="rounded-3xl border border-border bg-muted/35 p-5">
+            <p className="text-sm font-semibold">Want to add something?</p>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">Join Afghan Hub to contribute listings and connect with other members.</p>
+            <Link href="/login?mode=join" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Join the community <ArrowRight aria-hidden="true" className="size-4" /></Link>
+          </div>
+        </div>
+
+        <div className="mt-10 min-w-0">
+          <div className="flex flex-wrap items-end justify-between gap-5">
+            <div>
+              <div className="flex items-center gap-3">
+                <span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-primary"><ActiveIcon aria-hidden="true" className="size-5" /></span>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Currently browsing</p>
+                  <h2 id="results-heading" className="mt-1 text-3xl font-semibold tracking-tight">{publicCategories[kind].label}</h2>
+                </div>
+              </div>
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground">{publicCategories[kind].description}</p>
+            </div>
+            {search && <p className="rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground">Search: “{search}”</p>}
+          </div>
+
+          <div className="mt-8">
+            {result.unavailable ? (
+              <div role="status" className="rounded-3xl border border-border bg-card p-8 shadow-sm">
+                <h3 className="font-semibold">Listings are temporarily unavailable.</h3>
+                <p className="mt-2 text-sm text-muted-foreground">Please try again in a moment.</p>
+                <Link href={pageHref(page)} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Try again <ArrowRight aria-hidden="true" className="size-4" /></Link>
+              </div>
+            ) : result.items.length ? (
+              <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr))]">
+                {result.items.map(item => <ListingCard key={item.slug} item={item} kind={kind} />)}
+              </div>
+            ) : (
+              <div className="rounded-3xl border border-dashed border-border bg-card/60 p-8">
+                <h3 className="font-semibold">{search ? "No listings match your search." : "No listings to show here yet."}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {search ? "Try another name or clear your search." : "Check back for new community listings, or explore another category."}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {!result.unavailable && (page > 1 || result.hasMore) && (
+            <nav aria-label="Pagination" className="mt-10 flex flex-wrap items-center gap-3">
+              {page > 1 && <Link href={pageHref(page - 1)} className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-semibold hover:bg-muted"><ArrowLeft aria-hidden="true" className="size-4" /> Previous</Link>}
+              <span className="rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">Page {page}</span>
+              {result.hasMore && <Link href={pageHref(page + 1)} className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-semibold hover:bg-muted">Next <ArrowRight aria-hidden="true" className="size-4" /></Link>}
+            </nav>
+          )}
         </div>
       </section>
     </main>
