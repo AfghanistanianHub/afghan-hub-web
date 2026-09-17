@@ -104,7 +104,7 @@ export default async function ExplorePage({ searchParams }: Props) {
 
       <section aria-labelledby="results-heading" className="mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
-          <div>
+          <div className="min-w-0">
             <div className="flex flex-wrap items-end justify-between gap-5">
               <div>
                 <div className="flex items-center gap-3">
@@ -127,7 +127,7 @@ export default async function ExplorePage({ searchParams }: Props) {
                   <Link href={pageHref(page)} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">Try again <ArrowRight aria-hidden="true" className="size-4" /></Link>
                 </div>
               ) : result.items.length ? (
-                <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr))]">
                   {result.items.map(item => <ListingCard key={item.slug} item={item} kind={kind} />)}
                 </div>
               ) : (
@@ -149,7 +149,7 @@ export default async function ExplorePage({ searchParams }: Props) {
             )}
           </div>
 
-          <aside className="lg:sticky lg:top-24">
+          <aside className="min-w-0 lg:sticky lg:top-24">
             <form action="/explore" className="rounded-3xl border border-border bg-card p-5 shadow-sm">
               <input type="hidden" name="type" value={kind} />
               <div className="flex items-center gap-3">
