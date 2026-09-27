@@ -11,7 +11,7 @@ const checks = [
   ["/terms", 200, /info@apnbc\.ca/],
   ["/support", 200, /info@apnbc\.ca/],
   ["/explore?type=events", 200, /Find your next connection/],
-  ["/login?mode=join", 200, /Join Afghan Hub/],
+  ["/login?mode=join", 200, /Create your Afghan Hub account/],
   ["/forgot-password", 200, /Reset your password/],
   ["/robots.txt", 200, /Sitemap: https:\/\/app\.apnbc\.ca\/sitemap\.xml/],
   ["/sitemap.xml", 200, /https:\/\/app\.apnbc\.ca\/about/],

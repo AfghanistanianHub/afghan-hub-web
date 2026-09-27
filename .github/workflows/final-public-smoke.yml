@@ -1,0 +1,27 @@
+name: Final anonymous launch smoke
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/smoke-public.mjs"
+      - ".github/workflows/final-public-smoke.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/smoke-public.mjs"
+      - ".github/workflows/final-public-smoke.yml"
+permissions:
+  contents: read
+jobs:
+  public-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+      - name: Anonymous production release checks
+        env:
+          SMOKE_BASE_URL: https://app.apnbc.ca
+        run: node scripts/smoke-public.mjs
