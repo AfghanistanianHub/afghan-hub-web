@@ -50,11 +50,11 @@ const icons = {
   organizations: UsersRound,
 };
 
-const categoryPosition: Record<PublicKind, string> = {
-  opportunities: "left-[4%] top-[8%] sm:left-[7%] sm:top-[10%]",
-  events: "right-[2%] top-[18%] sm:right-[4%] sm:top-[14%]",
-  businesses: "bottom-[12%] left-[2%] sm:bottom-[10%] sm:left-[6%]",
-  organizations: "bottom-[5%] right-[3%] sm:bottom-[8%] sm:right-[5%]",
+const categoryNodePosition: Record<PublicKind, string> = {
+  opportunities: "left-[6%] top-[12%] sm:left-[3%] sm:top-[18%]",
+  events: "right-[6%] top-[12%] sm:right-[3%] sm:top-[18%]",
+  businesses: "bottom-[12%] left-[6%] sm:bottom-[18%] sm:left-[3%]",
+  organizations: "bottom-[12%] right-[6%] sm:bottom-[18%] sm:right-[3%]",
 };
 
 const categoryKicker: Record<PublicKind, string> = {
@@ -82,7 +82,7 @@ export default async function PublicHome() {
         />
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.025] [background-image:linear-gradient(to_right,var(--foreground)_1px,transparent_1px),linear-gradient(to_bottom,var(--foreground)_1px,transparent_1px)] [background-size:42px_42px]" />
 
-        <div className="relative mx-auto grid max-w-7xl gap-14 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[0.93fr_1.07fr] lg:items-center lg:gap-20 lg:py-28">
+        <div className="relative mx-auto grid max-w-7xl gap-10 px-5 py-12 sm:gap-14 sm:px-8 sm:py-24 lg:grid-cols-[0.93fr_1.07fr] lg:items-center lg:gap-20 lg:py-28">
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary">
               <Sparkles aria-hidden="true" className="size-3.5" />
@@ -110,30 +110,29 @@ export default async function PublicHome() {
                 Join Afghan Hub
               </Link>
             </div>
-            <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium text-muted-foreground">
+            <div className="mt-7 grid gap-1.5 text-xs font-medium text-muted-foreground sm:flex sm:flex-wrap sm:gap-x-5 sm:gap-y-2">
               <span>No account needed to explore</span>
-              <span aria-hidden="true">•</span>
+              <span aria-hidden="true" className="hidden sm:inline">•</span>
               <span>Built for Afghan community connections</span>
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-2xl lg:mx-0" aria-label="Explore Afghan Hub categories">
-            <div aria-hidden="true" className="absolute -inset-8 rounded-[3rem] bg-primary/5 blur-3xl" />
-            <div className="relative min-h-[410px] overflow-hidden rounded-[2.25rem] border border-border/80 bg-card/82 p-5 shadow-[0_24px_70px_rgb(15_23_42/0.09)] backdrop-blur sm:min-h-[500px] sm:p-7">
-              <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_50%_47%,color-mix(in_oklab,var(--primary)_11%,transparent),transparent_24%),radial-gradient(circle_at_23%_18%,color-mix(in_oklab,var(--accent)_75%,transparent),transparent_23%)]" />
-              <div aria-hidden="true" className="absolute left-1/2 top-1/2 size-[250px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/10 sm:size-[330px]" />
-              <div aria-hidden="true" className="absolute left-1/2 top-1/2 size-[150px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-primary/20 sm:size-[205px]" />
-              <div aria-hidden="true" className="absolute left-1/2 top-1/2 h-px w-[72%] -translate-x-1/2 -rotate-[24deg] bg-gradient-to-r from-transparent via-primary/15 to-transparent" />
-              <div aria-hidden="true" className="absolute left-1/2 top-1/2 h-px w-[72%] -translate-x-1/2 rotate-[31deg] bg-gradient-to-r from-transparent via-primary/15 to-transparent" />
+          <div className="relative mx-auto w-full max-w-xl lg:mx-0" aria-label="Explore Afghan Hub categories">
+            <div aria-hidden="true" className="pointer-events-none absolute inset-[12%] rounded-full bg-primary/7 blur-3xl" />
+            <div className="relative mx-auto flex aspect-square w-full max-w-[430px] items-center justify-center">
+              <div aria-hidden="true" className="absolute inset-[8%] rounded-full border border-primary/10" />
+              <div aria-hidden="true" className="absolute inset-[22%] rounded-full border border-dashed border-primary/20" />
+              <div aria-hidden="true" className="absolute left-1/2 top-1/2 h-px w-[76%] -translate-x-1/2 -rotate-[26deg] bg-gradient-to-r from-transparent via-primary/12 to-transparent" />
+              <div aria-hidden="true" className="absolute left-1/2 top-1/2 h-px w-[76%] -translate-x-1/2 rotate-[31deg] bg-gradient-to-r from-transparent via-primary/12 to-transparent" />
 
               <Link
                 href="/explore"
-                className="group absolute left-1/2 top-1/2 z-10 flex size-32 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-primary/15 bg-background/95 text-center shadow-[0_16px_50px_rgb(15_23_42/0.12)] transition-transform hover:scale-[1.03] sm:size-40"
+                className="group relative z-10 flex size-36 flex-col items-center justify-center rounded-full border border-primary/15 bg-background/96 text-center shadow-[0_18px_55px_rgb(15_23_42/0.10)] transition-[transform,box-shadow] hover:scale-[1.025] hover:shadow-[0_20px_60px_rgb(15_23_42/0.13)] sm:size-44"
               >
-                <span className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-primary">Afghan</span>
-                <span className="mt-0.5 text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">Hub</span>
-                <span className="mt-2 inline-flex items-center gap-1 text-[0.65rem] font-medium text-muted-foreground group-hover:text-primary">
-                  Explore <ArrowUpRight aria-hidden="true" className="size-3" />
+                <span className="text-[0.66rem] font-semibold uppercase tracking-[0.24em] text-primary">Afghan</span>
+                <span className="mt-0.5 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">Hub</span>
+                <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-muted-foreground group-hover:text-primary">
+                  Explore <ArrowUpRight aria-hidden="true" className="size-3.5" />
                 </span>
               </Link>
 
@@ -143,34 +142,20 @@ export default async function PublicHome() {
                   <Link
                     key={kind}
                     href={`/explore?type=${kind}`}
-                    className={`group absolute z-20 w-[42%] max-w-[190px] rounded-2xl border border-border/80 bg-background/92 p-3.5 shadow-[0_10px_35px_rgb(15_23_42/0.07)] backdrop-blur transition-[transform,border-color,box-shadow] hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_14px_38px_rgb(15_23_42/0.11)] sm:p-4 ${categoryPosition[kind]}`}
+                    aria-label={`${publicCategories[kind].label}: ${categoryKicker[kind]}`}
+                    className={`group absolute z-20 flex size-11 items-center justify-center rounded-full border border-border/80 bg-background/94 text-primary shadow-[0_9px_28px_rgb(15_23_42/0.08)] backdrop-blur transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_12px_32px_rgb(15_23_42/0.12)] sm:size-12 ${categoryNodePosition[kind]}`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
-                        <Icon aria-hidden="true" className="size-4.5" />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="truncate text-xs font-semibold">{publicCategories[kind].label}</p>
-                        <p className="mt-0.5 truncate text-[0.65rem] text-muted-foreground">{categoryKicker[kind]}</p>
-                      </div>
-                    </div>
+                    <Icon aria-hidden="true" className="size-4.5 sm:size-5" />
+                    <span className="pointer-events-none absolute top-full mt-2 hidden whitespace-nowrap text-[0.65rem] font-semibold text-muted-foreground transition-colors group-hover:text-primary sm:block">
+                      {publicCategories[kind].label}
+                    </span>
                   </Link>
                 );
               })}
-
-              {pulseItems[0] ? (
-                <Link
-                  href={publicHref(pulseItems[0].kind, pulseItems[0].item.slug)}
-                  className="absolute inset-x-5 bottom-5 z-30 flex items-center justify-between gap-4 rounded-2xl border border-border/80 bg-foreground px-4 py-3.5 text-background shadow-lg sm:inset-x-7 sm:px-5"
-                >
-                  <div className="min-w-0">
-                    <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] opacity-65">From the community</p>
-                    <p className="mt-1 truncate text-sm font-semibold">{pulseItems[0].item.title}</p>
-                  </div>
-                  <ArrowUpRight aria-hidden="true" className="size-4 shrink-0 opacity-70" />
-                </Link>
-              ) : null}
             </div>
+            <p className="mx-auto mt-2 max-w-sm text-center text-xs leading-5 text-muted-foreground sm:mt-4">
+              Start at the hub, then browse opportunities, events, businesses, and organizations below.
+            </p>
           </div>
         </div>
       </section>
