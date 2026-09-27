@@ -5,6 +5,8 @@ import type { RecommendedMember } from "@/lib/member-recommendations";
 
 type RecommendedMembersProps = {
   members: RecommendedMember[];
+  eyebrow?: string;
+  title?: string;
 };
 
 function getMemberName(member: RecommendedMember) {
@@ -24,7 +26,11 @@ function getInitials(name: string) {
     .join("");
 }
 
-export function RecommendedMembers({ members }: RecommendedMembersProps) {
+export function RecommendedMembers({
+  members,
+  eyebrow = "People worth meeting",
+  title = "Relevant people from the community",
+}: RecommendedMembersProps) {
   if (!members.length) return null;
 
   return (
@@ -32,10 +38,10 @@ export function RecommendedMembers({ members }: RecommendedMembersProps) {
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-            People worth meeting
+            {eyebrow}
           </p>
           <h2 className="mt-2 text-xl font-bold tracking-[-0.02em] text-foreground">
-            Relevant people from the community
+            {title}
           </h2>
         </div>
         <Link
