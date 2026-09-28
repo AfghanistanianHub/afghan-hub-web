@@ -62,7 +62,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
               <h1 className="mt-3 break-words text-3xl font-bold tracking-[-0.035em]">{displayName}</h1>
               {profile?.headline ? <p className="mt-3 text-sm leading-6 text-muted-foreground">{profile.headline}</p> : <p className="mt-3 text-sm leading-6 text-muted-foreground">Add a headline so people can understand what you do at a glance.</p>}
 
-              <div className="mt-7 rounded-[1.65rem] border border-border/80 bg-background/78 p-4 shadow-sm backdrop-blur-sm">
+              <div className="mt-7">
                 <AvatarUpload userId={user.id} currentAvatarUrl={profile?.avatar_url} />
               </div>
 
@@ -129,7 +129,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                 </fieldset>
 
                 <div className="sticky bottom-3 z-10 rounded-2xl border border-border/80 bg-card/92 p-3 shadow-lg backdrop-blur sm:bottom-4">
-                  <PendingSubmitButton pendingLabel="Saving profile…" className="w-full rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Save profile</PendingSubmitButton>
+                  <PendingSubmitButton pendingLabel="Saving profile…" className="w-full rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Save profile</PendingSubmitButton>
                 </div>
               </form>
             </section>
