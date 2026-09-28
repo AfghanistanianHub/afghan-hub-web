@@ -184,12 +184,12 @@ export default async function EditOrganizationPage({
                 <input name="country" type="text" defaultValue={organization.country ?? ""} className={fieldClassName} />
               </label>
 
-              <label className="flex items-center gap-3 rounded-2xl border border-border/80 bg-secondary/40 px-4 py-3 transition hover:border-primary/20 md:self-end">
+              <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border/80 bg-secondary/40 px-4 py-3 transition hover:border-primary/25 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15 md:self-end">
                 <input
                   name="is_accepting_volunteers"
                   type="checkbox"
                   defaultChecked={organization.is_accepting_volunteers}
-                  className="size-4 rounded border-border accent-[var(--primary)]"
+                  className="size-5 shrink-0 rounded border-border accent-[var(--primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 />
                 <span className="text-sm font-medium text-foreground">Accepting volunteers</span>
               </label>

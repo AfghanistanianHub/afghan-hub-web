@@ -135,8 +135,8 @@ export default async function EditOpportunityPage({
           <input id="country" name="country" type="text" defaultValue={opportunity.country ?? ""} className={fieldClassName} />
         </div>
 
-        <label className="flex items-center gap-3 rounded-2xl border border-border/80 bg-secondary/40 px-4 py-3 transition hover:border-primary/20">
-          <input name="is_remote" type="checkbox" defaultChecked={opportunity.is_remote} className="size-4 rounded border-border accent-[var(--primary)]" />
+        <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border/80 bg-secondary/40 px-4 py-3 transition hover:border-primary/25 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15">
+          <input name="is_remote" type="checkbox" defaultChecked={opportunity.is_remote} className="size-5 shrink-0 rounded border-border accent-[var(--primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
           <span className="text-sm font-medium text-foreground">Remote opportunity</span>
         </label>
 

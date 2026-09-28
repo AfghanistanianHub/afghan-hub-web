@@ -91,8 +91,8 @@ export default async function NewOpportunityPage() {
           </div>
         </div>
 
-        <label className="flex items-center gap-3 rounded-2xl border border-border/80 bg-secondary/40 p-4 transition hover:border-primary/20">
-          <input name="is_remote" type="checkbox" className="size-4 rounded border-input accent-primary" />
+        <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border/80 bg-secondary/40 p-4 transition hover:border-primary/25 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15">
+          <input name="is_remote" type="checkbox" className="size-5 shrink-0 rounded border-input accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
           <span className="text-sm font-medium text-foreground">Remote opportunity</span>
         </label>
 

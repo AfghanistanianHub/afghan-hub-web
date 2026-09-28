@@ -204,7 +204,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
           {hasFilters ? (
             <Link
               href="/opportunities"
-              className="rounded-2xl border border-border bg-card px-4 py-3 font-semibold text-foreground transition hover:bg-accent"
+              className="rounded-2xl border border-border bg-card px-4 py-3 font-semibold text-foreground transition hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               Clear
             </Link>
@@ -226,7 +226,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
 
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
         {error ? (
-          <div role="alert" className="rounded-3xl border border-destructive/25 bg-destructive/[0.06] p-8 text-center">
+          <div role="alert" className="relative overflow-hidden rounded-[1.75rem] border border-destructive/25 bg-destructive/[0.05] p-8 text-center"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-destructive/[0.06] blur-3xl"/>
             <h2 className="text-xl font-semibold text-destructive">We could not load opportunities</h2>
             <p className="mt-2 text-sm text-destructive/80">Please try again in a moment.</p>
           </div>
@@ -235,7 +235,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
             <Link
               key={opportunity.id}
               href={`/opportunities/${opportunity.slug}`}
-              className="group relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)] transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.07)]"
+              className="group relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)] transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.07)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               <div aria-hidden="true" className="absolute -right-10 -top-10 size-28 rounded-full border border-primary/10" />
               <div className="relative flex flex-wrap items-center gap-2">
@@ -270,18 +270,18 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
             </Link>
           ))
         ) : (
-          <div className="rounded-3xl border border-border bg-card p-12 text-center shadow-sm">
-            <h2 className="text-2xl font-semibold text-foreground">
+          <div className="relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-12 text-center shadow-[0_14px_42px_rgb(15_23_42/0.04)]"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-primary/[0.06] blur-3xl"/><span className="relative mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><BriefcaseBusiness aria-hidden="true" className="size-7"/></span>
+            <h2 className="relative mt-5 text-2xl font-semibold text-foreground">
               {hasFilters ? "No opportunities match these filters" : "No opportunities yet"}
             </h2>
-            <p className="mt-3 text-muted-foreground">
+            <p className="relative mx-auto mt-3 max-w-md text-muted-foreground">
               {hasFilters ? "Try adjusting or clearing your filters." : "The first opportunities will appear here."}
             </p>
 
             {hasFilters ? (
               <Link
                 href="/opportunities"
-                className="mt-5 inline-flex rounded-2xl border border-border px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-accent"
+                className="relative mt-5 inline-flex rounded-2xl border border-border px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 Clear filters
               </Link>
