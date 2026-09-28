@@ -294,14 +294,14 @@ export default async function DashboardPage() {
                 <Link
                   key={action.href}
                   href={action.href}
-                  className={`group relative overflow-hidden rounded-[1.65rem] border border-border/80 p-5 transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md ${featured ? "bg-foreground text-background md:row-span-2 xl:col-span-2" : "bg-card"}`}
+                  className={`group relative overflow-hidden rounded-[1.65rem] border border-border/80 p-5 transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md ${featured ? "bg-primary text-primary-foreground md:row-span-2 xl:col-span-2 shadow-[0_18px_42px_color-mix(in_oklab,var(--primary)_16%,transparent)]" : "bg-card"}`}
                 >
-                  <div aria-hidden="true" className={`absolute -right-8 -top-8 size-28 rounded-full border ${featured ? "border-background/10" : "border-primary/10"}`} />
-                  <div aria-hidden="true" className={`absolute right-5 top-10 size-12 rounded-full border ${featured ? "border-background/10" : "border-primary/10"}`} />
+                  <div aria-hidden="true" className={`absolute -right-8 -top-8 size-28 rounded-full border ${featured ? "border-primary-foreground/12" : "border-primary/10"}`} />
+                  <div aria-hidden="true" className={`absolute right-5 top-10 size-12 rounded-full border ${featured ? "border-primary-foreground/12" : "border-primary/10"}`} />
 
                   <div className="relative flex h-full flex-col justify-between">
                     <div className="flex items-start justify-between gap-4">
-                      <span className={`flex size-11 items-center justify-center rounded-2xl ${featured ? "bg-background/10" : "bg-secondary text-primary"}`}>
+                      <span className={`flex size-11 items-center justify-center rounded-2xl ${featured ? "bg-primary-foreground/12" : "bg-secondary text-primary"}`}>
                         <Icon aria-hidden="true" className="size-5" />
                       </span>
                       <ArrowUpRight aria-hidden="true" className={`size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 ${featured ? "opacity-65" : "text-muted-foreground group-hover:text-primary"}`} />
