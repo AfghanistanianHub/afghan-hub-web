@@ -101,7 +101,7 @@ export default async function MessagesPage() {
             </p>
             <Link
               href="/network"
-              className="mt-6 inline-flex rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className="mt-6 inline-flex rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               Browse the network
             </Link>
@@ -142,7 +142,7 @@ export default async function MessagesPage() {
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-4">
-                      <h2 className={`truncate text-foreground ${unreadCount > 0 ? "font-bold" : "font-semibold"}`}>
+                      <h2 className={`line-clamp-2 break-words leading-5 text-foreground ${unreadCount > 0 ? "font-bold" : "font-semibold"}`}>
                         {memberName}
                       </h2>
                       <span className="shrink-0 text-xs text-muted-foreground">{formatMessageTime(sortDate)}</span>
