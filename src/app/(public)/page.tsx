@@ -269,9 +269,7 @@ export default async function PublicHome() {
 
               <div className={index % 2 ? "lg:order-1" : ""}>
                 {feeds[index].unavailable ? (
-                  <p role="status" className="rounded-3xl border border-border p-6 text-sm text-muted-foreground">
-                    We couldn’t load these listings right now. Please try again shortly.
-                  </p>
+                  <div role="status" aria-live="polite" className="relative overflow-hidden rounded-3xl border border-border/80 bg-card p-6 text-sm text-muted-foreground shadow-[0_10px_30px_rgb(15_23_42/0.03)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"/><p className="relative font-medium text-foreground">Listings are temporarily unavailable.</p><p className="relative mt-2 leading-6">Please try again shortly.</p></div>
                 ) : feeds[index].items.length ? (
                   <div
                     className={`grid gap-5 ${
