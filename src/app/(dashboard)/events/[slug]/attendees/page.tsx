@@ -119,9 +119,9 @@ export default async function EventAttendeesPage({ params }: Props) {
     <main className="mx-auto max-w-5xl px-6 py-10">
       <Link
         href={`/events/${event.slug}`}
-        className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-primary"
+        className="inline-flex items-center gap-2 rounded-sm text-sm font-medium text-muted-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
-        <ArrowLeft className="size-4" />
+        <ArrowLeft aria-hidden="true" className="size-4" />
         Back to event
       </Link>
 
@@ -141,7 +141,7 @@ export default async function EventAttendeesPage({ params }: Props) {
 
           <Link
             href={`/events/${event.slug}/edit`}
-            className="rounded-2xl border border-border/80 bg-background/80 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted"
+            className="rounded-2xl border border-border/80 bg-background/80 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
             Edit event
           </Link>
@@ -149,12 +149,12 @@ export default async function EventAttendeesPage({ params }: Props) {
 
         <div className="mt-6 flex flex-wrap gap-3 text-sm text-muted-foreground">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5">
-            <CalendarDays className="size-4 text-primary" />
+            <CalendarDays aria-hidden="true" className="size-4 text-primary" />
             {formatDateTime(event.starts_at)}
           </span>
           {location ? (
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5">
-              <MapPin className="size-4 text-primary" />
+              <MapPin aria-hidden="true" className="size-4 text-primary" />
               {location}
             </span>
           ) : null}
@@ -179,7 +179,7 @@ export default async function EventAttendeesPage({ params }: Props) {
             </p>
           </div>
           <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary">
-            <UsersRound className="size-4" />
+            <UsersRound aria-hidden="true" className="size-4" />
             {attendeeCount}
           </span>
         </div>
@@ -196,7 +196,7 @@ export default async function EventAttendeesPage({ params }: Props) {
                     className="flex items-center gap-4 py-5 first:pt-0 last:pb-0"
                   >
                     <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground">
-                      <UserRound className="size-5" />
+                      <UserRound aria-hidden="true" className="size-5" />
                     </div>
                     <div>
                       <p className="font-semibold text-foreground">Private member</p>
@@ -229,14 +229,14 @@ export default async function EventAttendeesPage({ params }: Props) {
                       />
                     ) : (
                       <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary font-bold text-primary">
-                        {getInitials(memberName) || <UserRound className="size-5" />}
+                        {getInitials(memberName) || <UserRound aria-hidden="true" className="size-5" />}
                       </div>
                     )}
 
                     <div className="min-w-0">
-                      <p className="truncate font-semibold text-foreground">{memberName}</p>
+                      <p className="break-words font-semibold text-foreground">{memberName}</p>
                       {profile.headline ? (
-                        <p className="mt-1 truncate text-sm text-muted-foreground">
+                        <p className="mt-1 line-clamp-2 break-words text-sm leading-5 text-muted-foreground">
                           {profile.headline}
                         </p>
                       ) : null}
@@ -249,7 +249,7 @@ export default async function EventAttendeesPage({ params }: Props) {
 
                   <Link
                     href={`/members/${profile.id}`}
-                    className="rounded-2xl border border-border/80 bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted"
+                    className="rounded-2xl border border-border/80 bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                   >
                     View profile
                   </Link>
@@ -259,7 +259,7 @@ export default async function EventAttendeesPage({ params }: Props) {
           </div>
         ) : (
           <div className="mt-6 rounded-2xl border border-dashed border-border bg-muted/30 px-6 py-12 text-center">
-            <UsersRound className="mx-auto size-10 text-muted-foreground" />
+            <UsersRound aria-hidden="true" className="mx-auto size-10 text-muted-foreground" />
             <h3 className="mt-3 font-semibold text-foreground">No registrations yet</h3>
             <p className="mt-2 text-sm text-muted-foreground">
               Members who register for this event will appear here.

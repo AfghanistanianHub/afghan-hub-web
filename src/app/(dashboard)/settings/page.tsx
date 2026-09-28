@@ -83,7 +83,7 @@ export default async function SettingsPage({
                 <span className="min-w-0"><span className="block font-semibold text-foreground">Show my profile in the community</span><span className="mt-1 block text-sm leading-6 text-muted-foreground">Turn this off to hide your profile from public member listings.</span></span>
               </label>
 
-              <div className="mt-6 flex justify-end"><PendingSubmitButton pendingLabel="Saving settings…" className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Save settings</PendingSubmitButton></div>
+              <div className="mt-6 flex justify-end"><PendingSubmitButton pendingLabel="Saving settings…" className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Save settings</PendingSubmitButton></div>
             </form>
           </div>
 
@@ -94,7 +94,7 @@ export default async function SettingsPage({
               <h2 className="relative mt-2 text-xl font-semibold">Take a copy with you</h2>
               <p className="relative mt-3 text-sm leading-6 text-muted-foreground">Download your account details and profile as JSON. Messages, connections, contributions, saved items, RSVPs and uploaded files are outside this download.</p>
               <div className="relative mt-5"><AccountExportButton /></div>
-              <p className="relative mt-4 text-xs leading-5 text-muted-foreground">For a wider data request or account deletion, <Link href="/support" className="font-semibold text-primary underline underline-offset-4">contact support</Link>.</p>
+              <p className="relative mt-4 text-xs leading-5 text-muted-foreground">For a wider data request or account deletion, <Link href="/support" className="rounded-sm font-semibold text-primary underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">contact support</Link>.</p>
             </section>
 
             <section className="rounded-[1.75rem] border border-border bg-card p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)]">

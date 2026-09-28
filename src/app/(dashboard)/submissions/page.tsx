@@ -158,7 +158,7 @@ export default async function SubmissionsPage() {
 
         <section className="mt-10">
           <div className={sectionHeadingClass}>
-            <BriefcaseBusiness className="size-5 text-primary" />
+            <BriefcaseBusiness aria-hidden="true" className="size-5 text-primary" />
             <h2 className="text-xl font-bold text-foreground">Opportunities</h2>
             <span className={countClass}>{opportunities?.length ?? 0}</span>
           </div>
@@ -194,7 +194,7 @@ export default async function SubmissionsPage() {
 
         <section className="mt-12">
           <div className={sectionHeadingClass}>
-            <Building2 className="size-5 text-primary" />
+            <Building2 aria-hidden="true" className="size-5 text-primary" />
             <h2 className="text-xl font-bold text-foreground">Businesses</h2>
             <span className={countClass}>{businesses?.length ?? 0}</span>
           </div>
@@ -225,7 +225,7 @@ export default async function SubmissionsPage() {
 
         <section className="mt-12">
           <div className={sectionHeadingClass}>
-            <UsersRound className="size-5 text-primary" />
+            <UsersRound aria-hidden="true" className="size-5 text-primary" />
             <h2 className="text-xl font-bold text-foreground">Organizations</h2>
             <span className={countClass}>{organizations?.length ?? 0}</span>
           </div>
@@ -256,7 +256,7 @@ export default async function SubmissionsPage() {
 
         <section className="mt-12">
           <div className={sectionHeadingClass}>
-            <CalendarDays className="size-5 text-primary" />
+            <CalendarDays aria-hidden="true" className="size-5 text-primary" />
             <h2 className="text-xl font-bold text-foreground">Events</h2>
             <span className={countClass}>{events?.length ?? 0}</span>
           </div>
@@ -319,7 +319,7 @@ function SubmissionCard({
         <span
           className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${presentation.className}`}
         >
-          <StatusIcon className="size-3.5" />
+          <StatusIcon aria-hidden="true" className="size-3.5" />
           {presentation.label}
         </span>
         <span className="text-xs capitalize text-muted-foreground">{meta}</span>
@@ -327,7 +327,7 @@ function SubmissionCard({
 
       <Link
         href={detailHref}
-        className={`mt-4 block text-xl font-bold text-foreground transition hover:text-primary ${focusClass}`}
+        className={`mt-4 block break-words text-xl font-bold text-foreground transition hover:text-primary ${focusClass}`}
       >
         {title}
       </Link>
@@ -355,7 +355,7 @@ function SubmissionCard({
           href={editHref}
           className={`inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-muted ${focusClass}`}
         >
-          <Pencil className="size-3.5" /> Edit
+          <Pencil aria-hidden="true" className="size-3.5" /> Edit
         </Link>
       </div>
     </article>

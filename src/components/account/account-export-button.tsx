@@ -42,11 +42,11 @@ export function AccountExportButton() {
   return (
     <div>
       <button type="button" onClick={download} disabled={pending} aria-busy={pending}
-        className="rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold transition hover:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary disabled:cursor-wait disabled:opacity-60">
+        className="rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary disabled:cursor-wait disabled:opacity-60">
         {pending ? "Preparing download…" : "Download account and profile"}
       </button>
       <p role={failed ? "alert" : "status"} aria-live={failed ? "assertive" : "polite"}
-        className="mt-3 text-sm leading-6 text-muted-foreground">{message}</p>
+        className={failed ? "mt-3 rounded-xl border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm leading-6 text-destructive" : "mt-3 rounded-xl border border-primary/15 bg-primary/[0.05] px-3 py-2 text-sm leading-6 text-primary"}>{message}</p>
     </div>
   );
 }
