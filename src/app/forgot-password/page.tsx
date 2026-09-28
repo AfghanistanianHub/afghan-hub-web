@@ -31,8 +31,8 @@ export default async function ForgotPasswordPage({
 
         <div className="relative z-10 grid grid-cols-3 gap-3 text-center text-xs text-muted-foreground">
           <div className="rounded-2xl border border-primary/10 bg-background/72 px-3 py-4"><span className="block text-lg font-bold text-foreground">1</span><span className="mt-1 block">Enter email</span></div>
-          <div className="rounded-2xl border border-primary/10 bg-background/72 px-3 py-4"><span className="block text-lg font-bold text-background">2</span><span className="mt-1 block">Open secure link</span></div>
-          <div className="rounded-2xl border border-primary/10 bg-background/72 px-3 py-4"><span className="block text-lg font-bold text-background">3</span><span className="mt-1 block">Choose password</span></div>
+          <div className="rounded-2xl border border-primary/10 bg-background/72 px-3 py-4"><span className="block text-lg font-bold text-foreground">2</span><span className="mt-1 block">Open secure link</span></div>
+          <div className="rounded-2xl border border-primary/10 bg-background/72 px-3 py-4"><span className="block text-lg font-bold text-foreground">3</span><span className="mt-1 block">Choose password</span></div>
         </div>
       </section>
 
