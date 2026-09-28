@@ -140,8 +140,8 @@ export default async function NetworkPage() {
           ) : null}
 
           {error ? (
-            <div role="status" className="rounded-2xl border border-destructive/20 bg-destructive/[0.05] p-4 text-sm text-destructive">
-              We could not load the member directory right now. Please try again shortly.
+            <div role="alert" aria-live="assertive" className="relative overflow-hidden rounded-2xl border border-destructive/20 bg-destructive/[0.05] p-4 text-sm text-destructive"><div aria-hidden="true" className="pointer-events-none absolute -right-8 -top-8 size-24 rounded-full bg-destructive/[0.06] blur-2xl"/><span className="relative">
+              We could not load the member directory right now. Please try again shortly.</span>
             </div>
           ) : (
             <MemberDirectory members={members ?? []} />
