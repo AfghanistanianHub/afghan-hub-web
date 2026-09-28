@@ -26,7 +26,7 @@ export default async function BusinessPage({params,searchParams}:BusinessPagePro
  const services=Array.isArray(business.services)?business.services.filter((service:unknown):service is string=>typeof service==="string"):[];
  const location=[business.city,business.province_state,business.country].filter(Boolean).join(", ");
  return <main className="px-4 py-8 md:px-8"><div className="mx-auto max-w-6xl">
-  <Link href="/businesses" className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:opacity-80"><ArrowLeft aria-hidden="true" className="size-4"/>Back to businesses</Link>
+  <Link href="/businesses" className="inline-flex items-center gap-2 rounded-sm text-sm font-medium text-primary transition hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"><ArrowLeft aria-hidden="true" className="size-4"/>Back to businesses</Link>
   {actionError?<div role="alert" className="mt-6 rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{actionError}</div>:null}
   {business.status!=="published"?<div className="mt-6 rounded-2xl border border-accent/50 bg-accent/40 p-4 text-sm text-accent-foreground">{business.status==="draft"?"This business is waiting for moderator approval and is not visible to the community yet.":`This business was not approved.${business.moderation_note?` Reason: ${business.moderation_note}`:""} Edit it to submit it for review again.`}</div>:null}
 
