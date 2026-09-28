@@ -51,8 +51,8 @@ export default async function SettingsPage({
               <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Settings</h1>
               <p className="mt-3 max-w-xl leading-7 text-muted-foreground">Control how your profile appears, review your account identity, and access your data and support options.</p>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-2xl border border-border/80 bg-background/88 p-4 backdrop-blur"><p className="text-xs text-muted-foreground">Signed in as</p><p className="mt-1 truncate font-semibold text-foreground">{accountName}</p></div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-border/80 bg-background/88 p-4 backdrop-blur"><p className="text-xs text-muted-foreground">Signed in as</p><p className="mt-1 break-words font-semibold text-foreground">{accountName}</p></div>
               <div className="rounded-2xl border border-border/80 bg-background/88 p-4 backdrop-blur"><p className="text-xs text-muted-foreground">Directory status</p><p className="mt-1 font-semibold text-foreground">{profile?.is_public ?? true ? "Visible" : "Hidden"}</p></div>
             </div>
           </div>
@@ -67,7 +67,7 @@ export default async function SettingsPage({
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Identity</p>
               <h2 className="mt-2 text-xl font-semibold text-card-foreground">Account information</h2>
               <dl className="mt-6 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-2xl border border-border bg-muted/30 p-4"><dt className="text-xs text-muted-foreground">Name</dt><dd className="mt-1 font-semibold text-foreground">{accountName}</dd></div>
+                <div className="rounded-2xl border border-border bg-muted/30 p-4"><dt className="text-xs text-muted-foreground">Name</dt><dd className="mt-1 break-words font-semibold text-foreground">{accountName}</dd></div>
                 <div className="rounded-2xl border border-border bg-muted/30 p-4"><dt className="text-xs text-muted-foreground">Email</dt><dd className="mt-1 break-words font-semibold text-foreground">{accountEmail}</dd></div>
               </dl>
               <Link href="/profile" className="mt-6 inline-flex rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Edit profile details</Link>
@@ -80,7 +80,7 @@ export default async function SettingsPage({
 
               <label className="mt-6 flex cursor-pointer items-start gap-4 rounded-2xl border border-border bg-secondary/45 p-5 transition hover:border-primary/25 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15">
                 <input name="is_public" type="checkbox" defaultChecked={profile?.is_public ?? true} className="mt-0.5 size-5 rounded border-input bg-background text-primary focus:ring-primary" />
-                <span><span className="block font-semibold text-foreground">Show my profile in the community</span><span className="mt-1 block text-sm leading-6 text-muted-foreground">Turn this off to hide your profile from public member listings.</span></span>
+                <span className="min-w-0"><span className="block font-semibold text-foreground">Show my profile in the community</span><span className="mt-1 block text-sm leading-6 text-muted-foreground">Turn this off to hide your profile from public member listings.</span></span>
               </label>
 
               <div className="mt-6 flex justify-end"><PendingSubmitButton pendingLabel="Saving settings…" className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Save settings</PendingSubmitButton></div>
