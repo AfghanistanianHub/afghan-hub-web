@@ -73,7 +73,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
       <div className="mt-2 flex flex-col items-start gap-1.5 text-xs sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         {state.error ? (
-          <p id="message-error" role="alert" className="rounded-lg border border-destructive/20 bg-destructive/[0.05] px-2.5 py-1.5 text-destructive">
+          <p id="message-error" role="alert" aria-live="assertive" className="rounded-lg border border-destructive/20 bg-destructive/[0.05] px-2.5 py-1.5 text-destructive">
             {state.error}
           </p>
         ) : (
