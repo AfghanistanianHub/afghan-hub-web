@@ -67,11 +67,11 @@ export default async function EventPage({ params, searchParams }: Props) {
     <Link href="/events" className="inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"><ArrowLeft aria-hidden="true" className="size-4"/>Back to events</Link>
 
     <div className="mt-6 space-y-4">
-      {rsvp === "joined" ? <div role="status" className="rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm text-foreground">You are registered for this event.</div> : null}
-      {rsvp === "cancelled" ? <div role="status" className="rounded-2xl border border-border bg-muted/60 p-4 text-sm text-muted-foreground">Your registration was cancelled.</div> : null}
-      {rsvp === "full" || rsvp === "started" ? <div className="rounded-2xl border border-accent/50 bg-accent/40 p-4 text-sm text-accent-foreground">{rsvp === "full" ? "This event has reached its capacity." : "Registration is closed because this event has started."}</div> : null}
-      {rsvp === "error" ? <div role="alert" className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">We could not update your registration. Please try again.</div> : null}
-      {event.status !== "published" ? <div className="rounded-2xl border border-accent/50 bg-accent/40 p-4 text-sm text-accent-foreground">{event.status === "draft" ? "This event is waiting for moderator approval and is not visible to the community yet." : `This event was not approved.${event.moderation_note ? ` Reason: ${event.moderation_note}` : ""} Edit it to submit it for review again.`}</div> : null}
+      {rsvp === "joined" ? <div role="status" aria-live="polite" className="rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm text-foreground">You are registered for this event.</div> : null}
+      {rsvp === "cancelled" ? <div role="status" aria-live="polite" className="rounded-2xl border border-border bg-muted/60 p-4 text-sm text-muted-foreground">Your registration was cancelled.</div> : null}
+      {rsvp === "full" || rsvp === "started" ? <div role="status" aria-live="polite" className="rounded-2xl border border-accent/50 bg-accent/40 p-4 text-sm text-accent-foreground">{rsvp === "full" ? "This event has reached its capacity." : "Registration is closed because this event has started."}</div> : null}
+      {rsvp === "error" ? <div role="alert" aria-live="assertive" className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">We could not update your registration. Please try again.</div> : null}
+      {event.status !== "published" ? <div role="status" aria-live="polite" className="rounded-2xl border border-accent/50 bg-accent/40 p-4 text-sm leading-6 text-accent-foreground">{event.status === "draft" ? "This event is waiting for moderator approval and is not visible to the community yet." : `This event was not approved.${event.moderation_note ? ` Reason: ${event.moderation_note}` : ""} Edit it to submit it for review again.`}</div> : null}
     </div>
 
     <section className="relative mt-6 overflow-hidden rounded-[2rem] border border-border/80 bg-card shadow-[0_18px_60px_rgb(15_23_42/0.055)]">
@@ -93,9 +93,9 @@ export default async function EventPage({ params, searchParams }: Props) {
             </span>
             {!hasStarted && event.status === "published" ? <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-background/75 px-3 py-1.5 text-xs font-medium text-primary"><Sparkles aria-hidden="true" className="size-3"/>Upcoming</span> : null}
           </div>
-          <h1 className="mt-5 text-3xl font-bold leading-[1.08] tracking-[-0.035em] text-foreground md:text-5xl">{event.title}</h1>
+          <h1 className="mt-5 break-words text-3xl font-bold leading-[1.08] tracking-[-0.035em] text-foreground md:text-5xl">{event.title}</h1>
           {event.organization ? <p className="mt-4 text-sm text-muted-foreground">Hosted by <Link href={`/organizations/${event.organization.slug}`} className="rounded-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">{event.organization.name}</Link></p> : <p className="mt-4 text-sm text-muted-foreground">Community event</p>}
-          {event.summary ? <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">{event.summary}</p> : null}
+          {event.summary ? <p className="mt-5 max-w-2xl break-words text-lg leading-8 text-muted-foreground">{event.summary}</p> : null}
         </div>
 
         {isOwner ? <div className="flex shrink-0 flex-wrap gap-3 lg:justify-end">{event.status === "published" ? <Link href={`/events/${event.slug}/attendees`} className="rounded-xl border border-border bg-background/85 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Attendees</Link> : null}<Link href={`/events/${event.slug}/edit`} className="rounded-xl border border-border bg-background/85 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Edit</Link><DeleteEventButton slug={event.slug}/></div> : null}
@@ -109,7 +109,7 @@ export default async function EventPage({ params, searchParams }: Props) {
           </div>
 
           <p className="mt-9 text-xs font-semibold uppercase tracking-[0.18em] text-primary">About the event</p>
-          <div className="mt-5 whitespace-pre-wrap text-[1.02rem] leading-8 text-foreground/88">{event.description}</div>
+          <div className="mt-5 whitespace-pre-wrap break-words text-[1.02rem] leading-8 text-foreground/88">{event.description}</div>
 
           <div className="mt-10 grid gap-4 border-t border-border pt-6 text-sm text-muted-foreground sm:grid-cols-2">
             {event.ends_at ? <p><strong className="text-foreground">Ends:</strong> {formatDateTime(event.ends_at)}</p> : null}
@@ -142,7 +142,7 @@ export default async function EventPage({ params, searchParams }: Props) {
         <div className="flex items-start justify-between gap-3"><span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-primary"><CalendarDays aria-hidden="true" className="size-3.5"/>{relatedParts.month} {relatedParts.day}</span><ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground transition group-hover:text-primary"/></div>
         <h3 className="mt-4 line-clamp-2 text-lg font-bold leading-snug text-foreground group-hover:text-primary">{related.title}</h3>
         {related.summary?<p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">{related.summary}</p>:null}
-        {relatedLocation?<p className="mt-5 inline-flex items-center gap-1.5 text-xs text-muted-foreground">{related.is_online?<Monitor aria-hidden="true" className="size-3.5 text-primary"/>:<MapPin aria-hidden="true" className="size-3.5 text-primary"/>}{relatedLocation}</p>:null}
+        {relatedLocation?<p className="mt-5 flex items-start gap-1.5 text-xs leading-5 text-muted-foreground">{related.is_online?<Monitor aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-primary"/>:<MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-primary"/>}<span className="min-w-0 break-words">{relatedLocation}</span></p>:null}
       </Link>})}</div>
     </section>:null}
   </main>;

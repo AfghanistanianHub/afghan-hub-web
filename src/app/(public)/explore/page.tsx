@@ -118,7 +118,7 @@ export default async function ExplorePage({ searchParams }: Props) {
                 Search {publicCategories[kind].label.toLowerCase()}
                 <input type="search" name="q" defaultValue={search} maxLength={100} placeholder="Type a keyword" className="min-w-0 rounded-xl border border-input bg-background px-4 py-3 outline-offset-2 focus-visible:outline-2" />
               </label>
-              <button className="rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Search</button>
+              <button className="min-h-11 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Search</button>
             </div>
             {search && <Link href={`/explore?type=${kind}`} className="mt-3 inline-flex rounded-sm text-sm font-medium text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Clear search</Link>}
           </form>
@@ -126,7 +126,7 @@ export default async function ExplorePage({ searchParams }: Props) {
           <div className="rounded-3xl border border-border bg-muted/35 p-5">
             <p className="text-sm font-semibold">Want to add something?</p>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">Join Afghan Hub to contribute listings and connect with other members.</p>
-            <Link href="/login?mode=join" className="mt-4 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Join the community <ArrowRight aria-hidden="true" className="size-4" /></Link>
+            <Link href="/login?mode=join" className="relative mt-4 inline-flex items-center gap-2 rounded-xl border border-primary/15 bg-primary/[0.06] px-4 py-2.5 text-sm font-semibold text-primary transition hover:-translate-y-0.5 hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Join the community <ArrowRight aria-hidden="true" className="size-4" /></Link>
           </div>
         </div>
 
@@ -147,21 +147,29 @@ export default async function ExplorePage({ searchParams }: Props) {
 
           <div className="mt-8">
             {result.unavailable ? (
-              <div role="status" className="rounded-3xl border border-border bg-card p-8 shadow-sm">
-                <h3 className="font-semibold">Listings are temporarily unavailable.</h3>
-                <p className="mt-2 text-sm text-muted-foreground">Please try again in a moment.</p>
-                <Link href={pageHref(page)} className="mt-4 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Try again <ArrowRight aria-hidden="true" className="size-4" /></Link>
+              <div role="status" aria-live="polite" className="relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-8 shadow-[0_14px_42px_rgb(15_23_42/0.04)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"/>
+                <h3 className="relative font-semibold text-foreground">Listings are temporarily unavailable.</h3>
+                <p className="relative mt-2 text-sm leading-6 text-muted-foreground">Please try again in a moment.</p>
+                <Link href={pageHref(page)} className="relative mt-4 inline-flex items-center gap-2 rounded-xl border border-primary/15 bg-primary/[0.06] px-4 py-2.5 text-sm font-semibold text-primary transition hover:-translate-y-0.5 hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Try again <ArrowRight aria-hidden="true" className="size-4" /></Link>
               </div>
             ) : result.items.length ? (
               <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr))]">
                 {result.items.map(item => <ListingCard key={item.slug} item={item} kind={kind} />)}
               </div>
             ) : (
-              <div className="rounded-3xl border border-dashed border-border bg-card/60 p-8">
-                <h3 className="font-semibold">{search ? "No listings match your search." : "No listings to show here yet."}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
+              <div className="relative overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-card/60 p-8 shadow-[0_10px_30px_rgb(15_23_42/0.025)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"/>
+                <h3 className="relative font-semibold text-foreground">{search ? "No listings match your search." : "No listings to show here yet."}</h3>
+                <p className="relative mt-2 text-sm leading-6 text-muted-foreground">
                   {search ? "Try another name or clear your search." : "Check back for new community listings, or explore another category."}
                 </p>
+                {search ? (
+                  <Link
+                    href={`/explore?type=${kind}`}
+                    className="relative mt-5 inline-flex rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                  >
+                    Clear search
+                  </Link>
+                ) : null}
               </div>
             )}
           </div>
@@ -170,7 +178,7 @@ export default async function ExplorePage({ searchParams }: Props) {
             <nav aria-label="Pagination" className="mt-10 flex flex-wrap items-center gap-3">
               {page > 1 && <Link href={pageHref(page - 1)} className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-semibold transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"><ArrowLeft aria-hidden="true" className="size-4" /> Previous</Link>}
               <span className="rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">Page {page}</span>
-              {result.hasMore && <Link href={pageHref(page + 1)} className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-semibold hover:bg-muted">Next <ArrowRight aria-hidden="true" className="size-4" /></Link>}
+              {result.hasMore && <Link href={pageHref(page + 1)} className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Next <ArrowRight aria-hidden="true" className="size-4" /></Link>}
             </nav>
           )}
         </div>
