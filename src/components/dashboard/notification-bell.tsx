@@ -123,7 +123,7 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
         onClick={() => setIsOpen((current) => !current)}
         className="relative rounded-2xl border border-border/80 bg-card/78 p-3 text-muted-foreground shadow-[0_8px_24px_rgb(15_23_42/0.035)] transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-card hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
-        <Bell className="size-5" />
+        <Bell aria-hidden="true" className="size-5" />
         {unreadCount > 0 ? (
           <span className="absolute -right-1.5 -top-1.5 flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold leading-none text-primary-foreground ring-2 ring-background">
             {unreadCount > 99 ? "99+" : unreadCount}
@@ -171,7 +171,7 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
                     >
                       {isModerationNotification ? (
                         <span className={`flex size-10 shrink-0 items-center justify-center rounded-2xl border ${notification.type === "content_approved" ? "border-primary/10 bg-primary/10 text-primary" : "border-destructive/10 bg-destructive/[0.06] text-destructive"}`}>
-                          <ModerationIcon className="size-5" />
+                          <ModerationIcon aria-hidden="true" className="size-5" />
                         </span>
                       ) : notification.actor?.avatarUrl ? (
                         <ExternalImage src={notification.actor.avatarUrl} alt="" width={40} height={40} className="size-10 shrink-0 rounded-2xl border border-border/70 object-cover shadow-sm" />
@@ -180,7 +180,7 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
                           {notification.actor ? (
                             <span className="text-sm font-bold text-primary">{actorName.charAt(0).toUpperCase()}</span>
                           ) : (
-                            <UserRound className="size-5" />
+                            <UserRound aria-hidden="true" className="size-5" />
                           )}
                         </span>
                       )}
@@ -199,7 +199,7 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
           ) : (
             <div className="relative px-6 py-12 text-center"><div aria-hidden="true" className="absolute left-1/2 top-4 size-28 -translate-x-1/2 rounded-full bg-primary/[0.05] blur-2xl" />
               <span className="relative mx-auto flex size-12 items-center justify-center rounded-2xl bg-secondary text-primary">
-                <Bell className="size-6" />
+                <Bell aria-hidden="true" className="size-6" />
               </span>
               <p className="mt-4 text-sm font-semibold text-foreground">No notifications yet</p>
               <p className="mx-auto mt-1 max-w-64 text-xs leading-5 text-muted-foreground">
