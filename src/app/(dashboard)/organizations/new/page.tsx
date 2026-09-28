@@ -26,7 +26,7 @@ export default async function NewOrganizationPage({
           <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
           <div className="relative">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Create an organization</p>
-          <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Add your organization</h1>
+          <h1 className="mt-3 break-words text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Add your organization</h1>
           <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">
             Create a public page for your nonprofit, association, cultural group, professional network, or community initiative.
           </p>
@@ -34,7 +34,7 @@ export default async function NewOrganizationPage({
         </section>
 
         {error ? (
-          <div role="alert" className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">{error}</div>
+          <div role="alert" aria-live="assertive" className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">{error}</div>
         ) : null}
 
         <form action={createOrganization} className="surface-panel mt-8 space-y-8 rounded-[2rem] p-6 md:p-8">
