@@ -37,7 +37,7 @@ export function VerificationNote() {
       <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
         <ShieldCheck aria-hidden="true" className="size-4" />
       </span>
-      <p>
+      <p className="min-w-0 break-words">
         <span className="font-semibold text-foreground">What verification means: </span>
         {VERIFICATION_EXPLANATION}
       </p>
