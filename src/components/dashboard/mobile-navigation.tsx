@@ -52,7 +52,7 @@ export function MobileNavigation({
         aria-label="Open navigation"
         className="rounded-2xl border border-border/80 bg-card/78 p-2.5 text-muted-foreground shadow-[0_8px_24px_rgb(15_23_42/0.035)] transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-card hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:hidden"
       >
-        <Menu className="size-5" />
+        <Menu aria-hidden="true" className="size-5" />
       </Dialog.Trigger>
 
       <Dialog.Portal>
@@ -82,7 +82,7 @@ export function MobileNavigation({
               aria-label="Close navigation"
               className="relative rounded-xl border border-transparent p-2 text-muted-foreground transition hover:border-border hover:bg-card hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
-              <X className="size-5" />
+              <X aria-hidden="true" className="size-5" />
             </Dialog.Close>
           </div>
 
@@ -113,7 +113,7 @@ export function MobileNavigation({
                       active ? "bg-primary text-primary-foreground shadow-sm" : "bg-transparent text-muted-foreground group-hover:bg-background/70"
                     }`}
                   >
-                    <Icon className="size-4.5" />
+                    <Icon aria-hidden="true" className="size-4.5" />
                   </span>
                   <span className="truncate">{item.label}</span>
 
@@ -150,7 +150,7 @@ export function MobileNavigation({
                   isActivePath(pathname, "/profile") ? "bg-primary/[0.09] text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
               >
-                <UserRound className="size-5" />
+                <UserRound aria-hidden="true" className="size-5" />
                 Edit profile
               </Link>
 
@@ -162,7 +162,7 @@ export function MobileNavigation({
                   isActivePath(pathname, "/settings") ? "bg-primary/[0.09] text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
               >
-                <Settings className="size-5" />
+                <Settings aria-hidden="true" className="size-5" />
                 Settings
               </Link>
             </div>
