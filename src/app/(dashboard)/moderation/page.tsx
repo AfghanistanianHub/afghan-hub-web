@@ -229,27 +229,27 @@ export default async function ModerationPage({
   return (
     <main className="px-4 py-8 md:px-8">
       <div className="mx-auto max-w-6xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
-          Admin tools
-        </p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-          Content moderation
-        </h1>
-        <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <p className="max-w-3xl text-muted-foreground">
-            Review opportunities, events, businesses, and organizations before
-            they become visible to the community.
-          </p>
-
-          {accessContext.role === "admin" ? (
-            <Link
-              href="/moderation/team"
-              className="inline-flex w-fit rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted"
-            >
-              Manage moderation team
-            </Link>
-          ) : null}
-        </div>
+        <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
+          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
+          <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Admin tools</p>
+              <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Content moderation</h1>
+              <p className="mt-3 max-w-3xl text-muted-foreground">
+                Review opportunities, events, businesses, and organizations before they become visible to the community.
+              </p>
+            </div>
+            {accessContext.role === "admin" ? (
+              <Link
+                href="/moderation/team"
+                className="inline-flex w-fit rounded-2xl border border-border/80 bg-background/80 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted"
+              >
+                Manage moderation team
+              </Link>
+            ) : null}
+          </div>
+        </section>
 
         {error ? (
           <div
@@ -387,7 +387,7 @@ export default async function ModerationPage({
                   return (
                     <article
                       key={`${item.entityType}-${item.id}`}
-                      className="surface-panel rounded-2xl p-5"
+                      className="surface-panel rounded-[1.5rem] p-5"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="min-w-0">
@@ -469,7 +469,7 @@ function ModerationCard({
           : UsersRound;
 
   return (
-    <article className="surface-panel rounded-2xl p-6 transition hover:-translate-y-0.5 hover:shadow-md">
+    <article className="surface-panel relative overflow-hidden rounded-[1.75rem] p-6 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.06)]">
       <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-primary">
         <Icon className="size-3.5" />
         {label}
