@@ -150,7 +150,7 @@ export default async function OpportunityPage({
           <div className="flex flex-wrap items-start justify-between gap-6">
             <div className="max-w-3xl">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-primary">
+                <span className="inline-flex max-w-full items-center gap-2 break-words rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-primary">
                   <BriefcaseBusiness aria-hidden="true" className="size-3.5" />
                   {opportunity.type}
                 </span>
