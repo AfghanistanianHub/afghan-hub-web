@@ -1,9 +1,11 @@
 import Link from "next/link";
 import {
+  ArrowUpRight,
   BriefcaseBusiness,
   Building2,
   CalendarDays,
   Search,
+  Sparkles,
   UserRound,
   UsersRound,
 } from "lucide-react";
@@ -198,14 +200,20 @@ export default async function SearchPage({
   return (
     <main className="px-4 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
-          Discover Afghan Hub
-        </p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-          Search
-        </h1>
+        <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
+          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
+          <div className="relative">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+              <Sparkles aria-hidden="true" className="size-3.5" />
+              Discover Afghan Hub
+            </div>
+            <h1 className="mt-5 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Search</h1>
+            <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">Find people, services, organizations, opportunities, and events across the community.</p>
+          </div>
+        </section>
 
-        <form action="/search" role="search" className="relative mt-8">
+        <form action="/search" role="search" className="relative mt-8 rounded-[1.75rem] border border-border/80 bg-card/88 p-2 shadow-[0_12px_38px_rgb(15_23_42/0.035)] backdrop-blur">
           <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
           <input
             name="q"
@@ -215,11 +223,11 @@ export default async function SearchPage({
             defaultValue={query}
             placeholder="Search members, businesses, organizations, opportunities, or events"
             aria-label="Search Afghan Hub"
-            className="w-full rounded-2xl border border-border bg-card py-4 pl-12 pr-28 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
+            className="w-full rounded-2xl border border-transparent bg-background/70 py-4 pl-12 pr-28 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/30 focus:bg-background focus:ring-4 focus:ring-primary/10"
           />
           <button
             type="submit"
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-[calc(50%+1px)] hover:bg-primary/90"
           >
             Search
           </button>
@@ -257,8 +265,9 @@ export default async function SearchPage({
                     <Link
                       key={`${result.entity_type}-${result.entity_id}`}
                       href={href}
-                      className="surface-panel flex items-start gap-4 rounded-2xl p-5 transition hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-md"
+                      className="surface-panel group relative overflow-hidden flex items-start gap-4 rounded-[1.5rem] p-5 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_16px_36px_rgb(15_23_42/0.06)]"
                     >
+                      <div aria-hidden="true" className="absolute -right-8 -top-8 size-24 rounded-full border border-primary/10" />
                       {result.image_url ? (
                         <ExternalImage
                           src={result.image_url}
@@ -273,7 +282,7 @@ export default async function SearchPage({
                         </div>
                       )}
 
-                      <div className="min-w-0">
+                      <div className="relative min-w-0 flex-1">
                         <span className="text-xs font-semibold uppercase tracking-wide text-primary">
                           {getTypeLabel(result.entity_type)}
                         </span>
@@ -291,6 +300,7 @@ export default async function SearchPage({
                           </p>
                         ) : null}
                       </div>
+                      <ArrowUpRight aria-hidden="true" className="relative mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
                     </Link>
                   );
                 })}
