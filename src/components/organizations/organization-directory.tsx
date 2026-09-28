@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, MapPin } from "lucide-react";
+import { ArrowUpRight, MapPin, UsersRound } from "lucide-react";
 import { ExternalImage } from "@/components/ui/external-image";
 import { VerificationBadge } from "@/components/ui/verification-badge";
 
@@ -7,7 +7,7 @@ type Organization = { id:string; name:string; slug:string; short_description:str
 type OrganizationDirectoryProps = { organizations: Organization[] };
 
 export function OrganizationDirectory({ organizations }: OrganizationDirectoryProps) {
-  if (!organizations.length) return <div className="surface-panel mt-10 rounded-2xl p-8 text-center"><h2 className="text-xl font-semibold text-foreground">No organizations yet</h2><p className="mt-2 text-muted-foreground">Community organizations will appear here once they are added.</p></div>;
+  if (!organizations.length) return <div className="surface-panel relative mt-10 overflow-hidden rounded-[2rem] p-10 text-center shadow-[0_14px_42px_rgb(15_23_42/0.04)]"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-primary/[0.06] blur-3xl"/><span className="relative mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><UsersRound aria-hidden="true" className="size-7"/></span><h2 className="relative mt-5 text-xl font-semibold text-foreground">No organizations yet</h2><p className="relative mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">Community organizations will appear here once they are added.</p><Link href="/organizations/new" className="relative mt-6 inline-flex rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Add an organization</Link></div>;
   return <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{organizations.map((organization) => {
     const location=[organization.city,organization.province_state,organization.country].filter(Boolean).join(", ");
     return <Link key={organization.id} href={`/organizations/${organization.slug}`} className="surface-panel group relative overflow-hidden rounded-[1.75rem] p-6 transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.07)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
