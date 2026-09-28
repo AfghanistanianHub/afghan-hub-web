@@ -31,7 +31,7 @@ export function Header({
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
-    <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-border/80 bg-background/90 px-4 backdrop-blur-xl md:px-8">
+    <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-border/70 bg-background/78 px-4 shadow-[0_8px_28px_rgb(15_23_42/0.035)] backdrop-blur-2xl supports-[backdrop-filter]:bg-background/72 md:px-8">
       <div className="flex items-center gap-3">
         <MobileNavigation
           canModerate={canModerate}
@@ -49,7 +49,7 @@ export function Header({
         <form
           action="/search"
           role="search"
-          className="relative hidden w-80 md:block"
+          className="relative hidden w-[22rem] md:block"
         >
           <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
 
@@ -58,7 +58,7 @@ export function Header({
             type="search"
             placeholder="Search people, organizations, opportunities..."
             aria-label="Search Afghan Hub"
-            className="w-full rounded-2xl border border-border bg-card/80 py-3 pl-11 pr-4 text-sm text-foreground shadow-sm outline-none transition placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
+            className="w-full rounded-2xl border border-border/80 bg-card/72 py-3 pl-11 pr-4 text-sm text-foreground shadow-[0_8px_24px_rgb(15_23_42/0.035)] outline-none transition placeholder:text-muted-foreground hover:border-primary/20 focus:border-primary/45 focus:bg-card focus:ring-4 focus:ring-primary/10"
           />
         </form>
       </div>
@@ -75,14 +75,14 @@ export function Header({
           <p className="max-w-48 truncate text-xs text-muted-foreground">{email}</p>
         </div>
 
-        <div className="flex size-11 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground shadow-sm ring-4 ring-primary/10">
+        <div className="flex size-11 items-center justify-center rounded-full border border-primary/15 bg-primary font-bold text-primary-foreground shadow-[0_6px_18px_color-mix(in_oklab,var(--primary)_18%,transparent)] ring-4 ring-primary/8">
           {initial}
         </div>
 
         <form action={logout}>
           <button
             type="submit"
-            className="rounded-2xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm transition hover:bg-muted"
+            className="rounded-2xl border border-border/80 bg-card/72 px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm transition hover:border-primary/20 hover:bg-muted/70"
           >
             Sign out
           </button>
