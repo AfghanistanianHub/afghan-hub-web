@@ -136,9 +136,9 @@ export default async function SavedOpportunitiesPage() {
                     </p>
                   ) : null}
                   {location ? (
-                    <p className="relative mt-4 flex items-center gap-2 border-t border-border/70 pt-4 text-xs text-muted-foreground">
-                      <MapPin aria-hidden="true" className="size-3.5" />
-                      {location}
+                    <p className="relative mt-4 flex items-start gap-2 border-t border-border/70 pt-4 text-xs leading-5 text-muted-foreground">
+                      <MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
+                      <span className="min-w-0 break-words">{location}</span>
                     </p>
                   ) : null}
                 </Link>
@@ -148,19 +148,19 @@ export default async function SavedOpportunitiesPage() {
         ) : null}
 
         {!error && opportunities.length === 0 ? (
-          <div className="mt-8 flex min-h-72 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/70 px-6 text-center">
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-secondary text-primary">
+          <div className="relative mt-8 flex min-h-72 flex-col items-center justify-center overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-card/70 px-6 text-center shadow-[0_14px_42px_rgb(15_23_42/0.035)]"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-primary/[0.06] blur-3xl"/>
+            <div className="relative flex size-14 items-center justify-center rounded-2xl bg-secondary text-primary">
               <Bookmark aria-hidden="true" className="size-7" />
             </div>
-            <h2 className="mt-4 text-lg font-bold text-foreground">
+            <h2 className="relative mt-4 text-lg font-bold text-foreground">
               No saved opportunities yet
             </h2>
-            <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+            <p className="relative mt-2 max-w-md text-sm leading-6 text-muted-foreground">
               Save opportunities you want to review or apply for later.
             </p>
             <Link
               href="/opportunities"
-              className="mt-6 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className="relative mt-6 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               Browse opportunities
             </Link>
