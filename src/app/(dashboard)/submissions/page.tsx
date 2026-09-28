@@ -113,8 +113,8 @@ export default async function SubmissionsPage() {
     <main className="px-4 py-8 md:px-8">
       <div className="mx-auto max-w-6xl">
         <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card p-6 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:p-8">
-          <div className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-20 left-1/3 size-56 rounded-full bg-accent/45 blur-3xl" />
+          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-20 left-1/3 size-56 rounded-full bg-accent/45 blur-3xl" />
           <div className="relative flex flex-wrap items-end justify-between gap-5">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
@@ -150,9 +150,15 @@ export default async function SubmissionsPage() {
           <div
             role="alert"
             aria-live="assertive"
-            className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.08] p-4 text-sm text-destructive"
+            className="relative mt-8 overflow-hidden rounded-[1.5rem] border border-destructive/25 bg-destructive/[0.06] p-5 text-sm text-destructive"
           >
-            We could not load all of your submissions. Please try again.
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-destructive/[0.06] blur-3xl"
+            />
+            <span className="relative">
+              We could not load all of your submissions. Please try again.
+            </span>
           </div>
         ) : null}
 
@@ -347,13 +353,13 @@ function SubmissionCard({
       <div className="mt-6 flex gap-3">
         <Link
           href={detailHref}
-          className={`rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-muted ${focusClass}`}
+          className={`rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted ${focusClass}`}
         >
           View
         </Link>
         <Link
           href={editHref}
-          className={`inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-muted ${focusClass}`}
+          className={`inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted ${focusClass}`}
         >
           <Pencil aria-hidden="true" className="size-3.5" /> Edit
         </Link>
@@ -372,11 +378,15 @@ function EmptyState({
   text: string;
 }) {
   return (
-    <div className="mt-5 rounded-2xl border border-dashed border-border bg-muted/25 p-8 text-center">
-      <p className="text-sm text-muted-foreground">{text}</p>
+    <div className="relative mt-5 overflow-hidden rounded-[1.5rem] border border-dashed border-border/80 bg-muted/20 p-8 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"
+      />
+      <p className="relative text-sm leading-6 text-muted-foreground">{text}</p>
       <Link
         href={href}
-        className={`mt-4 inline-flex text-sm font-semibold text-primary transition hover:text-primary/80 ${focusClass}`}
+        className={`relative mt-5 inline-flex rounded-xl border border-primary/15 bg-primary/[0.06] px-4 py-2.5 text-sm font-semibold text-primary transition hover:-translate-y-0.5 hover:bg-primary/10 ${focusClass}`}
       >
         {label}
       </Link>
