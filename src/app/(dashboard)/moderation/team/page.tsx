@@ -67,7 +67,7 @@ export default async function ModerationTeamPage({
         <section className="relative mt-6 overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
           <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
           <div className="relative flex items-start gap-4">
-            <div className="rounded-2xl bg-primary/10 p-3 text-primary"><ShieldCheck className="size-6" /></div>
+            <div className="rounded-2xl bg-primary/10 p-3 text-primary"><ShieldCheck aria-hidden="true" className="size-6" /></div>
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Admin only</p>
               <h1 className="mt-2 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Moderation team</h1>
@@ -117,7 +117,7 @@ export default async function ModerationTeamPage({
                   <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="font-semibold text-foreground">
+                        <h2 className="break-words font-semibold text-foreground">
                           {memberName(member)}
                         </h2>
                         <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold capitalize text-secondary-foreground">
@@ -157,7 +157,7 @@ export default async function ModerationTeamPage({
                           <select
                             name="role"
                             defaultValue={member.role}
-                            className="rounded-2xl border border-border/80 bg-card px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
+                            className="rounded-2xl border border-border/80 bg-card px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-primary/50 focus:ring-4 focus:ring-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                           >
                             <option value="member">Member</option>
                             <option value="moderator">Moderator</option>
