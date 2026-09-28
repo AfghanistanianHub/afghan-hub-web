@@ -70,7 +70,7 @@ export default async function SettingsPage({
                 <div className="rounded-2xl border border-border bg-muted/30 p-4"><dt className="text-xs text-muted-foreground">Name</dt><dd className="mt-1 break-words font-semibold text-foreground">{accountName}</dd></div>
                 <div className="rounded-2xl border border-border bg-muted/30 p-4"><dt className="text-xs text-muted-foreground">Email</dt><dd className="mt-1 break-words font-semibold text-foreground">{accountEmail}</dd></div>
               </dl>
-              <Link href="/profile" className="mt-6 inline-flex rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Edit profile details</Link>
+              <Link href="/profile" className="mt-6 inline-flex rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Edit profile details</Link>
             </section>
 
             <form action={updateAccountSettings} className="rounded-[1.75rem] border border-border bg-card p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)] md:p-8">
@@ -79,7 +79,7 @@ export default async function SettingsPage({
               <p className="mt-2 text-sm leading-6 text-muted-foreground">Public profiles can appear in the member directory and be viewed by other Afghan Hub members.</p>
 
               <label className="mt-6 flex cursor-pointer items-start gap-4 rounded-2xl border border-border bg-secondary/45 p-5 transition hover:border-primary/25 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15">
-                <input name="is_public" type="checkbox" defaultChecked={profile?.is_public ?? true} className="mt-0.5 size-5 rounded border-input bg-background text-primary focus:ring-primary" />
+                <input name="is_public" type="checkbox" defaultChecked={profile?.is_public ?? true} className="mt-0.5 size-5 rounded border-input bg-background text-primary focus:ring-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
                 <span className="min-w-0"><span className="block font-semibold text-foreground">Show my profile in the community</span><span className="mt-1 block text-sm leading-6 text-muted-foreground">Turn this off to hide your profile from public member listings.</span></span>
               </label>
 

@@ -274,7 +274,8 @@ export default async function ModerationPage({
         <div className="mt-8 grid w-full grid-cols-2 rounded-2xl border border-border bg-muted/50 p-1 sm:inline-grid sm:w-auto">
           <Link
             href="/moderation"
-            className={`min-w-0 rounded-xl px-3 py-2 text-center text-sm font-semibold transition sm:px-4 ${
+            aria-current={activeView === "pending" ? "page" : undefined}
+            className={`min-w-0 rounded-xl px-3 py-2 text-center text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-4 ${
               activeView === "pending"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -364,9 +365,7 @@ export default async function ModerationPage({
                 ))}
               </div>
             ) : (
-              <div className="mt-5 rounded-3xl border border-dashed border-border bg-muted/30 p-12 text-center text-muted-foreground">
-                There is nothing waiting for review.
-              </div>
+              <div className="relative mt-5 overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-muted/25 p-12 text-center text-muted-foreground"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-primary/[0.06] blur-3xl"/><span className="relative mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><CircleCheck aria-hidden="true" className="size-7"/></span><p className="relative mt-5 font-medium text-foreground">Nothing waiting for review</p><p className="relative mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">New submissions will appear here when they need moderator approval.</p></div>
             )}
           </>
         ) : (
@@ -402,7 +401,7 @@ export default async function ModerationPage({
                                   : "bg-destructive/10 text-destructive"
                               }`}
                             >
-                              <DecisionIcon className="size-3.5" />
+                              <DecisionIcon aria-hidden="true" className="size-3.5" />
                               {approved ? "Approved" : "Rejected"}
                             </span>
                           </div>
@@ -415,14 +414,14 @@ export default async function ModerationPage({
                           </Link>
 
                           {item.moderationNote ? (
-                            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                            <p className="mt-3 break-words text-sm leading-6 text-muted-foreground">
                               Reason: {item.moderationNote}
                             </p>
                           ) : null}
                         </div>
 
                         <p className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
-                          <Clock3 className="size-3.5" />
+                          <Clock3 aria-hidden="true" className="size-3.5" />
                           {formatDateTime(item.moderatedAt)}
                         </p>
                       </div>
@@ -431,9 +430,7 @@ export default async function ModerationPage({
                 })}
               </div>
             ) : (
-              <div className="mt-5 rounded-3xl border border-dashed border-border bg-muted/30 p-12 text-center text-muted-foreground">
-                No moderation decisions have been recorded yet.
-              </div>
+              <div className="relative mt-5 overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-muted/25 p-12 text-center text-muted-foreground"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-accent/55 blur-3xl"/><span className="relative mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Clock3 aria-hidden="true" className="size-7"/></span><p className="relative mt-5 font-medium text-foreground">No moderation history yet</p><p className="relative mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">Approved and rejected submissions will appear here after the first review decision.</p></div>
             )}
           </section>
         )}
@@ -471,7 +468,7 @@ function ModerationCard({
   return (
     <article className="surface-panel relative overflow-hidden rounded-[1.75rem] p-6 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.06)]">
       <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-primary">
-        <Icon className="size-3.5" />
+        <Icon aria-hidden="true" className="size-3.5" />
         {label}
       </span>
       <Link
@@ -508,12 +505,12 @@ function ModerationButtons({
           pendingLabel="Approving…"
           className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
-          <Check className="size-4" /> Approve
+          <Check aria-hidden="true" className="size-4" /> Approve
         </PendingSubmitButton>
       </form>
 
       <details className="rounded-xl border border-destructive/20 bg-destructive/5 p-3">
-        <summary className="cursor-pointer text-sm font-semibold text-destructive">
+        <summary className="cursor-pointer rounded-lg px-1 py-1 text-sm font-semibold text-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destructive">
           Reject with a reason
         </summary>
         <form action={moderateContent} className="mt-3 space-y-3">
@@ -535,7 +532,7 @@ function ModerationButtons({
             pendingLabel="Rejecting…"
             className="inline-flex items-center gap-2 rounded-xl border border-destructive/30 px-4 py-2 text-sm font-semibold text-destructive transition hover:bg-destructive/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-destructive"
           >
-            <X className="size-4" /> Reject submission
+            <X aria-hidden="true" className="size-4" /> Reject submission
           </PendingSubmitButton>
         </form>
       </details>

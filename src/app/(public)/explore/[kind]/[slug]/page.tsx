@@ -66,11 +66,10 @@ export default async function PublicDetailPage({ params }: Props) {
   if (result.unavailable) {
     return (
       <main id="main-content" className="mx-auto max-w-3xl px-5 py-20 sm:px-8">
-        <div className="rounded-3xl border border-border bg-card p-8 shadow-sm sm:p-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Afghan Hub</p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight">We couldn’t load this listing.</h1>
-          <p className="mt-4 leading-7 text-muted-foreground">Please try again shortly.</p>
-          <Link href={publicHref(kind, slug)} className="mt-6 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+        <div className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card p-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] sm:p-10"><div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-60 rounded-full bg-primary/[0.07] blur-3xl"/><div aria-hidden="true" className="pointer-events-none absolute -bottom-20 left-1/3 size-52 rounded-full bg-accent/45 blur-3xl"/><p className="relative text-xs font-semibold uppercase tracking-[0.18em] text-primary">Afghan Hub</p>
+          <h1 className="relative mt-3 text-3xl font-semibold tracking-tight">We couldn’t load this listing.</h1>
+          <p className="relative mt-4 leading-7 text-muted-foreground">Please try again shortly.</p>
+          <Link href={publicHref(kind, slug)} className="relative mt-6 inline-flex items-center gap-2 rounded-xl border border-primary/15 bg-primary/[0.06] px-4 py-2.5 text-sm font-semibold text-primary transition hover:-translate-y-0.5 hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
             Try again <ArrowRight aria-hidden="true" className="size-4" />
           </Link>
         </div>
