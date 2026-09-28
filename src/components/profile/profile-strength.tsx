@@ -42,7 +42,7 @@ export function ProfileStrength({
 
       <div className="relative mt-4 h-2 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Profile completeness" aria-valuemin={0} aria-valuemax={100} aria-valuenow={strength.percent}>
         <div
-          className="h-full rounded-full bg-primary transition-[width]"
+          className="h-full rounded-full bg-primary transition-[width] motion-reduce:transition-none"
           style={{ width: `${strength.percent}%` }}
         />
       </div>
@@ -73,7 +73,7 @@ export function ProfileStrength({
       {showAction && !strength.complete ? (
         <Link
           href="/profile"
-          className="relative mt-5 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          className="relative mt-5 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           Complete profile
           <ArrowRight aria-hidden="true" className="size-4" />

@@ -218,13 +218,13 @@ export default async function DashboardPage() {
               {profile?.headline || location ? (
                 <div className="mt-5 flex flex-wrap gap-2 text-sm">
                   {profile?.headline ? (
-                    <span className="rounded-full border border-border bg-background/85 px-3 py-1.5 text-foreground shadow-sm">
+                    <span className="max-w-full break-words rounded-full border border-border bg-background/85 px-3 py-1.5 text-foreground shadow-sm">
                       {profile.headline}
                     </span>
                   ) : null}
 
                   {location ? (
-                    <span className="rounded-full border border-border bg-background/85 px-3 py-1.5 text-muted-foreground shadow-sm">
+                    <span className="max-w-full break-words rounded-full border border-border bg-background/85 px-3 py-1.5 text-muted-foreground shadow-sm">
                       {location}
                     </span>
                   ) : null}
@@ -249,7 +249,7 @@ export default async function DashboardPage() {
 
               <Link
                 href="/events"
-                className="group rounded-2xl border border-border/80 bg-background/88 p-4 backdrop-blur transition hover:-translate-y-0.5 hover:border-primary/30"
+                className="group rounded-2xl border border-border/80 bg-background/88 p-4 backdrop-blur transition hover:-translate-y-0.5 hover:border-primary/30 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 <div className="flex items-start justify-between gap-3">
                   <span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary">
@@ -382,8 +382,8 @@ export default async function DashboardPage() {
                       ) : null}
 
                       {opportunityLocation ? (
-                        <p className="mt-5 flex items-center gap-2 border-t border-border/70 pt-4 text-xs text-muted-foreground">
-                          <MapPin aria-hidden="true" className="size-3.5 text-primary" />
+                        <p className="mt-5 flex items-start gap-2 border-t border-border/70 pt-4 text-xs leading-5 text-muted-foreground">
+                          <MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-primary" />
                           <span className="min-w-0 break-words">{opportunityLocation}</span>
                         </p>
                       ) : null}
@@ -440,7 +440,7 @@ export default async function DashboardPage() {
                         {eventLocation ? (
                           <p className="mt-1.5 flex items-start gap-1.5 text-xs leading-5 text-muted-foreground">
                             <MapPin aria-hidden="true" className="mt-0.5 size-3 shrink-0" />
-                            <span className="line-clamp-1">{eventLocation}</span>
+                            <span className="min-w-0 break-words">{eventLocation}</span>
                           </p>
                         ) : null}
                       </Link>
@@ -459,7 +459,7 @@ export default async function DashboardPage() {
 
               <Link
                 href="/events"
-                className="mt-5 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                className="mt-5 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 Browse events
                 <ArrowRight aria-hidden="true" className="size-4" />
