@@ -59,7 +59,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
 
             <div className="relative">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Your community identity</p>
-              <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em]">{displayName}</h1>
+              <h1 className="mt-3 break-words text-3xl font-bold tracking-[-0.035em]">{displayName}</h1>
               {profile?.headline ? <p className="mt-3 text-sm leading-6 text-muted-foreground">{profile.headline}</p> : <p className="mt-3 text-sm leading-6 text-muted-foreground">Add a headline so people can understand what you do at a glance.</p>}
 
               <div className="mt-7 rounded-[1.65rem] border border-border/80 bg-background/78 p-4 shadow-sm backdrop-blur-sm">
@@ -69,13 +69,13 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
               <div className="mt-6 space-y-3 text-sm">
                 <div className="flex items-center gap-3 rounded-2xl border border-border/80 bg-background/72 p-3.5">
                   <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary"><BriefcaseBusiness aria-hidden="true" className="size-4" /></span>
-                  <div><p className="text-xs text-muted-foreground">Professional story</p><p className="mt-0.5 font-semibold">{hasProfessionalDetails ? "Started" : "Add your work"}</p></div>
+                  <div className="min-w-0"><p className="text-xs text-muted-foreground">Professional story</p><p className="mt-0.5 break-words font-semibold">{hasProfessionalDetails ? "Started" : "Add your work"}</p></div>
                 </div>
                 <div className="flex items-center gap-3 rounded-2xl border border-border/80 bg-background/72 p-3.5">
                   <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary"><Sparkles aria-hidden="true" className="size-4" /></span>
-                  <div><p className="text-xs text-muted-foreground">Discovery details</p><p className="mt-0.5 font-semibold">{hasDiscoveryDetails ? "People can find more about you" : "Add skills, language, location"}</p></div>
+                  <div className="min-w-0"><p className="text-xs text-muted-foreground">Discovery details</p><p className="mt-0.5 break-words font-semibold">{hasDiscoveryDetails ? "People can find more about you" : "Add skills, language, location"}</p></div>
                 </div>
-                {location ? <div className="flex items-center gap-2 px-1 text-xs text-muted-foreground"><MapPin aria-hidden="true" className="size-3.5" />{location}</div> : null}
+                {location ? <div className="flex items-start gap-2 px-1 text-xs leading-5 text-muted-foreground"><MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" /><span className="min-w-0 break-words">{location}</span></div> : null}
               </div>
             </div>
           </aside>
@@ -128,7 +128,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                   </div>
                 </fieldset>
 
-                <div className="sticky bottom-4 z-10 rounded-2xl border border-border/80 bg-card/92 p-3 shadow-lg backdrop-blur">
+                <div className="sticky bottom-3 z-10 rounded-2xl border border-border/80 bg-card/92 p-3 shadow-lg backdrop-blur sm:bottom-4">
                   <PendingSubmitButton pendingLabel="Saving profile…" className="w-full rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Save profile</PendingSubmitButton>
                 </div>
               </form>

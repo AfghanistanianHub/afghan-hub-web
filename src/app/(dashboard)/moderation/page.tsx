@@ -243,7 +243,7 @@ export default async function ModerationPage({
             {accessContext.role === "admin" ? (
               <Link
                 href="/moderation/team"
-                className="inline-flex w-fit rounded-2xl border border-border/80 bg-background/80 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted"
+                className="inline-flex w-fit rounded-2xl border border-border/80 bg-background/80 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 Manage moderation team
               </Link>
@@ -271,10 +271,10 @@ export default async function ModerationPage({
           </div>
         ) : null}
 
-        <div className="mt-8 inline-flex rounded-2xl border border-border bg-muted/50 p-1">
+        <div className="mt-8 grid w-full grid-cols-2 rounded-2xl border border-border bg-muted/50 p-1 sm:inline-grid sm:w-auto">
           <Link
             href="/moderation"
-            className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+            className={`min-w-0 rounded-xl px-3 py-2 text-center text-sm font-semibold transition sm:px-4 ${
               activeView === "pending"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -289,7 +289,7 @@ export default async function ModerationPage({
           </Link>
           <Link
             href="/moderation?view=history"
-            className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+            className={`min-w-0 rounded-xl px-3 py-2 text-center text-sm font-semibold transition sm:px-4 ${
               activeView === "history"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -409,7 +409,7 @@ export default async function ModerationPage({
 
                           <Link
                             href={getEntityHref(item.entityType, item.slug)}
-                            className="mt-3 block text-lg font-bold text-foreground transition hover:text-primary"
+                            className="mt-3 block break-words text-lg font-bold text-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                           >
                             {item.title}
                           </Link>
@@ -476,7 +476,7 @@ function ModerationCard({
       </span>
       <Link
         href={href}
-        className="mt-3 block text-xl font-bold text-foreground transition hover:text-primary"
+        className="mt-3 block break-words text-xl font-bold text-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
         {title}
       </Link>
@@ -506,7 +506,7 @@ function ModerationButtons({
         <input type="hidden" name="decision" value="approve" />
         <PendingSubmitButton
           pendingLabel="Approving…"
-          className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           <Check className="size-4" /> Approve
         </PendingSubmitButton>
