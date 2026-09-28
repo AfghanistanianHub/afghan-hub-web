@@ -235,7 +235,7 @@ export default async function DashboardPage() {
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-2">
               <Link
                 href="/opportunities"
-                className="group rounded-2xl border border-border/80 bg-background/88 p-4 backdrop-blur transition hover:-translate-y-0.5 hover:border-primary/30"
+                className="group rounded-2xl border border-border/80 bg-background/88 p-4 backdrop-blur transition hover:-translate-y-0.5 hover:border-primary/30 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 <div className="flex items-start justify-between gap-3">
                   <span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary">
@@ -263,7 +263,7 @@ export default async function DashboardPage() {
 
               <Link
                 href={nextStep.href}
-                className="group col-span-2 flex items-center justify-between gap-4 rounded-2xl bg-primary px-5 py-4 text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 sm:col-span-1 xl:col-span-2"
+                className="group col-span-2 flex items-center justify-between gap-4 rounded-2xl bg-primary px-5 py-4 text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:col-span-1 xl:col-span-2"
               >
                 <div>
                   <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] opacity-70">{nextStep.kicker}</p>
@@ -294,7 +294,7 @@ export default async function DashboardPage() {
                 <Link
                   key={action.href}
                   href={action.href}
-                  className={`group relative overflow-hidden rounded-[1.65rem] border border-border/80 p-5 transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md ${featured ? "bg-primary text-primary-foreground md:row-span-2 xl:col-span-2 shadow-[0_18px_42px_color-mix(in_oklab,var(--primary)_16%,transparent)]" : "bg-card"}`}
+                  className={`group relative overflow-hidden rounded-[1.65rem] border border-border/80 p-5 transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${featured ? "bg-primary text-primary-foreground md:row-span-2 xl:col-span-2 shadow-[0_18px_42px_color-mix(in_oklab,var(--primary)_16%,transparent)]" : "bg-card"}`}
                 >
                   <div aria-hidden="true" className={`absolute -right-8 -top-8 size-28 rounded-full border ${featured ? "border-primary-foreground/12" : "border-primary/10"}`} />
                   <div aria-hidden="true" className={`absolute right-5 top-10 size-12 rounded-full border ${featured ? "border-primary-foreground/12" : "border-primary/10"}`} />
@@ -337,7 +337,7 @@ export default async function DashboardPage() {
 
               <Link
                 href="/opportunities"
-                className="hidden items-center gap-2 text-sm font-semibold text-primary sm:inline-flex"
+                className="hidden items-center gap-2 rounded-sm text-sm font-semibold text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:inline-flex"
               >
                 View all
                 <ArrowRight aria-hidden="true" className="size-4" />
@@ -358,7 +358,7 @@ export default async function DashboardPage() {
                     <Link
                       key={opportunity.id}
                       href={`/opportunities/${opportunity.slug}`}
-                      className={`group relative overflow-hidden rounded-2xl border border-border bg-background p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm ${index === 0 ? "md:col-span-2 2xl:col-span-1" : ""}`}
+                      className={`group relative overflow-hidden rounded-2xl border border-border bg-background p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${index === 0 ? "md:col-span-2 2xl:col-span-1" : ""}`}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <span className="rounded-full bg-primary/[0.08] px-2.5 py-1 text-[0.68rem] font-semibold capitalize text-primary">
@@ -384,7 +384,7 @@ export default async function DashboardPage() {
                       {opportunityLocation ? (
                         <p className="mt-5 flex items-center gap-2 border-t border-border/70 pt-4 text-xs text-muted-foreground">
                           <MapPin aria-hidden="true" className="size-3.5 text-primary" />
-                          <span className="truncate">{opportunityLocation}</span>
+                          <span className="min-w-0 break-words">{opportunityLocation}</span>
                         </p>
                       ) : null}
                     </Link>
@@ -430,7 +430,7 @@ export default async function DashboardPage() {
                       <Link
                         key={event.id}
                         href={`/events/${event.slug}`}
-                        className="group relative block py-3 pl-7"
+                        className="group relative block rounded-xl py-3 pl-7 pr-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                       >
                         <span aria-hidden="true" className="absolute left-0 top-[1.15rem] size-[11px] rounded-full border-2 border-card bg-primary" />
                         <p className="text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-primary">
@@ -459,7 +459,7 @@ export default async function DashboardPage() {
 
               <Link
                 href="/events"
-                className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary"
+                className="mt-5 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 Browse events
                 <ArrowRight aria-hidden="true" className="size-4" />
