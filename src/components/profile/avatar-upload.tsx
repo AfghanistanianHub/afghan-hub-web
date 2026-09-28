@@ -103,7 +103,7 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
           id="avatar-upload-message"
           role={message.kind === "error" ? "alert" : "status"}
           aria-live={message.kind === "error" ? "assertive" : "polite"}
-          className={message.kind === "error" ? "relative rounded-xl border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm text-destructive" : "relative rounded-xl border border-primary/15 bg-primary/[0.05] px-3 py-2 text-sm text-primary"}
+          className={message.kind === "error" ? "relative break-words rounded-xl border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm leading-6 text-destructive" : "relative break-words rounded-xl border border-primary/15 bg-primary/[0.05] px-3 py-2 text-sm leading-6 text-primary"}
         >
           {message.text}
         </p>
