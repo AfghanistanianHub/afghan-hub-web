@@ -31,10 +31,11 @@ export function Sidebar({
     : dashboardNavigation;
 
   return (
-    <aside className="hidden min-h-screen w-64 shrink-0 border-r border-sidebar-border bg-sidebar/95 lg:flex lg:flex-col">
-      <div className="flex h-20 items-center border-b border-sidebar-border px-5">
+    <aside className="relative hidden min-h-screen w-64 shrink-0 overflow-hidden border-r border-sidebar-border/80 bg-sidebar/82 shadow-[8px_0_32px_rgb(15_23_42/0.025)] backdrop-blur-2xl lg:flex lg:flex-col">
+      <div aria-hidden="true" className="pointer-events-none absolute -left-20 -top-24 size-64 rounded-full bg-primary/[0.055] blur-3xl" />
+      <div className="relative flex h-20 items-center border-b border-sidebar-border/80 px-5">
         <Link href="/dashboard" className="group inline-flex items-center gap-3 rounded-xl px-1 py-1">
-          <span className="flex size-9 items-center justify-center rounded-2xl bg-primary text-sm font-black text-primary-foreground shadow-sm transition-transform group-hover:-rotate-3">
+          <span className="flex size-9 items-center justify-center rounded-2xl border border-primary-foreground/10 bg-primary text-sm font-black text-primary-foreground shadow-[0_8px_20px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition-transform group-hover:-rotate-3">
             A
           </span>
           <span>
@@ -48,13 +49,13 @@ export function Sidebar({
         </Link>
       </div>
 
-      <div className="px-5 pt-5">
+      <div className="relative px-5 pt-5">
         <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           Workspace
         </p>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-3">
+      <nav className="relative flex-1 space-y-1 overflow-y-auto px-3 py-3">
         {navigation.map((item) => {
           const Icon = item.icon;
           const active = isActivePath(pathname, item.href);
@@ -109,7 +110,7 @@ export function Sidebar({
         })}
       </nav>
 
-      <div className="border-t border-sidebar-border p-3">
+      <div className="relative border-t border-sidebar-border/80 p-3">
         <p className="px-3 pb-2 pt-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           Account
         </p>
