@@ -274,6 +274,7 @@ export default async function ModerationPage({
         <div className="mt-8 grid w-full grid-cols-2 rounded-2xl border border-border bg-muted/50 p-1 sm:inline-grid sm:w-auto">
           <Link
             href="/moderation"
+            aria-current={activeView === "pending" ? "page" : undefined}
             className={`min-w-0 rounded-xl px-3 py-2 text-center text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-4 ${
               activeView === "pending"
                 ? "bg-background text-foreground shadow-sm"
@@ -413,7 +414,7 @@ export default async function ModerationPage({
                           </Link>
 
                           {item.moderationNote ? (
-                            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                            <p className="mt-3 break-words text-sm leading-6 text-muted-foreground">
                               Reason: {item.moderationNote}
                             </p>
                           ) : null}
