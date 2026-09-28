@@ -4,7 +4,7 @@ export function SupportLinks() {
   return (
     <nav aria-label="Privacy, terms and support" className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
       {["privacy", "terms", "support"].map((page) => (
-        <Link key={page} href={"/" + page} className="rounded-sm capitalize hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">{page}</Link>
+        <Link key={page} href={"/" + page} className="rounded-sm capitalize transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">{page}</Link>
       ))}
     </nav>
   );
