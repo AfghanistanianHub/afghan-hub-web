@@ -71,7 +71,7 @@ export default async function EventPage({ params, searchParams }: Props) {
       {rsvp === "cancelled" ? <div role="status" aria-live="polite" className="rounded-2xl border border-border bg-muted/60 p-4 text-sm text-muted-foreground">Your registration was cancelled.</div> : null}
       {rsvp === "full" || rsvp === "started" ? <div role="status" aria-live="polite" className="rounded-2xl border border-accent/50 bg-accent/40 p-4 text-sm text-accent-foreground">{rsvp === "full" ? "This event has reached its capacity." : "Registration is closed because this event has started."}</div> : null}
       {rsvp === "error" ? <div role="alert" aria-live="assertive" className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">We could not update your registration. Please try again.</div> : null}
-      {event.status !== "published" ? <div role="status" aria-live="polite" className="rounded-2xl border border-accent/50 bg-accent/40 p-4 text-sm leading-6 text-accent-foreground">{event.status === "draft" ? "This event is waiting for moderator approval and is not visible to the community yet." : `This event was not approved.${event.moderation_note ? ` Reason: ${event.moderation_note}` : ""} Edit it to submit it for review again.`}</div> : null}
+      {event.status !== "published" ? <div role="status" aria-live="polite" className="break-words rounded-2xl border border-accent/50 bg-accent/40 p-4 text-sm leading-6 text-accent-foreground">{event.status === "draft" ? "This event is waiting for moderator approval and is not visible to the community yet." : `This event was not approved.${event.moderation_note ? ` Reason: ${event.moderation_note}` : ""} Edit it to submit it for review again.`}</div> : null}
     </div>
 
     <section className="relative mt-6 overflow-hidden rounded-[2rem] border border-border/80 bg-card shadow-[0_18px_60px_rgb(15_23_42/0.055)]">
@@ -87,7 +87,7 @@ export default async function EventPage({ params, searchParams }: Props) {
 
         <div className="max-w-3xl">
           <div className="flex flex-wrap gap-2">
-            <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
+            <span className="inline-flex max-w-full items-center gap-2 break-words rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
               {event.is_online ? <Monitor aria-hidden="true" className="size-3.5"/> : <MapPin aria-hidden="true" className="size-3.5"/>}
               {event.is_online ? "Online event" : "In-person event"}
             </span>
@@ -136,7 +136,7 @@ export default async function EventPage({ params, searchParams }: Props) {
     {relatedEvents.length ? <section className="mt-10" aria-labelledby="related-events-heading">
       <div className="flex items-end justify-between gap-4">
         <div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Keep exploring</p><h2 id="related-events-heading" className="mt-2 text-2xl font-bold tracking-[-0.025em] text-foreground">Related events</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Upcoming events with similar topics or locations.</p></div>
-        <Link href="/events" className="hidden items-center gap-2 rounded-sm text-sm font-semibold text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:inline-flex">View all<ArrowRight aria-hidden="true" className="size-4"/></Link>
+        <Link href="/events" className="hidden items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:inline-flex">View all<ArrowRight aria-hidden="true" className="size-4"/></Link>
       </div>
       <div className="mt-5 grid gap-4 md:grid-cols-3">{relatedEvents.map((related)=>{const relatedParts=formatDateParts(related.starts_at);const relatedLocation=related.is_online?"Online":[related.venue_name,related.city,related.country].filter(Boolean).join(", ");return <Link key={related.id} href={`/events/${related.slug}`} className="group rounded-[1.5rem] border border-border/80 bg-card p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
         <div className="flex items-start justify-between gap-3"><span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-primary"><CalendarDays aria-hidden="true" className="size-3.5"/>{relatedParts.month} {relatedParts.day}</span><ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground transition group-hover:text-primary"/></div>
