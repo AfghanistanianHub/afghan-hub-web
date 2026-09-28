@@ -17,7 +17,7 @@ export default async function NewOrganizationPage({
   return (
     <main className="px-4 py-8 md:px-8">
       <div className="mx-auto max-w-4xl">
-        <Link href="/organizations" className="text-sm font-medium text-primary transition hover:text-primary/80">
+        <Link href="/organizations" className="rounded-sm text-sm font-medium text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
           ← Back to organizations
         </Link>
 
@@ -34,7 +34,7 @@ export default async function NewOrganizationPage({
         </section>
 
         {error ? (
-          <div className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">{error}</div>
+          <div role="alert" className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">{error}</div>
         ) : null}
 
         <form action={createOrganization} className="surface-panel mt-8 space-y-8 rounded-[2rem] p-6 md:p-8">
@@ -122,8 +122,8 @@ export default async function NewOrganizationPage({
           </section>
 
           <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:justify-end">
-            <Link href="/organizations" className="rounded-2xl border border-border/80 bg-background px-5 py-3 text-center font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted">Cancel</Link>
-            <button type="submit" className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90">Create organization</button>
+            <Link href="/organizations" className="rounded-2xl border border-border/80 bg-background px-5 py-3 text-center font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Cancel</Link>
+            <button type="submit" className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Create organization</button>
           </div>
         </form>
       </div>
