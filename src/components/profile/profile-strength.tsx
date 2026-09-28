@@ -40,7 +40,7 @@ export function ProfileStrength({
         </span>
       </div>
 
-      <div className="relative mt-4 h-2 overflow-hidden rounded-full bg-muted" aria-label={`Profile ${strength.percent}% complete`}>
+      <div className="relative mt-4 h-2 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Profile completeness" aria-valuemin={0} aria-valuemax={100} aria-valuenow={strength.percent}>
         <div
           className="h-full rounded-full bg-primary transition-[width]"
           style={{ width: `${strength.percent}%` }}
@@ -57,8 +57,8 @@ export function ProfileStrength({
           {nextSteps.map((step) => (
             <div key={step.key} className="flex items-start gap-3">
               <Circle aria-hidden="true" className="mt-1 size-3.5 shrink-0 text-primary" />
-              <div>
-                <p className="text-sm font-semibold text-foreground">{step.label}</p>
+              <div className="min-w-0">
+                <p className="break-words text-sm font-semibold text-foreground">{step.label}</p>
                 {!compact ? (
                   <p className="mt-0.5 text-xs leading-5 text-muted-foreground">
                     {step.description}
@@ -73,7 +73,7 @@ export function ProfileStrength({
       {showAction && !strength.complete ? (
         <Link
           href="/profile"
-          className="relative mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+          className="relative mt-5 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           Complete profile
           <ArrowRight aria-hidden="true" className="size-4" />
