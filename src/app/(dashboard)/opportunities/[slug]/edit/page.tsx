@@ -58,20 +58,18 @@ export default async function EditOpportunityPage({
         ← Back to opportunity
       </Link>
 
-      <div className="mt-5">
-        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">
-          Opportunity editor
-        </p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-          Edit opportunity
-        </h1>
-        <p className="mt-2 text-muted-foreground">
-          Update the opportunity information below.
-        </p>
-        <p className="mt-3 text-sm text-amber-700">
-          Saving changes submits this opportunity for moderator review.
-        </p>
-      </div>
+      <section className="relative mt-5 overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
+        <div className="relative">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">Opportunity editor</p>
+          <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Edit opportunity</h1>
+          <p className="mt-3 text-muted-foreground">Update the opportunity information below.</p>
+          <p className="mt-4 inline-flex rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-sm font-medium text-primary">
+            Saving changes submits this opportunity for moderator review.
+          </p>
+        </div>
+      </section>
 
       {error ? (
         <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -79,7 +77,7 @@ export default async function EditOpportunityPage({
         </div>
       ) : null}
 
-      <form action={updateOpportunity} className="surface-panel mt-8 space-y-6 rounded-3xl p-6 md:p-8">
+      <form action={updateOpportunity} className="surface-panel mt-8 space-y-8 rounded-[2rem] p-6 md:p-8">
         <input type="hidden" name="original_slug" value={opportunity.slug} />
 
         <div>
@@ -137,7 +135,7 @@ export default async function EditOpportunityPage({
           <input id="country" name="country" type="text" defaultValue={opportunity.country ?? ""} className={fieldClassName} />
         </div>
 
-        <label className="flex items-center gap-3 rounded-xl border border-border bg-muted/30 px-4 py-3">
+        <label className="flex items-center gap-3 rounded-2xl border border-border/80 bg-secondary/40 px-4 py-3 transition hover:border-primary/20">
           <input name="is_remote" type="checkbox" defaultChecked={opportunity.is_remote} className="size-4 rounded border-border accent-[var(--primary)]" />
           <span className="text-sm font-medium text-foreground">Remote opportunity</span>
         </label>
@@ -158,10 +156,10 @@ export default async function EditOpportunityPage({
         </div>
 
         <div className="flex flex-wrap gap-3 border-t border-border pt-6">
-          <button type="submit" className="rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:opacity-90">
+          <button type="submit" className="rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90">
             Save and submit for review
           </button>
-          <Link href={`/opportunities/${opportunity.slug}`} className="rounded-xl border border-border bg-card px-5 py-3 text-sm font-semibold transition hover:bg-muted">
+          <Link href={`/opportunities/${opportunity.slug}`} className="rounded-2xl border border-border/80 bg-background px-5 py-3 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-muted">
             Cancel
           </Link>
         </div>
