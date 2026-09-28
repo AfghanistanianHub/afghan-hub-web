@@ -132,8 +132,8 @@ export default async function EditBusinessPage({
                 <input name="services" type="text" defaultValue={business.services.join(", ")} className="mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
                 <span className="mt-2 block text-xs text-muted-foreground">Separate each service with a comma.</span>
               </label>
-              <label className="flex items-center gap-3 rounded-2xl border border-border/80 bg-secondary/40 px-4 py-3 transition hover:border-primary/20 md:col-span-2">
-                <input name="is_hiring" type="checkbox" defaultChecked={business.is_hiring} className="size-4 rounded border-input accent-primary" />
+              <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border/80 bg-secondary/40 px-4 py-3 transition hover:border-primary/25 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15 md:col-span-2">
+                <input name="is_hiring" type="checkbox" defaultChecked={business.is_hiring} className="size-5 shrink-0 rounded border-input accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
                 <span className="text-sm font-medium">This business is currently hiring</span>
               </label>
             </div>
