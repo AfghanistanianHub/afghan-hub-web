@@ -116,9 +116,9 @@ export default async function ConversationPage({ params, searchParams }: Convers
           <Link
             href="/messages"
             aria-label="Back to messages"
-            className="relative flex size-10 shrink-0 items-center justify-center rounded-xl border border-transparent text-muted-foreground transition hover:border-border hover:bg-card hover:text-foreground"
+            className="relative flex size-10 shrink-0 items-center justify-center rounded-xl border border-transparent text-muted-foreground transition hover:border-border hover:bg-card hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
-            <ArrowLeft className="size-5" />
+            <ArrowLeft aria-hidden="true" className="size-5" />
           </Link>
 
           {otherMember?.avatar_url ? (
@@ -131,7 +131,7 @@ export default async function ConversationPage({ params, searchParams }: Convers
             />
           ) : (
             <div className="relative flex size-11 shrink-0 items-center justify-center rounded-2xl bg-secondary text-primary">
-              <UserRound className="size-5" />
+              <UserRound aria-hidden="true" className="size-5" />
             </div>
           )}
 
@@ -210,7 +210,7 @@ export default async function ConversationPage({ params, searchParams }: Convers
                       {formatMessageTime(message.created_at)}
                       {isMine && message.id === latestSentMessage?.id && latestSentMessageIsSeen ? (
                         <span className="ml-2 inline-flex items-center gap-1 font-medium">
-                          <CheckCheck className="size-3.5" /> Seen
+                          <CheckCheck aria-hidden="true" className="size-3.5" /> Seen
                         </span>
                       ) : null}
                     </p>
