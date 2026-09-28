@@ -49,11 +49,11 @@ export default async function ForgotPasswordPage({
           <p className="mt-3 text-sm leading-6 text-muted-foreground">Enter your account email and we will send you a secure reset link.</p>
 
           {error ? (
-            <div role="alert" className="mt-6 rounded-xl border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">{error}</div>
+            <div role="alert" aria-live="assertive" className="mt-6 rounded-xl border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">{error}</div>
           ) : null}
 
           {message ? (
-            <div role="status" className="mt-6 rounded-xl border border-primary/15 bg-primary/[0.06] p-3 text-sm text-primary">{message}</div>
+            <div role="status" aria-live="polite" className="mt-6 rounded-xl border border-primary/15 bg-primary/[0.06] p-3 text-sm text-primary">{message}</div>
           ) : null}
 
           <form action={requestPasswordReset} className="mt-7 space-y-5">
