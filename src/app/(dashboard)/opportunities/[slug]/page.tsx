@@ -117,13 +117,13 @@ export default async function OpportunityPage({
 
       <div className="mt-6 space-y-4">
         {actionError ? (
-          <div role="alert" className="rounded-2xl border border-destructive/20 bg-destructive/[0.06] p-4 text-sm text-destructive">
+          <div role="alert" aria-live="assertive" className="rounded-2xl border border-destructive/20 bg-destructive/[0.06] p-4 text-sm text-destructive">
             {actionError}
           </div>
         ) : null}
 
         {opportunity.status !== "published" ? (
-          <div className="rounded-2xl border border-accent/50 bg-accent/35 p-4 text-sm text-accent-foreground">
+          <div role="status" aria-live="polite" className="rounded-2xl border border-accent/50 bg-accent/35 p-4 text-sm leading-6 text-accent-foreground">
             {opportunity.status === "draft"
               ? "This opportunity is waiting for moderator approval and is not visible to the community yet."
               : `This opportunity was not approved.${
@@ -135,7 +135,7 @@ export default async function OpportunityPage({
         ) : null}
 
         {opportunity.status === "published" && isExpired ? (
-          <div className="rounded-2xl border border-border bg-muted/50 p-4 text-sm text-muted-foreground">
+          <div role="status" aria-live="polite" className="rounded-2xl border border-border bg-muted/50 p-4 text-sm text-muted-foreground">
             This opportunity has passed its application deadline and is no longer active.
           </div>
         ) : null}
@@ -161,20 +161,20 @@ export default async function OpportunityPage({
                 ) : null}
               </div>
 
-              <h1 className="mt-5 text-3xl font-bold leading-[1.08] tracking-[-0.035em] text-foreground md:text-5xl">
+              <h1 className="mt-5 break-words text-3xl font-bold leading-[1.08] tracking-[-0.035em] text-foreground md:text-5xl">
                 {opportunity.title}
               </h1>
               {opportunity.summary ? (
-                <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
+                <p className="mt-5 max-w-2xl break-words text-lg leading-8 text-muted-foreground">
                   {opportunity.summary}
                 </p>
               ) : null}
 
               <div className="mt-7 flex flex-wrap gap-3 text-sm">
                 {location ? (
-                  <span className="inline-flex items-center gap-2 rounded-xl border border-border bg-background/85 px-3.5 py-2 text-muted-foreground shadow-sm">
-                    <MapPin aria-hidden="true" className="size-4 text-primary" />
-                    {location}
+                  <span className="inline-flex min-w-0 items-start gap-2 rounded-xl border border-border bg-background/85 px-3.5 py-2 text-muted-foreground shadow-sm">
+                    <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
+                    <span className="min-w-0 break-words">{location}</span>
                   </span>
                 ) : null}
                 {opportunity.deadline ? (
@@ -226,7 +226,7 @@ export default async function OpportunityPage({
         <div className="relative grid border-t border-border/70 lg:grid-cols-[minmax(0,1fr)_330px]">
           <article className="min-w-0 px-6 py-8 md:px-9 md:py-10 lg:border-r lg:border-border/70">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">About this opportunity</p>
-            <div className="mt-5 whitespace-pre-wrap text-[1.02rem] leading-8 text-foreground/88">
+            <div className="mt-5 whitespace-pre-wrap break-words text-[1.02rem] leading-8 text-foreground/88">
               {opportunity.description}
             </div>
           </article>
@@ -341,9 +341,9 @@ export default async function OpportunityPage({
                   ) : null}
                   <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     {relatedLocation ? (
-                      <span className="inline-flex items-center gap-1.5">
-                        <MapPin aria-hidden="true" className="size-3.5 text-primary" />
-                        {relatedLocation}
+                      <span className="inline-flex min-w-0 items-start gap-1.5">
+                        <MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-primary" />
+                        <span className="min-w-0 break-words">{relatedLocation}</span>
                       </span>
                     ) : null}
                     {related.deadline ? (
