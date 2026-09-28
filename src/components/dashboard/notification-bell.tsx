@@ -121,7 +121,7 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
         aria-controls={panelId}
         aria-haspopup="dialog"
         onClick={() => setIsOpen((current) => !current)}
-        className="relative rounded-xl border border-border bg-card p-3 text-muted-foreground shadow-sm transition hover:border-primary/30 hover:bg-accent hover:text-foreground"
+        className="relative rounded-2xl border border-border/80 bg-card/78 p-3 text-muted-foreground shadow-[0_8px_24px_rgb(15_23_42/0.035)] transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-card hover:text-foreground"
       >
         <Bell className="size-5" />
         {unreadCount > 0 ? (
@@ -136,18 +136,18 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
           id={panelId}
           role="dialog"
           aria-label="Notifications"
-          className="absolute right-0 z-50 mt-3 w-[min(23rem,calc(100vw-2rem))] overflow-hidden rounded-3xl border border-border bg-card shadow-2xl shadow-foreground/10"
+          className="absolute right-0 z-50 mt-3 w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-[1.75rem] border border-border/80 bg-card/96 shadow-[0_24px_70px_rgb(15_23_42/0.16)] backdrop-blur-2xl"
         >
-          <div className="flex items-center justify-between border-b border-border px-5 py-4">
-            <div>
-              <p className="font-semibold text-foreground">Notifications</p>
+          <div className="relative flex items-center justify-between border-b border-border/80 px-5 py-4"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-28 rounded-full bg-primary/[0.06] blur-2xl" />
+            <div className="relative">
+              <p className="font-semibold tracking-tight text-foreground">Notifications</p>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {unreadCount > 0 ? `${unreadCount} unread` : "You’re all caught up"}
               </p>
             </div>
             {unreadCount > 0 ? (
               <form action={markAllNotificationsRead}>
-                <button type="submit" className="rounded-xl px-3 py-2 text-xs font-semibold text-primary transition hover:bg-primary/10">
+                <button type="submit" className="relative rounded-xl border border-primary/10 bg-primary/[0.04] px-3 py-2 text-xs font-semibold text-primary transition hover:bg-primary/10">
                   Mark all read
                 </button>
               </form>
@@ -163,20 +163,20 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
                 const ModerationIcon = notification.type === "content_approved" ? CircleCheck : CircleX;
 
                 return (
-                  <form key={notification.id} action={markNotificationRead} className="border-b border-border last:border-b-0">
+                  <form key={notification.id} action={markNotificationRead} className="border-b border-border/80 last:border-b-0">
                     <input type="hidden" name="notification_id" value={notification.id} />
                     <button
                       type="submit"
-                      className={`flex w-full gap-3 px-5 py-4 text-left transition hover:bg-accent/70 ${isUnread ? "bg-primary/[0.04]" : ""}`}
+                      className={`group flex w-full gap-3 px-5 py-4 text-left transition hover:bg-primary/[0.035] ${isUnread ? "bg-primary/[0.045]" : ""}`}
                     >
                       {isModerationNotification ? (
-                        <span className={`flex size-10 shrink-0 items-center justify-center rounded-2xl ${notification.type === "content_approved" ? "bg-primary/10 text-primary" : "bg-red-50 text-red-600"}`}>
+                        <span className={`flex size-10 shrink-0 items-center justify-center rounded-2xl border ${notification.type === "content_approved" ? "border-primary/10 bg-primary/10 text-primary" : "border-destructive/10 bg-destructive/[0.06] text-destructive"}`}>
                           <ModerationIcon className="size-5" />
                         </span>
                       ) : notification.actor?.avatarUrl ? (
-                        <ExternalImage src={notification.actor.avatarUrl} alt="" width={40} height={40} className="size-10 shrink-0 rounded-2xl object-cover" />
+                        <ExternalImage src={notification.actor.avatarUrl} alt="" width={40} height={40} className="size-10 shrink-0 rounded-2xl border border-border/70 object-cover shadow-sm" />
                       ) : (
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+                        <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-secondary text-primary">
                           {notification.actor ? (
                             <span className="text-sm font-bold text-primary">{actorName.charAt(0).toUpperCase()}</span>
                           ) : (
@@ -186,7 +186,7 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
                       )}
 
                       <span className="min-w-0 flex-1">
-                        <span className="block text-sm leading-5 text-foreground">{getNotificationMessage(notification)}</span>
+                        <span className={`block text-sm leading-5 text-foreground ${isUnread ? "font-semibold" : ""}`}>{getNotificationMessage(notification)}</span>
                         <span className="mt-1 block text-xs text-muted-foreground">{formatNotificationTime(notification.createdAt)}</span>
                       </span>
 
@@ -197,8 +197,8 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
               })}
             </div>
           ) : (
-            <div className="px-6 py-12 text-center">
-              <span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+            <div className="relative px-6 py-12 text-center"><div aria-hidden="true" className="absolute left-1/2 top-4 size-28 -translate-x-1/2 rounded-full bg-primary/[0.05] blur-2xl" />
+              <span className="relative mx-auto flex size-12 items-center justify-center rounded-2xl bg-secondary text-primary">
                 <Bell className="size-6" />
               </span>
               <p className="mt-4 text-sm font-semibold text-foreground">No notifications yet</p>
