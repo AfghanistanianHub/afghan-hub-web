@@ -134,7 +134,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                     <div className="min-w-0 flex-1">
                       <h3 className="line-clamp-2 break-words text-lg font-bold leading-6 text-foreground transition group-hover:text-primary">{memberName}</h3>
                       {member.headline ? (
-                        <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted-foreground">{member.headline}</p>
+                        <p className="mt-1 line-clamp-2 break-words text-sm leading-5 text-muted-foreground">{member.headline}</p>
                       ) : null}
                     </div>
                     <ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
@@ -159,7 +159,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                   {member.skills.length > 0 ? (
                     <div className="relative mt-5 flex flex-wrap gap-2 border-t border-border/70 pt-4">
                       {member.skills.slice(0, 4).map((skill) => (
-                        <span key={skill} className="rounded-full border border-border bg-muted/60 px-3 py-1 text-xs text-muted-foreground">
+                        <span key={skill} className="max-w-full break-words rounded-full border border-border bg-muted/60 px-3 py-1 text-xs text-muted-foreground">
                           {skill}
                         </span>
                       ))}
@@ -171,12 +171,12 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
           })}
         </div>
       ) : (
-        <div className="mt-6 flex min-h-72 flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-card px-6 text-center shadow-sm">
-          <span className="flex size-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+        <div className="relative mt-6 flex min-h-72 flex-col items-center justify-center overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-card px-6 text-center shadow-[0_12px_36px_rgb(15_23_42/0.035)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-36 rounded-full bg-primary/[0.06] blur-3xl"/>
+          <span className="relative flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             <UserRound aria-hidden="true" className="size-7" />
           </span>
-          <h2 className="mt-4 text-lg font-bold text-foreground">No members found</h2>
-          <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+          <h2 className="relative mt-4 text-lg font-bold text-foreground">No members found</h2>
+          <p className="relative mt-2 max-w-md text-sm leading-6 text-muted-foreground">
             Try searching with another name, location, profession, company, or skill.
           </p>
         </div>
