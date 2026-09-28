@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, CheckCheck, UserRound } from "lucide-react";
+import { ArrowLeft, CheckCheck, MessageSquare, UserRound } from "lucide-react";
 
 import { MarkConversationRead } from "@/components/messages/mark-conversation-read";
 import { MessageComposer } from "@/components/messages/message-composer";
@@ -135,19 +135,19 @@ export default async function ConversationPage({ params, searchParams }: Convers
             </div>
           )}
 
-          <div className="relative min-w-0">
+          <div className="relative min-w-0 flex-1">
             {otherMemberId ? (
               <Link
                 href={`/members/${otherMemberId}`}
-                className="block truncate font-semibold text-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                className="line-clamp-2 break-words rounded-sm font-semibold leading-5 text-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 {memberName}
               </Link>
             ) : (
-              <p className="truncate font-semibold text-foreground">{memberName}</p>
+              <p className="line-clamp-2 break-words font-semibold leading-5 text-foreground">{memberName}</p>
             )}
 
-            <p className="truncate text-sm text-muted-foreground">
+            <p className="mt-0.5 line-clamp-2 break-words text-sm leading-5 text-muted-foreground">
               {otherMember?.headline || "Afghan Hub member"}
             </p>
           </div>
@@ -181,10 +181,14 @@ export default async function ConversationPage({ params, searchParams }: Convers
           ) : null}
 
           {messages.length === 0 ? (
-            <div className="flex h-full min-h-72 items-center justify-center text-center">
-              <div>
-                <h1 className="text-lg font-semibold text-foreground">Start your conversation</h1>
-                <p className="mt-2 text-sm text-muted-foreground">Send a message to {memberName}.</p>
+            <div className="flex h-full min-h-72 items-center justify-center px-4 text-center">
+              <div className="relative w-full max-w-md overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-background/55 px-6 py-10">
+                <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-36 rounded-full bg-primary/[0.07] blur-3xl" />
+                <span className="relative mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <MessageSquare aria-hidden="true" className="size-7" />
+                </span>
+                <h1 className="relative mt-5 text-lg font-semibold text-foreground">Start your conversation</h1>
+                <p className="relative mt-2 break-words text-sm leading-6 text-muted-foreground">Send a message to {memberName}.</p>
               </div>
             </div>
           ) : (
