@@ -50,7 +50,7 @@ function EventCard({
   return (
     <Link
       href={`/events/${event.slug}`}
-      className="surface-panel group relative overflow-hidden block rounded-[1.5rem] p-5 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_16px_36px_rgb(15_23_42/0.06)]"
+      className="surface-panel group relative block overflow-hidden rounded-[1.5rem] p-5 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_16px_36px_rgb(15_23_42/0.06)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
     >
       <div aria-hidden="true" className="absolute -right-8 -top-8 size-24 rounded-full border border-primary/10" />
       <div className="relative flex flex-wrap items-center gap-2">
@@ -75,7 +75,7 @@ function EventCard({
 
       {location ? (
         <p className="relative mt-4 flex items-start gap-2 border-t border-border/70 pt-4 text-sm text-muted-foreground">
-          <MapPin className="mt-0.5 size-4 shrink-0" />
+          <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
           {location}
         </p>
       ) : null}
@@ -143,13 +143,13 @@ export default async function MyEventsPage() {
         <div className="flex flex-wrap gap-3">
           <Link
             href="/events"
-            className="rounded-2xl border border-border/80 bg-background/80 px-5 py-3 font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted"
+            className="rounded-2xl border border-border/80 bg-background/80 px-5 py-3 font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
             Browse events
           </Link>
           <Link
             href="/events/new"
-            className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90"
+            className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
             Create Event
           </Link>
@@ -173,7 +173,7 @@ export default async function MyEventsPage() {
           </div>
         ) : (
           <div className="mt-5 rounded-3xl border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
-            <CalendarDays className="mx-auto size-9 text-muted-foreground" />
+            <CalendarDays aria-hidden="true" className="mx-auto size-9 text-muted-foreground" />
             <h3 className="mt-3 font-semibold text-foreground">
               No upcoming registrations
             </h3>
@@ -185,7 +185,7 @@ export default async function MyEventsPage() {
 
         {pastRegistered.length ? (
           <details className="mt-6 rounded-2xl border border-border bg-muted/30 p-5">
-            <summary className="cursor-pointer font-semibold text-foreground">
+            <summary className="cursor-pointer rounded-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
               Past registrations ({pastRegistered.length})
             </summary>
             <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -216,7 +216,7 @@ export default async function MyEventsPage() {
           </div>
         ) : (
           <div className="mt-5 rounded-3xl border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
-            <CalendarDays className="mx-auto size-9 text-muted-foreground" />
+            <CalendarDays aria-hidden="true" className="mx-auto size-9 text-muted-foreground" />
             <h3 className="mt-3 font-semibold text-foreground">
               You are not hosting any events yet
             </h3>
