@@ -111,12 +111,12 @@ export default async function ConversationPage({ params, searchParams }: Convers
       ) : null}
       <RealtimeReadReceiptRefresh conversationId={conversationId} />
 
-      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
-        <header className="flex items-center gap-4 border-b border-border px-4 py-4 sm:px-5">
+      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-hidden rounded-[2rem] border border-border/80 bg-card shadow-[0_18px_55px_rgb(15_23_42/0.045)]">
+        <header className="relative flex items-center gap-4 border-b border-border/80 bg-background/72 px-4 py-4 backdrop-blur-xl sm:px-5"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-16 size-32 rounded-full bg-primary/[0.055] blur-2xl" />
           <Link
             href="/messages"
             aria-label="Back to messages"
-            className="flex size-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition hover:bg-accent hover:text-foreground"
+            className="relative flex size-10 shrink-0 items-center justify-center rounded-xl border border-transparent text-muted-foreground transition hover:border-border hover:bg-card hover:text-foreground"
           >
             <ArrowLeft className="size-5" />
           </Link>
@@ -127,15 +127,15 @@ export default async function ConversationPage({ params, searchParams }: Convers
               alt=""
               width={44}
               height={44}
-              className="size-11 shrink-0 rounded-2xl object-cover"
+              className="relative size-11 shrink-0 rounded-2xl border border-border/70 object-cover shadow-sm"
             />
           ) : (
-            <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+            <div className="relative flex size-11 shrink-0 items-center justify-center rounded-2xl bg-secondary text-primary">
               <UserRound className="size-5" />
             </div>
           )}
 
-          <div className="min-w-0">
+          <div className="relative min-w-0">
             {otherMemberId ? (
               <Link
                 href={`/members/${otherMemberId}`}
@@ -194,10 +194,10 @@ export default async function ConversationPage({ params, searchParams }: Convers
               return (
                 <div key={message.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
                   <div
-                    className={`max-w-[84%] rounded-2xl px-4 py-3 sm:max-w-[70%] ${
+                    className={`max-w-[84%] rounded-2xl px-4 py-3 shadow-[0_6px_18px_rgb(15_23_42/0.035)] sm:max-w-[70%] ${
                       isMine
-                        ? "rounded-br-md bg-primary text-primary-foreground shadow-sm"
-                        : "rounded-bl-md border border-border bg-muted/60 text-foreground"
+                        ? "rounded-br-md bg-primary text-primary-foreground"
+                        : "rounded-bl-md border border-border/80 bg-muted/55 text-foreground"
                     }`}
                   >
                     <p className="whitespace-pre-wrap break-words text-sm leading-6">{message.body}</p>
