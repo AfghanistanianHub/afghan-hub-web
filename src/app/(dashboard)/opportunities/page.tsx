@@ -196,7 +196,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
         <div className="flex items-end gap-3">
           <button
             type="submit"
-            className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-sm transition hover:opacity-90"
+            className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
             Apply
           </button>
@@ -226,9 +226,9 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
 
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
         {error ? (
-          <div className="rounded-3xl border border-red-200 bg-red-50 p-8 text-center">
-            <h2 className="text-xl font-semibold text-red-700">We could not load opportunities</h2>
-            <p className="mt-2 text-sm text-red-600">Please try again in a moment.</p>
+          <div role="alert" className="rounded-3xl border border-destructive/25 bg-destructive/[0.06] p-8 text-center">
+            <h2 className="text-xl font-semibold text-destructive">We could not load opportunities</h2>
+            <p className="mt-2 text-sm text-destructive/80">Please try again in a moment.</p>
           </div>
         ) : opportunities?.length ? (
           opportunities.map((opportunity) => (
