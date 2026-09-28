@@ -82,7 +82,7 @@ export function ConnectionRequests({
                   <p className="break-words font-semibold text-foreground">{name}</p>
 
                   {requester.headline ? (
-                    <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted-foreground">
+                    <p className="mt-1 line-clamp-2 break-words text-sm leading-5 text-muted-foreground">
                       {requester.headline}
                     </p>
                   ) : null}
