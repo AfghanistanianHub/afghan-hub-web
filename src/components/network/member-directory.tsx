@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
@@ -50,6 +50,7 @@ function getInitials(name: string) {
 
 export function MemberDirectory({ members }: MemberDirectoryProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const normalizedQuery = searchQuery.trim().toLowerCase();
   const hasSearchQuery = normalizedQuery.length > 0;
 
@@ -75,6 +76,11 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
     });
   }, [members, normalizedQuery]);
 
+  function clearSearch() {
+    setSearchQuery("");
+    window.requestAnimationFrame(() => searchInputRef.current?.focus());
+  }
+
   return (
     <>
       <div className="mt-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -86,6 +92,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
         <div className="relative w-full lg:max-w-md">
           <Search aria-hidden="true" className="absolute left-4 top-1/2 size-4.5 -translate-y-1/2 text-muted-foreground" />
           <input
+            ref={searchInputRef}
             type="search"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
@@ -187,7 +194,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
           {hasSearchQuery ? (
             <button
               type="button"
-              onClick={() => setSearchQuery("")}
+              onClick={clearSearch}
               className="relative mt-5 inline-flex min-h-10 items-center justify-center rounded-xl border border-border/80 bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               Clear search
