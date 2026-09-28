@@ -53,7 +53,7 @@ export default async function EditOpportunityPage({
     <main className="mx-auto max-w-4xl px-4 py-8 md:px-6 md:py-10">
       <Link
         href={`/opportunities/${opportunity.slug}`}
-        className="text-sm font-semibold text-primary transition hover:opacity-75"
+        className="rounded-sm text-sm font-semibold text-primary transition hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
         ← Back to opportunity
       </Link>
@@ -72,7 +72,7 @@ export default async function EditOpportunityPage({
       </section>
 
       {error ? (
-        <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div role="alert" className="mt-6 rounded-2xl border border-destructive/25 bg-destructive/[0.06] px-4 py-3 text-sm text-destructive">
           {error}
         </div>
       ) : null}
@@ -156,10 +156,10 @@ export default async function EditOpportunityPage({
         </div>
 
         <div className="flex flex-wrap gap-3 border-t border-border pt-6">
-          <button type="submit" className="rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90">
+          <button type="submit" className="rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
             Save and submit for review
           </button>
-          <Link href={`/opportunities/${opportunity.slug}`} className="rounded-2xl border border-border/80 bg-background px-5 py-3 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-muted">
+          <Link href={`/opportunities/${opportunity.slug}`} className="rounded-2xl border border-border/80 bg-background px-5 py-3 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
             Cancel
           </Link>
         </div>
