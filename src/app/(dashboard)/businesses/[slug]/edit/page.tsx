@@ -72,16 +72,14 @@ export default async function EditBusinessPage({
           ← Back to business
         </Link>
 
-        <section className="mt-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
-            Business settings
-          </p>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-            Edit {business.name}
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Keep your business profile accurate, useful, and easy to discover.
-          </p>
+        <section className="relative mt-6 overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
+          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
+          <div className="relative">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Business settings</p>
+            <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] md:text-5xl">Edit {business.name}</h1>
+            <p className="mt-3 max-w-2xl text-muted-foreground">Keep your business profile accurate, useful, and easy to discover.</p>
+          </div>
         </section>
 
         {formError ? (
@@ -102,7 +100,7 @@ export default async function EditBusinessPage({
 
         <form
           action={updateBusiness}
-          className="surface-panel mt-8 space-y-8 p-6 md:p-8"
+          className="surface-panel mt-8 space-y-8 rounded-[2rem] p-6 md:p-8"
         >
           <input type="hidden" name="slug" value={business.slug} />
 
@@ -134,7 +132,7 @@ export default async function EditBusinessPage({
                 <input name="services" type="text" defaultValue={business.services.join(", ")} className="mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
                 <span className="mt-2 block text-xs text-muted-foreground">Separate each service with a comma.</span>
               </label>
-              <label className="flex items-center gap-3 rounded-xl border border-border bg-muted/35 px-4 py-3 md:col-span-2">
+              <label className="flex items-center gap-3 rounded-2xl border border-border/80 bg-secondary/40 px-4 py-3 transition hover:border-primary/20 md:col-span-2">
                 <input name="is_hiring" type="checkbox" defaultChecked={business.is_hiring} className="size-4 rounded border-input accent-primary" />
                 <span className="text-sm font-medium">This business is currently hiring</span>
               </label>
@@ -178,8 +176,8 @@ export default async function EditBusinessPage({
           </section>
 
           <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:justify-end">
-            <Link href={`/businesses/${business.slug}`} className="rounded-xl border border-border bg-background px-5 py-3 text-center font-semibold transition hover:bg-muted">Cancel</Link>
-            <button type="submit" className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90">Save changes</button>
+            <Link href={`/businesses/${business.slug}`} className="rounded-2xl border border-border/80 bg-background px-5 py-3 text-center font-semibold transition hover:-translate-y-0.5 hover:bg-muted">Cancel</Link>
+            <button type="submit" className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90">Save changes</button>
           </div>
         </form>
       </div>
