@@ -290,7 +290,7 @@ export default async function SearchPage({
                           {getSafeResultTitle(result)}
                         </h2>
                         {result.subtitle ? (
-                          <p className="mt-1 line-clamp-2 text-sm leading-6 text-muted-foreground">
+                          <p className="mt-1 line-clamp-2 break-words text-sm leading-6 text-muted-foreground">
                             {result.subtitle}
                           </p>
                         ) : null}
@@ -306,12 +306,12 @@ export default async function SearchPage({
                 })}
               </div>
             ) : (
-              <div className="mt-5 flex min-h-64 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/70 px-6 text-center">
-                <Search aria-hidden="true" className="size-10 text-muted-foreground/60" />
-                <h2 className="mt-4 text-lg font-bold text-foreground">
+              <div className="relative mt-5 flex min-h-64 flex-col items-center justify-center overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-card/70 px-6 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"/>
+                <Search aria-hidden="true" className="relative size-10 text-primary/70" />
+                <h2 className="relative mt-4 text-lg font-bold text-foreground">
                   No results found
                 </h2>
-                <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+                <p className="relative mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                   Try another name, location, skill, organization, business,
                   opportunity, or event.
                 </p>
@@ -321,12 +321,12 @@ export default async function SearchPage({
         ) : null}
 
         {!query ? (
-          <div className="mt-8 flex min-h-64 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/70 px-6 text-center">
+          <div className="relative mt-8 flex min-h-64 flex-col items-center justify-center overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-card/70 px-6 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"/>
             <Search aria-hidden="true" className="size-10 text-muted-foreground/60" />
             <h2 className="mt-4 text-lg font-bold text-foreground">
               Search the community
             </h2>
-            <p className="mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
+            <p className="relative mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
               Find people, services, organizations, opportunities, and events
               across Afghan Hub.
             </p>
