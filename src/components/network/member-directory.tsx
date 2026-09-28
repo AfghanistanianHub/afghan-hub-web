@@ -83,11 +83,12 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
         </div>
 
         <div className="relative w-full lg:max-w-md">
-          <Search className="absolute left-4 top-1/2 size-4.5 -translate-y-1/2 text-muted-foreground" />
+          <Search aria-hidden="true" className="absolute left-4 top-1/2 size-4.5 -translate-y-1/2 text-muted-foreground" />
           <input
             type="search"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
+            aria-label="Search members"
             placeholder="Search people, skills, companies..."
             className="w-full rounded-2xl border border-border/80 bg-card/88 py-3.5 pl-11 pr-4 text-sm text-foreground shadow-[0_8px_24px_rgb(15_23_42/0.035)] outline-none transition placeholder:text-muted-foreground hover:border-primary/20 focus:border-primary/40 focus:ring-4 focus:ring-primary/10"
           />
@@ -112,7 +113,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
               .join(" at ");
 
             return (
-              <Link key={member.id} href={`/members/${member.id}`} className="group block">
+              <Link key={member.id} href={`/members/${member.id}`} className="group block rounded-[1.75rem] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
                 <article className="relative h-full overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)] transition duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 group-hover:shadow-[0_18px_42px_rgb(15_23_42/0.07)]">
                   <div aria-hidden="true" className="absolute -right-10 -top-10 size-28 rounded-full border border-primary/10" />
                   <div className="relative flex items-start gap-4">
@@ -126,7 +127,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                       />
                     ) : (
                       <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 font-bold text-primary">
-                        {getInitials(memberName) || <UserRound className="size-6" />}
+                        {getInitials(memberName) || <UserRound aria-hidden="true" className="size-6" />}
                       </div>
                     )}
 
@@ -142,14 +143,14 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                   <div className="relative mt-5 space-y-3 text-sm text-muted-foreground">
                     {professionalDetails ? (
                       <div className="flex items-start gap-3">
-                        <BriefcaseBusiness className="mt-0.5 size-4 shrink-0 text-primary" />
+                        <BriefcaseBusiness aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
                         <span className="min-w-0 break-words">{professionalDetails}</span>
                       </div>
                     ) : null}
 
                     {location ? (
                       <div className="flex items-start gap-3">
-                        <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
+                        <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
                         <span className="min-w-0 break-words">{location}</span>
                       </div>
                     ) : null}
@@ -172,7 +173,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
       ) : (
         <div className="mt-6 flex min-h-72 flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-card px-6 text-center shadow-sm">
           <span className="flex size-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
-            <UserRound className="size-7" />
+            <UserRound aria-hidden="true" className="size-7" />
           </span>
           <h2 className="mt-4 text-lg font-bold text-foreground">No members found</h2>
           <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
