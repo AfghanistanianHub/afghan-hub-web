@@ -60,7 +60,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
             <div className="relative">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Your community identity</p>
               <h1 className="mt-3 break-words text-3xl font-bold tracking-[-0.035em]">{displayName}</h1>
-              {profile?.headline ? <p className="mt-3 text-sm leading-6 text-muted-foreground">{profile.headline}</p> : <p className="mt-3 text-sm leading-6 text-muted-foreground">Add a headline so people can understand what you do at a glance.</p>}
+              {profile?.headline ? <p className="mt-3 break-words text-sm leading-6 text-muted-foreground">{profile.headline}</p> : <p className="mt-3 text-sm leading-6 text-muted-foreground">Add a headline so people can understand what you do at a glance.</p>}
 
               <div className="mt-7">
                 <AvatarUpload userId={user.id} currentAvatarUrl={profile?.avatar_url} />
@@ -86,7 +86,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
             <section className="rounded-[2rem] border border-border/80 bg-card p-6 shadow-[0_12px_38px_rgb(15_23_42/0.045)] md:p-8">
               <div className="max-w-2xl">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Profile builder</p>
-                <h2 className="mt-2 text-3xl font-bold tracking-[-0.03em]">Tell the community who you are</h2>
+                <h2 className="mt-2 break-words text-3xl font-bold tracking-[-0.03em]">Tell the community who you are</h2>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">Use the sections below to shape how other members discover and understand your work, experience, and interests.</p>
               </div>
 
