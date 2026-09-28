@@ -121,7 +121,7 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
         aria-controls={panelId}
         aria-haspopup="dialog"
         onClick={() => setIsOpen((current) => !current)}
-        className="relative rounded-2xl border border-border/80 bg-card/78 p-3 text-muted-foreground shadow-[0_8px_24px_rgb(15_23_42/0.035)] transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-card hover:text-foreground"
+        className="relative rounded-2xl border border-border/80 bg-card/78 p-3 text-muted-foreground shadow-[0_8px_24px_rgb(15_23_42/0.035)] transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-card hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
         <Bell className="size-5" />
         {unreadCount > 0 ? (
@@ -147,7 +147,7 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
             </div>
             {unreadCount > 0 ? (
               <form action={markAllNotificationsRead}>
-                <button type="submit" className="relative rounded-xl border border-primary/10 bg-primary/[0.04] px-3 py-2 text-xs font-semibold text-primary transition hover:bg-primary/10">
+                <button type="submit" className="relative rounded-xl border border-primary/10 bg-primary/[0.04] px-3 py-2 text-xs font-semibold text-primary transition hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
                   Mark all read
                 </button>
               </form>
@@ -167,7 +167,7 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
                     <input type="hidden" name="notification_id" value={notification.id} />
                     <button
                       type="submit"
-                      className={`group flex w-full gap-3 px-5 py-4 text-left transition hover:bg-primary/[0.035] ${isUnread ? "bg-primary/[0.045]" : ""}`}
+                      className={`group flex w-full gap-3 px-5 py-4 text-left transition hover:bg-primary/[0.035] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary ${isUnread ? "bg-primary/[0.045]" : ""}`}
                     >
                       {isModerationNotification ? (
                         <span className={`flex size-10 shrink-0 items-center justify-center rounded-2xl border ${notification.type === "content_approved" ? "border-primary/10 bg-primary/10 text-primary" : "border-destructive/10 bg-destructive/[0.06] text-destructive"}`}>

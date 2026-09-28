@@ -34,7 +34,7 @@ export function Sidebar({
     <aside className="relative hidden min-h-screen w-64 shrink-0 overflow-hidden border-r border-sidebar-border/80 bg-sidebar/82 shadow-[8px_0_32px_rgb(15_23_42/0.025)] backdrop-blur-2xl lg:flex lg:flex-col">
       <div aria-hidden="true" className="pointer-events-none absolute -left-20 -top-24 size-64 rounded-full bg-primary/[0.055] blur-3xl" />
       <div className="relative flex h-20 items-center border-b border-sidebar-border/80 px-5">
-        <Link href="/dashboard" className="group inline-flex items-center gap-3 rounded-xl px-1 py-1">
+        <Link href="/dashboard" className="group inline-flex items-center gap-3 rounded-xl px-1 py-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
           <span className="flex size-9 items-center justify-center rounded-2xl border border-primary-foreground/10 bg-primary text-sm font-black text-primary-foreground shadow-[0_8px_20px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition-transform group-hover:-rotate-3">
             A
           </span>
@@ -65,7 +65,7 @@ export function Sidebar({
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`group relative flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition ${
+              className={`group relative flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                 active
                   ? "bg-primary/[0.09] text-foreground shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--primary)_12%,transparent)]"
                   : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
@@ -118,7 +118,7 @@ export function Sidebar({
           <Link
             href="/profile"
             aria-current={isActivePath(pathname, "/profile") ? "page" : undefined}
-            className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition ${
+            className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
               isActivePath(pathname, "/profile")
                 ? "bg-primary/[0.09] text-foreground"
                 : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
@@ -131,7 +131,7 @@ export function Sidebar({
           <Link
             href="/settings"
             aria-current={isActivePath(pathname, "/settings") ? "page" : undefined}
-            className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition ${
+            className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
               isActivePath(pathname, "/settings")
                 ? "bg-primary/[0.09] text-foreground"
                 : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
