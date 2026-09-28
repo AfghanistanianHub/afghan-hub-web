@@ -150,7 +150,7 @@ export default async function MessagesPage() {
 
                     <div className="mt-1 flex items-center gap-3">
                       <p
-                        className={`min-w-0 flex-1 truncate text-sm ${
+                        className={`min-w-0 flex-1 line-clamp-2 break-words text-sm leading-5 ${
                           unreadCount > 0 ? "font-medium text-foreground/80" : "text-muted-foreground"
                         }`}
                       >
