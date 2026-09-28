@@ -76,7 +76,7 @@ export function MyConnections({
             <Link
               key={member.id}
               href={"/members/" + member.id}
-              className="group relative overflow-hidden rounded-[1.5rem] border border-border/80 bg-card p-5 shadow-[0_8px_26px_rgb(15_23_42/0.03)] transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_16px_36px_rgb(15_23_42/0.06)]"
+              className="group relative overflow-hidden rounded-[1.5rem] border border-border/80 bg-card p-5 shadow-[0_8px_26px_rgb(15_23_42/0.03)] transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_16px_36px_rgb(15_23_42/0.06)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               <div aria-hidden="true" className="absolute -right-8 -top-8 size-24 rounded-full border border-primary/10" />
               <div className="relative flex items-center gap-3">
@@ -90,12 +90,12 @@ export function MyConnections({
                   />
                 ) : (
                   <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/[0.10] font-bold text-primary transition group-hover:bg-primary/[0.14]">
-                    {name.charAt(0).toUpperCase() || <UserRound className="size-5" />}
+                    {name.charAt(0).toUpperCase() || <UserRound aria-hidden="true" className="size-5" />}
                   </div>
                 )}
 
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold text-foreground">
+                  <p className="line-clamp-2 break-words font-semibold leading-5 text-foreground">
                     {name}
                   </p>
 
@@ -109,9 +109,9 @@ export function MyConnections({
               </div>
 
               {location ? (
-                <p className="relative mt-4 flex items-center gap-2 border-t border-border/70 pt-4 text-sm text-muted-foreground">
-                  <MapPin aria-hidden="true" className="size-3.5 text-primary" />
-                  {location}
+                <p className="relative mt-4 flex items-start gap-2 border-t border-border/70 pt-4 text-sm leading-5 text-muted-foreground">
+                  <MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-primary" />
+                  <span className="min-w-0 break-words">{location}</span>
                 </p>
               ) : null}
             </Link>
