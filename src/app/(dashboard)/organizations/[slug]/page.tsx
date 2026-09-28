@@ -27,7 +27,7 @@ export default async function OrganizationPage({params,searchParams}:Organizatio
  const programs=Array.isArray(organization.programs)?organization.programs.filter((program:unknown):program is string=>typeof program==="string"):[];
  const location=[organization.city,organization.province_state,organization.country].filter(Boolean).join(", ");
  return <main className="px-4 py-8 md:px-8"><div className="mx-auto max-w-6xl">
-  <Link href="/organizations" className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:opacity-80"><ArrowLeft aria-hidden="true" className="size-4"/>Back to organizations</Link>
+  <Link href="/organizations" className="inline-flex items-center gap-2 rounded-sm text-sm font-medium text-primary transition hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"><ArrowLeft aria-hidden="true" className="size-4"/>Back to organizations</Link>
   {actionError?<div role="alert" className="mt-6 rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{actionError}</div>:null}
   {organization.status!=="published"?<div className="mt-6 rounded-2xl border border-accent/50 bg-accent/40 p-4 text-sm text-accent-foreground">{organization.status==="draft"?"This organization is waiting for moderator approval and is not visible to the community yet.":`This organization was not approved.${organization.moderation_note?` Reason: ${organization.moderation_note}`:""} Edit it to submit it for review again.`}</div>:null}
 
