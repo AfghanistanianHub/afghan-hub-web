@@ -84,8 +84,8 @@ export default async function SavedOpportunitiesPage() {
     <main className="px-4 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">
         <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
-          <div className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
+          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
           <div className="relative max-w-2xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
               <Sparkles aria-hidden="true" className="size-3.5" />
@@ -125,7 +125,7 @@ export default async function SavedOpportunitiesPage() {
                     {opportunity.type}
                   </span>
                   <div className="relative mt-4 flex items-start justify-between gap-4">
-                    <h2 className="text-xl font-bold text-card-foreground transition group-hover:text-primary">
+                    <h2 className="break-words text-xl font-bold text-card-foreground transition group-hover:text-primary">
                       {opportunity.title}
                     </h2>
                     <ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
