@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowUpRight, BriefcaseBusiness, Search } from "lucide-react";
 import {
   formatOpportunityDeadline,
   getUtcDateKey,
@@ -119,10 +120,16 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 md:px-8 lg:px-10">
-      <section className="flex flex-col gap-5 rounded-3xl border border-border bg-card px-6 py-8 shadow-sm md:flex-row md:items-end md:justify-between md:px-8 md:py-10">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Opportunity board</p>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground md:text-4xl">Opportunities</h1>
+      <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/50 blur-3xl" />
+        <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-3xl">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+            <BriefcaseBusiness aria-hidden="true" className="size-3.5" />
+            Opportunity board
+          </div>
+          <h1 className="mt-5 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Opportunities</h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
             Discover jobs, volunteering, scholarships, mentorship, education, investment, and community opportunities.
           </p>
@@ -130,19 +137,21 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
 
         <Link
           href="/opportunities/new"
-          className="inline-flex w-fit rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-90"
+          className="inline-flex w-fit items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_18%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/92"
         >
           Post opportunity
+          <ArrowUpRight aria-hidden="true" className="size-4" />
         </Link>
+        </div>
       </section>
 
       <form
         action="/opportunities"
         method="get"
-        className="mt-8 grid gap-4 rounded-3xl border border-border bg-card p-5 shadow-sm md:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]"
+        className="mt-8 grid gap-4 rounded-[1.75rem] border border-border/80 bg-card/88 p-5 shadow-[0_12px_38px_rgb(15_23_42/0.035)] backdrop-blur md:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]"
       >
         <label className="grid gap-2 text-sm font-medium text-foreground">
-          Search opportunities
+          <span className="inline-flex items-center gap-2"><Search aria-hidden="true" className="size-4 text-primary" /> Search opportunities</span>
           <input
             type="search"
             name="q"
@@ -215,7 +224,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
         ) : null}
       </div>
 
-      <div className="mt-6 space-y-5">
+      <div className="mt-6 grid gap-5 lg:grid-cols-2">
         {error ? (
           <div className="rounded-3xl border border-red-200 bg-red-50 p-8 text-center">
             <h2 className="text-xl font-semibold text-red-700">We could not load opportunities</h2>
@@ -226,9 +235,10 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
             <Link
               key={opportunity.id}
               href={`/opportunities/${opportunity.slug}`}
-              className="group block rounded-3xl border border-border bg-card p-6 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-md"
+              className="group relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)] transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.07)]"
             >
-              <div className="flex flex-wrap items-center gap-2">
+              <div aria-hidden="true" className="absolute -right-10 -top-10 size-28 rounded-full border border-primary/10" />
+              <div className="relative flex flex-wrap items-center gap-2">
                 <span className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
                   {formatType(opportunity.type)}
                 </span>
@@ -237,19 +247,22 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
                 </span>
               </div>
 
-              <h2 className="mt-4 text-2xl font-semibold tracking-tight text-foreground transition group-hover:text-primary">
-                {opportunity.title}
-              </h2>
+              <div className="relative mt-5 flex items-start justify-between gap-4">
+                <h2 className="text-xl font-semibold tracking-tight text-foreground transition group-hover:text-primary md:text-2xl">
+                  {opportunity.title}
+                </h2>
+                <ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+              </div>
 
               {opportunity.organization ? (
-                <p className="mt-2 text-sm font-medium text-primary">Posted by {getOrganizationName(opportunity.organization)}</p>
+                <p className="relative mt-2 text-sm font-medium text-primary">Posted by {getOrganizationName(opportunity.organization)}</p>
               ) : (
-                <p className="mt-2 text-sm text-muted-foreground">Personal opportunity</p>
+                <p className="relative mt-2 text-sm text-muted-foreground">Personal opportunity</p>
               )}
 
-              <p className="mt-3 text-sm leading-7 text-muted-foreground md:text-base">{opportunity.summary}</p>
+              <p className="relative mt-3 line-clamp-3 text-sm leading-7 text-muted-foreground md:text-base">{opportunity.summary}</p>
 
-              <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+              <div className="relative mt-5 flex flex-wrap gap-x-6 gap-y-2 border-t border-border/70 pt-4 text-sm text-muted-foreground">
                 {opportunity.city ? <span>{opportunity.city}</span> : null}
                 {opportunity.country ? <span>{opportunity.country}</span> : null}
                 {opportunity.deadline ? <span>Deadline {formatOpportunityDeadline(opportunity.deadline)}</span> : null}
