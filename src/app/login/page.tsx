@@ -110,13 +110,13 @@ export default async function LoginPage({
           </p>
 
           {error ? (
-            <div role="alert" className="mt-6 rounded-xl border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">
+            <div role="alert" aria-live="assertive" className="mt-6 rounded-xl border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">
               {error}
             </div>
           ) : null}
 
           {message ? (
-            <div role="status" className="mt-6 rounded-xl border border-primary/15 bg-primary/[0.06] p-3 text-sm text-primary">
+            <div role="status" aria-live="polite" className="mt-6 rounded-xl border border-primary/15 bg-primary/[0.06] p-3 text-sm text-primary">
               {message}
             </div>
           ) : null}
