@@ -50,25 +50,25 @@ export function MobileNavigation({
       <Dialog.Trigger
         type="button"
         aria-label="Open navigation"
-        className="rounded-xl border border-border bg-card p-2.5 text-muted-foreground shadow-sm transition hover:border-primary/30 hover:bg-accent hover:text-foreground lg:hidden"
+        className="rounded-2xl border border-border/80 bg-card/78 p-2.5 text-muted-foreground shadow-[0_8px_24px_rgb(15_23_42/0.035)] transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-card hover:text-foreground lg:hidden"
       >
         <Menu className="size-5" />
       </Dialog.Trigger>
 
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-50 bg-foreground/15 backdrop-blur-sm" />
+        <Dialog.Backdrop className="fixed inset-0 z-50 bg-foreground/12 backdrop-blur-md" />
 
         <Dialog.Popup
           aria-label="Main navigation"
-          className="fixed inset-y-0 left-0 z-50 flex h-dvh w-[min(20rem,88vw)] flex-col border-r border-border bg-background shadow-2xl"
+          className="fixed inset-y-0 left-0 z-50 flex h-dvh w-[min(20rem,88vw)] flex-col overflow-hidden border-r border-border/80 bg-background/96 shadow-[18px_0_55px_rgb(15_23_42/0.12)] backdrop-blur-2xl"
         >
-          <div className="flex h-20 shrink-0 items-center justify-between border-b border-border px-5">
+          <div className="relative flex h-20 shrink-0 items-center justify-between border-b border-border/80 px-5"><div aria-hidden="true" className="pointer-events-none absolute -left-16 -top-20 size-52 rounded-full bg-primary/[0.06] blur-3xl" />
             <Link
               href="/dashboard"
               onClick={() => setIsOpen(false)}
-              className="inline-flex items-center gap-3"
+              className="relative inline-flex items-center gap-3"
             >
-              <span className="flex size-9 items-center justify-center rounded-2xl bg-primary text-sm font-black text-primary-foreground shadow-sm">
+              <span className="flex size-9 items-center justify-center rounded-2xl border border-primary-foreground/10 bg-primary text-sm font-black text-primary-foreground shadow-[0_8px_20px_color-mix(in_oklab,var(--primary)_16%,transparent)]">
                 A
               </span>
               <span>
@@ -80,7 +80,7 @@ export function MobileNavigation({
             <Dialog.Close
               type="button"
               aria-label="Close navigation"
-              className="rounded-xl p-2 text-muted-foreground transition hover:bg-accent hover:text-foreground"
+              className="relative rounded-xl border border-transparent p-2 text-muted-foreground transition hover:border-border hover:bg-card hover:text-foreground"
             >
               <X className="size-5" />
             </Dialog.Close>
@@ -101,16 +101,16 @@ export function MobileNavigation({
                   href={item.href}
                   onClick={() => setIsOpen(false)}
                   aria-current={active ? "page" : undefined}
-                  className={`relative flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition ${
+                  className={`group relative flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition ${
                     active
-                      ? "bg-primary/[0.09] text-foreground"
-                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                      ? "bg-primary/[0.09] text-foreground shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--primary)_12%,transparent)]"
+                      : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   }`}
                 >
                   {active ? <span aria-hidden="true" className="absolute left-1 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-primary" /> : null}
                   <span
                     className={`flex size-9 items-center justify-center rounded-xl ${
-                      active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                      active ? "bg-primary text-primary-foreground shadow-sm" : "bg-transparent text-muted-foreground group-hover:bg-background/70"
                     }`}
                   >
                     <Icon className="size-4.5" />
@@ -139,7 +139,7 @@ export function MobileNavigation({
             })}
           </nav>
 
-          <div className="shrink-0 border-t border-border p-3">
+          <div className="relative shrink-0 border-t border-border/80 bg-background/82 p-3 backdrop-blur">
             <p className="px-3 pb-2 pt-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Account</p>
             <div className="space-y-1">
               <Link
