@@ -66,22 +66,22 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
   }
 
   return (
-    <div className="space-y-4" aria-busy={uploading}>
+    <div className="relative space-y-4 overflow-hidden rounded-[1.5rem] border border-border/80 bg-background/72 p-5 shadow-[0_10px_30px_rgb(15_23_42/0.035)]" aria-busy={uploading}><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-16 size-40 rounded-full bg-primary/[0.06] blur-3xl" />
       {currentAvatarUrl ? (
         <ExternalImage
           src={currentAvatarUrl}
           alt="Profile avatar"
           width={96}
           height={96}
-          className="size-24 rounded-full border border-border object-cover shadow-sm"
+          className="relative size-24 rounded-[1.5rem] border-4 border-card object-cover shadow-[0_12px_28px_rgb(15_23_42/0.10)]"
         />
       ) : (
-        <div className="flex size-24 items-center justify-center rounded-full border border-border bg-muted text-sm text-muted-foreground">
+        <div className="relative flex size-24 items-center justify-center rounded-[1.5rem] border border-dashed border-border bg-muted/60 text-sm text-muted-foreground">
           No photo
         </div>
       )}
 
-      <label className="inline-flex cursor-pointer rounded-xl bg-primary px-4 py-2 font-medium text-primary-foreground transition hover:bg-primary/90 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary">
+      <label className="relative inline-flex min-h-10 cursor-pointer items-center justify-center rounded-xl bg-primary px-4 py-2 font-medium text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary">
         <span role="status" aria-live="polite">
           {uploading ? "Uploading…" : "Upload photo"}
         </span>
@@ -103,7 +103,7 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
           id="avatar-upload-message"
           role={message.kind === "error" ? "alert" : "status"}
           aria-live={message.kind === "error" ? "assertive" : "polite"}
-          className={message.kind === "error" ? "text-sm text-destructive" : "text-sm text-muted-foreground"}
+          className={message.kind === "error" ? "relative rounded-xl border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm text-destructive" : "relative rounded-xl border border-primary/15 bg-primary/[0.05] px-3 py-2 text-sm text-primary"}
         >
           {message.text}
         </p>
