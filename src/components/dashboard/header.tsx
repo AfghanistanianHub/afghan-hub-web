@@ -76,7 +76,7 @@ export function Header({
           <p className="max-w-48 truncate text-xs text-muted-foreground">{email}</p>
         </div>
 
-        <div className="flex size-10 items-center justify-center rounded-full border border-primary/15 bg-primary font-bold text-primary-foreground shadow-[0_6px_18px_color-mix(in_oklab,var(--primary)_18%,transparent)] ring-4 ring-primary/8 sm:size-11">
+        <div aria-hidden="true" className="flex size-10 items-center justify-center rounded-full border border-primary/15 bg-primary font-bold text-primary-foreground shadow-[0_6px_18px_color-mix(in_oklab,var(--primary)_18%,transparent)] ring-4 ring-primary/8 sm:size-11">
           {initial}
         </div>
 
