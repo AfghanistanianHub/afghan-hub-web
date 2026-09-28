@@ -50,7 +50,7 @@ export function MobileNavigation({
       <Dialog.Trigger
         type="button"
         aria-label="Open navigation"
-        className="rounded-2xl border border-border/80 bg-card/78 p-2.5 text-muted-foreground shadow-[0_8px_24px_rgb(15_23_42/0.035)] transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-card hover:text-foreground lg:hidden"
+        className="rounded-2xl border border-border/80 bg-card/78 p-2.5 text-muted-foreground shadow-[0_8px_24px_rgb(15_23_42/0.035)] transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-card hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:hidden"
       >
         <Menu className="size-5" />
       </Dialog.Trigger>
@@ -66,7 +66,7 @@ export function MobileNavigation({
             <Link
               href="/dashboard"
               onClick={() => setIsOpen(false)}
-              className="relative inline-flex items-center gap-3"
+              className="relative inline-flex items-center gap-3 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               <span className="flex size-9 items-center justify-center rounded-2xl border border-primary-foreground/10 bg-primary text-sm font-black text-primary-foreground shadow-[0_8px_20px_color-mix(in_oklab,var(--primary)_16%,transparent)]">
                 A
@@ -80,7 +80,7 @@ export function MobileNavigation({
             <Dialog.Close
               type="button"
               aria-label="Close navigation"
-              className="relative rounded-xl border border-transparent p-2 text-muted-foreground transition hover:border-border hover:bg-card hover:text-foreground"
+              className="relative rounded-xl border border-transparent p-2 text-muted-foreground transition hover:border-border hover:bg-card hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               <X className="size-5" />
             </Dialog.Close>
@@ -101,7 +101,7 @@ export function MobileNavigation({
                   href={item.href}
                   onClick={() => setIsOpen(false)}
                   aria-current={active ? "page" : undefined}
-                  className={`group relative flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition ${
+                  className={`group relative flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                     active
                       ? "bg-primary/[0.09] text-foreground shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--primary)_12%,transparent)]"
                       : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
@@ -146,7 +146,7 @@ export function MobileNavigation({
                 href="/profile"
                 onClick={() => setIsOpen(false)}
                 aria-current={isActivePath(pathname, "/profile") ? "page" : undefined}
-                className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition ${
+                className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                   isActivePath(pathname, "/profile") ? "bg-primary/[0.09] text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
               >
@@ -158,7 +158,7 @@ export function MobileNavigation({
                 href="/settings"
                 onClick={() => setIsOpen(false)}
                 aria-current={isActivePath(pathname, "/settings") ? "page" : undefined}
-                className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition ${
+                className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                   isActivePath(pathname, "/settings") ? "bg-primary/[0.09] text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
               >
