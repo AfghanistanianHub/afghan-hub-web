@@ -20,6 +20,7 @@ export function PendingSubmitButton({
       type="submit"
       disabled={pending}
       aria-disabled={pending}
+      aria-busy={pending}
       className={`${className} disabled:cursor-wait disabled:opacity-60`}
     >
       <span role="status" aria-live="polite">
