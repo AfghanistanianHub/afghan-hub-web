@@ -48,7 +48,7 @@ export default async function EditEventPage({ params, searchParams }: Props) {
       </section>
 
       {error ? (
-        <div className="mt-6 rounded-xl border border-destructive/25 bg-destructive/8 px-4 py-3 text-sm text-destructive">{error}</div>
+        <div role="alert" className="mt-6 rounded-xl border border-destructive/25 bg-destructive/8 px-4 py-3 text-sm text-destructive">{error}</div>
       ) : null}
 
       <form action={updateEvent} className="surface-panel mt-8 space-y-8 rounded-[2rem] p-6 md:p-8">
@@ -137,8 +137,8 @@ export default async function EditEventPage({ params, searchParams }: Props) {
         </section>
 
         <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:justify-end">
-          <Link href={`/events/${event.slug}`} className="rounded-2xl border border-border/80 bg-background px-5 py-3 text-center font-semibold transition hover:-translate-y-0.5 hover:bg-muted">Cancel</Link>
-          <button type="submit" className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90">Save and Submit for Review</button>
+          <Link href={`/events/${event.slug}`} className="rounded-2xl border border-border/80 bg-background px-5 py-3 text-center font-semibold transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Cancel</Link>
+          <button type="submit" className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Save and Submit for Review</button>
         </div>
       </form>
     </main>

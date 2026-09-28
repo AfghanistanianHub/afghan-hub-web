@@ -83,7 +83,7 @@ export default async function MessagesPage() {
           <div
             role="alert"
             aria-live="assertive"
-            className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+            className="mt-8 rounded-2xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive"
           >
             We could not load your conversations. Please try again.
           </div>
@@ -93,7 +93,7 @@ export default async function MessagesPage() {
           <div className="relative mt-8 overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-16 text-center shadow-[0_14px_42px_rgb(15_23_42/0.04)]">
             <div aria-hidden="true" className="absolute -right-12 -top-12 size-36 rounded-full border border-primary/10" />
             <span className="relative mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-              <MessageSquare className="size-7" />
+              <MessageSquare aria-hidden="true" className="size-7" />
             </span>
             <h2 className="mt-5 text-lg font-semibold text-foreground">No conversations yet</h2>
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
@@ -136,7 +136,7 @@ export default async function MessagesPage() {
                     />
                   ) : (
                     <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary text-primary">
-                      <UserRound className="size-6" />
+                      <UserRound aria-hidden="true" className="size-6" />
                     </div>
                   )}
 
