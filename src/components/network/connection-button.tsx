@@ -26,13 +26,13 @@ export function ConnectionButton({
   if (currentUserId === memberId) return null;
 
   const primaryButton =
-    "inline-flex min-h-11 items-center justify-center rounded-2xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary";
+    "inline-flex min-h-11 w-full items-center justify-center rounded-2xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:w-auto";
   const secondaryButton =
-    "inline-flex min-h-11 items-center justify-center rounded-2xl border border-border/80 bg-card px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary";
+    "inline-flex min-h-11 w-full items-center justify-center rounded-2xl border border-border/80 bg-card px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:w-auto";
 
   if (!connection) {
     return (
-      <form action={sendConnectionRequest}>
+      <form className="w-full sm:w-auto" action={sendConnectionRequest}>
         <input type="hidden" name="recipient_id" value={memberId} />
         <button type="submit" className={primaryButton}>Connect</button>
       </form>
@@ -41,17 +41,18 @@ export function ConnectionButton({
 
   if (connection.status === "accepted") {
     return (
-      <div className="flex flex-wrap items-center gap-2.5">
+      <div className="flex w-full flex-wrap items-center gap-2.5 sm:w-auto">
         <span className="inline-flex min-h-11 items-center rounded-2xl border border-primary/20 bg-primary/[0.07] px-4 py-2.5 text-sm font-semibold text-primary">
           Connected
         </span>
 
-        <form action={startConversation}>
+        <form className="w-full sm:w-auto" action={startConversation}>
           <input type="hidden" name="member_id" value={memberId} />
           <button type="submit" className={primaryButton}>Message</button>
         </form>
 
         <form
+          className="w-full sm:w-auto"
           action={removeConnection}
           onSubmit={(event) => {
             if (!window.confirm("Remove this connection?")) event.preventDefault();
@@ -60,7 +61,7 @@ export function ConnectionButton({
           <input type="hidden" name="connection_id" value={connection.id} />
           <button
             type="submit"
-            className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-destructive/25 bg-card px-4 py-2.5 text-sm font-semibold text-destructive transition hover:-translate-y-0.5 hover:bg-destructive/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-destructive"
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-2xl border border-destructive/25 bg-card px-4 py-2.5 text-sm font-semibold text-destructive transition hover:-translate-y-0.5 hover:bg-destructive/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-destructive sm:w-auto"
           >
             Disconnect
           </button>
@@ -77,7 +78,7 @@ export function ConnectionButton({
             Request sent
           </span>
 
-          <form action={removeConnection}>
+          <form className="w-full sm:w-auto" action={removeConnection}>
             <input type="hidden" name="connection_id" value={connection.id} />
             <button type="submit" className={secondaryButton}>Cancel request</button>
           </form>
