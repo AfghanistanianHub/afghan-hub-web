@@ -109,7 +109,7 @@ export default async function OpportunityPage({
     <main className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10">
       <Link
         href="/opportunities"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition hover:opacity-75"
+        className="inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
         <ArrowLeft aria-hidden="true" className="size-4" />
         Back to opportunities
@@ -195,7 +195,7 @@ export default async function OpportunityPage({
                     <button
                       type="submit"
                       aria-pressed={isSaved}
-                      className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition ${
+                      className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${
                         isSaved
                           ? "border-primary/30 bg-primary/10 text-primary"
                           : "border-border bg-background/85 text-foreground hover:bg-muted"
@@ -211,7 +211,7 @@ export default async function OpportunityPage({
                   <>
                     <Link
                       href={`/opportunities/${opportunity.slug}/edit`}
-                      className="rounded-xl border border-border bg-background/85 px-4 py-2.5 text-sm font-semibold transition hover:bg-muted"
+                      className="rounded-xl border border-border bg-background/85 px-4 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                     >
                       Edit
                     </Link>
@@ -239,7 +239,7 @@ export default async function OpportunityPage({
                 href={opportunity.external_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:opacity-95"
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 Apply now
                 <ExternalLink aria-hidden="true" className="size-4" />
@@ -284,7 +284,7 @@ export default async function OpportunityPage({
                   <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Contact</p>
                   <a
                     href={`mailto:${opportunity.contact_email}`}
-                    className="mt-2 block break-words text-sm font-semibold text-primary hover:underline"
+                    className="mt-2 block break-words rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                   >
                     {opportunity.contact_email}
                   </a>
@@ -307,7 +307,7 @@ export default async function OpportunityPage({
                 Similar active opportunities based on type, topic, and location.
               </p>
             </div>
-            <Link href="/opportunities" className="hidden items-center gap-2 text-sm font-semibold text-primary sm:inline-flex">
+            <Link href="/opportunities" className="hidden items-center gap-2 rounded-sm text-sm font-semibold text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:inline-flex">
               View all
               <ArrowRight aria-hidden="true" className="size-4" />
             </Link>
@@ -323,7 +323,7 @@ export default async function OpportunityPage({
                 <Link
                   key={related.id}
                   href={`/opportunities/${related.slug}`}
-                  className="group rounded-[1.5rem] border border-border/80 bg-card p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md"
+                  className="group rounded-[1.5rem] border border-border/80 bg-card p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <span className="rounded-full bg-primary/[0.08] px-2.5 py-1 text-[0.68rem] font-semibold capitalize text-primary">
