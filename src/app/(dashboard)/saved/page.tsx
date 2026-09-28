@@ -102,8 +102,8 @@ export default async function SavedOpportunitiesPage() {
         </section>
 
         {error ? (
-          <div role="alert" className="mt-8 rounded-2xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
-            We could not load your saved opportunities. Please try again.
+          <div role="alert" aria-live="assertive" className="relative mt-8 overflow-hidden rounded-2xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive"><div aria-hidden="true" className="pointer-events-none absolute -right-8 -top-8 size-24 rounded-full bg-destructive/[0.06] blur-2xl"/><span className="relative">
+            We could not load your saved opportunities. Please try again.</span>
           </div>
         ) : null}
 
@@ -131,7 +131,7 @@ export default async function SavedOpportunitiesPage() {
                     <ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
                   </div>
                   {opportunity.summary ? (
-                    <p className="relative mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">
+                    <p className="relative mt-3 line-clamp-3 break-words text-sm leading-6 text-muted-foreground">
                       {opportunity.summary}
                     </p>
                   ) : null}
