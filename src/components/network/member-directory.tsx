@@ -131,7 +131,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                     )}
 
                     <div className="min-w-0 flex-1">
-                      <h3 className="truncate text-lg font-bold text-foreground transition group-hover:text-primary">{memberName}</h3>
+                      <h3 className="line-clamp-2 break-words text-lg font-bold leading-6 text-foreground transition group-hover:text-primary">{memberName}</h3>
                       {member.headline ? (
                         <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted-foreground">{member.headline}</p>
                       ) : null}
@@ -143,14 +143,14 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                     {professionalDetails ? (
                       <div className="flex items-start gap-3">
                         <BriefcaseBusiness className="mt-0.5 size-4 shrink-0 text-primary" />
-                        <span>{professionalDetails}</span>
+                        <span className="min-w-0 break-words">{professionalDetails}</span>
                       </div>
                     ) : null}
 
                     {location ? (
                       <div className="flex items-start gap-3">
                         <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
-                        <span>{location}</span>
+                        <span className="min-w-0 break-words">{location}</span>
                       </div>
                     ) : null}
                   </div>
