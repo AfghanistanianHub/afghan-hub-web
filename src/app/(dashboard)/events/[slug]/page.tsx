@@ -140,8 +140,8 @@ export default async function EventPage({ params, searchParams }: Props) {
       </div>
       <div className="mt-5 grid gap-4 md:grid-cols-3">{relatedEvents.map((related)=>{const relatedParts=formatDateParts(related.starts_at);const relatedLocation=related.is_online?"Online":[related.venue_name,related.city,related.country].filter(Boolean).join(", ");return <Link key={related.id} href={`/events/${related.slug}`} className="group rounded-[1.5rem] border border-border/80 bg-card p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
         <div className="flex items-start justify-between gap-3"><span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-primary"><CalendarDays aria-hidden="true" className="size-3.5"/>{relatedParts.month} {relatedParts.day}</span><ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground transition group-hover:text-primary"/></div>
-        <h3 className="mt-4 line-clamp-2 text-lg font-bold leading-snug text-foreground group-hover:text-primary">{related.title}</h3>
-        {related.summary?<p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">{related.summary}</p>:null}
+        <h3 className="mt-4 line-clamp-2 break-words text-lg font-bold leading-snug text-foreground group-hover:text-primary">{related.title}</h3>
+        {related.summary?<p className="mt-2 line-clamp-2 break-words text-sm leading-6 text-muted-foreground">{related.summary}</p>:null}
         {relatedLocation?<p className="mt-5 flex items-start gap-1.5 text-xs leading-5 text-muted-foreground">{related.is_online?<Monitor aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-primary"/>:<MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-primary"/>}<span className="min-w-0 break-words">{relatedLocation}</span></p>:null}
       </Link>})}</div>
     </section>:null}
