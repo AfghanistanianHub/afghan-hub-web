@@ -66,7 +66,7 @@ export default async function UpdatePasswordPage({
           <p className="mt-3 text-sm leading-6 text-muted-foreground">{PASSWORD_POLICY_HINT} Enter the same password twice.</p>
 
           {error ? (
-            <div role="alert" className="mt-6 rounded-xl border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">{error}</div>
+            <div role="alert" aria-live="assertive" className="mt-6 rounded-xl border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">{error}</div>
           ) : null}
 
           <form action={updatePassword} className="mt-7 space-y-5">
