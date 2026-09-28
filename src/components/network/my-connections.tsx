@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowUpRight, MapPin } from "lucide-react";
+import { ArrowUpRight, MapPin, UserRound } from "lucide-react";
+import { ExternalImage } from "@/components/ui/external-image";
 
 type Member = {
   id: string;
@@ -9,6 +10,7 @@ type Member = {
   headline: string | null;
   city: string | null;
   country: string | null;
+  avatar_url: string | null;
 };
 
 type AcceptedConnection = {
@@ -78,9 +80,19 @@ export function MyConnections({
             >
               <div aria-hidden="true" className="absolute -right-8 -top-8 size-24 rounded-full border border-primary/10" />
               <div className="relative flex items-center gap-3">
-                <div className="flex size-12 items-center justify-center rounded-xl bg-primary/[0.10] font-bold text-primary transition group-hover:bg-primary/[0.14]">
-                  {name.charAt(0).toUpperCase()}
-                </div>
+                {member.avatar_url ? (
+                  <ExternalImage
+                    src={member.avatar_url}
+                    alt={name}
+                    width={48}
+                    height={48}
+                    className="size-12 shrink-0 rounded-2xl border border-border/70 object-cover shadow-sm"
+                  />
+                ) : (
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/[0.10] font-bold text-primary transition group-hover:bg-primary/[0.14]">
+                    {name.charAt(0).toUpperCase() || <UserRound className="size-5" />}
+                  </div>
+                )}
 
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold text-foreground">
@@ -88,7 +100,7 @@ export function MyConnections({
                   </p>
 
                   {member.headline ? (
-                    <p className="mt-1 truncate text-sm text-muted-foreground">
+                    <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted-foreground">
                       {member.headline}
                     </p>
                   ) : null}
