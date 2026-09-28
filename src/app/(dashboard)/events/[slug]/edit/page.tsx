@@ -48,7 +48,7 @@ export default async function EditEventPage({ params, searchParams }: Props) {
       </section>
 
       {error ? (
-        <div role="alert" className="mt-6 rounded-xl border border-destructive/25 bg-destructive/8 px-4 py-3 text-sm text-destructive">{error}</div>
+        <div role="alert" aria-live="assertive" className="mt-6 rounded-xl border border-destructive/25 bg-destructive/8 px-4 py-3 text-sm text-destructive">{error}</div>
       ) : null}
 
       <form action={updateEvent} className="surface-panel mt-8 space-y-8 rounded-[2rem] p-6 md:p-8">
