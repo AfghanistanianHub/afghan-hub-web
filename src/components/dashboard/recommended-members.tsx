@@ -46,7 +46,7 @@ export function RecommendedMembers({
         </div>
         <Link
           href="/network"
-          className="hidden items-center gap-2 text-sm font-semibold text-primary sm:inline-flex"
+          className="hidden items-center gap-2 rounded-sm text-sm font-semibold text-primary sm:inline-flex focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           Explore network
           <ArrowRight aria-hidden="true" className="size-4" />
@@ -63,7 +63,7 @@ export function RecommendedMembers({
             <Link
               key={member.id}
               href={`/members/${member.id}`}
-              className="group rounded-2xl border border-border bg-background p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm"
+              className="group rounded-2xl border border-border bg-background p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               <div className="flex items-start gap-3.5">
                 {member.avatar_url ? (
@@ -80,8 +80,8 @@ export function RecommendedMembers({
                   </span>
                 )}
 
-                <div className="min-w-0">
-                  <h3 className="truncate font-bold text-foreground transition group-hover:text-primary">
+                <div className="min-w-0 flex-1">
+                  <h3 className="line-clamp-2 break-words font-bold leading-5 text-foreground transition group-hover:text-primary">
                     {memberName}
                   </h3>
                   {member.headline ? (
@@ -102,13 +102,13 @@ export function RecommendedMembers({
                 {work ? (
                   <p className="flex items-start gap-2">
                     <BriefcaseBusiness aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-primary" />
-                    <span className="line-clamp-1">{work}</span>
+                    <span className="min-w-0 break-words">{work}</span>
                   </p>
                 ) : null}
                 {location ? (
                   <p className="flex items-start gap-2">
                     <MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-primary" />
-                    <span className="line-clamp-1">{location}</span>
+                    <span className="min-w-0 break-words">{location}</span>
                   </p>
                 ) : null}
               </div>
@@ -119,7 +119,7 @@ export function RecommendedMembers({
 
       <Link
         href="/network"
-        className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary sm:hidden"
+        className="mt-5 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:hidden"
       >
         Explore network
         <ArrowRight aria-hidden="true" className="size-4" />
