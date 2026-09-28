@@ -335,7 +335,7 @@ export default async function OpportunityPage({
                     {related.title}
                   </h3>
                   {related.summary ? (
-                    <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">
+                    <p className="mt-2 line-clamp-2 break-words text-sm leading-6 text-muted-foreground">
                       {related.summary}
                     </p>
                   ) : null}
