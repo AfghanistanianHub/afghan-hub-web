@@ -20,7 +20,7 @@ export default async function NewBusinessPage({
       <div className="mx-auto max-w-4xl">
         <Link
           href="/businesses"
-          className="text-sm font-medium text-primary transition hover:text-primary/80"
+          className="rounded-sm text-sm font-medium text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           ← Back to businesses
         </Link>
@@ -45,7 +45,7 @@ export default async function NewBusinessPage({
         </section>
 
         {error ? (
-          <div className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">
+          <div role="alert" className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">
             {error}
           </div>
         ) : null}
@@ -133,8 +133,8 @@ export default async function NewBusinessPage({
           </section>
 
           <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:justify-end">
-            <Link href="/businesses" className="rounded-2xl border border-border/80 bg-background px-5 py-3 text-center font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted">Cancel</Link>
-            <button type="submit" className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90">Create business</button>
+            <Link href="/businesses" className="rounded-2xl border border-border/80 bg-background px-5 py-3 text-center font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Cancel</Link>
+            <button type="submit" className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Create business</button>
           </div>
         </form>
       </div>
