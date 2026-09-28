@@ -69,7 +69,7 @@ export default async function EditOrganizationPage({
       <div className="mx-auto max-w-4xl">
         <Link
           href={`/organizations/${organization.slug}`}
-          className="text-sm font-semibold text-primary transition hover:opacity-75"
+          className="rounded-sm text-sm font-semibold text-primary transition hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           ← Back to organization
         </Link>
@@ -85,7 +85,7 @@ export default async function EditOrganizationPage({
         </section>
 
         {formError ? (
-          <div className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <div role="alert" className="mt-8 rounded-2xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">
             {formError}
           </div>
         ) : null}
@@ -199,13 +199,13 @@ export default async function EditOrganizationPage({
           <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:justify-end">
             <Link
               href={`/organizations/${organization.slug}`}
-              className="rounded-2xl border border-border/80 bg-background px-5 py-3 text-center text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-muted"
+              className="rounded-2xl border border-border/80 bg-background px-5 py-3 text-center text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               Cancel
             </Link>
             <button
               type="submit"
-              className="rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90"
+              className="rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               Save changes
             </button>
