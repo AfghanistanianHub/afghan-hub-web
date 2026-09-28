@@ -215,7 +215,7 @@ export default async function MyEventsPage() {
             ))}
           </div>
         ) : (
-          <div className="mt-5 rounded-3xl border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
+          <div className="relative mt-5 overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-muted/25 px-6 py-10 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"/>
             <CalendarDays aria-hidden="true" className="relative mx-auto size-9 text-primary" />
             <h3 className="relative mt-3 font-semibold text-foreground">
               You are not hosting any events yet
