@@ -65,10 +65,10 @@ function EventCard({
         ) : null}
       </div>
 
-      <div className="relative mt-3 flex items-start justify-between gap-3"><h3 className="text-lg font-bold text-foreground transition group-hover:text-primary">{event.title}</h3><ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"/></div>
+      <div className="relative mt-3 flex items-start justify-between gap-3"><h3 className="break-words text-lg font-bold leading-6 text-foreground transition group-hover:text-primary">{event.title}</h3><ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"/></div>
 
       {event.summary ? (
-        <p className="relative mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">
+        <p className="relative mt-2 line-clamp-2 break-words text-sm leading-6 text-muted-foreground">
           {event.summary}
         </p>
       ) : null}
@@ -76,7 +76,7 @@ function EventCard({
       {location ? (
         <p className="relative mt-4 flex items-start gap-2 border-t border-border/70 pt-4 text-sm text-muted-foreground">
           <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-          {location}
+          <span className="min-w-0 break-words">{location}</span>
         </p>
       ) : null}
     </Link>
@@ -172,12 +172,12 @@ export default async function MyEventsPage() {
             ))}
           </div>
         ) : (
-          <div className="mt-5 rounded-3xl border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
-            <CalendarDays aria-hidden="true" className="mx-auto size-9 text-muted-foreground" />
-            <h3 className="mt-3 font-semibold text-foreground">
+          <div className="relative mt-5 overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-muted/25 px-6 py-10 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"/>
+            <CalendarDays aria-hidden="true" className="relative mx-auto size-9 text-primary" />
+            <h3 className="relative mt-3 font-semibold text-foreground">
               No upcoming registrations
             </h3>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="relative mt-2 text-sm leading-6 text-muted-foreground">
               Register for an event and it will appear here.
             </p>
           </div>
@@ -216,11 +216,11 @@ export default async function MyEventsPage() {
           </div>
         ) : (
           <div className="mt-5 rounded-3xl border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
-            <CalendarDays aria-hidden="true" className="mx-auto size-9 text-muted-foreground" />
-            <h3 className="mt-3 font-semibold text-foreground">
+            <CalendarDays aria-hidden="true" className="relative mx-auto size-9 text-primary" />
+            <h3 className="relative mt-3 font-semibold text-foreground">
               You are not hosting any events yet
             </h3>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="relative mt-2 text-sm leading-6 text-muted-foreground">
               Create an event to submit it for moderation.
             </p>
           </div>
