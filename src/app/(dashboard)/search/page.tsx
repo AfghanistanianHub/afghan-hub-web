@@ -227,7 +227,7 @@ export default async function SearchPage({
           />
           <button
             type="submit"
-            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-[calc(50%+1px)] hover:bg-primary/90"
+            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-[calc(50%+1px)] hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
             Search
           </button>
