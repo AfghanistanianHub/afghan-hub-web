@@ -36,18 +36,22 @@ export default async function EditEventPage({ params, searchParams }: Props) {
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-10">
-      <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Event settings</p>
-        <h1 className="mt-3 text-4xl font-bold tracking-tight">Edit Event</h1>
-        <p className="mt-2 text-muted-foreground">Update the event details while keeping the experience clear for attendees.</p>
-        <p className="mt-3 text-sm text-accent-foreground">Saving changes submits this event for moderator review.</p>
-      </div>
+      <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
+        <div className="relative">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Event settings</p>
+          <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] md:text-5xl">Edit Event</h1>
+          <p className="mt-3 text-muted-foreground">Update the event details while keeping the experience clear for attendees.</p>
+          <p className="mt-4 inline-flex rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-sm font-medium text-primary">Saving changes submits this event for moderator review.</p>
+        </div>
+      </section>
 
       {error ? (
         <div className="mt-6 rounded-xl border border-destructive/25 bg-destructive/8 px-4 py-3 text-sm text-destructive">{error}</div>
       ) : null}
 
-      <form action={updateEvent} className="surface-panel mt-10 space-y-6 p-6 md:p-8">
+      <form action={updateEvent} className="surface-panel mt-8 space-y-8 rounded-[2rem] p-6 md:p-8">
         <input type="hidden" name="original_slug" value={event.slug} />
 
         <div>
@@ -118,7 +122,7 @@ export default async function EditEventPage({ params, searchParams }: Props) {
         </section>
 
         <section className="border-t border-border pt-6">
-          <label className="flex items-center gap-3 rounded-xl border border-border bg-muted/35 px-4 py-3">
+          <label className="flex items-center gap-3 rounded-2xl border border-border/80 bg-secondary/40 px-4 py-3 transition hover:border-primary/20">
             <input name="is_online" type="checkbox" defaultChecked={event.is_online} className="size-4 rounded border-input accent-primary" />
             <span className="text-sm font-medium">Online event</span>
           </label>
@@ -133,8 +137,8 @@ export default async function EditEventPage({ params, searchParams }: Props) {
         </section>
 
         <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:justify-end">
-          <Link href={`/events/${event.slug}`} className="rounded-xl border border-border bg-background px-5 py-3 text-center font-semibold transition hover:bg-muted">Cancel</Link>
-          <button type="submit" className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90">Save and Submit for Review</button>
+          <Link href={`/events/${event.slug}`} className="rounded-2xl border border-border/80 bg-background px-5 py-3 text-center font-semibold transition hover:-translate-y-0.5 hover:bg-muted">Cancel</Link>
+          <button type="submit" className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90">Save and Submit for Review</button>
         </div>
       </form>
     </main>
