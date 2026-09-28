@@ -75,12 +75,12 @@ export function EventDateTimePicker({
         aria-expanded={isOpen}
         aria-controls={panelId}
         aria-haspopup="dialog"
-        className="flex w-full items-center justify-between rounded-xl border border-input bg-background px-4 py-3 text-left text-foreground outline-none transition hover:border-primary/50 hover:bg-muted/40 focus:border-primary focus:ring-2 focus:ring-ring/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+        className="flex w-full min-w-0 items-center justify-between gap-3 rounded-xl border border-input bg-background px-4 py-3 text-left text-foreground outline-none transition hover:border-primary/50 hover:bg-muted/40 focus:border-primary focus:ring-2 focus:ring-ring/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
-        <span className={selectedDate && hour && minute ? "text-foreground" : "text-muted-foreground"}>
+        <span className={`min-w-0 break-words ${selectedDate && hour && minute ? "text-foreground" : "text-muted-foreground"}`}>
           {displayValue}
         </span>
-        <span aria-hidden="true" className="text-lg text-muted-foreground">📅</span>
+        <span aria-hidden="true" className="shrink-0 text-lg text-muted-foreground">📅</span>
       </button>
 
       {isOpen ? (
@@ -94,7 +94,7 @@ export function EventDateTimePicker({
 
           <div className="mt-4 border-t border-border pt-4">
             <p className="text-sm font-semibold">Time</p>
-            <div className="mt-2 grid grid-cols-3 gap-3">
+            <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div>
                 <label htmlFor={`${name}-hour`} className="mb-1 block text-xs text-muted-foreground">Hour</label>
                 <select id={`${name}-hour`} value={hour} onChange={(event) => setHour(event.target.value)} className={fieldClass}>
