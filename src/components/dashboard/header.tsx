@@ -72,7 +72,7 @@ export function Header({
         />
 
         <div className="hidden text-right sm:block">
-          <p className="text-sm font-semibold text-foreground">{displayName}</p>
+          <p className="max-w-40 truncate text-sm font-semibold text-foreground lg:max-w-52">{displayName}</p>
           <p className="max-w-48 truncate text-xs text-muted-foreground">{email}</p>
         </div>
 
