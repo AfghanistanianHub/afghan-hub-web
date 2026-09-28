@@ -67,7 +67,7 @@ export default async function EditBusinessPage({
       <div className="mx-auto max-w-4xl">
         <Link
           href={`/businesses/${business.slug}`}
-          className="text-sm font-medium text-primary transition hover:text-primary/80"
+          className="rounded-sm text-sm font-medium text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           ← Back to business
         </Link>
@@ -83,7 +83,7 @@ export default async function EditBusinessPage({
         </section>
 
         {formError ? (
-          <div className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.08] p-4 text-sm text-destructive">
+          <div role="alert" className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.08] p-4 text-sm text-destructive">
             {formError}
           </div>
         ) : null}
