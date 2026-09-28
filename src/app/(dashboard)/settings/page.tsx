@@ -49,7 +49,7 @@ export default async function SettingsPage({
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Your account</p>
               <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Settings</h1>
-              <p className="mt-3 max-w-xl leading-7 text-muted-foreground">Control how your profile appears, review your account identity, and access your data and support options.</p>
+              <p className="mt-3 max-w-xl break-words leading-7 text-muted-foreground">Control how your profile appears, review your account identity, and access your data and support options.</p>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-border/80 bg-background/88 p-4 backdrop-blur"><p className="text-xs text-muted-foreground">Signed in as</p><p className="mt-1 break-words font-semibold text-foreground">{accountName}</p></div>
@@ -58,8 +58,8 @@ export default async function SettingsPage({
           </div>
         </section>
 
-        {formError ? <div role="alert" aria-live="assertive" className="mt-6 rounded-2xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">{formError}</div> : null}
-        {saved === "1" ? <div role="status" aria-live="polite" className="mt-6 rounded-2xl border border-primary/20 bg-primary/8 p-4 text-sm text-primary">Your settings have been saved.</div> : null}
+        {formError ? <div role="alert" aria-live="assertive" className="mt-6 break-words rounded-2xl border border-destructive/25 bg-destructive/8 p-4 text-sm leading-6 text-destructive">{formError}</div> : null}
+        {saved === "1" ? <div role="status" aria-live="polite" className="mt-6 break-words rounded-2xl border border-primary/20 bg-primary/8 p-4 text-sm leading-6 text-primary">Your settings have been saved.</div> : null}
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div className="space-y-6">
@@ -92,7 +92,7 @@ export default async function SettingsPage({
               <div aria-hidden="true" className="absolute -right-12 -top-12 size-36 rounded-full border border-primary/10" />
               <p className="relative text-xs font-semibold uppercase tracking-[0.16em] text-primary">Your data</p>
               <h2 className="relative mt-2 text-xl font-semibold">Take a copy with you</h2>
-              <p className="relative mt-3 text-sm leading-6 text-muted-foreground">Download your account details and profile as JSON. Messages, connections, contributions, saved items, RSVPs and uploaded files are outside this download.</p>
+              <p className="relative mt-3 break-words text-sm leading-6 text-muted-foreground">Download your account details and profile as JSON. Messages, connections, contributions, saved items, RSVPs and uploaded files are outside this download.</p>
               <div className="relative mt-5"><AccountExportButton /></div>
               <p className="relative mt-4 text-xs leading-5 text-muted-foreground">For a wider data request or account deletion, <Link href="/support" className="rounded-sm font-semibold text-primary underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">contact support</Link>.</p>
             </section>
