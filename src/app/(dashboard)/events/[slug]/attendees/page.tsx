@@ -153,7 +153,7 @@ export default async function EventAttendeesPage({ params }: Props) {
             {formatDateTime(event.starts_at)}
           </span>
           {location ? (
-            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5">
+            <span className="inline-flex max-w-full items-start gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5">
               <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
               <span className="min-w-0 break-words">{location}</span>
             </span>
@@ -218,7 +218,7 @@ export default async function EventAttendeesPage({ params }: Props) {
                   key={registration.profile_id}
                   className="flex flex-wrap items-center justify-between gap-4 py-5 first:pt-0 last:pb-0"
                 >
-                  <div className="flex min-w-0 items-center gap-4">
+                  <div className="flex min-w-0 flex-1 items-center gap-4">
                     {profile.avatar_url ? (
                       <ExternalImage
                         src={profile.avatar_url}
