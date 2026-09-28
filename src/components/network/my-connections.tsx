@@ -100,7 +100,7 @@ export function MyConnections({
                   </p>
 
                   {member.headline ? (
-                    <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted-foreground">
+                    <p className="mt-1 line-clamp-2 break-words text-sm leading-5 text-muted-foreground">
                       {member.headline}
                     </p>
                   ) : null}
