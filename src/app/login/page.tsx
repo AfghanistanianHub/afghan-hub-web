@@ -40,27 +40,27 @@ export default async function LoginPage({
 
   return (
     <main className="min-h-screen bg-background text-foreground lg:grid lg:grid-cols-[1.08fr_0.92fr]">
-      <section className="relative hidden min-h-screen overflow-hidden border-r border-border bg-foreground text-background lg:flex lg:flex-col lg:justify-between lg:p-10 xl:p-14">
-        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_18%_8%,color-mix(in_oklab,var(--primary)_32%,transparent),transparent_30%),radial-gradient(circle_at_86%_86%,color-mix(in_oklab,var(--accent)_18%,transparent),transparent_30%)]" />
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.055] [background-image:linear-gradient(to_right,currentColor_1px,transparent_1px),linear-gradient(to_bottom,currentColor_1px,transparent_1px)] [background-size:44px_44px]" />
-        <div aria-hidden="true" className="absolute -right-20 top-24 size-[28rem] rounded-full border border-background/10" />
-        <div aria-hidden="true" className="absolute right-12 top-40 size-72 rounded-full border border-dashed border-background/10" />
+      <section className="relative hidden min-h-screen overflow-hidden border-r border-border/80 bg-card text-foreground lg:flex lg:flex-col lg:justify-between lg:p-10 xl:p-14">
+        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_18%_8%,color-mix(in_oklab,var(--primary)_14%,transparent),transparent_30%),radial-gradient(circle_at_86%_86%,color-mix(in_oklab,var(--accent)_48%,transparent),transparent_30%)]" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 text-primary opacity-[0.035] [background-image:linear-gradient(to_right,currentColor_1px,transparent_1px),linear-gradient(to_bottom,currentColor_1px,transparent_1px)] [background-size:44px_44px]" />
+        <div aria-hidden="true" className="absolute -right-20 top-24 size-[28rem] rounded-full border border-primary/10" />
+        <div aria-hidden="true" className="absolute right-12 top-40 size-72 rounded-full border border-dashed border-primary/10" />
 
         <div className="relative z-10">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em]">
-            <span className="flex size-8 items-center justify-center rounded-xl bg-background/10">A</span>
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-primary">
+            <span className="flex size-8 items-center justify-center rounded-xl bg-secondary text-primary">A</span>
             Afghan Hub
           </Link>
 
           <div className="mt-20 max-w-xl xl:mt-28">
-            <div className="inline-flex items-center gap-2 rounded-full border border-background/10 bg-background/5 px-3 py-1.5 text-xs font-semibold">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-primary/[0.055] px-3 py-1.5 text-xs font-semibold">
               <Sparkles aria-hidden="true" className="size-3.5" />
               People. Possibilities. Belonging.
             </div>
             <h1 className="mt-6 text-5xl font-semibold leading-[1.02] tracking-[-0.045em] xl:text-6xl">
               A place to find your people — and your next step.
             </h1>
-            <p className="mt-5 max-w-lg text-base leading-7 text-background/65">
+            <p className="mt-5 max-w-lg text-base leading-7 text-muted-foreground">
               Afghan Hub brings community, opportunities, gatherings, and Afghan-led work into one connected space.
             </p>
           </div>
@@ -70,14 +70,14 @@ export default async function LoginPage({
           {communityPaths.map(path => {
             const Icon = path.icon;
             return (
-              <div key={path.label} className="rounded-2xl border border-background/10 bg-background/[0.055] p-4 backdrop-blur-sm">
+              <div key={path.label} className="rounded-2xl border border-primary/10 bg-background/72 p-4 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-background/10">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
                     <Icon aria-hidden="true" className="size-4.5" />
                   </span>
                   <div>
                     <p className="text-sm font-semibold">{path.label}</p>
-                    <p className="mt-0.5 text-xs text-background/55">{path.note}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{path.note}</p>
                   </div>
                 </div>
               </div>
