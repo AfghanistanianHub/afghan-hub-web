@@ -63,7 +63,7 @@ export default async function EditOpportunityPage({
         <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
         <div className="relative">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">Opportunity editor</p>
-          <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Edit opportunity</h1>
+          <h1 className="mt-3 break-words text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Edit opportunity</h1>
           <p className="mt-3 text-muted-foreground">Update the opportunity information below.</p>
           <p className="mt-4 inline-flex rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-sm font-medium text-primary">
             Saving changes submits this opportunity for moderator review.
@@ -72,7 +72,7 @@ export default async function EditOpportunityPage({
       </section>
 
       {error ? (
-        <div role="alert" className="mt-6 rounded-2xl border border-destructive/25 bg-destructive/[0.06] px-4 py-3 text-sm text-destructive">
+        <div role="alert" aria-live="assertive" className="mt-6 rounded-2xl border border-destructive/25 bg-destructive/[0.06] px-4 py-3 text-sm text-destructive">
           {error}
         </div>
       ) : null}

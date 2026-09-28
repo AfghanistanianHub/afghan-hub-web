@@ -83,7 +83,7 @@ export default async function EditBusinessPage({
         </section>
 
         {formError ? (
-          <div role="alert" className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.08] p-4 text-sm text-destructive">
+          <div role="alert" aria-live="assertive" className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.08] p-4 text-sm text-destructive">
             {formError}
           </div>
         ) : null}

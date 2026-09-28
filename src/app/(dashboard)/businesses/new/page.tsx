@@ -33,7 +33,7 @@ export default async function NewBusinessPage({
             Create a business
           </p>
 
-          <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">
+          <h1 className="mt-3 break-words text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">
             Add your business
           </h1>
 
@@ -45,7 +45,7 @@ export default async function NewBusinessPage({
         </section>
 
         {error ? (
-          <div role="alert" className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">
+          <div role="alert" aria-live="assertive" className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">
             {error}
           </div>
         ) : null}

@@ -79,13 +79,13 @@ export default async function EditOrganizationPage({
           <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
           <div className="relative">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Organization settings</p>
-            <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Edit {organization.name}</h1>
+            <h1 className="mt-3 break-words text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Edit {organization.name}</h1>
             <p className="mt-3 max-w-2xl text-muted-foreground">Keep your organization profile current and useful to the community.</p>
           </div>
         </section>
 
         {formError ? (
-          <div role="alert" className="mt-8 rounded-2xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">
+          <div role="alert" aria-live="assertive" className="mt-8 rounded-2xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">
             {formError}
           </div>
         ) : null}
