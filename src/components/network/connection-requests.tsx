@@ -62,7 +62,7 @@ export function ConnectionRequests({
             >
               <Link
                 href={"/members/" + requester.id}
-                className="min-w-0 flex items-center gap-3"
+                className="min-w-0 flex items-center gap-3 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 {requester.avatar_url ? (
                   <ExternalImage
@@ -74,7 +74,7 @@ export function ConnectionRequests({
                   />
                 ) : (
                   <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/[0.10] font-bold text-primary">
-                    {name.charAt(0).toUpperCase() || <UserRound className="size-5" />}
+                    {name.charAt(0).toUpperCase() || <UserRound aria-hidden="true" className="size-5" />}
                   </div>
                 )}
 

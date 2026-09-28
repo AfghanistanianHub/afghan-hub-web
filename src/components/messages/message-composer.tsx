@@ -64,16 +64,16 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
           className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary disabled:cursor-wait disabled:opacity-60"
         >
           {isPending ? (
-            <span className="size-5 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
+            <span aria-hidden="true" className="size-5 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground motion-reduce:animate-none" />
           ) : (
-            <Send className="size-5" />
+            <Send aria-hidden="true" className="size-5" />
           )}
         </button>
       </div>
 
       <div className="mt-2 flex flex-col items-start gap-1.5 text-xs sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         {state.error ? (
-          <p id="message-error" role="alert" className="text-red-600">
+          <p id="message-error" role="alert" className="rounded-lg border border-destructive/20 bg-destructive/[0.05] px-2.5 py-1.5 text-destructive">
             {state.error}
           </p>
         ) : (
