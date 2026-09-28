@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { format, parseISO } from "date-fns";
 import { DayPicker } from "@daypicker/react";
 import "@daypicker/react/style.css";
@@ -52,6 +52,7 @@ export function EventDateTimePicker({
   const [minute, setMinute] = useState(initialTime.minute);
   const [period, setPeriod] = useState(initialTime.period);
   const [isOpen, setIsOpen] = useState(false);
+  const panelId = useId();
 
   const twentyFourHourTime = toTwentyFourHourTime(hour, minute, period);
   const hiddenValue = selectedDate && twentyFourHourTime
@@ -71,7 +72,10 @@ export function EventDateTimePicker({
       <button
         type="button"
         onClick={() => setIsOpen((current) => !current)}
-        className="flex w-full items-center justify-between rounded-xl border border-input bg-background px-4 py-3 text-left text-foreground outline-none transition hover:border-primary/50 hover:bg-muted/40 focus:border-primary focus:ring-2 focus:ring-ring/20"
+        aria-expanded={isOpen}
+        aria-controls={panelId}
+        aria-haspopup="dialog"
+        className="flex w-full items-center justify-between rounded-xl border border-input bg-background px-4 py-3 text-left text-foreground outline-none transition hover:border-primary/50 hover:bg-muted/40 focus:border-primary focus:ring-2 focus:ring-ring/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
         <span className={selectedDate && hour && minute ? "text-foreground" : "text-muted-foreground"}>
           {displayValue}
@@ -80,7 +84,7 @@ export function EventDateTimePicker({
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 z-50 mt-2 w-full min-w-[340px] rounded-2xl border border-border bg-popover p-4 text-popover-foreground shadow-xl">
+        <div id={panelId} role="dialog" aria-label={`${label} date and time`} className="absolute left-0 z-50 mt-2 w-[min(22rem,calc(100vw-2rem))] rounded-2xl border border-border bg-popover p-4 text-popover-foreground shadow-xl">
           <DayPicker
             mode="single"
             selected={selectedDate}
@@ -130,7 +134,7 @@ export function EventDateTimePicker({
                 setPeriod("AM");
                 setIsOpen(false);
               }}
-              className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               Clear
             </button>
@@ -139,7 +143,7 @@ export function EventDateTimePicker({
               type="button"
               disabled={!selectedDate || !hour || !minute}
               onClick={() => setIsOpen(false)}
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-50"
             >
               Done
             </button>
