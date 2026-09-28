@@ -138,7 +138,15 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_78%_4%,color-mix(in_oklab,var(--primary)_8%,transparent),transparent_24%),radial-gradient(circle_at_18%_96%,color-mix(in_oklab,var(--accent)_42%,transparent),transparent_30%)]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 -z-10 opacity-[0.018] [background-image:linear-gradient(to_right,var(--foreground)_1px,transparent_1px),linear-gradient(to_bottom,var(--foreground)_1px,transparent_1px)] [background-size:48px_48px]"
+      />
       <RealtimeMessageRefresh currentUserId={user.id} />
       <div className="flex min-h-screen">
         <Sidebar
