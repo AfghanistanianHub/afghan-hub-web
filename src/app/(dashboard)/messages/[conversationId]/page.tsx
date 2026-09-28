@@ -139,7 +139,7 @@ export default async function ConversationPage({ params, searchParams }: Convers
             {otherMemberId ? (
               <Link
                 href={`/members/${otherMemberId}`}
-                className="truncate font-semibold text-foreground transition hover:text-primary"
+                className="block truncate font-semibold text-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 {memberName}
               </Link>
@@ -160,7 +160,7 @@ export default async function ConversationPage({ params, searchParams }: Convers
                 hasEarlierMessages ? (
                   <Link
                     href={`/messages/${conversationId}?limit=${nextMessageLimit}`}
-                    className="inline-flex rounded-xl border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground transition hover:bg-accent"
+                    className="inline-flex rounded-xl border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground transition hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                   >
                     Load earlier messages
                   </Link>
@@ -172,7 +172,7 @@ export default async function ConversationPage({ params, searchParams }: Convers
               {messageLimit > 100 ? (
                 <Link
                   href={`/messages/${conversationId}`}
-                  className="inline-flex rounded-xl border border-primary/20 bg-primary/5 px-4 py-2 text-xs font-semibold text-primary transition hover:bg-primary/10"
+                  className="inline-flex rounded-xl border border-primary/20 bg-primary/5 px-4 py-2 text-xs font-semibold text-primary transition hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                 >
                   Back to latest
                 </Link>
