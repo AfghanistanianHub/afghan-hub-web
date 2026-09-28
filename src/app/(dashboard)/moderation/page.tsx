@@ -243,7 +243,7 @@ export default async function ModerationPage({
             {accessContext.role === "admin" ? (
               <Link
                 href="/moderation/team"
-                className="inline-flex w-fit rounded-2xl border border-border/80 bg-background/80 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted"
+                className="inline-flex w-fit rounded-2xl border border-border/80 bg-background/80 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 Manage moderation team
               </Link>
@@ -289,7 +289,7 @@ export default async function ModerationPage({
           </Link>
           <Link
             href="/moderation?view=history"
-            className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+            className={`min-w-0 rounded-xl px-3 py-2 text-center text-sm font-semibold transition sm:px-4 ${
               activeView === "history"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
