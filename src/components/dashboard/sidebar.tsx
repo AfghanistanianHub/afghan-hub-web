@@ -84,7 +84,7 @@ export function Sidebar({
                     : "bg-transparent text-current group-hover:bg-background/70"
                 }`}
               >
-                <Icon className="size-4.5" />
+                <Icon aria-hidden="true" className="size-4.5" />
               </span>
               <span className="truncate">{item.label}</span>
 
@@ -124,7 +124,7 @@ export function Sidebar({
                 : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             }`}
           >
-            <UserRound className="size-5" />
+            <UserRound aria-hidden="true" className="size-5" />
             Edit profile
           </Link>
 
@@ -137,7 +137,7 @@ export function Sidebar({
                 : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             }`}
           >
-            <Settings className="size-5" />
+            <Settings aria-hidden="true" className="size-5" />
             Settings
           </Link>
         </div>
