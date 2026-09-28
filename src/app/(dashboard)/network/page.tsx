@@ -51,7 +51,6 @@ export default async function NetworkPage() {
             headline,
             city,
             country,
-            avatar_url,
             avatar_url
           ),
           recipient:profiles!connections_recipient_id_fkey (
@@ -61,7 +60,8 @@ export default async function NetworkPage() {
             last_name,
             headline,
             city,
-            country
+            country,
+            avatar_url
           )
         `)
         .eq("status", "accepted")
