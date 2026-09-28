@@ -36,15 +36,15 @@ export function DeadlinePicker({
         aria-expanded={isOpen}
         aria-controls={panelId}
         aria-haspopup="dialog"
-        className="flex w-full items-center justify-between rounded-xl border border-input bg-background px-4 py-3 text-left outline-none transition hover:border-primary/35 focus:border-primary focus:ring-2 focus:ring-ring/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+        className="flex w-full min-w-0 items-center justify-between gap-3 rounded-xl border border-input bg-background px-4 py-3 text-left outline-none transition hover:border-primary/35 focus:border-primary focus:ring-2 focus:ring-ring/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
-        <span className={selectedDate ? "text-foreground" : "text-muted-foreground"}>
+        <span className={`min-w-0 break-words ${selectedDate ? "text-foreground" : "text-muted-foreground"}`}>
           {selectedDate
             ? format(selectedDate, "MMMM d, yyyy")
             : "Select a deadline"}
         </span>
 
-        <span aria-hidden="true" className="text-lg text-muted-foreground">
+        <span aria-hidden="true" className="shrink-0 text-lg text-muted-foreground">
           📅
         </span>
       </button>
