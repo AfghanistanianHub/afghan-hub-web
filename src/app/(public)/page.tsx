@@ -207,7 +207,7 @@ export default async function PublicHome() {
                   <Link
                     key={`${kind}-${item.slug}`}
                     href={publicHref(kind, item.slug)}
-                    className={`group relative overflow-hidden rounded-3xl border border-border/80 p-5 transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md ${featured ? "bg-primary text-primary-foreground sm:row-span-2 lg:col-span-2" : "bg-card"}`}
+                    className={`group relative overflow-hidden rounded-3xl border border-border/80 p-5 transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${featured ? "bg-primary text-primary-foreground sm:row-span-2 lg:col-span-2" : "bg-card"}`}
                   >
                     <div aria-hidden="true" className={`absolute -right-10 -top-10 size-32 rounded-full border ${featured ? "border-primary-foreground/15" : "border-primary/10"}`} />
                     <div aria-hidden="true" className={`absolute -right-2 top-6 size-16 rounded-full border ${featured ? "border-primary-foreground/10" : "border-primary/8"}`} />
@@ -226,9 +226,9 @@ export default async function PublicHome() {
                           {item.title}
                         </h3>
                         {featured ? (
-                          <p className="mt-3 flex items-center gap-1.5 text-xs opacity-75">
-                            <MapPin aria-hidden="true" className="size-3.5" />
-                            <span className="truncate">{item.location}</span>
+                          <p className="mt-3 flex items-start gap-1.5 text-xs leading-5 opacity-75">
+                            <MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
+                            <span className="min-w-0 break-words">{item.location}</span>
                           </p>
                         ) : null}
                       </div>
@@ -260,7 +260,7 @@ export default async function PublicHome() {
                   <p className="mt-3 text-sm leading-6 text-muted-foreground">{publicCategories[kind].description}</p>
                   <Link
                     href={`/explore?type=${kind}`}
-                    className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+                    className="mt-6 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                   >
                     Explore all <ArrowRight aria-hidden="true" className="size-4" />
                   </Link>
@@ -269,9 +269,7 @@ export default async function PublicHome() {
 
               <div className={index % 2 ? "lg:order-1" : ""}>
                 {feeds[index].unavailable ? (
-                  <p role="status" className="rounded-3xl border border-border p-6 text-sm text-muted-foreground">
-                    We couldn’t load these listings right now. Please try again shortly.
-                  </p>
+                  <div role="status" aria-live="polite" className="relative overflow-hidden rounded-3xl border border-border/80 bg-card p-6 text-sm text-muted-foreground shadow-[0_10px_30px_rgb(15_23_42/0.03)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"/><p className="relative font-medium text-foreground">Listings are temporarily unavailable.</p><p className="relative mt-2 leading-6">Please try again shortly.</p></div>
                 ) : feeds[index].items.length ? (
                   <div
                     className={`grid gap-5 ${
@@ -309,7 +307,7 @@ export default async function PublicHome() {
                     <p className="relative mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
                       {kind === "events" ? "No upcoming events are listed right now." : "No current listings yet. Check back soon or join to contribute."}
                     </p>
-                    <Link href="/login?mode=join" className="relative mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+                    <Link href="/login?mode=join" className="relative mt-5 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
                       Join and contribute <ArrowRight aria-hidden="true" className="size-4" />
                     </Link>
                   </div>
