@@ -102,7 +102,7 @@ export default async function SavedOpportunitiesPage() {
         </section>
 
         {error ? (
-          <div className="mt-8 rounded-2xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
+          <div role="alert" className="mt-8 rounded-2xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
             We could not load your saved opportunities. Please try again.
           </div>
         ) : null}
@@ -118,7 +118,7 @@ export default async function SavedOpportunitiesPage() {
                 <Link
                   key={opportunity.id}
                   href={`/opportunities/${opportunity.slug}`}
-                  className="group relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)] transition hover:-translate-y-1 hover:border-primary/35 hover:shadow-[0_18px_42px_rgb(15_23_42/0.07)]"
+                  className="group relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)] transition hover:-translate-y-1 hover:border-primary/35 hover:shadow-[0_18px_42px_rgb(15_23_42/0.07)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                 >
                   <div aria-hidden="true" className="absolute -right-10 -top-10 size-28 rounded-full border border-primary/10" />
                   <span className="relative rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold capitalize text-primary">
@@ -137,7 +137,7 @@ export default async function SavedOpportunitiesPage() {
                   ) : null}
                   {location ? (
                     <p className="relative mt-4 flex items-center gap-2 border-t border-border/70 pt-4 text-xs text-muted-foreground">
-                      <MapPin className="size-3.5" />
+                      <MapPin aria-hidden="true" className="size-3.5" />
                       {location}
                     </p>
                   ) : null}
@@ -150,7 +150,7 @@ export default async function SavedOpportunitiesPage() {
         {!error && opportunities.length === 0 ? (
           <div className="mt-8 flex min-h-72 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/70 px-6 text-center">
             <div className="flex size-14 items-center justify-center rounded-2xl bg-secondary text-primary">
-              <Bookmark className="size-7" />
+              <Bookmark aria-hidden="true" className="size-7" />
             </div>
             <h2 className="mt-4 text-lg font-bold text-foreground">
               No saved opportunities yet
@@ -160,7 +160,7 @@ export default async function SavedOpportunitiesPage() {
             </p>
             <Link
               href="/opportunities"
-              className="mt-6 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:opacity-90"
+              className="mt-6 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               Browse opportunities
             </Link>
