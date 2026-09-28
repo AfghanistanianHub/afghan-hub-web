@@ -290,7 +290,7 @@ export default async function ModerationPage({
           </Link>
           <Link
             href="/moderation?view=history"
-            className={`min-w-0 rounded-xl px-3 py-2 text-center text-sm font-semibold transition sm:px-4 ${
+            className={`min-w-0 rounded-xl px-3 py-2 text-center text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-4 ${
               activeView === "history"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -467,8 +467,8 @@ function ModerationCard({
 
   return (
     <article className="surface-panel relative overflow-hidden rounded-[1.75rem] p-6 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.06)]">
-      <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-primary">
-        <Icon aria-hidden="true" className="size-3.5" />
+      <span className="flex min-w-0 items-start gap-2 break-words text-xs font-semibold uppercase tracking-wide text-primary">
+        <Icon aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
         {label}
       </span>
       <Link
@@ -478,11 +478,11 @@ function ModerationCard({
         {title}
       </Link>
       {summary ? (
-        <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">
+        <p className="mt-3 line-clamp-3 break-words text-sm leading-6 text-muted-foreground">
           {summary}
         </p>
       ) : null}
-      <p className="mt-4 text-xs text-muted-foreground">{meta}</p>
+      <p className="mt-4 break-words text-xs leading-5 text-muted-foreground">{meta}</p>
       <ModerationButtons entityId={entityId} entityType={entityType} />
     </article>
   );
