@@ -150,7 +150,7 @@ export default async function ExplorePage({ searchParams }: Props) {
               <div role="status" aria-live="polite" className="relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-8 shadow-[0_14px_42px_rgb(15_23_42/0.04)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"/>
                 <h3 className="relative font-semibold text-foreground">Listings are temporarily unavailable.</h3>
                 <p className="relative mt-2 text-sm leading-6 text-muted-foreground">Please try again in a moment.</p>
-                <Link href={pageHref(page)} className="mt-4 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Try again <ArrowRight aria-hidden="true" className="size-4" /></Link>
+                <Link href={pageHref(page)} className="relative mt-4 inline-flex items-center gap-2 rounded-xl border border-primary/15 bg-primary/[0.06] px-4 py-2.5 text-sm font-semibold text-primary transition hover:-translate-y-0.5 hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Try again <ArrowRight aria-hidden="true" className="size-4" /></Link>
               </div>
             ) : result.items.length ? (
               <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr))]">
@@ -162,6 +162,14 @@ export default async function ExplorePage({ searchParams }: Props) {
                 <p className="relative mt-2 text-sm leading-6 text-muted-foreground">
                   {search ? "Try another name or clear your search." : "Check back for new community listings, or explore another category."}
                 </p>
+                {search ? (
+                  <Link
+                    href={`/explore?type=${kind}`}
+                    className="relative mt-5 inline-flex rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                  >
+                    Clear search
+                  </Link>
+                ) : null}
               </div>
             )}
           </div>
