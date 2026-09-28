@@ -337,7 +337,7 @@ export default async function DashboardPage() {
 
               <Link
                 href="/opportunities"
-                className="hidden items-center gap-2 rounded-sm text-sm font-semibold text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:inline-flex"
+                className="hidden items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:inline-flex"
               >
                 View all
                 <ArrowRight aria-hidden="true" className="size-4" />
@@ -367,7 +367,7 @@ export default async function DashboardPage() {
                         <ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground group-hover:text-primary" />
                       </div>
 
-                      <h3 className="mt-5 line-clamp-2 text-lg font-bold leading-snug text-foreground transition group-hover:text-primary">
+                      <h3 className="mt-5 line-clamp-2 break-words text-lg font-bold leading-snug text-foreground transition group-hover:text-primary">
                         {opportunity.title}
                       </h3>
 
@@ -376,7 +376,7 @@ export default async function DashboardPage() {
                       ) : null}
 
                       {opportunity.summary ? (
-                        <p className="mt-3 line-clamp-2 text-sm leading-6 text-muted-foreground">
+                        <p className="mt-3 line-clamp-2 break-words text-sm leading-6 text-muted-foreground">
                           {opportunity.summary}
                         </p>
                       ) : null}
