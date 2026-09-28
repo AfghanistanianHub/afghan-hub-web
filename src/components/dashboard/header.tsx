@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { LogOut, Search } from "lucide-react";
 import { logout } from "@/app/(dashboard)/actions";
 import { MobileNavigation } from "@/components/dashboard/mobile-navigation";
 import {
@@ -32,7 +32,7 @@ export function Header({
 
   return (
     <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-border/70 bg-background/78 px-4 shadow-[0_8px_28px_rgb(15_23_42/0.035)] backdrop-blur-2xl supports-[backdrop-filter]:bg-background/72 md:px-8">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         <MobileNavigation
           canModerate={canModerate}
           pendingModerationCount={pendingModerationCount}
@@ -41,9 +41,10 @@ export function Header({
 
         <Link
           href="/dashboard"
-          className="text-sm font-extrabold tracking-[0.18em] text-primary lg:hidden"
+          className="font-extrabold tracking-[0.16em] text-primary lg:hidden"
         >
-          AFGHAN HUB
+          <span className="text-base sm:hidden">AH</span>
+          <span className="hidden text-sm sm:inline">AFGHAN HUB</span>
         </Link>
 
         <form
@@ -75,16 +76,18 @@ export function Header({
           <p className="max-w-48 truncate text-xs text-muted-foreground">{email}</p>
         </div>
 
-        <div className="flex size-11 items-center justify-center rounded-full border border-primary/15 bg-primary font-bold text-primary-foreground shadow-[0_6px_18px_color-mix(in_oklab,var(--primary)_18%,transparent)] ring-4 ring-primary/8">
+        <div className="flex size-10 items-center justify-center rounded-full border border-primary/15 bg-primary font-bold text-primary-foreground shadow-[0_6px_18px_color-mix(in_oklab,var(--primary)_18%,transparent)] ring-4 ring-primary/8 sm:size-11">
           {initial}
         </div>
 
         <form action={logout}>
           <button
             type="submit"
-            className="rounded-2xl border border-border/80 bg-card/72 px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm transition hover:border-primary/20 hover:bg-muted/70"
+            aria-label="Sign out"
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-2xl border border-border/80 bg-card/72 px-3 py-2.5 text-sm font-semibold text-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-primary/20 hover:bg-muted/70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:px-4"
           >
-            Sign out
+            <LogOut aria-hidden="true" className="size-4 sm:hidden" />
+            <span className="hidden sm:inline">Sign out</span>
           </button>
         </form>
       </div>
