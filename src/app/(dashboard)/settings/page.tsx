@@ -88,13 +88,13 @@ export default async function SettingsPage({
           </div>
 
           <aside className="space-y-6">
-            <section className="relative overflow-hidden rounded-[1.75rem] border border-border bg-foreground p-6 text-background shadow-[0_14px_40px_rgb(15_23_42/0.1)]">
-              <div aria-hidden="true" className="absolute -right-12 -top-12 size-36 rounded-full border border-background/10" />
-              <p className="relative text-xs font-semibold uppercase tracking-[0.16em] text-background/55">Your data</p>
+            <section className="relative overflow-hidden rounded-[1.75rem] border border-primary/15 bg-primary/[0.055] p-6 text-foreground shadow-[0_14px_40px_rgb(15_23_42/0.045)]">
+              <div aria-hidden="true" className="absolute -right-12 -top-12 size-36 rounded-full border border-primary/10" />
+              <p className="relative text-xs font-semibold uppercase tracking-[0.16em] text-primary">Your data</p>
               <h2 className="relative mt-2 text-xl font-semibold">Take a copy with you</h2>
-              <p className="relative mt-3 text-sm leading-6 text-background/65">Download your account details and profile as JSON. Messages, connections, contributions, saved items, RSVPs and uploaded files are outside this download.</p>
+              <p className="relative mt-3 text-sm leading-6 text-muted-foreground">Download your account details and profile as JSON. Messages, connections, contributions, saved items, RSVPs and uploaded files are outside this download.</p>
               <div className="relative mt-5"><AccountExportButton /></div>
-              <p className="relative mt-4 text-xs leading-5 text-background/50">For a wider data request or account deletion, <Link href="/support" className="font-semibold text-background underline underline-offset-4">contact support</Link>.</p>
+              <p className="relative mt-4 text-xs leading-5 text-muted-foreground">For a wider data request or account deletion, <Link href="/support" className="font-semibold text-primary underline underline-offset-4">contact support</Link>.</p>
             </section>
 
             <section className="rounded-[1.75rem] border border-border bg-card p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)]">
