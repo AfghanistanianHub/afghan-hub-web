@@ -36,8 +36,9 @@ export function ConnectionRequests({
   }
 
   return (
-    <section className="mt-8 rounded-2xl border border-primary/15 bg-primary/[0.04] p-6">
-      <h2 className="text-xl font-bold text-foreground">Connection requests</h2>
+    <section className="relative mt-8 overflow-hidden rounded-[1.75rem] border border-primary/15 bg-primary/[0.04] p-6">
+      <div aria-hidden="true" className="absolute -right-12 -top-12 size-32 rounded-full border border-primary/10" />
+      <div className="relative"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">New activity</p><h2 className="mt-1 text-xl font-bold text-foreground">Connection requests</h2></div>
 
       <div className="mt-5 space-y-4">
         {requests.map((request) => {
@@ -54,7 +55,7 @@ export function ConnectionRequests({
           return (
             <div
               key={request.id}
-              className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+              className="relative flex flex-col gap-4 rounded-2xl border border-border/80 bg-card p-4 shadow-[0_8px_24px_rgb(15_23_42/0.03)] sm:flex-row sm:items-center sm:justify-between"
             >
               <Link
                 href={"/members/" + requester.id}

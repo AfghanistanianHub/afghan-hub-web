@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { useMemo, useState } from "react";
 import {
+  ArrowUpRight,
   BriefcaseBusiness,
   MapPin,
   Search,
@@ -88,7 +89,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Search people, skills, companies..."
-            className="w-full rounded-2xl border border-border bg-card py-3.5 pl-11 pr-4 text-sm text-foreground shadow-sm outline-none transition placeholder:text-muted-foreground focus:border-primary/40 focus:ring-4 focus:ring-primary/10"
+            className="w-full rounded-2xl border border-border/80 bg-card/88 py-3.5 pl-11 pr-4 text-sm text-foreground shadow-[0_8px_24px_rgb(15_23_42/0.035)] outline-none transition placeholder:text-muted-foreground hover:border-primary/20 focus:border-primary/40 focus:ring-4 focus:ring-primary/10"
           />
         </div>
       </div>
@@ -112,8 +113,9 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
 
             return (
               <Link key={member.id} href={`/members/${member.id}`} className="group block">
-                <article className="h-full rounded-3xl border border-border bg-card p-6 shadow-sm transition duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/25 group-hover:shadow-md">
-                  <div className="flex items-start gap-4">
+                <article className="relative h-full overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)] transition duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 group-hover:shadow-[0_18px_42px_rgb(15_23_42/0.07)]">
+                  <div aria-hidden="true" className="absolute -right-10 -top-10 size-28 rounded-full border border-primary/10" />
+                  <div className="relative flex items-start gap-4">
                     {member.avatar_url ? (
                       <ExternalImage
                         src={member.avatar_url}
@@ -128,15 +130,16 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                       </div>
                     )}
 
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <h3 className="truncate text-lg font-bold text-foreground transition group-hover:text-primary">{memberName}</h3>
                       {member.headline ? (
                         <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted-foreground">{member.headline}</p>
                       ) : null}
                     </div>
+                    <ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
                   </div>
 
-                  <div className="mt-5 space-y-3 text-sm text-muted-foreground">
+                  <div className="relative mt-5 space-y-3 text-sm text-muted-foreground">
                     {professionalDetails ? (
                       <div className="flex items-start gap-3">
                         <BriefcaseBusiness className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -153,7 +156,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                   </div>
 
                   {member.skills.length > 0 ? (
-                    <div className="mt-5 flex flex-wrap gap-2">
+                    <div className="relative mt-5 flex flex-wrap gap-2 border-t border-border/70 pt-4">
                       {member.skills.slice(0, 4).map((skill) => (
                         <span key={skill} className="rounded-full border border-border bg-muted/60 px-3 py-1 text-xs text-muted-foreground">
                           {skill}
