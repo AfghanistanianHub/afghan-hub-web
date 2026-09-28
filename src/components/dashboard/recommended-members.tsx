@@ -46,7 +46,7 @@ export function RecommendedMembers({
         </div>
         <Link
           href="/network"
-          className="hidden items-center gap-2 rounded-sm text-sm font-semibold text-primary sm:inline-flex focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          className="hidden items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:text-primary/80 sm:inline-flex focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           Explore network
           <ArrowRight aria-hidden="true" className="size-4" />
@@ -93,7 +93,7 @@ export function RecommendedMembers({
               </div>
 
               {member.reason ? (
-                <p className="mt-4 inline-flex rounded-full bg-primary/[0.07] px-2.5 py-1 text-[0.68rem] font-semibold text-primary">
+                <p className="mt-4 inline-flex max-w-full break-words rounded-full bg-primary/[0.07] px-2.5 py-1 text-[0.68rem] font-semibold text-primary">
                   {member.reason}
                 </p>
               ) : null}
@@ -119,7 +119,7 @@ export function RecommendedMembers({
 
       <Link
         href="/network"
-        className="mt-5 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:hidden"
+        className="mt-5 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:hidden"
       >
         Explore network
         <ArrowRight aria-hidden="true" className="size-4" />
