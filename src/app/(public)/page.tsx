@@ -98,14 +98,14 @@ export default async function PublicHome() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/explore"
-                className="inline-flex items-center gap-3 rounded-xl bg-primary px-6 py-3.5 font-semibold text-primary-foreground shadow-sm transition-transform hover:-translate-y-0.5 hover:bg-primary/90"
+                className="inline-flex items-center gap-3 rounded-xl bg-primary px-6 py-3.5 font-semibold text-primary-foreground shadow-sm transition-transform hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 Explore the community
                 <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
               <Link
                 href="/login?mode=join"
-                className="rounded-xl border border-border bg-background/72 px-6 py-3.5 font-semibold backdrop-blur hover:bg-muted"
+                className="rounded-xl border border-border bg-background/72 px-6 py-3.5 font-semibold backdrop-blur transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 Join Afghan Hub
               </Link>
@@ -127,7 +127,7 @@ export default async function PublicHome() {
 
               <Link
                 href="/explore"
-                className="group relative z-10 flex size-36 flex-col items-center justify-center rounded-full border border-primary/15 bg-background/96 text-center shadow-[0_18px_55px_rgb(15_23_42/0.10)] transition-[transform,box-shadow] hover:scale-[1.025] hover:shadow-[0_20px_60px_rgb(15_23_42/0.13)] sm:size-44"
+                className="group relative z-10 flex size-36 flex-col items-center justify-center rounded-full border border-primary/15 bg-background/96 text-center shadow-[0_18px_55px_rgb(15_23_42/0.10)] transition-[transform,box-shadow] hover:scale-[1.025] hover:shadow-[0_20px_60px_rgb(15_23_42/0.13)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:size-44"
               >
                 <span className="text-[0.66rem] font-semibold uppercase tracking-[0.24em] text-primary">Afghan</span>
                 <span className="mt-0.5 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">Hub</span>
@@ -143,7 +143,7 @@ export default async function PublicHome() {
                     key={kind}
                     href={`/explore?type=${kind}`}
                     aria-label={`${publicCategories[kind].label}: ${categoryKicker[kind]}`}
-                    className={`group absolute z-20 flex size-11 items-center justify-center rounded-full border border-border/80 bg-background/94 text-primary shadow-[0_9px_28px_rgb(15_23_42/0.08)] backdrop-blur transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_12px_32px_rgb(15_23_42/0.12)] sm:size-12 ${categoryNodePosition[kind]}`}
+                    className={`group absolute z-20 flex size-11 items-center justify-center rounded-full border border-border/80 bg-background/94 text-primary shadow-[0_9px_28px_rgb(15_23_42/0.08)] backdrop-blur transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_12px_32px_rgb(15_23_42/0.12)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:size-12 ${categoryNodePosition[kind]}`}
                   >
                     <Icon aria-hidden="true" className="size-4.5 sm:size-5" />
                     <span className="pointer-events-none absolute top-full mt-2 hidden whitespace-nowrap text-[0.65rem] font-semibold text-muted-foreground transition-colors group-hover:text-primary sm:block">
@@ -168,7 +168,7 @@ export default async function PublicHome() {
               <Link
                 key={kind}
                 href={`/explore?type=${kind}`}
-                className="group flex min-h-36 flex-col justify-between bg-background px-5 py-5 transition-colors hover:bg-secondary/55 sm:min-h-40 sm:px-6"
+                className="group flex min-h-36 flex-col justify-between bg-background px-5 py-5 transition-colors hover:bg-secondary/55 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary sm:min-h-40 sm:px-6"
               >
                 <div className="flex items-start justify-between gap-3">
                   <span className="flex size-10 items-center justify-center rounded-2xl bg-secondary text-primary transition-transform group-hover:scale-105">
@@ -194,7 +194,7 @@ export default async function PublicHome() {
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Community pulse</p>
                 <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">What is moving right now</h2>
               </div>
-              <Link href="/explore" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+              <Link href="/explore" className="inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
                 See everything <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
             </div>
@@ -333,7 +333,7 @@ export default async function PublicHome() {
           </div>
           <Link
             href="/login?mode=join"
-            className="shrink-0 rounded-xl bg-background px-6 py-3.5 font-semibold text-primary hover:bg-background/90"
+            className="shrink-0 rounded-xl bg-background px-6 py-3.5 font-semibold text-primary transition hover:-translate-y-0.5 hover:bg-background/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
             Join Afghan Hub
           </Link>
