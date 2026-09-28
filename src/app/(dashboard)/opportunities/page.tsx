@@ -204,7 +204,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
           {hasFilters ? (
             <Link
               href="/opportunities"
-              className="rounded-2xl border border-border bg-card px-4 py-3 font-semibold text-foreground transition hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className="rounded-2xl border border-border bg-card px-4 py-3 font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               Clear
             </Link>
@@ -226,7 +226,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
 
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
         {error ? (
-          <div role="alert" className="relative overflow-hidden rounded-[1.75rem] border border-destructive/25 bg-destructive/[0.05] p-8 text-center"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-destructive/[0.06] blur-3xl"/>
+          <div role="alert" aria-live="assertive" className="relative overflow-hidden rounded-[1.75rem] border border-destructive/25 bg-destructive/[0.05] p-8 text-center"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-destructive/[0.06] blur-3xl"/>
             <h2 className="text-xl font-semibold text-destructive">We could not load opportunities</h2>
             <p className="mt-2 text-sm text-destructive/80">Please try again in a moment.</p>
           </div>
@@ -248,7 +248,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
               </div>
 
               <div className="relative mt-5 flex items-start justify-between gap-4">
-                <h2 className="text-xl font-semibold tracking-tight text-foreground transition group-hover:text-primary md:text-2xl">
+                <h2 className="break-words text-xl font-semibold tracking-tight text-foreground transition group-hover:text-primary md:text-2xl">
                   {opportunity.title}
                 </h2>
                 <ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
@@ -260,7 +260,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
                 <p className="relative mt-2 text-sm text-muted-foreground">Personal opportunity</p>
               )}
 
-              <p className="relative mt-3 line-clamp-3 text-sm leading-7 text-muted-foreground md:text-base">{opportunity.summary}</p>
+              <p className="relative mt-3 line-clamp-3 break-words text-sm leading-7 text-muted-foreground md:text-base">{opportunity.summary}</p>
 
               <div className="relative mt-5 flex flex-wrap gap-x-6 gap-y-2 border-t border-border/70 pt-4 text-sm text-muted-foreground">
                 {opportunity.city ? <span>{opportunity.city}</span> : null}
