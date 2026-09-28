@@ -207,7 +207,7 @@ export default async function DashboardPage() {
                 Your community, connected
               </div>
 
-              <h1 className="mt-5 text-3xl font-extrabold tracking-[-0.04em] text-foreground md:text-5xl">
+              <h1 className="mt-5 break-words text-3xl font-extrabold tracking-[-0.04em] text-foreground md:text-5xl">
                 Welcome back, {displayName}
               </h1>
 
@@ -267,7 +267,7 @@ export default async function DashboardPage() {
               >
                 <div>
                   <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] opacity-70">{nextStep.kicker}</p>
-                  <p className="mt-1 font-semibold">{nextStep.title}</p>
+                  <p className="mt-1 break-words font-semibold">{nextStep.title}</p>
                 </div>
                 <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
@@ -312,7 +312,7 @@ export default async function DashboardPage() {
                       <h3 className={`${featured ? "mt-2 max-w-md text-3xl md:text-4xl" : "mt-1 text-lg"} font-bold leading-tight tracking-[-0.025em]`}>
                         {action.title}
                       </h3>
-                      <p className={`${featured ? "mt-3 max-w-md text-sm leading-6 opacity-70" : "mt-2 line-clamp-2 text-sm leading-5 text-muted-foreground"}`}>
+                      <p className={`${featured ? "mt-3 max-w-md break-words text-sm leading-6 opacity-70" : "mt-2 line-clamp-2 break-words text-sm leading-5 text-muted-foreground"}`}>
                         {action.description}
                       </p>
                     </div>
@@ -372,7 +372,7 @@ export default async function DashboardPage() {
                       </h3>
 
                       {organizationName ? (
-                        <p className="mt-2 text-xs font-medium text-foreground/70">{organizationName}</p>
+                        <p className="mt-2 break-words text-xs font-medium text-foreground/70">{organizationName}</p>
                       ) : null}
 
                       {opportunity.summary ? (
