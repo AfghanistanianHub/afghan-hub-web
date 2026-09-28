@@ -62,8 +62,8 @@ export default function AboutPage() {
               <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">Explore first. Join when you are ready. Contribute when you have something to share.</p>
             </div>
             <div className="flex shrink-0 flex-wrap gap-3">
-              <Link href="/explore" className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Explore Afghan Hub <ArrowRight aria-hidden="true" className="size-4" /></Link>
-              <Link href="/login?mode=join" className="rounded-xl border border-border bg-background px-5 py-3 text-sm font-semibold hover:bg-muted">Join the community</Link>
+              <Link href="/explore" className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Explore Afghan Hub <ArrowRight aria-hidden="true" className="size-4" /></Link>
+              <Link href="/login?mode=join" className="rounded-xl border border-border bg-background px-5 py-3 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Join the community</Link>
             </div>
           </div>
         </div>
