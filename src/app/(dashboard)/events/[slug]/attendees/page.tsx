@@ -136,7 +136,7 @@ export default async function EventAttendeesPage({ params }: Props) {
             <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">
               Event attendees
             </h1>
-            <p className="mt-3 text-lg text-muted-foreground">{event.title}</p>
+            <p className="mt-3 break-words text-lg text-muted-foreground">{event.title}</p>
           </div>
 
           <Link
@@ -148,14 +148,14 @@ export default async function EventAttendeesPage({ params }: Props) {
         </div>
 
         <div className="mt-6 flex flex-wrap gap-3 text-sm text-muted-foreground">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5">
+          <span className="inline-flex max-w-full items-start gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5">
             <CalendarDays aria-hidden="true" className="size-4 text-primary" />
             {formatDateTime(event.starts_at)}
           </span>
           {location ? (
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5">
-              <MapPin aria-hidden="true" className="size-4 text-primary" />
-              {location}
+              <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
+              <span className="min-w-0 break-words">{location}</span>
             </span>
           ) : null}
         </div>
@@ -240,7 +240,7 @@ export default async function EventAttendeesPage({ params }: Props) {
                           {profile.headline}
                         </p>
                       ) : null}
-                      <p className="mt-1 text-xs text-muted-foreground">
+                      <p className="mt-1 break-words text-xs leading-5 text-muted-foreground">
                         {memberLocation ? `${memberLocation} · ` : ""}
                         Registered {formatDateTime(registration.created_at)}
                       </p>
@@ -258,10 +258,10 @@ export default async function EventAttendeesPage({ params }: Props) {
             })}
           </div>
         ) : (
-          <div className="mt-6 rounded-2xl border border-dashed border-border bg-muted/30 px-6 py-12 text-center">
-            <UsersRound aria-hidden="true" className="mx-auto size-10 text-muted-foreground" />
-            <h3 className="mt-3 font-semibold text-foreground">No registrations yet</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
+          <div className="relative mt-6 overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-muted/25 px-6 py-12 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"/>
+            <UsersRound aria-hidden="true" className="relative mx-auto size-10 text-primary" />
+            <h3 className="relative mt-3 font-semibold text-foreground">No registrations yet</h3>
+            <p className="relative mt-2 text-sm leading-6 text-muted-foreground">
               Members who register for this event will appear here.
             </p>
           </div>
