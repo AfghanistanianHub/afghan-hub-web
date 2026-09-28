@@ -125,7 +125,7 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
       >
         <Bell aria-hidden="true" className="size-5" />
         {unreadCount > 0 ? (
-          <span className="absolute -right-1.5 -top-1.5 flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold leading-none text-primary-foreground ring-2 ring-background">
+          <span aria-hidden="true" className="absolute -right-1.5 -top-1.5 flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold leading-none text-primary-foreground ring-2 ring-background">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         ) : null}
