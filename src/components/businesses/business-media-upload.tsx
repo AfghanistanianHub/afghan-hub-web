@@ -91,12 +91,12 @@ export function BusinessMediaUpload({
   }
 
   const uploadClass =
-    "inline-flex min-h-11 cursor-pointer items-center justify-center rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary";
+    "inline-flex min-h-11 w-full cursor-pointer items-center justify-center rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary sm:w-auto";
 
   return (
     <div className="space-y-6" aria-busy={uploading}>
       <section className="surface-panel relative overflow-hidden rounded-[1.75rem] p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)]">
-        <h2 className="text-xl font-semibold">Business cover</h2>
+        <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-36 rounded-full bg-primary/[0.045] blur-3xl"/><h2 className="relative text-xl font-semibold">Business cover</h2>
         <div className="mt-5">
           {currentCoverUrl ? (
             <ExternalImage src={currentCoverUrl} alt={`${businessName} cover`} width={1200} height={400} className="h-48 w-full rounded-[1.5rem] border border-border/70 object-cover shadow-sm" />
@@ -110,13 +110,13 @@ export function BusinessMediaUpload({
         </div>
       </section>
       <section className="surface-panel relative overflow-hidden rounded-[1.75rem] p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)]">
-        <h2 className="text-xl font-semibold">Business logo</h2>
+        <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-36 rounded-full bg-primary/[0.045] blur-3xl"/><h2 className="relative text-xl font-semibold">Business logo</h2>
         <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
           {currentLogoUrl ? <ExternalImage src={currentLogoUrl} alt={`${businessName} logo`} width={96} height={96} className="h-24 w-24 rounded-[1.4rem] border border-border/70 object-cover shadow-sm" /> : <div className="flex h-24 w-24 items-center justify-center rounded-[1.4rem] border border-border bg-primary/10 text-3xl font-bold text-primary shadow-sm">{businessName.charAt(0).toUpperCase()}</div>}
           <div><label className={uploadClass}><span role="status" aria-live="polite">{uploading ? "Uploading…" : "Upload logo"}</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading} aria-describedby="business-logo-help business-media-message" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadImage(file, "logo", 5); }} /></label><p id="business-logo-help" className="mt-2 text-xs text-muted-foreground">JPG, PNG, or WebP. Maximum size: 5 MB.</p></div>
         </div>
       </section>
-      {message ? <p id="business-media-message" role={message.kind === "error" ? "alert" : "status"} aria-live={message.kind === "error" ? "assertive" : "polite"} className={message.kind === "error" ? "rounded-xl border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm text-destructive" : "rounded-xl border border-primary/15 bg-primary/[0.05] px-3 py-2 text-sm text-primary"}>{message.text}</p> : null}
+      {message ? <p id="business-media-message" role={message.kind === "error" ? "alert" : "status"} aria-live={message.kind === "error" ? "assertive" : "polite"} className={message.kind === "error" ? "break-words rounded-xl border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm leading-6 text-destructive" : "break-words rounded-xl border border-primary/15 bg-primary/[0.05] px-3 py-2 text-sm leading-6 text-primary"}>{message.text}</p> : null}
     </div>
   );
 }
