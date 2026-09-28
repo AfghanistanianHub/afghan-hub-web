@@ -56,7 +56,7 @@ export function PageRecovery({ reset }: RecoveryProps) {
               onClick={() => startTransition(reset)}
               className="min-h-11 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary disabled:cursor-wait disabled:opacity-60"
             >
-              <span role="status">{pending ? "Trying again…" : "Try again"}</span>
+              <span role="status" aria-live="polite">{pending ? "Trying again…" : "Try again"}</span>
             </button>
             {/* Full document navigation is intentional when the client router/layout may have failed. */}
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
