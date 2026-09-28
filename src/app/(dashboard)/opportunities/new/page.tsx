@@ -23,19 +23,23 @@ export default async function NewOpportunityPage() {
     "mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10";
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-10">
-      <div>
+    <main className="mx-auto max-w-4xl px-4 py-8 md:px-8 md:py-10">
+      <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
+        <div className="relative">
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Create an opportunity</p>
-        <h1 className="mt-2 text-4xl font-bold tracking-tight text-foreground">Post an Opportunity</h1>
+        <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Post an Opportunity</h1>
         <p className="mt-3 text-muted-foreground">
           Share a job, scholarship, volunteer role, mentorship, or another opportunity.
         </p>
-        <p className="mt-3 inline-flex rounded-full bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground">
+        <p className="mt-4 inline-flex rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-sm font-medium text-primary">
           Your submission will be reviewed before it appears publicly.
         </p>
-      </div>
+        </div>
+      </section>
 
-      <form action={createOpportunity} className="surface-panel mt-10 space-y-6 rounded-3xl p-6 md:p-8">
+      <form action={createOpportunity} className="surface-panel mt-8 space-y-8 rounded-[2rem] p-6 md:p-8">
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-foreground">Title</label>
           <input id="title" name="title" type="text" required className={fieldClassName} />
@@ -87,7 +91,7 @@ export default async function NewOpportunityPage() {
           </div>
         </div>
 
-        <label className="flex items-center gap-3 rounded-xl border border-border bg-muted/40 p-4">
+        <label className="flex items-center gap-3 rounded-2xl border border-border/80 bg-secondary/40 p-4 transition hover:border-primary/20">
           <input name="is_remote" type="checkbox" className="size-4 rounded border-input accent-primary" />
           <span className="text-sm font-medium text-foreground">Remote opportunity</span>
         </label>
@@ -108,7 +112,7 @@ export default async function NewOpportunityPage() {
         </div>
 
         <div className="flex justify-end border-t border-border pt-6">
-          <button type="submit" className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90">
+          <button type="submit" className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90">
             Submit for Review
           </button>
         </div>
