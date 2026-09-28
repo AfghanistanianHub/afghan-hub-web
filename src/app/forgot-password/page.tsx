@@ -16,23 +16,23 @@ export default async function ForgotPasswordPage({
 
   return (
     <main className="min-h-screen bg-background text-foreground lg:grid lg:grid-cols-[0.95fr_1.05fr]">
-      <section className="relative hidden min-h-screen overflow-hidden border-r border-border bg-foreground p-10 text-background lg:flex lg:flex-col lg:justify-between xl:p-14">
-        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,color-mix(in_oklab,var(--primary)_32%,transparent),transparent_30%),radial-gradient(circle_at_85%_86%,color-mix(in_oklab,var(--accent)_18%,transparent),transparent_28%)]" />
-        <div aria-hidden="true" className="absolute -right-24 top-24 size-[30rem] rounded-full border border-background/10" />
-        <div aria-hidden="true" className="absolute right-12 top-40 size-72 rounded-full border border-dashed border-background/10" />
+      <section className="relative hidden min-h-screen overflow-hidden border-r border-border/80 bg-card p-10 text-foreground lg:flex lg:flex-col lg:justify-between xl:p-14">
+        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,color-mix(in_oklab,var(--primary)_14%,transparent),transparent_30%),radial-gradient(circle_at_85%_86%,color-mix(in_oklab,var(--accent)_48%,transparent),transparent_28%)]" />
+        <div aria-hidden="true" className="absolute -right-24 top-24 size-[30rem] rounded-full border border-primary/10" />
+        <div aria-hidden="true" className="absolute right-12 top-40 size-72 rounded-full border border-dashed border-primary/10" />
 
-        <Link href="/" className="relative z-10 text-sm font-semibold uppercase tracking-[0.22em]">Afghan Hub</Link>
+        <Link href="/" className="relative z-10 text-sm font-semibold uppercase tracking-[0.22em] text-primary">Afghan Hub</Link>
 
         <div className="relative z-10 max-w-xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-background/55">Secure account recovery</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Secure account recovery</p>
           <h1 className="mt-4 text-5xl font-semibold leading-[1.03] tracking-[-0.045em] xl:text-6xl">Get back to your community.</h1>
-          <p className="mt-5 max-w-lg text-base leading-7 text-background/65">We will send the recovery link only through the email connected to your Afghan Hub account.</p>
+          <p className="mt-5 max-w-lg text-base leading-7 text-muted-foreground">We will send the recovery link only through the email connected to your Afghan Hub account.</p>
         </div>
 
-        <div className="relative z-10 grid grid-cols-3 gap-3 text-center text-xs text-background/60">
-          <div className="rounded-2xl border border-background/10 bg-background/[0.05] px-3 py-4"><span className="block text-lg font-bold text-background">1</span><span className="mt-1 block">Enter email</span></div>
-          <div className="rounded-2xl border border-background/10 bg-background/[0.05] px-3 py-4"><span className="block text-lg font-bold text-background">2</span><span className="mt-1 block">Open secure link</span></div>
-          <div className="rounded-2xl border border-background/10 bg-background/[0.05] px-3 py-4"><span className="block text-lg font-bold text-background">3</span><span className="mt-1 block">Choose password</span></div>
+        <div className="relative z-10 grid grid-cols-3 gap-3 text-center text-xs text-muted-foreground">
+          <div className="rounded-2xl border border-primary/10 bg-background/72 px-3 py-4"><span className="block text-lg font-bold text-foreground">1</span><span className="mt-1 block">Enter email</span></div>
+          <div className="rounded-2xl border border-primary/10 bg-background/72 px-3 py-4"><span className="block text-lg font-bold text-background">2</span><span className="mt-1 block">Open secure link</span></div>
+          <div className="rounded-2xl border border-primary/10 bg-background/72 px-3 py-4"><span className="block text-lg font-bold text-background">3</span><span className="mt-1 block">Choose password</span></div>
         </div>
       </section>
 
