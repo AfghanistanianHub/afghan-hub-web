@@ -64,23 +64,17 @@ export default async function ModerationTeamPage({
           ← Back to moderation
         </Link>
 
-        <div className="mt-6 flex items-start gap-4">
-          <div className="rounded-2xl bg-primary/10 p-3 text-primary">
-            <ShieldCheck className="size-6" />
+        <section className="relative mt-6 overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
+          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
+          <div className="relative flex items-start gap-4">
+            <div className="rounded-2xl bg-primary/10 p-3 text-primary"><ShieldCheck className="size-6" /></div>
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Admin only</p>
+              <h1 className="mt-2 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Moderation team</h1>
+              <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">Promote trusted members to moderator or admin, or return them to the standard member role.</p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
-              Admin only
-            </p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-              Moderation team
-            </h1>
-            <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">
-              Promote trusted members to moderator or admin, or return them to
-              the standard member role.
-            </p>
-          </div>
-        </div>
+        </section>
 
         {error ? (
           <div
@@ -118,7 +112,7 @@ export default async function ModerationTeamPage({
               return (
                 <article
                   key={member.id}
-                  className="surface-panel rounded-2xl p-5"
+                  className="surface-panel rounded-[1.5rem] p-5 transition hover:border-primary/25 hover:shadow-[0_12px_30px_rgb(15_23_42/0.045)]"
                 >
                   <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                     <div className="min-w-0">
@@ -163,7 +157,7 @@ export default async function ModerationTeamPage({
                           <select
                             name="role"
                             defaultValue={member.role}
-                            className="rounded-xl border border-border bg-card px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
+                            className="rounded-2xl border border-border/80 bg-card px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
                           >
                             <option value="member">Member</option>
                             <option value="moderator">Moderator</option>
@@ -173,7 +167,7 @@ export default async function ModerationTeamPage({
 
                         <PendingSubmitButton
                           pendingLabel="Saving role…"
-                          className="rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                          className="rounded-2xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                         >
                           Save role
                         </PendingSubmitButton>

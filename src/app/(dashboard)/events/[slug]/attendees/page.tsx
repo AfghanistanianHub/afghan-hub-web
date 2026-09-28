@@ -125,13 +125,15 @@ export default async function EventAttendeesPage({ params }: Props) {
         Back to event
       </Link>
 
-      <section className="surface-panel mt-6 rounded-3xl p-6 md:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-5">
+      <section className="relative mt-6 overflow-hidden rounded-[2rem] border border-border/80 bg-card p-6 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:p-8">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
+        <div className="relative flex flex-wrap items-start justify-between gap-5">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
               Host tools
             </p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">
               Event attendees
             </h1>
             <p className="mt-3 text-lg text-muted-foreground">{event.title}</p>
@@ -139,7 +141,7 @@ export default async function EventAttendeesPage({ params }: Props) {
 
           <Link
             href={`/events/${event.slug}/edit`}
-            className="rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-muted"
+            className="rounded-2xl border border-border/80 bg-background/80 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted"
           >
             Edit event
           </Link>
@@ -160,7 +162,7 @@ export default async function EventAttendeesPage({ params }: Props) {
 
         <div className="mt-7 grid gap-4 sm:grid-cols-3">
           {[['Registered', attendeeCount], ['Capacity', event.capacity ?? 'Unlimited'], ['Remaining', remaining ?? 'Unlimited']].map(([label, value]) => (
-            <div key={String(label)} className="rounded-2xl border border-border bg-muted/30 p-5">
+            <div key={String(label)} className="rounded-2xl border border-border/80 bg-background/72 p-5 shadow-sm">
               <p className="text-sm text-muted-foreground">{label}</p>
               <p className="mt-2 text-3xl font-bold text-foreground">{value}</p>
             </div>
@@ -168,7 +170,7 @@ export default async function EventAttendeesPage({ params }: Props) {
         </div>
       </section>
 
-      <section className="surface-panel mt-8 rounded-2xl p-6 md:p-8">
+      <section className="surface-panel mt-8 rounded-[1.75rem] p-6 md:p-8">
         <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold text-foreground">Registered members</h2>
@@ -223,10 +225,10 @@ export default async function EventAttendeesPage({ params }: Props) {
                         alt={memberName}
                         width={48}
                         height={48}
-                        className="size-12 rounded-xl object-cover"
+                        className="size-12 rounded-2xl border border-border/70 object-cover shadow-sm"
                       />
                     ) : (
-                      <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 font-bold text-primary">
+                      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary font-bold text-primary">
                         {getInitials(memberName) || <UserRound className="size-5" />}
                       </div>
                     )}
@@ -247,7 +249,7 @@ export default async function EventAttendeesPage({ params }: Props) {
 
                   <Link
                     href={`/members/${profile.id}`}
-                    className="rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-muted"
+                    className="rounded-2xl border border-border/80 bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted"
                   >
                     View profile
                   </Link>
