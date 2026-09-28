@@ -85,7 +85,7 @@ export function RecommendedMembers({
                     {memberName}
                   </h3>
                   {member.headline ? (
-                    <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">
+                    <p className="mt-1 line-clamp-2 break-words text-xs leading-5 text-muted-foreground">
                       {member.headline}
                     </p>
                   ) : null}
