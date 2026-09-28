@@ -21,7 +21,7 @@ export default async function ForgotPasswordPage({
         <div aria-hidden="true" className="absolute -right-24 top-24 size-[30rem] rounded-full border border-primary/10" />
         <div aria-hidden="true" className="absolute right-12 top-40 size-72 rounded-full border border-dashed border-primary/10" />
 
-        <Link href="/" className="relative z-10 text-sm font-semibold uppercase tracking-[0.22em] text-primary">Afghan Hub</Link>
+        <Link href="/" className="relative z-10 rounded-sm text-sm font-semibold uppercase tracking-[0.22em] text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Afghan Hub</Link>
 
         <div className="relative z-10 max-w-xl">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Secure account recovery</p>
@@ -43,7 +43,7 @@ export default async function ForgotPasswordPage({
         </div>
 
         <div className="relative w-full max-w-md">
-          <Link href="/" className="mb-8 inline-block text-sm font-semibold uppercase tracking-[0.22em] text-primary lg:hidden">Afghan Hub</Link>
+          <Link href="/" className="mb-8 inline-block rounded-sm text-sm font-semibold uppercase tracking-[0.22em] text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:hidden">Afghan Hub</Link>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Password recovery</p>
           <h2 className="mt-3 text-3xl font-bold tracking-[-0.03em] sm:text-4xl">Reset your password</h2>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">Enter your account email and we will send you a secure reset link.</p>
@@ -65,7 +65,7 @@ export default async function ForgotPasswordPage({
           </form>
 
           <div className="mt-6 border-t border-border pt-5 text-center">
-            <Link href="/login" className="text-sm font-medium text-primary transition hover:opacity-75">Back to sign in</Link>
+            <Link href="/login" className="rounded-sm text-sm font-medium text-primary transition hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Back to sign in</Link>
           </div>
         </div>
       </section>

@@ -47,7 +47,7 @@ export default async function LoginPage({
         <div aria-hidden="true" className="absolute right-12 top-40 size-72 rounded-full border border-dashed border-primary/10" />
 
         <div className="relative z-10">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-primary">
+          <Link href="/" className="inline-flex items-center gap-2 rounded-sm text-sm font-semibold uppercase tracking-[0.22em] text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
             <span className="flex size-8 items-center justify-center rounded-xl bg-secondary text-primary">A</span>
             Afghan Hub
           </Link>
@@ -94,7 +94,7 @@ export default async function LoginPage({
 
         <div className="relative w-full max-w-md">
           <div className="mb-8 lg:hidden">
-            <Link href="/" className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Afghan Hub</Link>
+            <Link href="/" className="rounded-sm text-sm font-semibold uppercase tracking-[0.22em] text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Afghan Hub</Link>
           </div>
 
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
@@ -144,7 +144,7 @@ export default async function LoginPage({
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="text-sm font-medium text-primary transition hover:opacity-75"
+                  className="rounded-sm text-sm font-medium text-primary transition hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                 >
                   Forgot password?
                 </Link>
@@ -173,7 +173,7 @@ export default async function LoginPage({
 
             <p className="text-center text-sm text-muted-foreground">
               {joining ? "Already a member? " : "New to Afghan Hub? "}
-              <Link href={joining ? "/login" : "/login?mode=join"} className="font-semibold text-primary underline">
+              <Link href={joining ? "/login" : "/login?mode=join"} className="rounded-sm font-semibold text-primary underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
                 {joining ? "Sign in" : "Create an account"}
               </Link>
             </p>
