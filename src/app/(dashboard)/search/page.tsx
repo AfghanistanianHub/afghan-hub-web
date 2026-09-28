@@ -214,7 +214,7 @@ export default async function SearchPage({
         </section>
 
         <form action="/search" role="search" className="relative mt-8 rounded-[1.75rem] border border-border/80 bg-card/88 p-2 shadow-[0_12px_38px_rgb(15_23_42/0.035)] backdrop-blur">
-          <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
+          <Search aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
           <input
             name="q"
             type="search"
@@ -234,13 +234,13 @@ export default async function SearchPage({
         </form>
 
         {query && query.length < 2 ? (
-          <div className="mt-8 rounded-xl border border-amber-500/25 bg-amber-500/10 p-4 text-sm text-amber-700">
+          <div role="status" aria-live="polite" className="mt-8 rounded-xl border border-amber-500/25 bg-amber-500/10 p-4 text-sm text-amber-700">
             Enter at least two characters to search.
           </div>
         ) : null}
 
         {error ? (
-          <div className="mt-8 rounded-xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
+          <div role="alert" aria-live="assertive" className="mt-8 rounded-xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
             We could not complete your search. Please try again.
           </div>
         ) : null}
@@ -265,7 +265,7 @@ export default async function SearchPage({
                     <Link
                       key={`${result.entity_type}-${result.entity_id}`}
                       href={href}
-                      className="surface-panel group relative overflow-hidden flex items-start gap-4 rounded-[1.5rem] p-5 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_16px_36px_rgb(15_23_42/0.06)]"
+                      className="surface-panel group relative flex items-start gap-4 overflow-hidden rounded-[1.5rem] p-5 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_16px_36px_rgb(15_23_42/0.06)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                     >
                       <div aria-hidden="true" className="absolute -right-8 -top-8 size-24 rounded-full border border-primary/10" />
                       {result.image_url ? (
@@ -278,7 +278,7 @@ export default async function SearchPage({
                         />
                       ) : (
                         <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                          <Icon className="size-5" />
+                          <Icon aria-hidden="true" className="size-5" />
                         </div>
                       )}
 
@@ -286,7 +286,7 @@ export default async function SearchPage({
                         <span className="text-xs font-semibold uppercase tracking-wide text-primary">
                           {getTypeLabel(result.entity_type)}
                         </span>
-                        <h2 className="mt-1 truncate font-bold text-foreground">
+                        <h2 className="mt-1 line-clamp-2 break-words font-bold leading-5 text-foreground">
                           {getSafeResultTitle(result)}
                         </h2>
                         {result.subtitle ? (
@@ -295,7 +295,7 @@ export default async function SearchPage({
                           </p>
                         ) : null}
                         {location ? (
-                          <p className="mt-2 text-xs text-muted-foreground">
+                          <p className="mt-2 break-words text-xs leading-5 text-muted-foreground">
                             {location}
                           </p>
                         ) : null}
@@ -307,7 +307,7 @@ export default async function SearchPage({
               </div>
             ) : (
               <div className="mt-5 flex min-h-64 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/70 px-6 text-center">
-                <Search className="size-10 text-muted-foreground/60" />
+                <Search aria-hidden="true" className="size-10 text-muted-foreground/60" />
                 <h2 className="mt-4 text-lg font-bold text-foreground">
                   No results found
                 </h2>
@@ -322,7 +322,7 @@ export default async function SearchPage({
 
         {!query ? (
           <div className="mt-8 flex min-h-64 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/70 px-6 text-center">
-            <Search className="size-10 text-muted-foreground/60" />
+            <Search aria-hidden="true" className="size-10 text-muted-foreground/60" />
             <h2 className="mt-4 text-lg font-bold text-foreground">
               Search the community
             </h2>
