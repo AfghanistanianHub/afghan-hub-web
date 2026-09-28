@@ -150,9 +150,15 @@ export default async function SubmissionsPage() {
           <div
             role="alert"
             aria-live="assertive"
-            className="relative mt-8 overflow-hidden rounded-[1.5rem] border border-destructive/25 bg-destructive/[0.06] p-5 text-sm text-destructive"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-destructive/[0.06] blur-3xl" /><span className="relative"
+            className="relative mt-8 overflow-hidden rounded-[1.5rem] border border-destructive/25 bg-destructive/[0.06] p-5 text-sm text-destructive"
           >
-            We could not load all of your submissions. Please try again.</span>
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-destructive/[0.06] blur-3xl"
+            />
+            <span className="relative">
+              We could not load all of your submissions. Please try again.
+            </span>
           </div>
         ) : null}
 
@@ -372,7 +378,11 @@ function EmptyState({
   text: string;
 }) {
   return (
-    <div className="relative mt-5 overflow-hidden rounded-[1.5rem] border border-dashed border-border/80 bg-muted/20 p-8 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl" />
+    <div className="relative mt-5 overflow-hidden rounded-[1.5rem] border border-dashed border-border/80 bg-muted/20 p-8 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"
+      />
       <p className="relative text-sm leading-6 text-muted-foreground">{text}</p>
       <Link
         href={href}
