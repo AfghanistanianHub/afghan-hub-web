@@ -328,7 +328,7 @@ function SubmissionCard({
           <StatusIcon aria-hidden="true" className="size-3.5" />
           {presentation.label}
         </span>
-        <span className="text-xs capitalize text-muted-foreground">{meta}</span>
+        <span className="max-w-full break-words text-xs capitalize text-muted-foreground">{meta}</span>
       </div>
 
       <Link
@@ -338,13 +338,13 @@ function SubmissionCard({
         {title}
       </Link>
       {summary ? (
-        <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">
+        <p className="mt-3 line-clamp-3 break-words text-sm leading-6 text-muted-foreground">
           {summary}
         </p>
       ) : null}
 
       {presentation.label === "Not approved" && moderationNote ? (
-        <div className="mt-4 rounded-xl border border-destructive/20 bg-destructive/[0.05] p-3 text-sm leading-6 text-destructive">
+        <div className="mt-4 break-words rounded-xl border border-destructive/20 bg-destructive/[0.05] p-3 text-sm leading-6 text-destructive">
           <span className="font-semibold">Moderator note:</span>{" "}
           {moderationNote}
         </div>
