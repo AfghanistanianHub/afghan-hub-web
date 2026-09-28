@@ -154,6 +154,7 @@ export default async function MyEventsPage() {
             Create Event
           </Link>
         </div>
+        </div>
       </section>
 
       <section className="mt-10">
