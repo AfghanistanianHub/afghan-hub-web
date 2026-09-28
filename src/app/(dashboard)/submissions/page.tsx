@@ -112,15 +112,15 @@ export default async function SubmissionsPage() {
   return (
     <main className="px-4 py-8 md:px-8">
       <div className="mx-auto max-w-6xl">
-        <section className="surface-panel relative overflow-hidden rounded-3xl p-6 md:p-8">
-          <div className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full border border-primary/10" />
-          <div className="pointer-events-none absolute -right-4 -top-8 size-36 rounded-full border border-primary/10" />
+        <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card p-6 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:p-8">
+          <div className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 left-1/3 size-56 rounded-full bg-accent/45 blur-3xl" />
           <div className="relative flex flex-wrap items-end justify-between gap-5">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
                 Your content
               </p>
-              <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+              <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">
                 My submissions
               </h1>
               <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">
@@ -132,13 +132,13 @@ export default async function SubmissionsPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/opportunities/new"
-                className={`rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 ${focusClass}`}
+                className={`rounded-2xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90 ${focusClass}`}
               >
                 New opportunity
               </Link>
               <Link
                 href="/events/new"
-                className={`rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted ${focusClass}`}
+                className={`rounded-2xl border border-border/80 bg-background/80 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted ${focusClass}`}
               >
                 New event
               </Link>
@@ -314,7 +314,7 @@ function SubmissionCard({
   const StatusIcon = presentation.icon;
 
   return (
-    <article className="surface-panel rounded-2xl p-6 transition hover:-translate-y-0.5 hover:shadow-md focus-within:shadow-md">
+    <article className="surface-panel relative overflow-hidden rounded-[1.75rem] p-6 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.06)] focus-within:shadow-md">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <span
           className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${presentation.className}`}

@@ -52,30 +52,30 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
         </Link>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[330px_minmax(0,1fr)] lg:items-start">
-          <aside className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-foreground p-6 text-background shadow-[0_18px_55px_rgb(15_23_42/0.12)] lg:sticky lg:top-6 md:p-7">
-            <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_18%_10%,color-mix(in_oklab,var(--primary)_35%,transparent),transparent_30%),radial-gradient(circle_at_88%_88%,color-mix(in_oklab,var(--accent)_18%,transparent),transparent_28%)]" />
-            <div aria-hidden="true" className="absolute -right-14 top-10 size-44 rounded-full border border-background/10" />
-            <div aria-hidden="true" className="absolute right-8 top-24 size-20 rounded-full border border-dashed border-background/10" />
+          <aside className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card p-6 text-foreground shadow-[0_18px_55px_rgb(15_23_42/0.055)] lg:sticky lg:top-6 md:p-7">
+            <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_18%_10%,color-mix(in_oklab,var(--primary)_12%,transparent),transparent_30%),radial-gradient(circle_at_88%_88%,color-mix(in_oklab,var(--accent)_48%,transparent),transparent_28%)]" />
+            <div aria-hidden="true" className="absolute -right-14 top-10 size-44 rounded-full border border-primary/10" />
+            <div aria-hidden="true" className="absolute right-8 top-24 size-20 rounded-full border border-dashed border-primary/10" />
 
             <div className="relative">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-background/55">Your community identity</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Your community identity</p>
               <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em]">{displayName}</h1>
-              {profile?.headline ? <p className="mt-3 text-sm leading-6 text-background/65">{profile.headline}</p> : <p className="mt-3 text-sm leading-6 text-background/55">Add a headline so people can understand what you do at a glance.</p>}
+              {profile?.headline ? <p className="mt-3 text-sm leading-6 text-muted-foreground">{profile.headline}</p> : <p className="mt-3 text-sm leading-6 text-muted-foreground">Add a headline so people can understand what you do at a glance.</p>}
 
-              <div className="mt-7 rounded-[1.65rem] border border-background/10 bg-background/[0.055] p-4 backdrop-blur-sm">
+              <div className="mt-7 rounded-[1.65rem] border border-border/80 bg-background/78 p-4 shadow-sm backdrop-blur-sm">
                 <AvatarUpload userId={user.id} currentAvatarUrl={profile?.avatar_url} />
               </div>
 
               <div className="mt-6 space-y-3 text-sm">
-                <div className="flex items-center gap-3 rounded-2xl border border-background/10 bg-background/[0.045] p-3.5">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-background/10"><BriefcaseBusiness aria-hidden="true" className="size-4" /></span>
-                  <div><p className="text-xs text-background/45">Professional story</p><p className="mt-0.5 font-semibold">{hasProfessionalDetails ? "Started" : "Add your work"}</p></div>
+                <div className="flex items-center gap-3 rounded-2xl border border-border/80 bg-background/72 p-3.5">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary"><BriefcaseBusiness aria-hidden="true" className="size-4" /></span>
+                  <div><p className="text-xs text-muted-foreground">Professional story</p><p className="mt-0.5 font-semibold">{hasProfessionalDetails ? "Started" : "Add your work"}</p></div>
                 </div>
-                <div className="flex items-center gap-3 rounded-2xl border border-background/10 bg-background/[0.045] p-3.5">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-background/10"><Sparkles aria-hidden="true" className="size-4" /></span>
-                  <div><p className="text-xs text-background/45">Discovery details</p><p className="mt-0.5 font-semibold">{hasDiscoveryDetails ? "People can find more about you" : "Add skills, language, location"}</p></div>
+                <div className="flex items-center gap-3 rounded-2xl border border-border/80 bg-background/72 p-3.5">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary"><Sparkles aria-hidden="true" className="size-4" /></span>
+                  <div><p className="text-xs text-muted-foreground">Discovery details</p><p className="mt-0.5 font-semibold">{hasDiscoveryDetails ? "People can find more about you" : "Add skills, language, location"}</p></div>
                 </div>
-                {location ? <div className="flex items-center gap-2 px-1 text-xs text-background/55"><MapPin aria-hidden="true" className="size-3.5" />{location}</div> : null}
+                {location ? <div className="flex items-center gap-2 px-1 text-xs text-muted-foreground"><MapPin aria-hidden="true" className="size-3.5" />{location}</div> : null}
               </div>
             </div>
           </aside>
