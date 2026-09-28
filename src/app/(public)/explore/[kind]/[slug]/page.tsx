@@ -70,7 +70,7 @@ export default async function PublicDetailPage({ params }: Props) {
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Afghan Hub</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight">We couldn’t load this listing.</h1>
           <p className="mt-4 leading-7 text-muted-foreground">Please try again shortly.</p>
-          <Link href={publicHref(kind, slug)} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+          <Link href={publicHref(kind, slug)} className="mt-6 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
             Try again <ArrowRight aria-hidden="true" className="size-4" />
           </Link>
         </div>
@@ -93,7 +93,7 @@ export default async function PublicDetailPage({ params }: Props) {
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,color-mix(in_oklab,var(--primary)_11%,transparent),transparent_28%),radial-gradient(circle_at_12%_82%,color-mix(in_oklab,var(--accent)_52%,transparent),transparent_32%)]"
         />
         <div className="relative mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
-          <Link href={`/explore?type=${kind}`} className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+          <Link href={`/explore?type=${kind}`} className="inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
             <ArrowLeft aria-hidden="true" className="size-4" />
             All {publicCategories[kind].label.toLowerCase()}
           </Link>
@@ -178,10 +178,10 @@ export default async function PublicDetailPage({ params }: Props) {
               Join Afghan Hub to connect with members, save listings, and contribute to the community.
             </p>
             <div className="mt-5 grid gap-3">
-              <Link href="/login?mode=join" className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+              <Link href="/login?mode=join" className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
                 Join Afghan Hub <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
-              <Link href={`/${kind}/${encodeURIComponent(slug)}`} className="inline-flex items-center justify-center rounded-xl border border-border px-5 py-3 text-sm font-semibold hover:bg-muted">
+              <Link href={`/${kind}/${encodeURIComponent(slug)}`} className="inline-flex items-center justify-center rounded-xl border border-border px-5 py-3 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
                 Open member view
               </Link>
             </div>
@@ -192,7 +192,7 @@ export default async function PublicDetailPage({ params }: Props) {
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Discover more {publicCategories[kind].label.toLowerCase()} from across the community.
             </p>
-            <Link href={`/explore?type=${kind}`} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+            <Link href={`/explore?type=${kind}`} className="mt-4 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
               Browse all <ArrowRight aria-hidden="true" className="size-4" />
             </Link>
           </div>
