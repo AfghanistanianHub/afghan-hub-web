@@ -41,7 +41,7 @@ export function Header({
 
         <Link
           href="/dashboard"
-          className="font-extrabold tracking-[0.16em] text-primary lg:hidden"
+          className="rounded-sm font-extrabold tracking-[0.16em] text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:hidden"
         >
           <span className="text-base sm:hidden">AH</span>
           <span className="hidden text-sm sm:inline">AFGHAN HUB</span>
