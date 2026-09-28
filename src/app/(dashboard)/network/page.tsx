@@ -50,7 +50,9 @@ export default async function NetworkPage() {
             last_name,
             headline,
             city,
-            country
+            country,
+            avatar_url,
+            avatar_url
           ),
           recipient:profiles!connections_recipient_id_fkey (
             id,
@@ -111,7 +113,7 @@ export default async function NetworkPage() {
             </p>
           </div>
 
-          <div className="relative mt-7 grid grid-cols-3 gap-3 lg:mt-0">
+          <div className="relative mt-7 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:mt-0">
             <div className="rounded-2xl border border-border/80 bg-background/90 p-4 backdrop-blur">
               <span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"><UsersRound aria-hidden="true" className="size-4" /></span>
               <p className="mt-4 text-2xl font-bold tracking-tight">{memberCount}</p>
