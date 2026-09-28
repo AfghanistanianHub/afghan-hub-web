@@ -186,7 +186,7 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
                       )}
 
                       <span className="min-w-0 flex-1">
-                        <span className={`block text-sm leading-5 text-foreground ${isUnread ? "font-semibold" : ""}`}>{getNotificationMessage(notification)}</span>
+                        <span className={`block break-words text-sm leading-5 text-foreground ${isUnread ? "font-semibold" : ""}`}>{getNotificationMessage(notification)}</span>
                         <span className="mt-1 block text-xs text-muted-foreground">{formatNotificationTime(notification.createdAt)}</span>
                       </span>
 
