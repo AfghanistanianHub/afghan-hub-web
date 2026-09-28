@@ -60,6 +60,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         <button
           type="submit"
           disabled={isPending}
+          aria-busy={isPending}
           aria-label={isPending ? "Sending message" : "Send message"}
           className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary disabled:cursor-wait disabled:opacity-60"
         >
@@ -73,7 +74,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
       <div className="mt-2 flex flex-col items-start gap-1.5 text-xs sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         {state.error ? (
-          <p id="message-error" role="alert" aria-live="assertive" className="rounded-lg border border-destructive/20 bg-destructive/[0.05] px-2.5 py-1.5 text-destructive">
+          <p id="message-error" role="alert" aria-live="assertive" className="max-w-full break-words rounded-lg border border-destructive/20 bg-destructive/[0.05] px-2.5 py-1.5 leading-5 text-destructive">
             {state.error}
           </p>
         ) : (
