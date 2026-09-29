@@ -102,7 +102,9 @@ Current recovery relies on operator-managed logical exports in encrypted off-sit
 Recommended operator-managed rule (to implement after policy approval):
 
 - inventory each backup generation and every local/off-site copy, with its creation date, custodian, location, approved expiry date, and any documented hold/review date;
-- before each backup cycle, the assigned custodian checks expiry and active holds; do not delete a generation or copy covered by an active documented legal/investigation hold or applicable minimum retention requirement, even if its ordinary expiry date has passed;
+- the assigned custodian maintains an expiry-review schedule independent of backup creation, with a next review date and coverage during absence; choose and approve the review cadence before implementation, and arrange a due-date check for each generation so a stopped backup job cannot postpone expiry handling;
+- check expiry and active holds on that schedule, at each recorded expiry/review date, and before each backup cycle; do not delete a generation or copy covered by an active documented legal/investigation hold or applicable minimum retention requirement, even if its ordinary expiry date has passed;
+- when exports are paused or retired, perform an inventory/expiry sweep and assign continuing custody and due-date checks for every remaining copy; keep those checks active until authorized disposal is verified for all copies, including copies awaiting hold release;
 - assign each hold a responsible reviewer, scope, reason, and next review date; record the authorized release before resuming ordinary expiry, then remove expired copies no longer subject to a hold or minimum retention requirement from every inventoried location;
 - record removal completion without copying personal data into the log; overdue hold reviews must be escalated, not treated as automatic release;
 - retain the runbook's recoverability baseline of at least two recent generations where practical; escalate any conflict with approved expiry rather than silently retaining indefinitely;
