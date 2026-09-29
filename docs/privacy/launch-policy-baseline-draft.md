@@ -78,7 +78,8 @@ Recommended baseline:
 - restrict access to operators with a legitimate need;
 - separate safety evidence from ordinary account/profile data so deletion workflows can apply different handling;
 - use a documented review date rather than permanent retention;
-- a reasonable **internal starting target for review** is 12 months after case closure, with earlier deletion where no longer necessary and longer retention only for an active investigation, legal obligation, or documented legal hold.
+- a reasonable **internal starting target for review** is 12 months after case closure, with earlier deletion only where no longer necessary and no applicable minimum retention or hold prevents it; longer retention requires an active investigation, legal obligation, or documented legal hold;
+- where BC PIPA section 35(1) applies, preserve the personal information used to make a decision directly affecting the individual for at least one year after use, including supporting evidence rather than only the outcome record; this minimum takes precedence over earlier deletion in any data class.
 
 The 12-month period is a proposed operational baseline, not a statutory requirement and should not be published as a legal entitlement without review.
 
@@ -122,7 +123,8 @@ Recommended launch position:
 
 - log receipt and acknowledge promptly; identity verification must protect disclosure without silently restarting the request clock;
 - distinguish the written-request response clock from correction implementation;
-- sections 25–29 cover written applicants under section 27, which includes access and correction; track the general 30-day response limit from receipt and assess any section 31 extension separately;
+- for access requests, track the general section 29 response limit of 30 days from receipt and assess any section 31 extension separately;
+- handle correction-only requests promptly under section 24 without using a 30-day waiting period or automatically applying an access-request extension; owner/legal review must confirm any additional written-response deadline before deadline templates are adopted, considering sections 25–29 together;
 - calculate statutory days using section 1 (Saturdays and holidays excluded);
 - under section 24, implement warranted corrections as soon as reasonably possible, notify applicable prior recipients, or annotate the requested correction if it is not made; a response extension must not be treated as permission to postpone this duty;
 - route broader access requests through verified support; the narrow self-service export does not define the scope of statutory access.
@@ -188,7 +190,7 @@ This is a launch-safety decision, not an argument against future self-service de
 | Routine app/debug logs | Proposed 30–90 day rolling window | Verify provider capabilities |
 | Security/abuse evidence | Proposed review at 12 months after closure | Longer only with documented reason/legal hold |
 | Backups | Operator-managed inventory and approved expiry for manual exports | Assign custodian; exempt active holds/minimum retention; record release before expiry cleanup; reconcile deletions before restored access |
-| Decision records directly affecting an individual | Respect applicable minimum legal retention | BC PIPA s.35 can require at least one year |
+| Personal information used to make a decision directly affecting an individual, including supporting evidence | Retain at least one year after use where BC PIPA s.35(1) applies | Preserve the information used, not only the decision outcome; overrides earlier deletion rules |
 
 ## Decisions that can be adopted now without public-risk
 
