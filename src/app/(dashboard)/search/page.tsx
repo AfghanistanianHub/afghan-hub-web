@@ -543,7 +543,7 @@ export default async function SearchPage({
               </h2>
               <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
                 You do not need to know where something lives in Afghan Hub.
-                Choose a path and we will narrow the community for you.
+                Choose a path and we will focus the kinds of results you see.
               </p>
             </div>
 
