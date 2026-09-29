@@ -699,7 +699,10 @@ export type Database = {
           languages: string[]
           last_name: string | null
           linkedin_url: string | null
+          looking_for_mentor: boolean
+          mentorship_topics: string[]
           onboarding_completed: boolean
+          open_to_mentoring: boolean
           opportunity_status: Database["public"]["Enums"]["profile_status"]
           profession: string | null
           province_state: string | null
@@ -726,7 +729,10 @@ export type Database = {
           languages?: string[]
           last_name?: string | null
           linkedin_url?: string | null
+          looking_for_mentor?: boolean
+          mentorship_topics?: string[]
           onboarding_completed?: boolean
+          open_to_mentoring?: boolean
           opportunity_status?: Database["public"]["Enums"]["profile_status"]
           profession?: string | null
           province_state?: string | null
@@ -753,7 +759,10 @@ export type Database = {
           languages?: string[]
           last_name?: string | null
           linkedin_url?: string | null
+          looking_for_mentor?: boolean
+          mentorship_topics?: string[]
           onboarding_completed?: boolean
+          open_to_mentoring?: boolean
           opportunity_status?: Database["public"]["Enums"]["profile_status"]
           profession?: string | null
           province_state?: string | null
