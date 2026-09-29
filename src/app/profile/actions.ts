@@ -23,7 +23,7 @@ function getMentorshipTopics(formData: FormData) {
   const topics: string[] = [];
 
   for (const rawTopic of value.split(",")) {
-    const topic = rawTopic.trim();
+    const topic = rawTopic.trim().normalize("NFC");
     if (!topic) continue;
 
     const normalized = topic.toLowerCase();
