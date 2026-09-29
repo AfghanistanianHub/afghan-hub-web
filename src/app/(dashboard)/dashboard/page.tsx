@@ -4,13 +4,12 @@ import {
   ArrowRight,
   ArrowUpRight,
   BriefcaseBusiness,
-  Building2,
   CalendarDays,
   MapPin,
   Sparkles,
-  UsersRound,
 } from "lucide-react";
 import { RecommendedMembers } from "@/components/dashboard/recommended-members";
+import { GoalPaths } from "@/components/discovery/goal-paths";
 import { ProfileStrength } from "@/components/profile/profile-strength";
 import { ConnectionThread } from "@/components/ui/connection-thread";
 import {
@@ -37,37 +36,6 @@ function formatEventDate(value: string) {
     year: "numeric",
   }).format(new Date(value));
 }
-
-const quickActions = [
-  {
-    title: "Explore members",
-    kicker: "People",
-    description: "Find people to learn from, collaborate with, or simply say hello to.",
-    href: "/network",
-    icon: UsersRound,
-  },
-  {
-    title: "Find opportunities",
-    kicker: "Next step",
-    description: "Jobs, grants, volunteer roles, and programs.",
-    href: "/opportunities",
-    icon: BriefcaseBusiness,
-  },
-  {
-    title: "Discover businesses",
-    kicker: "Support local",
-    description: "Afghan-owned services and businesses.",
-    href: "/businesses",
-    icon: Building2,
-  },
-  {
-    title: "Community events",
-    kicker: "Show up",
-    description: "Cultural, social, and professional gatherings.",
-    href: "/events",
-    icon: CalendarDays,
-  },
-];
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -275,53 +243,7 @@ export default async function DashboardPage() {
           </div>
         </section>
 
-        <section aria-labelledby="dashboard-explore-heading">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Start here</p>
-              <h2 id="dashboard-explore-heading" className="mt-2 text-2xl font-bold tracking-[-0.025em] text-foreground">
-                Move through Afghan Hub
-              </h2>
-            </div>
-          </div>
-
-          <div className="mt-5 grid auto-rows-[170px] gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {quickActions.map((action, index) => {
-              const Icon = action.icon;
-              const featured = index === 0;
-
-              return (
-                <Link
-                  key={action.href}
-                  href={action.href}
-                  className={`group relative overflow-hidden rounded-[1.65rem] border border-border/80 p-5 transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${featured ? "bg-primary text-primary-foreground md:row-span-2 xl:col-span-2 shadow-[0_18px_42px_color-mix(in_oklab,var(--primary)_16%,transparent)]" : "bg-card"}`}
-                >
-                  <div aria-hidden="true" className={`absolute -right-8 -top-8 size-28 rounded-full border ${featured ? "border-primary-foreground/12" : "border-primary/10"}`} />
-                  <div aria-hidden="true" className={`absolute right-5 top-10 size-12 rounded-full border ${featured ? "border-primary-foreground/12" : "border-primary/10"}`} />
-
-                  <div className="relative flex h-full flex-col justify-between">
-                    <div className="flex items-start justify-between gap-4">
-                      <span className={`flex size-11 items-center justify-center rounded-2xl ${featured ? "bg-primary-foreground/12" : "bg-secondary text-primary"}`}>
-                        <Icon aria-hidden="true" className="size-5" />
-                      </span>
-                      <ArrowUpRight aria-hidden="true" className={`size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 ${featured ? "opacity-65" : "text-muted-foreground group-hover:text-primary"}`} />
-                    </div>
-
-                    <div>
-                      <p className={`text-[0.64rem] font-semibold uppercase tracking-[0.18em] ${featured ? "opacity-60" : "text-primary"}`}>{action.kicker}</p>
-                      <h3 className={`${featured ? "mt-2 max-w-md text-3xl md:text-4xl" : "mt-1 text-lg"} font-bold leading-tight tracking-[-0.025em]`}>
-                        {action.title}
-                      </h3>
-                      <p className={`${featured ? "mt-3 max-w-md text-sm leading-6 opacity-70" : "mt-2 line-clamp-2 text-sm leading-5 text-muted-foreground"}`}>
-                        {action.description}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
+        <GoalPaths />
 
         <RecommendedMembers members={recommendedMembers} />
 
