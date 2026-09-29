@@ -102,7 +102,9 @@ Current recovery relies on operator-managed logical exports in encrypted off-sit
 Recommended operator-managed rule (to implement after policy approval):
 
 - inventory each backup generation and every local/off-site copy, with its creation date, custodian, location, approved expiry date, and any documented hold/review date;
-- the assigned custodian reviews expiry before each backup cycle and removes expired generations from every inventoried location, recording completion without copying personal data into the log;
+- before each backup cycle, the assigned custodian checks expiry and active holds; do not delete a generation or copy covered by an active documented legal/investigation hold or applicable minimum retention requirement, even if its ordinary expiry date has passed;
+- assign each hold a responsible reviewer, scope, reason, and next review date; record the authorized release before resuming ordinary expiry, then remove expired copies no longer subject to a hold or minimum retention requirement from every inventoried location;
+- record removal completion without copying personal data into the log; overdue hold reviews must be escalated, not treated as automatic release;
 - retain the runbook's recoverability baseline of at least two recent generations where practical; escalate any conflict with approved expiry rather than silently retaining indefinitely;
 - delete temporary unencrypted copies after verification of encrypted off-site copies, as the runbook already requires;
 - do not promise immediate deletion from every historical backup;
@@ -183,7 +185,7 @@ This is a launch-safety decision, not an argument against future self-service de
 | User-owned media | Delete with content/account | Storage-first |
 | Routine app/debug logs | Proposed 30–90 day rolling window | Verify provider capabilities |
 | Security/abuse evidence | Proposed review at 12 months after closure | Longer only with documented reason/legal hold |
-| Backups | Operator-managed inventory and approved expiry for manual exports | Assign custodian; verify removal of all copies; reconcile deletions before restored access |
+| Backups | Operator-managed inventory and approved expiry for manual exports | Assign custodian; exempt active holds/minimum retention; record release before expiry cleanup; reconcile deletions before restored access |
 | Decision records directly affecting an individual | Respect applicable minimum legal retention | BC PIPA s.35 can require at least one year |
 
 ## Decisions that can be adopted now without public-risk
