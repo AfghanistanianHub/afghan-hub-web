@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   BriefcaseBusiness,
   Globe2,
-  HandHeart,
   MapPin,
   Sparkles,
   UserRound,
@@ -33,7 +32,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("first_name,last_name,headline,profession,company,city,province_state,country,bio,linkedin_url,website_url,languages,skills,avatar_url,open_to_mentoring,looking_for_mentor,mentorship_topics")
+    .select("first_name,last_name,headline,profession,company,city,province_state,country,bio,linkedin_url,website_url,languages,skills,avatar_url")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -43,11 +42,6 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
   const location = [profile?.city, profile?.province_state, profile?.country].filter(Boolean).join(", ");
   const hasProfessionalDetails = Boolean(profile?.headline || profile?.profession || profile?.company);
   const hasDiscoveryDetails = Boolean(profile?.skills?.length || profile?.languages?.length || location);
-  const hasMentorshipPreferences = Boolean(
-    profile?.open_to_mentoring ||
-      profile?.looking_for_mentor ||
-      profile?.mentorship_topics?.length,
-  );
 
   return (
     <main className="min-h-screen bg-background px-4 py-8 text-foreground md:px-8 md:py-10">
@@ -81,12 +75,6 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                   <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary"><Sparkles aria-hidden="true" className="size-4" /></span>
                   <div className="min-w-0"><p className="text-xs text-muted-foreground">Discovery details</p><p className="mt-0.5 break-words font-semibold">{hasDiscoveryDetails ? "People can find more about you" : "Add skills, language, location"}</p></div>
                 </div>
-                {hasMentorshipPreferences ? (
-                  <div className="flex items-center gap-3 rounded-2xl border border-border/80 bg-background/72 p-3.5">
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary"><HandHeart aria-hidden="true" className="size-4" /></span>
-                    <div className="min-w-0"><p className="text-xs text-muted-foreground">Mentorship</p><p className="mt-0.5 break-words font-semibold">Preferences visible on your profile</p></div>
-                  </div>
-                ) : null}
                 {location ? <div className="flex items-start gap-2 px-1 text-xs leading-5 text-muted-foreground"><MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" /><span className="min-w-0 break-words">{location}</span></div> : null}
               </div>
             </div>
@@ -125,53 +113,6 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                   </div>
                   <label className="block"><span className="text-sm font-medium">Skills</span><input name="skills" defaultValue={profile?.skills?.join(", ") ?? ""} placeholder="Computer repair, Filmmaking, Community organizing" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each skill with a comma.</span></label>
                   <label className="block"><span className="text-sm font-medium">Languages</span><input name="languages" defaultValue={profile?.languages?.join(", ") ?? ""} placeholder="Dari, English, Persian" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each language with a comma.</span></label>
-                </fieldset>
-
-                <fieldset className="space-y-6 border-t border-border/70 pt-8">
-                  <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"><HandHeart aria-hidden="true" className="size-4" /></span>Mentorship</legend>
-                  <div className="rounded-[1.5rem] border border-border/80 bg-muted/25 p-5">
-                    <p className="text-sm leading-6 text-muted-foreground">
-                      Mentorship is optional. These choices describe how you want to connect with other members; they are not credentials or endorsements from Afghan Hub.
-                    </p>
-                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                      <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-border/80 bg-background p-4 transition hover:border-primary/25">
-                        <input
-                          type="checkbox"
-                          name="open_to_mentoring"
-                          defaultChecked={profile?.open_to_mentoring ?? false}
-                          className="mt-1 size-4 rounded border-border accent-primary"
-                        />
-                        <span>
-                          <span className="block text-sm font-semibold text-foreground">Open to mentoring</span>
-                          <span className="mt-1 block text-xs leading-5 text-muted-foreground">I am open to sharing experience or guidance.</span>
-                        </span>
-                      </label>
-                      <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-border/80 bg-background p-4 transition hover:border-primary/25">
-                        <input
-                          type="checkbox"
-                          name="looking_for_mentor"
-                          defaultChecked={profile?.looking_for_mentor ?? false}
-                          className="mt-1 size-4 rounded border-border accent-primary"
-                        />
-                        <span>
-                          <span className="block text-sm font-semibold text-foreground">Looking for a mentor</span>
-                          <span className="mt-1 block text-xs leading-5 text-muted-foreground">I would like guidance from someone in the community.</span>
-                        </span>
-                      </label>
-                    </div>
-                    <label className="mt-5 block">
-                      <span className="text-sm font-medium">Mentorship topics</span>
-                      <input
-                        name="mentorship_topics"
-                        defaultValue={profile?.mentorship_topics?.join(", ") ?? ""}
-                        placeholder="Career growth, Entrepreneurship, Technology"
-                        className={fieldClassName}
-                      />
-                      <span className="mt-2 block text-xs leading-5 text-muted-foreground">
-                        Add up to 12 topics, separated by commas. Each topic can be up to 60 characters.
-                      </span>
-                    </label>
-                  </div>
                 </fieldset>
 
                 <fieldset className="space-y-6 border-t border-border/70 pt-8">
