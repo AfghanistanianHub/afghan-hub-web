@@ -86,6 +86,20 @@ export default async function NewOrganizationPage({
                 <input name="programs" type="text" placeholder="Education, Mentorship, Settlement support" className={fieldClassName} />
                 <span className="mt-2 block text-xs text-muted-foreground">Separate each program with a comma.</span>
               </label>
+
+              <label className="md:col-span-2 flex items-start gap-3 rounded-2xl border border-border/80 bg-muted/35 p-4">
+                <input
+                  name="is_accepting_volunteers"
+                  type="checkbox"
+                  className="mt-1 size-4 rounded border-input text-primary focus:ring-primary"
+                />
+                <span>
+                  <span className="block text-sm font-semibold text-foreground">Accepting volunteers</span>
+                  <span className="mt-1 block text-xs leading-5 text-muted-foreground">
+                    This helps people discover this organization when looking for volunteer opportunities.
+                  </span>
+                </span>
+              </label>
             </div>
           </section>
 
