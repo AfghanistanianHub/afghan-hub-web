@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
@@ -50,9 +50,11 @@ function getInitials(name: string) {
 
 export function MemberDirectory({ members }: MemberDirectoryProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const hasSearchQuery = normalizedQuery.length > 0;
 
   const filteredMembers = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase();
     if (!normalizedQuery) return members;
 
     return members.filter((member) => {
@@ -72,7 +74,12 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
 
       return searchableContent.includes(normalizedQuery);
     });
-  }, [members, searchQuery]);
+  }, [members, normalizedQuery]);
+
+  function clearSearch() {
+    setSearchQuery("");
+    window.requestAnimationFrame(() => searchInputRef.current?.focus());
+  }
 
   return (
     <>
@@ -85,6 +92,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
         <div className="relative w-full lg:max-w-md">
           <Search aria-hidden="true" className="absolute left-4 top-1/2 size-4.5 -translate-y-1/2 text-muted-foreground" />
           <input
+            ref={searchInputRef}
             type="search"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
@@ -96,7 +104,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
       </div>
 
       <div className="mt-5 flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground" aria-live="polite">
           {filteredMembers.length} {filteredMembers.length === 1 ? "member" : "members"} found
         </p>
       </div>
@@ -175,10 +183,23 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
           <span className="relative flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             <UserRound aria-hidden="true" className="size-7" />
           </span>
-          <h2 className="relative mt-4 text-lg font-bold text-foreground">No members found</h2>
+          <h2 className="relative mt-4 text-lg font-bold text-foreground">
+            {hasSearchQuery ? "No matching members" : "No public members yet"}
+          </h2>
           <p className="relative mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-            Try searching with another name, location, profession, company, or skill.
+            {hasSearchQuery
+              ? "Try another name, location, profession, company, or skill."
+              : "Public member profiles will appear here as the community grows."}
           </p>
+          {hasSearchQuery ? (
+            <button
+              type="button"
+              onClick={clearSearch}
+              className="relative mt-5 inline-flex min-h-10 items-center justify-center rounded-xl border border-border/80 bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+            >
+              Clear search
+            </button>
+          ) : null}
         </div>
       )}
     </>
