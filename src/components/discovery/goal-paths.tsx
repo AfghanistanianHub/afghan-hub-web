@@ -13,15 +13,15 @@ const goalPaths = [
   {
     label: "Work",
     title: "Find work",
-    description: "Jobs, programs, grants, and practical next steps.",
+    description: "Jobs and community businesses that are currently hiring.",
     href: "/search?intent=find_work",
     icon: BriefcaseBusiness,
     number: "01",
   },
   {
     label: "Settle",
-    title: "Find newcomer services",
-    description: "Discover services and businesses that can help you move forward.",
+    title: "Find useful services",
+    description: "Browse community businesses and local services for everyday needs.",
     href: "/search?intent=find_services",
     icon: MapPinned,
     number: "02",
@@ -119,7 +119,7 @@ export function GoalPaths() {
                   <span className="flex size-12 items-center justify-center rounded-2xl border border-primary/10 bg-primary/[0.07] text-primary shadow-sm">
                     <Icon aria-hidden="true" className="size-5" />
                   </span>
-                  <span className="text-3xl font-black tracking-[-0.06em] text-foreground/[0.07]">
+                  <span aria-hidden="true" className="text-3xl font-black tracking-[-0.06em] text-foreground/[0.07]">
                     {goal.number}
                   </span>
                 </div>
