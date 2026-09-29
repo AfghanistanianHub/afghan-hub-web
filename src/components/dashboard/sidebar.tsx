@@ -43,7 +43,7 @@ export function Sidebar({
               AFGHAN HUB
             </span>
             <span className="mt-0.5 block text-[0.65rem] font-medium tracking-wide text-muted-foreground">
-              Community workspace
+              Community & opportunity
             </span>
           </span>
         </Link>
