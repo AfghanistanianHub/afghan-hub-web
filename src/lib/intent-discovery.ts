@@ -144,3 +144,66 @@ export function rankIntentCandidates<T extends IntentDiscoveryCandidate>(
       intentReason: reason,
     }));
 }
+
+
+function getBrowseSourceTypes(
+  intent: PhaseOneSearchIntent,
+): [DiscoveryEntityType, DiscoveryEntityType] | null {
+  switch (intent) {
+    case "find_work":
+      return ["opportunity", "business"];
+    case "volunteer":
+      return ["opportunity", "organization"];
+    case "join_community":
+      return ["organization", "event"];
+    case "hire_talent":
+    case "find_services":
+      return null;
+  }
+}
+
+export function limitIntentBrowseCandidates<
+  T extends RankedIntentCandidate<IntentDiscoveryCandidate>,
+>(
+  intent: PhaseOneSearchIntent,
+  candidates: T[],
+  limit: number,
+): T[] {
+  const sourceTypes = getBrowseSourceTypes(intent);
+
+  if (!sourceTypes || candidates.length <= limit) {
+    return candidates.slice(0, limit);
+  }
+
+  const [primaryType, secondaryType] = sourceTypes;
+  const primary = candidates.filter(
+    (candidate) => candidate.entityType === primaryType,
+  );
+  const secondary = candidates.filter(
+    (candidate) => candidate.entityType === secondaryType,
+  );
+
+  if (primary.length === 0 || secondary.length === 0) {
+    return candidates.slice(0, limit);
+  }
+
+  const reservedPerSource = Math.floor(limit / 2);
+  const selected = [
+    ...primary.slice(0, reservedPerSource),
+    ...secondary.slice(0, reservedPerSource),
+  ];
+  const selectedIds = new Set(selected.map((candidate) => candidate.id));
+
+  for (const candidate of candidates) {
+    if (selected.length >= limit) {
+      break;
+    }
+
+    if (!selectedIds.has(candidate.id)) {
+      selected.push(candidate);
+      selectedIds.add(candidate.id);
+    }
+  }
+
+  return selected;
+}
