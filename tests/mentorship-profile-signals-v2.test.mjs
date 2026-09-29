@@ -66,6 +66,9 @@ test("generated database types include mentorship fields for row, insert, and up
 });
 
 test("profile save NFC-normalizes, deduplicates, and bounds mentorship topics", () => {
+  const normalizeIndex = profileAction.indexOf('rawTopic.trim().normalize("NFC")');
+  const dedupeIndex = profileAction.indexOf("const normalized = topic.toLowerCase()");
+  assert.ok(normalizeIndex >= 0 && dedupeIndex > normalizeIndex);
   assert.match(profileAction, /rawTopic\.trim\(\)\.normalize\("NFC"\)/);
   assert.match(profileAction, /const normalized = topic\.toLowerCase\(\)/);
   assert.match(profileAction, /seen\.has\(normalized\)/);
