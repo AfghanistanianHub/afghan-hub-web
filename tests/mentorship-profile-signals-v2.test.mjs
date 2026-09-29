@@ -40,6 +40,7 @@ test("database validates canonical mentorship topics without a privileged helper
     migration,
     /CREATE OR REPLACE FUNCTION public\.mentorship_topics_are_valid/i,
   );
+  assert.match(migration, /SECURITY INVOKER/i);
   assert.match(migration, /IMMUTABLE/i);
   assert.match(migration, /SET search_path = ''/i);
   assert.doesNotMatch(migration, /SECURITY DEFINER/i);
@@ -50,6 +51,21 @@ test("database validates canonical mentorship topics without a privileged helper
   assert.match(
     migration,
     /CHECK \(public\.mentorship_topics_are_valid\(mentorship_topics\)\)/i,
+  );
+});
+
+test("mentorship validation helper has a bounded executable surface", () => {
+  assert.match(
+    migration,
+    /REVOKE ALL ON FUNCTION public\.mentorship_topics_are_valid\(text\[\]\) FROM PUBLIC/i,
+  );
+  assert.match(
+    migration,
+    /REVOKE ALL ON FUNCTION public\.mentorship_topics_are_valid\(text\[\]\) FROM anon/i,
+  );
+  assert.match(
+    migration,
+    /GRANT EXECUTE ON FUNCTION public\.mentorship_topics_are_valid\(text\[\]\) TO authenticated/i,
   );
 });
 
