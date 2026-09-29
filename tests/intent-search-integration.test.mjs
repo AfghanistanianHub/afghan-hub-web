@@ -27,7 +27,21 @@ test("search exposes supported intents and human-readable reasons", () => {
 });
 
 test("intent-only browse stays bounded and keyword remains optional", () => {
-  assert.match(source, /const isIntentOnlyBrowse = Boolean\(intent && query\.length === 0\)/);
-  assert.match(source, /isIntentOnlyBrowse \? 24 : eligibleResults\.length/);
+  assert.match(source, /const BROWSE_RESULT_LIMIT = 24/);
+  assert.match(source, /limitIntentBrowseCandidates/);
   assert.doesNotMatch(source, /name="q"[\s\S]{0,200}required/);
+});
+
+test("keyword intent expands candidates before the final display cap", () => {
+  assert.match(source, /const KEYWORD_RESULT_LIMIT = 30/);
+  assert.match(source, /const INTENT_KEYWORD_CANDIDATE_LIMIT = 100/);
+  assert.match(
+    source,
+    /result_limit:\s*intent[\s\S]*INTENT_KEYWORD_CANDIDATE_LIMIT[\s\S]*KEYWORD_RESULT_LIMIT/,
+  );
+  const rankingIndex = source.indexOf("rankIntentCandidates(");
+  const displaySliceIndex = source.indexOf(
+    "rankedIntentCandidates.slice(0, KEYWORD_RESULT_LIMIT)",
+  );
+  assert.ok(rankingIndex >= 0 && displaySliceIndex > rankingIndex);
 });
