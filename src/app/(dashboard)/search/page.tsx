@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { ExternalImage } from "@/components/ui/external-image";
+import { discoveryIntentCards } from "@/components/discovery/goal-paths";
 import { VerificationBadge } from "@/components/ui/verification-badge";
 import {
   getPhaseOneSearchIntent,
@@ -529,17 +530,84 @@ export default async function SearchPage({
         ) : null}
 
         {!query && !intent ? (
-          <div className="relative mt-8 flex min-h-64 flex-col items-center justify-center overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-card/70 px-6 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]">
-            <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl" />
-            <Search className="size-10 text-muted-foreground/60" />
-            <h2 className="mt-4 text-lg font-bold text-foreground">
-              Search the community
-            </h2>
-            <p className="mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
-              Find people, services, organizations, opportunities, and events
-              across Afghan Hub.
-            </p>
-          </div>
+          <section className="mt-8" aria-labelledby="search-start-heading">
+            <div className="flex flex-col gap-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                Start with a goal
+              </p>
+              <h2
+                id="search-start-heading"
+                className="text-2xl font-bold tracking-[-0.025em] text-foreground"
+              >
+                Tell us what you are trying to do.
+              </h2>
+              <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+                You do not need to know where something lives in Afghan Hub.
+                Choose a path and we will narrow the community for you.
+              </p>
+            </div>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {discoveryIntentCards.map((goal) => {
+                const Icon = goal.icon;
+
+                return (
+                  <Link
+                    key={goal.href}
+                    href={goal.href}
+                    className="group relative overflow-hidden rounded-[1.5rem] border border-border/80 bg-card p-5 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_14px_34px_rgb(15_23_42/0.05)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                  >
+                    <div
+                      aria-hidden="true"
+                      className="absolute -right-8 -top-8 size-24 rounded-full border border-primary/10"
+                    />
+                    <div className="relative flex items-start justify-between gap-4">
+                      <span className="flex size-11 items-center justify-center rounded-2xl bg-primary/[0.07] text-primary">
+                        <Icon aria-hidden="true" className="size-5" />
+                      </span>
+                      <ArrowUpRight
+                        aria-hidden="true"
+                        className="size-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
+                      />
+                    </div>
+                    <div className="relative mt-6">
+                      <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-primary">
+                        {goal.label}
+                      </p>
+                      <h3 className="mt-1 text-lg font-bold tracking-[-0.02em] text-foreground">
+                        {goal.title}
+                      </h3>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        {goal.description}
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
+
+              <div className="relative overflow-hidden rounded-[1.5rem] border border-dashed border-border bg-muted/30 p-5">
+                <div
+                  aria-hidden="true"
+                  className="absolute -bottom-10 -right-10 size-28 rounded-full bg-primary/[0.05] blur-2xl"
+                />
+                <span className="relative flex size-11 items-center justify-center rounded-2xl border border-border bg-background text-muted-foreground">
+                  <Search aria-hidden="true" className="size-5" />
+                </span>
+                <div className="relative mt-6">
+                  <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                    Explore
+                  </p>
+                  <h3 className="mt-1 text-lg font-bold tracking-[-0.02em] text-foreground">
+                    Search anything
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    Use the search box above for a person, skill, service, place,
+                    organization, opportunity, or event.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
         ) : null}
       </div>
     </main>
