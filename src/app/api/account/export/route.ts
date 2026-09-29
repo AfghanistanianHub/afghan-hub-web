@@ -6,7 +6,7 @@ const privateHeaders = {
   "X-Content-Type-Options": "nosniff",
 };
 
-const profileColumns = "id,display_name,first_name,last_name,username,headline,bio,profession,company,city,province_state,country,skills,languages,linkedin_url,website_url,avatar_url,is_public";
+const profileColumns = "id,display_name,first_name,last_name,username,headline,bio,profession,company,city,province_state,country,skills,languages,linkedin_url,website_url,avatar_url,is_public,open_to_mentoring,looking_for_mentor,mentorship_topics";
 
 function failure(status: number, message: string) {
   return Response.json({ error: message }, { status, headers: privateHeaders });
