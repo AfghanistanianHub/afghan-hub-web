@@ -65,7 +65,8 @@ test("generated database types include mentorship fields for row, insert, and up
   );
 });
 
-test("profile save normalizes, deduplicates, and bounds mentorship topics", () => {
+test("profile save NFC-normalizes, deduplicates, and bounds mentorship topics", () => {
+  assert.match(profileAction, /rawTopic\.trim\(\)\.normalize\("NFC"\)/);
   assert.match(profileAction, /const normalized = topic\.toLowerCase\(\)/);
   assert.match(profileAction, /seen\.has\(normalized\)/);
   assert.match(profileAction, /mentorshipTopics\.length > 12/);
@@ -91,4 +92,16 @@ test("mentorship UI remains optional and non-credentialed", () => {
   assert.match(memberPage, /\.eq\("onboarding_completed",true\)/);
   assert.match(memberPage, /RecommendedMembers/);
   assert.match(memberPage, /rankMemberRecommendations/);
+});
+
+
+const exportRoute = fs.readFileSync(
+  new URL("../src/app/api/account/export/route.ts", import.meta.url),
+  "utf8",
+);
+
+test("profile export includes persisted mentorship data", () => {
+  assert.match(exportRoute, /open_to_mentoring/);
+  assert.match(exportRoute, /looking_for_mentor/);
+  assert.match(exportRoute, /mentorship_topics/);
 });
