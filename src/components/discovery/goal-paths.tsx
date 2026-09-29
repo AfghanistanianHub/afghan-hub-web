@@ -19,9 +19,9 @@ const goalPaths = [
     number: "01",
   },
   {
-    label: "Settle",
-    title: "Find useful services",
-    description: "Browse community businesses and local services for everyday needs.",
+    label: "Services",
+    title: "Find services & businesses",
+    description: "Browse community businesses and practical services for everyday and professional needs.",
     href: "/search?intent=find_services",
     icon: MapPinned,
     number: "02",

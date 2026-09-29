@@ -186,6 +186,87 @@ export default async function PublicHome() {
         </div>
       </section>
 
+      <section className="border-b border-border/70 bg-background" aria-labelledby="community-pathways-heading">
+        <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-16">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">One hub, many paths</p>
+              <h2 id="community-pathways-heading" className="mt-2 max-w-2xl text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">
+                Built for every part of the community.
+              </h2>
+            </div>
+            <p className="max-w-xl text-sm leading-6 text-muted-foreground sm:text-right">
+              Find your next opportunity, grow a business, represent an organization, or simply stay connected to what is happening around you.
+            </p>
+          </div>
+
+          <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                kicker: "People",
+                title: "Professionals & members",
+                copy: "Discover opportunities, people, and ways to grow your network.",
+                href: "/explore?type=opportunities",
+                icon: BriefcaseBusiness,
+              },
+              {
+                kicker: "Business",
+                title: "Entrepreneurs & businesses",
+                copy: "Be discovered, find local businesses, and take part in the wider ecosystem.",
+                href: "/explore?type=businesses",
+                icon: Building2,
+              },
+              {
+                kicker: "Organizations",
+                title: "Groups & community leaders",
+                copy: "Showcase your work, programs, events, and ways people can participate.",
+                href: "/explore?type=organizations",
+                icon: UsersRound,
+              },
+              {
+                kicker: "Community",
+                title: "Everyone who wants to connect",
+                copy: "See gatherings, community activity, and what is happening around you.",
+                href: "/explore?type=events",
+                icon: CalendarDays,
+              },
+            ].map((pathway, index) => {
+              const Icon = pathway.icon;
+              return (
+                <Link
+                  key={pathway.title}
+                  href={pathway.href}
+                  className="group relative min-h-56 overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-5 transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.06)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                >
+                  <div aria-hidden="true" className="absolute -right-12 -top-12 size-36 rounded-full border border-primary/10 transition-transform duration-300 group-hover:scale-110" />
+                  <div aria-hidden="true" className="absolute right-8 top-8 size-14 rounded-full border border-dashed border-primary/10" />
+                  <div className="relative flex h-full flex-col justify-between gap-8">
+                    <div className="flex items-start justify-between gap-4">
+                      <span className="flex size-11 items-center justify-center rounded-2xl bg-secondary text-primary shadow-sm">
+                        <Icon aria-hidden="true" className="size-5" />
+                      </span>
+                      <span aria-hidden="true" className="text-3xl font-black tracking-[-0.06em] text-foreground/[0.07]">
+                        0{index + 1}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-primary">{pathway.kicker}</p>
+                      <div className="mt-1.5 flex items-end justify-between gap-4">
+                        <div>
+                          <h3 className="text-lg font-semibold tracking-tight text-foreground">{pathway.title}</h3>
+                          <p className="mt-2 text-sm leading-6 text-muted-foreground">{pathway.copy}</p>
+                        </div>
+                        <ArrowUpRight aria-hidden="true" className="mb-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {pulseItems.length > 1 ? (
         <section className="overflow-hidden border-b border-border/70 bg-muted/35">
           <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-16">

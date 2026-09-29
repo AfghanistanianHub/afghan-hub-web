@@ -14,11 +14,15 @@ const search = fs.readFileSync(
   new URL("../src/app/(dashboard)/search/page.tsx", import.meta.url),
   "utf8",
 );
+const publicHome = fs.readFileSync(
+  new URL("../src/app/(public)/page.tsx", import.meta.url),
+  "utf8",
+);
 
-test("dashboard exposes goal-based newcomer-friendly navigation", () => {
+test("dashboard exposes community-wide goal-based navigation", () => {
   for (const label of [
     "Find work",
-    "Find useful services",
+    "Find services & businesses",
     "Meet people in my field",
     "Join the community",
     "Volunteer and help",
@@ -41,4 +45,18 @@ test("search empty state offers visual goal navigation instead of a dead end", (
   assert.match(search, /Tell us what you are trying to do\./);
   assert.match(search, /discoveryIntentCards\.map/);
   assert.match(search, /Search anything/);
+});
+
+
+test("public landing positions Afghan Hub for the whole community", () => {
+  assert.match(publicHome, /Built for every part of the community\./);
+  for (const audience of [
+    "Professionals & members",
+    "Entrepreneurs & businesses",
+    "Groups & community leaders",
+    "Everyone who wants to connect",
+  ]) {
+    assert.ok(publicHome.includes(audience), `Missing audience path: ${audience}`);
+  }
+  assert.doesNotMatch(goalPaths, /label: "Settle"/);
 });
