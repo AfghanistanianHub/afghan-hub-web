@@ -18,7 +18,8 @@ Operational implications for launch:
 - protect personal information using reasonable safeguards;
 - keep documented retention/destruction rules rather than indefinite default retention;
 - preserve information for at least one year when it has been used to make a decision that directly affects an individual, where BC PIPA section 35 applies;
-- written access/correction requests under BC PIPA have a statutory response framework, including a general 30-day response period and permitted extensions.
+- written requests have a response framework under BC PIPA sections 25–31;
+- correction implementation has a separate duty under section 24; do not treat a response deadline as permission to delay a correction.
 
 Primary references:
 
@@ -96,27 +97,38 @@ Proposed internal target:
 
 ### 7. Backups and recovery copies
 
-Recommended rule:
+Current recovery relies on operator-managed logical exports in encrypted off-site storage, not automatic Supabase backup retention or PITR; see [the Free-plan recovery runbook](../operations/free-plan-backup-recovery.md). Database exports do not include Storage object bytes.
 
+Recommended operator-managed rule (to implement after policy approval):
+
+- inventory each backup generation and every local/off-site copy, with its creation date, custodian, location, approved expiry date, and any documented hold/review date;
+- the assigned custodian reviews expiry before each backup cycle and removes expired generations from every inventoried location, recording completion without copying personal data into the log;
+- retain the runbook's recoverability baseline of at least two recent generations where practical; escalate any conflict with approved expiry rather than silently retaining indefinitely;
+- delete temporary unencrypted copies after verification of encrypted off-site copies, as the runbook already requires;
 - do not promise immediate deletion from every historical backup;
 - production deletion should remove data from active systems first;
-- backup copies should expire through the provider's ordinary rolling retention cycle and should not be restored except for legitimate disaster recovery;
-- if a backup containing deleted data is restored, the deletion must be re-applied where operationally feasible;
-- document actual Supabase/Vercel/provider retention settings before publishing a specific backup-retention period.
+- manual exports do not expire automatically; final expiry periods require owner approval and a named operator before this control can be considered implemented;
+- restrict recovery copies to legitimate disaster recovery;
+- maintain a restricted, minimal deletion record for recovery reconciliation; after restoration, re-apply approved deletions and verify the result before reopening access; if reconciliation fails, keep the restored system isolated and escalate;
+- verify any future provider-managed backup lifecycle separately before making claims about it; provider expiry does not cover operator-held exports.
 
 ### 8. Privacy request timing
 
 Recommended launch position:
 
-- internally acknowledge verified privacy requests promptly;
-- track statutory access/correction deadlines separately from general support tickets;
-- for BC PIPA access/correction requests, operations must support the applicable statutory response period and extensions rather than inventing a generic support SLA;
-- do not advertise a shorter universal completion promise unless it can be consistently met across access, export, correction, and deletion.
+- log receipt and acknowledge promptly; identity verification must protect disclosure without silently restarting the request clock;
+- distinguish the written-request response clock from correction implementation;
+- sections 25–29 cover written applicants under section 27, which includes access and correction; track the general 30-day response limit from receipt and assess any section 31 extension separately;
+- calculate statutory days using section 1 (Saturdays and holidays excluded);
+- under section 24, implement warranted corrections as soon as reasonably possible, notify applicable prior recipients, or annotate the requested correction if it is not made; a response extension must not be treated as permission to postpone this duty;
+- route broader access requests through verified support; the narrow self-service export does not define the scope of statutory access.
 
-Suggested internal operating targets:
+Suggested internal operating targets (not public promises):
 - acknowledgement: within 5 business days;
-- legal access/correction deadline: tracked according to applicable law;
-- deletion/export completion: no public fixed deadline until rehearsal and staffing prove a sustainable target.
+- response due date and correction progress: tracked separately;
+- deletion completion: no public fixed deadline until rehearsal and staffing prove a sustainable target.
+
+References: [BC PIPA sections 24–31](https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/00_03063_01#section24). Review applicability and extensions case by case.
 
 ### 9. Governing jurisdiction
 
@@ -171,7 +183,7 @@ This is a launch-safety decision, not an argument against future self-service de
 | User-owned media | Delete with content/account | Storage-first |
 | Routine app/debug logs | Proposed 30–90 day rolling window | Verify provider capabilities |
 | Security/abuse evidence | Proposed review at 12 months after closure | Longer only with documented reason/legal hold |
-| Backups | Provider rolling lifecycle | Do not promise instant purge from historical backups |
+| Backups | Operator-managed inventory and approved expiry for manual exports | Assign custodian; verify removal of all copies; reconcile deletions before restored access |
 | Decision records directly affecting an individual | Respect applicable minimum legal retention | BC PIPA s.35 can require at least one year |
 
 ## Decisions that can be adopted now without public-risk
@@ -185,7 +197,7 @@ The following are suitable as internal launch controls immediately:
 5. shared-content impact requires review;
 6. business/organization ownership impact requires review;
 7. no public fixed deletion SLA yet;
-8. track BC PIPA access/correction deadlines distinctly;
+8. track written-request responses and prompt correction implementation separately;
 9. no broad raw-data export;
 10. document exceptions/legal holds explicitly.
 
