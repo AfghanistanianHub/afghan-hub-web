@@ -31,7 +31,8 @@ test("dashboard exposes goal-based newcomer-friendly navigation", () => {
 
 test("goal cards route to explicit discovery intents where available", () => {
   assert.match(goalPaths, /\/search\?intent=find_work/);
-  assert.match(goalPaths, /\/search\?intent=find_services/);\n  assert.match(goalPaths, /aria-hidden="true" className="text-3xl/);
+  assert.match(goalPaths, /\/search\?intent=find_services/);
+  assert.match(goalPaths, /aria-hidden="true" className="text-3xl/);
   assert.match(goalPaths, /\/search\?intent=join_community/);
   assert.match(goalPaths, /\/search\?intent=volunteer/);
 });
