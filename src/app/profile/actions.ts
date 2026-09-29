@@ -75,7 +75,7 @@ export async function saveProfile(formData: FormData) {
 
   if (
     mentorshipTopics.length > 12 ||
-    mentorshipTopics.some((topic) => topic.length > 60)
+    mentorshipTopics.some((topic) => [...topic].length > 60)
   ) {
     redirect(
       "/profile?error=Add%20up%20to%2012%20mentorship%20topics%2C%20each%2060%20characters%20or%20less.",
