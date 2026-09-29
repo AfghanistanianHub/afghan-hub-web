@@ -11,11 +11,16 @@ import {
 } from "lucide-react";
 
 import { ExternalImage } from "@/components/ui/external-image";
+import { VerificationBadge } from "@/components/ui/verification-badge";
+import { getPhaseOneSearchIntent, phaseOneSearchIntents, rankIntentCandidates } from "@/lib/intent-discovery";
+import { businessIntentCandidate, eventIntentCandidate, memberIntentCandidate, opportunityIntentCandidate, organizationIntentCandidate } from "@/lib/intent-signals";
+import { getIntentBrowseItems } from "@/lib/intent-browse";
 import { createClient } from "@/lib/supabase/server";
 
 type SearchPageProps = {
   searchParams: Promise<{
     q?: string;
+    intent?: string;
   }>;
 };
 
@@ -29,6 +34,7 @@ type SearchResult = {
   city: string;
   country: string;
   rank: number;
+  browse_verified?: boolean;
 };
 
 function isMemberResult(result: SearchResult) {
@@ -97,12 +103,42 @@ function getTypeLabel(entityType: string) {
   }
 }
 
+function getIntentEmptyCopy(intent: ReturnType<typeof getPhaseOneSearchIntent>) {
+  switch (intent) {
+    case "find_work":
+      return "No current jobs or explicitly hiring businesses match this view yet.";
+    case "hire_talent":
+      return "No eligible public member profiles are available in this view yet.";
+    case "volunteer":
+      return "No current volunteer roles or organizations explicitly accepting volunteers are available yet.";
+    case "find_services":
+      return "No published businesses are available in this view yet.";
+    case "join_community":
+      return "No published community organizations or current events are available in this view yet.";
+    default:
+      return null;
+  }
+}
+
+function getResultKey(result: SearchResult) {
+  return `${result.entity_type}:${result.entity_id}`;
+}
+
 export default async function SearchPage({
   searchParams,
 }: SearchPageProps) {
-  const { q } = await searchParams;
+  const { q, intent: rawIntent } = await searchParams;
   const query = q?.trim() ?? "";
+  const intent = getPhaseOneSearchIntent(rawIntent);
   const supabase = await createClient();
+  const isIntentOnlyBrowse = Boolean(intent && query.length === 0);
+  const user =
+    isIntentOnlyBrowse && intent === "hire_talent"
+      ? (await supabase.auth.getUser()).data.user
+      : null;
+  const browseItems = isIntentOnlyBrowse
+    ? await getIntentBrowseItems(supabase, intent, { viewerId: user?.id })
+    : [];
 
   const { data, error } =
     query.length >= 2
@@ -112,9 +148,22 @@ export default async function SearchPage({
         })
       : { data: [], error: null };
 
-  const rawResults = ((data ?? []) as SearchResult[]).filter(
-    (result) => getResultHref(result) !== null,
-  );
+  const browseResults: SearchResult[] = browseItems.map((item) => ({
+    entity_id: item.id,
+    entity_type: item.entityType,
+    entity_slug: item.slug ?? "",
+    title: item.title,
+    subtitle: item.subtitle ?? "",
+    image_url: "",
+    city: item.city ?? "",
+    country: item.country ?? "",
+    rank: 0,
+    browse_verified: item.isVerified,
+  }));
+
+  const rawResults = (
+    isIntentOnlyBrowse ? browseResults : ((data ?? []) as SearchResult[])
+  ).filter((result) => getResultHref(result) !== null);
   const memberIds = rawResults
     .filter(isMemberResult)
     .map((result) => result.entity_id);
@@ -124,10 +173,18 @@ export default async function SearchPage({
   const eventIds = rawResults
     .filter((result) => result.entity_type === "event")
     .map((result) => result.entity_id);
+  const businessIds = rawResults
+    .filter((result) => result.entity_type === "business")
+    .map((result) => result.entity_id);
+  const organizationIds = rawResults
+    .filter((result) => result.entity_type === "organization")
+    .map((result) => result.entity_id);
   const [
     { data: visibleMembers },
     { data: visibleOpportunities },
     { data: visibleEvents },
+    { data: businessSignals },
+    { data: organizationSignals },
   ] = await Promise.all([
     memberIds.length > 0
       ? supabase
@@ -140,11 +197,11 @@ export default async function SearchPage({
     opportunityIds.length > 0
       ? supabase
           .from("opportunities")
-          .select("id,deadline")
+          .select("id,deadline,type")
           .in("id", opportunityIds)
           .eq("status", "published")
       : Promise.resolve({
-          data: [] as { id: string; deadline: string | null }[],
+          data: [] as { id: string; deadline: string | null; type: string | null }[],
         }),
     eventIds.length > 0
       ? supabase
@@ -158,6 +215,22 @@ export default async function SearchPage({
             starts_at: string;
             ends_at: string | null;
           }[],
+        }),
+    businessIds.length > 0
+      ? supabase
+          .from("businesses")
+          .select("id,is_hiring,is_verified")
+          .in("id", businessIds)
+          .eq("status", "published")
+      : Promise.resolve({ data: [] as { id: string; is_hiring: boolean; is_verified: boolean }[] }),
+    organizationIds.length > 0
+      ? supabase
+          .from("organizations")
+          .select("id,is_accepting_volunteers,is_verified")
+          .in("id", organizationIds)
+          .eq("status", "published")
+      : Promise.resolve({
+          data: [] as { id: string; is_accepting_volunteers: boolean; is_verified: boolean }[],
         }),
   ]);
   const today = new Date().toISOString().slice(0, 10);
@@ -181,7 +254,14 @@ export default async function SearchPage({
       })
       .map((item) => item.id),
   );
-  const results = rawResults.filter((result) => {
+  const visibleBusinessIds = new Set(
+    (businessSignals ?? []).map((item) => item.id),
+  );
+  const visibleOrganizationIds = new Set(
+    (organizationSignals ?? []).map((item) => item.id),
+  );
+
+  const eligibleResults = rawResults.filter((result) => {
     if (isMemberResult(result)) {
       return visibleMemberIds.has(result.entity_id);
     }
@@ -194,8 +274,77 @@ export default async function SearchPage({
       return visibleEventIds.has(result.entity_id);
     }
 
-    return true;
+    if (result.entity_type === "business") {
+      return visibleBusinessIds.has(result.entity_id);
+    }
+
+    if (result.entity_type === "organization") {
+      return visibleOrganizationIds.has(result.entity_id);
+    }
+
+    return false;
   });
+
+  const businessSignalById = new Map(
+    (businessSignals ?? []).map((item) => [item.id, item]),
+  );
+  const organizationSignalById = new Map(
+    (organizationSignals ?? []).map((item) => [item.id, item]),
+  );
+  const opportunitySignalById = new Map(
+    (visibleOpportunities ?? []).map((item) => [item.id, item]),
+  );
+
+  const rankedIntentResults = rankIntentCandidates(
+    intent,
+    eligibleResults.map((result) => {
+      const key = getResultKey(result);
+
+      if (isMemberResult(result)) {
+        return memberIntentCandidate(key);
+      }
+
+      if (result.entity_type === "business") {
+        return businessIntentCandidate(key, {
+          isHiring: businessSignalById.get(result.entity_id)?.is_hiring ?? false,
+        });
+      }
+
+      if (result.entity_type === "organization") {
+        return organizationIntentCandidate(key, {
+          acceptsVolunteers:
+            organizationSignalById.get(result.entity_id)
+              ?.is_accepting_volunteers ?? false,
+        });
+      }
+
+      if (result.entity_type === "opportunity") {
+        return opportunityIntentCandidate(
+          key,
+          opportunitySignalById.get(result.entity_id)?.type,
+        );
+      }
+
+      return eventIntentCandidate(key);
+    }),
+    isIntentOnlyBrowse ? 24 : eligibleResults.length,
+  );
+  const resultByKey = new Map(
+    eligibleResults.map((result) => [getResultKey(result), result]),
+  );
+  const intentReasonByKey = new Map(
+    rankedIntentResults.map((item) => [item.id, item.intentReason]),
+  );
+  const isVerifiedResult = (result: SearchResult) =>
+    result.browse_verified ??
+    (result.entity_type === "business"
+      ? businessSignalById.get(result.entity_id)?.is_verified ?? false
+      : result.entity_type === "organization"
+        ? organizationSignalById.get(result.entity_id)?.is_verified ?? false
+        : false);
+  const results = rankedIntentResults
+    .map((item) => resultByKey.get(item.id))
+    .filter((result): result is SearchResult => Boolean(result));
 
   return (
     <main className="px-4 py-8 md:px-8">
@@ -208,48 +357,71 @@ export default async function SearchPage({
               <Sparkles aria-hidden="true" className="size-3.5" />
               Discover Afghan Hub
             </div>
-            <h1 className="mt-5 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Search</h1>
-            <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">Find people, services, organizations, opportunities, and events across the community.</p>
+            <h1 className="mt-5 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">
+              Search with purpose.
+            </h1>
+            <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">
+              Choose what you are trying to do, then browse or add a keyword. Afghan Hub uses only explicit, public signals to prioritize relevant people and listings.
+            </p>
           </div>
         </section>
 
-        <form action="/search" role="search" className="relative mt-8 rounded-[1.75rem] border border-border/80 bg-card/88 p-2 shadow-[0_12px_38px_rgb(15_23_42/0.035)] backdrop-blur">
-          <Search aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
-          <input
-            name="q"
-            type="search"
-            required
-            minLength={2}
-            defaultValue={query}
-            placeholder="Search members, businesses, organizations, opportunities, or events"
-            aria-label="Search Afghan Hub"
-            className="w-full rounded-2xl border border-transparent bg-background/70 py-4 pl-12 pr-28 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/30 focus:bg-background focus:ring-4 focus:ring-primary/10"
-          />
+        <form action="/search" role="search" className="relative mt-8 grid gap-3 rounded-[1.75rem] border border-border/80 bg-card/88 p-4 shadow-[0_12px_38px_rgb(15_23_42/0.035)] backdrop-blur md:grid-cols-[14rem_minmax(0,1fr)_auto] md:items-end">
+          <label className="grid gap-2 text-sm font-medium text-foreground">
+            What are you looking for?
+            <select
+              name="intent"
+              defaultValue={intent ?? ""}
+              className="rounded-2xl border border-border/80 bg-background/70 px-4 py-4 text-sm text-foreground outline-none transition hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
+            >
+              <option value="">Anything in the community</option>
+              {phaseOneSearchIntents.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="relative grid gap-2 text-sm font-medium text-foreground">
+            Search Afghan Hub
+            <Search className="pointer-events-none absolute bottom-4 left-4 size-5 text-muted-foreground" />
+            <input
+              name="q"
+              type="search"
+              defaultValue={query}
+              placeholder={intent ? "Optional keyword…" : "Name, skill, organization, service, opportunity…"}
+              aria-label="Search Afghan Hub"
+              className="w-full rounded-2xl border border-border/80 bg-background/70 py-4 pl-12 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
+            />
+          </label>
           <button
             type="submit"
-            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-[calc(50%+1px)] hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+            className="rounded-2xl bg-primary px-5 py-4 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
-            Search
+            {intent && !query ? "Browse" : "Search"}
           </button>
         </form>
 
         {query && query.length < 2 ? (
-          <div role="status" aria-live="polite" className="mt-8 rounded-xl border border-amber-500/25 bg-amber-500/10 p-4 text-sm text-amber-700">
+          <div className="mt-8 rounded-xl border border-amber-500/25 bg-amber-500/10 p-4 text-sm text-amber-700">
             Enter at least two characters to search.
           </div>
         ) : null}
 
         {error ? (
-          <div role="alert" aria-live="assertive" className="mt-8 rounded-xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
+          <div className="mt-8 rounded-xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
             We could not complete your search. Please try again.
           </div>
         ) : null}
 
-        {!error && query.length >= 2 ? (
+        {!error && (query.length >= 2 || isIntentOnlyBrowse) ? (
           <div className="mt-8">
             <p className="text-sm text-muted-foreground">
               {results.length} {results.length === 1 ? "result" : "results"}
-              {` for “${query}”`}
+              {query ? ` for “${query}”` : ""}
+              {intent
+                ? ` · ${isIntentOnlyBrowse ? "browsing" : "prioritized for"} ${phaseOneSearchIntents.find((option) => option.value === intent)?.label.toLowerCase()}`
+                : ""}
             </p>
 
             {results.length > 0 ? (
@@ -278,25 +450,33 @@ export default async function SearchPage({
                         />
                       ) : (
                         <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                          <Icon aria-hidden="true" className="size-5" />
+                          <Icon className="size-5" />
                         </div>
                       )}
 
                       <div className="relative min-w-0 flex-1">
-                        <span className="text-xs font-semibold uppercase tracking-wide text-primary">
-                          {getTypeLabel(result.entity_type)}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-semibold uppercase tracking-wide text-primary">
+                            {getTypeLabel(result.entity_type)}
+                          </span>
+                          {isVerifiedResult(result) ? <VerificationBadge compact /> : null}
+                        </div>
                         <h2 className="mt-1 line-clamp-2 break-words font-bold leading-5 text-foreground">
                           {getSafeResultTitle(result)}
                         </h2>
                         {result.subtitle ? (
-                          <p className="mt-1 line-clamp-2 break-words text-sm leading-6 text-muted-foreground">
+                          <p className="mt-1 line-clamp-2 text-sm leading-6 text-muted-foreground">
                             {result.subtitle}
                           </p>
                         ) : null}
                         {location ? (
-                          <p className="mt-2 break-words text-xs leading-5 text-muted-foreground">
+                          <p className="mt-2 text-xs text-muted-foreground">
                             {location}
+                          </p>
+                        ) : null}
+                        {intentReasonByKey.get(getResultKey(result)) ? (
+                          <p className="mt-2 text-xs font-semibold text-primary">
+                            {intentReasonByKey.get(getResultKey(result))}
                           </p>
                         ) : null}
                       </div>
@@ -306,27 +486,35 @@ export default async function SearchPage({
                 })}
               </div>
             ) : (
-              <div className="relative mt-5 flex min-h-64 flex-col items-center justify-center overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-card/70 px-6 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"/>
-                <Search aria-hidden="true" className="relative size-10 text-primary/70" />
-                <h2 className="relative mt-4 text-lg font-bold text-foreground">
+              <div className="relative mt-5 flex min-h-64 flex-col items-center justify-center overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-card/70 px-6 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]">
+                <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl" />
+                <Search className="size-10 text-muted-foreground/60" />
+                <h2 className="mt-4 text-lg font-bold text-foreground">
                   No results found
                 </h2>
-                <p className="relative mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-                  Try another name, location, skill, organization, business,
-                  opportunity, or event.
+                <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+                  {isIntentOnlyBrowse && intent
+                    ? getIntentEmptyCopy(intent)
+                    : "Try another name, location, skill, organization, business, opportunity, or event."}
                 </p>
+                {isIntentOnlyBrowse ? (
+                  <p className="mt-3 max-w-md text-xs leading-5 text-muted-foreground">
+                    Add an optional keyword above to broaden or refine your discovery.
+                  </p>
+                ) : null}
               </div>
             )}
           </div>
         ) : null}
 
-        {!query ? (
-          <div className="relative mt-8 flex min-h-64 flex-col items-center justify-center overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-card/70 px-6 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"/>
-            <Search aria-hidden="true" className="size-10 text-muted-foreground/60" />
+        {!query && !intent ? (
+          <div className="relative mt-8 flex min-h-64 flex-col items-center justify-center overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-card/70 px-6 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]">
+            <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl" />
+            <Search className="size-10 text-muted-foreground/60" />
             <h2 className="mt-4 text-lg font-bold text-foreground">
               Search the community
             </h2>
-            <p className="relative mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
+            <p className="mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
               Find people, services, organizations, opportunities, and events
               across Afghan Hub.
             </p>
