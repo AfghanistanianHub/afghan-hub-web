@@ -12,7 +12,12 @@ import {
 
 import { ExternalImage } from "@/components/ui/external-image";
 import { VerificationBadge } from "@/components/ui/verification-badge";
-import { getPhaseOneSearchIntent, phaseOneSearchIntents, rankIntentCandidates } from "@/lib/intent-discovery";
+import {
+  getPhaseOneSearchIntent,
+  limitIntentBrowseCandidates,
+  phaseOneSearchIntents,
+  rankIntentCandidates,
+} from "@/lib/intent-discovery";
 import { businessIntentCandidate, eventIntentCandidate, memberIntentCandidate, opportunityIntentCandidate, organizationIntentCandidate } from "@/lib/intent-signals";
 import { getIntentBrowseItems } from "@/lib/intent-browse";
 import { createClient } from "@/lib/supabase/server";
@@ -131,20 +136,27 @@ export default async function SearchPage({
   const query = q?.trim() ?? "";
   const intent = getPhaseOneSearchIntent(rawIntent);
   const supabase = await createClient();
-  const isIntentOnlyBrowse = Boolean(intent && query.length === 0);
+  const isIntentOnlyBrowse = intent !== null && query.length === 0;
   const user =
-    isIntentOnlyBrowse && intent === "hire_talent"
+    intent === "hire_talent" && query.length === 0
       ? (await supabase.auth.getUser()).data.user
       : null;
-  const browseItems = isIntentOnlyBrowse
-    ? await getIntentBrowseItems(supabase, intent, { viewerId: user?.id })
-    : [];
+  const browseItems =
+    intent !== null && query.length === 0
+      ? await getIntentBrowseItems(supabase, intent, { viewerId: user?.id })
+      : [];
+
+  const KEYWORD_RESULT_LIMIT = 30;
+  const INTENT_KEYWORD_CANDIDATE_LIMIT = 100;
+  const BROWSE_RESULT_LIMIT = 24;
 
   const { data, error } =
     query.length >= 2
       ? await supabase.rpc("search_afghan_hub", {
           search_query: query,
-          result_limit: 30,
+          result_limit: intent
+            ? INTENT_KEYWORD_CANDIDATE_LIMIT
+            : KEYWORD_RESULT_LIMIT,
         })
       : { data: [], error: null };
 
@@ -295,7 +307,7 @@ export default async function SearchPage({
     (visibleOpportunities ?? []).map((item) => [item.id, item]),
   );
 
-  const rankedIntentResults = rankIntentCandidates(
+  const rankedIntentCandidates = rankIntentCandidates(
     intent,
     eligibleResults.map((result) => {
       const key = getResultKey(result);
@@ -327,8 +339,17 @@ export default async function SearchPage({
 
       return eventIntentCandidate(key);
     }),
-    isIntentOnlyBrowse ? 24 : eligibleResults.length,
+    eligibleResults.length,
   );
+  const rankedIntentResults =
+    isIntentOnlyBrowse && intent
+      ? limitIntentBrowseCandidates(
+          intent,
+          rankedIntentCandidates,
+          BROWSE_RESULT_LIMIT,
+        )
+      : rankedIntentCandidates.slice(0, KEYWORD_RESULT_LIMIT);
+
   const resultByKey = new Map(
     eligibleResults.map((result) => [getResultKey(result), result]),
   );
