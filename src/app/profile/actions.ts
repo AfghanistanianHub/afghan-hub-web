@@ -15,27 +15,6 @@ function getOptionalString(formData: FormData, field: string) {
   return cleanedValue.length > 0 ? cleanedValue : null;
 }
 
-function getMentorshipTopics(formData: FormData) {
-  const value = getOptionalString(formData, "mentorship_topics");
-  if (!value) return [];
-
-  const seen = new Set<string>();
-  const topics: string[] = [];
-
-  for (const rawTopic of value.split(",")) {
-    const topic = rawTopic.trim();
-    if (!topic) continue;
-
-    const normalized = topic.toLowerCase();
-    if (seen.has(normalized)) continue;
-
-    seen.add(normalized);
-    topics.push(topic);
-  }
-
-  return topics;
-}
-
 export async function saveProfile(formData: FormData) {
   const supabase = await createClient();
 
@@ -71,25 +50,12 @@ export async function saveProfile(formData: FormData) {
     ?.split(",")
     .map((item) => item.trim())
     .filter(Boolean);
-  const mentorshipTopics = getMentorshipTopics(formData);
-
-  if (
-    mentorshipTopics.length > 12 ||
-    mentorshipTopics.some((topic) => [...topic].length > 60)
-  ) {
-    redirect(
-      "/profile?error=Add%20up%20to%2012%20mentorship%20topics%2C%20each%2060%20characters%20or%20less.",
-    );
-  }
-
   const profession = getOptionalString(formData, "profession");
   const company = getOptionalString(formData, "company");
   const city = getOptionalString(formData, "city");
   const provinceState = getOptionalString(formData, "province_state");
   const country = getOptionalString(formData, "country");
   const bio = getOptionalString(formData, "bio");
-  const openToMentoring = formData.get("open_to_mentoring") === "on";
-  const lookingForMentor = formData.get("looking_for_mentor") === "on";
 
   const displayName =
     [firstName, lastName].filter(Boolean).join(" ") || "Member";
@@ -112,9 +78,6 @@ export async function saveProfile(formData: FormData) {
       website_url: websiteUrl,
       languages: languages ?? [],
       skills: skills ?? [],
-      open_to_mentoring: openToMentoring,
-      looking_for_mentor: lookingForMentor,
-      mentorship_topics: mentorshipTopics,
       onboarding_completed: true,
       updated_at: new Date().toISOString(),
     },
