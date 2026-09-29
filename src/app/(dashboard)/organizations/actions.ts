@@ -59,6 +59,8 @@ export async function createOrganization(formData: FormData) {
   const city = getOptionalString(formData, "city");
   const provinceState = getOptionalString(formData, "province_state");
   const country = getOptionalString(formData, "country");
+  const isAcceptingVolunteers =
+    formData.get("is_accepting_volunteers") === "on";
 
   if (websiteUrl && !isValidHttpUrl(websiteUrl)) {
     redirect("/organizations/new?error=Enter%20a%20valid%20website%20URL");
@@ -108,6 +110,7 @@ export async function createOrganization(formData: FormData) {
     province_state: provinceState,
     country,
     programs,
+    is_accepting_volunteers: isAcceptingVolunteers,
     status: "draft",
     updated_at: new Date().toISOString(),
   });
