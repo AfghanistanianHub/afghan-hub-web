@@ -42,12 +42,12 @@ async function settingsHarness(result, signedIn = true) {
   const client = profileClient(result);
   const revalidations = [];
   client.auth = { getUser: async () => ({ data: { user: signedIn ? { id: "trusted-member" } : null }, error: null }) };
-  const module = await loadModule("../src/app/(dashboard)/settings/actions.ts", {
+  const loaded = await loadModule("../src/app/(dashboard)/settings/actions.ts", {
     "next/navigation": { redirect: (url) => { throw new Error(url); } },
     "next/cache": { revalidatePath: (...args) => revalidations.push(args) },
     "@/lib/supabase/server": { createClient: async () => client },
   });
-  return { save: module.updateAccountSettings, calls: client.calls, revalidations };
+  return { save: loaded.updateAccountSettings, calls: client.calls, revalidations };
 }
 
 test("visibility can change using only the permitted column and authenticated owner", async () => {
@@ -90,7 +90,7 @@ async function avatarHarness(result, uploadError = null) {
     };
   } };
   const jsx = (type, props) => ({ type, props });
-  const module = await loadModule("../src/components/profile/avatar-upload.tsx", {
+  const loaded = await loadModule("../src/components/profile/avatar-upload.tsx", {
     "react/jsx-runtime": { jsx, jsxs: jsx },
     "react": { useState: (initial) => {
       const messageState = stateIndex++ === 1;
@@ -100,7 +100,7 @@ async function avatarHarness(result, uploadError = null) {
     "@/components/ui/external-image": { ExternalImage: () => null },
     "@/lib/supabase/client": { createClient: () => client },
   });
-  const element = module.default({ userId: "trusted-member", currentAvatarUrl: null });
+  const element = loaded.default({ userId: "trusted-member", currentAvatarUrl: null });
   const input = findInput(element); assert.ok(input);
   return {
     async upload() {
