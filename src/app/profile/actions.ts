@@ -60,34 +60,46 @@ export async function saveProfile(formData: FormData) {
   const displayName =
     [firstName, lastName].filter(Boolean).join(" ") || "Member";
 
-  const { error } = await supabase.from("profiles").upsert(
-    {
-      id: user.id,
-      email: user.email ?? null,
-      first_name: firstName,
-      last_name: lastName,
-      headline,
-      display_name: displayName,
-      profession,
-      company,
-      city,
-      province_state: provinceState,
-      country,
-      bio,
-      linkedin_url: linkedinUrl,
-      website_url: websiteUrl,
-      languages: languages ?? [],
-      skills: skills ?? [],
-      onboarding_completed: true,
-      updated_at: new Date().toISOString(),
-    },
-    {
-      onConflict: "id",
-    },
-  );
+  const editableProfile = {
+    first_name: firstName,
+    last_name: lastName,
+    headline,
+    display_name: displayName,
+    profession,
+    company,
+    city,
+    province_state: provinceState,
+    country,
+    bio,
+    linkedin_url: linkedinUrl,
+    website_url: websiteUrl,
+    languages: languages ?? [],
+    skills: skills ?? [],
+    onboarding_completed: true,
+  };
 
-  if (error) {
+  // Identity columns are insert-only; the database maintains updated_at.
+  const { data: updatedProfile, error: updateError } = await supabase
+    .from("profiles")
+    .update(editableProfile)
+    .eq("id", user.id)
+    .select("id")
+    .maybeSingle();
+
+  if (updateError) {
     redirect("/profile?error=We%20could%20not%20save%20your%20profile.%20Please%20try%20again.");
+  }
+
+  if (!updatedProfile) {
+    const { error: insertError } = await supabase
+      .from("profiles")
+      .insert({ id: user.id, email: user.email ?? null, ...editableProfile })
+      .select("id")
+      .single();
+
+    if (insertError) {
+      redirect("/profile?error=We%20could%20not%20save%20your%20profile.%20Please%20try%20again.");
+    }
   }
 
   redirect("/dashboard");
