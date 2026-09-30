@@ -175,6 +175,12 @@ test("landing responsive layout, keyboard and accessibility in sandboxed Chrome"
       throw error;
     }
   }
+  // Inspect the real listing component with long local fixture titles.
+  await page.send("Emulation.setDeviceMetricsOverride", { width: 375, height: 1000, deviceScaleFactor: 1, mobile: false });
+  await page.evaluate("const article=document.querySelector('article');scrollTo(0,article.getBoundingClientRect().top+scrollY-document.querySelector('header').offsetHeight-20)");
+  const listingShot = await page.send("Page.captureScreenshot", { format: "jpeg", quality: 75 });
+  screenshots.push({ name: "listing_375.jpg", data: listingShot.data });
+  await page.send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   // 200% text resizing at desktop, plus the 720px reflow equivalent of a 1440px page at 200% zoom.
   await page.evaluate("document.documentElement.style.fontSize='200%'");
   const resized = await page.evaluate(layoutExpression);

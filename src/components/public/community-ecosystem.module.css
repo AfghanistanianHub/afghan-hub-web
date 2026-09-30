@@ -44,6 +44,7 @@
 .cardLabel svg:last-child { margin-left: auto; }
 .cardBody strong { display: block; margin-top: 9px; font-size: .875rem; color: #2d253b; }
 .people { grid-area: people; display: flex; align-items: center; flex-direction: column; gap: 8px; padding: 8px 0; text-align: center; color: #49347d; }
+.people > strong, .people > span { position: relative; max-width: 100%; padding: 2px 6px; border-radius: 8px; background: #faf8f5; }
 .people strong { font-size: 1rem; }
 .people > span { font-size: .75rem; color: #61586e; }
 .avatars { display: flex; padding-left: 8px; }
