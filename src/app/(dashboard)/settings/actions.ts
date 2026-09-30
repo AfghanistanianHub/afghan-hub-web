@@ -24,7 +24,6 @@ export async function updateAccountSettings(formData: FormData) {
     .from("profiles")
     .update({
       is_public: formData.get("is_public") === "on",
-      updated_at: new Date().toISOString(),
     })
     .eq("id", user.id)
     .select("id")
