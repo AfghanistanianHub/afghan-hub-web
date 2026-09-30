@@ -7,12 +7,13 @@ Updated 2026-09-30. Visual design/frontend UX only; preserve existing functional
 - Implemented connected people/organizations/events/opportunities hero with linked business path, reusable SVG/CSS covers, public-scoped indigo/coral/gold palette and larger header touch targets.
 - Preserved community pathways, pulse, listing data/empty/error states, metadata and all existing destinations.
 - Checks passed: lint (one existing warning), TypeScript, build, 27 relevant regression tests, HTTP/rendered-link smoke, new text-color AA contrast calculations.
-- Added sandbox-enabled browser QA to the existing Linux test step, with a local-only content fixture and screenshot evidence; awaiting execution. Hero rows now grow with text to prevent occlusion.
-- Pending: actual browser checks at 320/375, 768, 1024 and 1440px; keyboard, 200% zoom, reduced motion and populated listing covers. Source-level responsive/accessibility review is not a visual pass.
+- Added sandbox-enabled browser QA to the existing Linux test step, with a local-only content fixture and screenshot evidence; executed successfully on both Node 22/24 (195 tests, zero skips). Hero rows now grow with text to prevent occlusion.
+- Passed in actual sandbox-enabled Chrome: 320/375/768/1024/1440px; zero overflow/occlusion/axe AA violations; keyboard, 200% text/reflow, reduced motion, populated listing covers and category navigation. Mobile/tablet/desktop screenshots inspected.
+- Follow-up: improve caption backing over connection lines and inspect a populated-card screenshot; verify final-head CI.
 
 Review artifact: draft PR #337; Vercel code build passed. Preview is protected by Vercel login from this session.
 
 ## Next
-Finish browser QA on the draft preview and resolve any layout issues before marking the landing milestone complete. Then refine discovery/detail visual consistency using the same artwork.
+Confirm final caption/card evidence, then refine discovery/detail visual consistency using the same artwork.
 
-Blocker: native browser initialization and normal Chrome launch fail in this session. No production deployment or merge authorized/performed.
+Local browser remains unavailable; CI browser QA supplies the verified evidence. No production deployment or merge authorized/performed.
