@@ -10,6 +10,7 @@ import {
   Sparkles,
   UsersRound,
 } from "lucide-react";
+import { CommunityEcosystem } from "@/components/public/community-ecosystem";
 import { ListingCard } from "@/components/public/listing-card";
 import { publicCategories, publicKinds, publicHref, type PublicKind } from "@/lib/public-catalog";
 import { getPublicListings } from "@/lib/public-content";
@@ -50,13 +51,6 @@ const icons = {
   organizations: UsersRound,
 };
 
-const categoryNodePosition: Record<PublicKind, string> = {
-  opportunities: "left-[6%] top-[12%] sm:left-[3%] sm:top-[18%]",
-  events: "right-[6%] top-[12%] sm:right-[3%] sm:top-[18%]",
-  businesses: "bottom-[12%] left-[6%] sm:bottom-[18%] sm:left-[3%]",
-  organizations: "bottom-[12%] right-[6%] sm:bottom-[18%] sm:right-[3%]",
-};
-
 const categoryKicker: Record<PublicKind, string> = {
   opportunities: "Move forward",
   events: "Come together",
@@ -82,13 +76,13 @@ export default async function PublicHome() {
         />
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.025] [background-image:linear-gradient(to_right,var(--foreground)_1px,transparent_1px),linear-gradient(to_bottom,var(--foreground)_1px,transparent_1px)] [background-size:42px_42px]" />
 
-        <div className="relative mx-auto grid max-w-7xl gap-10 px-5 py-12 sm:gap-14 sm:px-8 sm:py-24 lg:grid-cols-[0.93fr_1.07fr] lg:items-center lg:gap-20 lg:py-28">
+        <div className="relative mx-auto grid max-w-7xl gap-10 px-5 py-12 sm:gap-14 sm:px-8 sm:py-16 lg:grid-cols-[0.93fr_1.07fr] lg:items-center lg:gap-10 lg:py-20">
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary">
               <Sparkles aria-hidden="true" className="size-3.5" />
               People. Possibilities. Belonging.
             </div>
-            <h1 className="mt-6 max-w-3xl text-4xl font-semibold leading-[1.02] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
+            <h1 className="mt-6 max-w-3xl text-4xl font-semibold leading-[1.02] tracking-[-0.04em] sm:text-6xl lg:text-[4rem]">
               Rooted in community.
               <span className="mt-1 block text-primary">Growing together.</span>
             </h1>
@@ -117,46 +111,7 @@ export default async function PublicHome() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-xl lg:mx-0" aria-label="Explore Afghan Hub categories">
-            <div aria-hidden="true" className="pointer-events-none absolute inset-[12%] rounded-full bg-primary/7 blur-3xl" />
-            <div className="relative mx-auto flex aspect-square w-full max-w-[430px] items-center justify-center">
-              <div aria-hidden="true" className="absolute inset-[8%] rounded-full border border-primary/10" />
-              <div aria-hidden="true" className="absolute inset-[22%] rounded-full border border-dashed border-primary/20" />
-              <div aria-hidden="true" className="absolute left-1/2 top-1/2 h-px w-[76%] -translate-x-1/2 -rotate-[26deg] bg-gradient-to-r from-transparent via-primary/12 to-transparent" />
-              <div aria-hidden="true" className="absolute left-1/2 top-1/2 h-px w-[76%] -translate-x-1/2 rotate-[31deg] bg-gradient-to-r from-transparent via-primary/12 to-transparent" />
-
-              <Link
-                href="/explore"
-                className="group relative z-10 flex size-36 flex-col items-center justify-center rounded-full border border-primary/15 bg-background/96 text-center shadow-[0_18px_55px_rgb(15_23_42/0.10)] transition-[transform,box-shadow] hover:scale-[1.025] hover:shadow-[0_20px_60px_rgb(15_23_42/0.13)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:size-44"
-              >
-                <span className="text-[0.66rem] font-semibold uppercase tracking-[0.24em] text-primary">Afghan</span>
-                <span className="mt-0.5 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">Hub</span>
-                <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-muted-foreground group-hover:text-primary">
-                  Explore <ArrowUpRight aria-hidden="true" className="size-3.5" />
-                </span>
-              </Link>
-
-              {publicKinds.map(kind => {
-                const Icon = icons[kind];
-                return (
-                  <Link
-                    key={kind}
-                    href={`/explore?type=${kind}`}
-                    aria-label={`${publicCategories[kind].label}: ${categoryKicker[kind]}`}
-                    className={`group absolute z-20 flex size-11 items-center justify-center rounded-full border border-border/80 bg-background/94 text-primary shadow-[0_9px_28px_rgb(15_23_42/0.08)] backdrop-blur transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_12px_32px_rgb(15_23_42/0.12)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:size-12 ${categoryNodePosition[kind]}`}
-                  >
-                    <Icon aria-hidden="true" className="size-4.5 sm:size-5" />
-                    <span className="pointer-events-none absolute top-full mt-2 hidden whitespace-nowrap text-[0.65rem] font-semibold text-muted-foreground transition-colors group-hover:text-primary sm:block">
-                      {publicCategories[kind].label}
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-            <p className="mx-auto mt-2 max-w-sm text-center text-xs leading-5 text-muted-foreground sm:mt-4">
-              Start at the hub, then browse opportunities, events, businesses, and organizations below.
-            </p>
-          </div>
+          <CommunityEcosystem />
         </div>
       </section>
 

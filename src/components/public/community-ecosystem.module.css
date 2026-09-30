@@ -1,0 +1,43 @@
+.ecosystem { width:100%; max-width:540px; margin-inline:auto; position:relative; min-height:530px; isolation:isolate; background:radial-gradient(ellipse at center,#eceaf7 0,transparent 68%); }
+.connections { position:absolute; inset:0; width:100%; height:100%; color:#bab7d3; z-index:-1; }
+.card { position:absolute; width:218px; overflow:hidden; border:1px solid #e4e0e9; border-radius:18px; background:#fff; box-shadow:0 14px 40px #30254c0c; transition:transform .2s,box-shadow .2s; }
+.card:hover { transform:translateY(-4px); box-shadow:0 18px 40px #30254c18; }
+.organizations { top:10px; left:4%; transform:rotate(-5deg); }
+.events { top:158px; right:0; transform:rotate(5deg); }
+.opportunities { bottom:48px; left:6%; transform:rotate(-3deg); }
+.pattern { height:100%; overflow:hidden; }
+.pattern svg { width:100%; height:100%; }
+.indigo { background:#eeebfa; color:#c9c1ea; }
+.coral { background:#fff0e9; color:#efb6a1; }
+.gold { background:#fff5d8; color:#ecd38a; }
+.blue { background:#eaf1fb; color:#b7cce9; }
+.card > .pattern { height:84px; }
+.cardBody { padding:16px; }
+.cardLabel { display:flex; align-items:center; gap:7px; font-size:11px; font-weight:600; color:#605971; }
+.cardLabel svg:last-child { margin-left:auto; }
+.cardBody strong { display:block; margin-top:9px; font-size:15px; color:#2d253b; }
+.people { position:absolute; top:200px; left:9%; display:flex; align-items:center; flex-direction:column; gap:8px; color:#49347d; }
+.people strong { font-size:16px; }
+.people > span { font-size:11px; color:#61586e; }
+.avatars { display:flex; padding-left:8px; }
+.avatars span { width:43px; height:43px; margin-left:-8px; border:3px solid #faf8f5; border-radius:50%; background:radial-gradient(circle at 50% 37%,#b87957 0 22%,transparent 23%),radial-gradient(ellipse at 50% 100%,#766493 0 42%,#eadcf3 43%); }
+.avatars span:nth-child(2) { background:radial-gradient(circle at 50% 37%,#dfa780 0 22%,transparent 23%),radial-gradient(ellipse at 50% 100%,#bc765a 0 42%,#f7e2d5 43%); }
+.avatars span:nth-child(3) { background:radial-gradient(circle at 50% 37%,#8c5c44 0 22%,transparent 23%),radial-gradient(ellipse at 50% 100%,#637dac 0 42%,#dce5f5 43%); }
+.businesses { position:absolute; bottom:0; right:0; display:flex; align-items:center; gap:9px; padding:14px 17px; border:1px solid #e4e0e9; border-radius:40px; background:#fff; font-size:12px; font-weight:600; }
+.spark { position:absolute; top:30px; right:12%; font-size:64px; color:#cc6e4f; }
+@media(max-width:1023px) and (min-width:600px) { .ecosystem { width:540px; max-width:100%; margin:auto; } }
+@media(max-width:599px) { .ecosystem { min-height:470px; } .card { width:180px; } .cardBody { padding:12px; } .cardBody strong { font-size:13px; } .organizations { left:0; } .events { top:156px; } .opportunities { bottom:52px; left:0; } .people { top:179px; left:0; max-width:145px; } .people strong { font-size:13px; } .people > span { font-size:10px; } .spark { right:5%; } .card > .pattern { height:65px; } }
+@media(prefers-reduced-motion:reduce) { .card { transition:none; } }
+
+/* Compact flow prevents layered cards colliding on small phones and at zoom. */
+@media(max-width:399px) {
+ .ecosystem { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; min-height:0; padding:16px 0; }
+ .people { position:static; grid-column:1/-1; max-width:none; padding:12px; }
+ .card { position:static; width:100%; transform:none; }
+ .opportunities { grid-column:1/-1; }
+ .businesses { position:static; grid-column:1/-1; justify-content:center; font-size:11px; padding:14px 10px; }
+ .connections { opacity:.3; }
+ .spark { top:0; right:0; font-size:40px; }
+ .cardLabel { font-size:10px; gap:4px; }
+ .cardLabel svg { width:13px; flex-shrink:0; }
+}

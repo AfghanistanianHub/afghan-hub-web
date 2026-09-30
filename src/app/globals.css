@@ -172,3 +172,6 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Public discovery palette; member surfaces keep their existing tokens. */
+.public-shell { --primary:#49347d; --primary-foreground:#fff; --secondary:#eeebf6; --secondary-foreground:#49347d; --accent:#f4e5db; --accent-foreground:#7c4632; --ring:#71569f; --background:#faf8f5; --foreground:#292334; --muted-foreground:#655e70; --border:#e5e0e7; }
