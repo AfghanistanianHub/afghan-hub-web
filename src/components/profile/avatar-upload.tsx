@@ -46,12 +46,14 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
       data: { publicUrl },
     } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
-    const { error: profileError } = await supabase
+    const { data: updatedProfile, error: profileError } = await supabase
       .from("profiles")
-      .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
-      .eq("id", userId);
+      .update({ avatar_url: publicUrl })
+      .eq("id", userId)
+      .select("id")
+      .maybeSingle();
 
-    if (profileError) {
+    if (profileError || !updatedProfile) {
       setMessage({
         text: "The photo uploaded, but we could not update your profile. Please try again.",
         kind: "error",
