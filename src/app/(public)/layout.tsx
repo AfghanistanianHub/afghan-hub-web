@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col font-sans [&>main]:flex-1">
+    <div className="public-shell flex min-h-screen flex-col font-sans [&>main]:flex-1">
       <a
         href="#main-content"
         className="sr-only fixed left-4 top-4 z-50 rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-lg focus:not-sr-only focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
@@ -31,24 +31,24 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             aria-label="Public navigation"
             className="order-3 grid w-full grid-cols-3 gap-1 rounded-xl border border-border/70 bg-muted/35 p-1 text-xs font-semibold sm:flex sm:flex-wrap sm:border-0 sm:bg-transparent sm:p-0 sm:text-sm sm:font-medium md:order-none md:w-auto"
           >
-            <Link href="/explore" className="inline-flex min-h-9 items-center justify-center rounded-lg px-2 text-center transition hover:bg-background hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-10 sm:px-3 sm:hover:bg-muted">
+            <Link href="/explore" className="inline-flex min-h-11 items-center justify-center rounded-lg px-2 text-center transition hover:bg-background hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-11 sm:px-3 sm:hover:bg-muted">
               Explore
             </Link>
-            <Link href="/about" className="inline-flex min-h-9 items-center justify-center rounded-lg px-2 text-center transition hover:bg-background hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-10 sm:px-3 sm:hover:bg-muted">
+            <Link href="/about" className="inline-flex min-h-11 items-center justify-center rounded-lg px-2 text-center transition hover:bg-background hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-11 sm:px-3 sm:hover:bg-muted">
               Our mission
             </Link>
-            <Link href="/dashboard" className="inline-flex min-h-9 items-center justify-center rounded-lg px-2 text-center transition hover:bg-background hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-10 sm:px-3 sm:hover:bg-muted">
+            <Link href="/dashboard" className="inline-flex min-h-11 items-center justify-center rounded-lg px-2 text-center transition hover:bg-background hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-11 sm:px-3 sm:hover:bg-muted">
               Member home
             </Link>
           </nav>
 
           <div className="flex shrink-0 items-center gap-1 text-xs font-semibold sm:gap-2 sm:text-sm">
-            <Link href="/login" className="inline-flex min-h-9 items-center rounded-lg px-2.5 transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-10 sm:px-3">
+            <Link href="/login" className="inline-flex min-h-11 items-center rounded-lg px-2.5 transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-11 sm:px-3">
               Sign in
             </Link>
             <Link
               href="/login?mode=join"
-              className="rounded-lg bg-primary px-3 py-2 text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:rounded-xl sm:px-4 sm:py-2.5"
+              className="inline-flex min-h-11 items-center rounded-lg bg-primary px-3 py-2 text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:rounded-xl sm:px-4 sm:py-2.5"
             >
               Join us
             </Link>

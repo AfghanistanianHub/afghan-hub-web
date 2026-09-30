@@ -1,3 +1,4 @@
+import { CommunityPattern } from "./community-ecosystem";
 import Link from "next/link";
 import { ArrowUpRight, MapPin, BriefcaseBusiness, CalendarDays, Building2, UsersRound } from "lucide-react";
 import type { PublicListing } from "@/lib/public-content";
@@ -12,7 +13,7 @@ export function ListingDate({ item, kind }: { item: PublicListing; kind: PublicK
 const listingTones = {
   opportunities: "from-sky-100 via-blue-50 to-background text-sky-900",
   events: "from-amber-100 via-orange-50 to-background text-amber-900",
-  businesses: "from-teal-100 via-cyan-50 to-background text-teal-900",
+  businesses: "from-blue-100 via-sky-50 to-background text-blue-900",
   organizations: "from-violet-100 via-indigo-50 to-background text-indigo-900",
 } satisfies Record<PublicKind, string>;
 
@@ -22,9 +23,7 @@ export function ListingCard({ item, kind }: { item: PublicListing; kind: PublicK
     <article className="@container group relative min-w-0 overflow-hidden rounded-3xl border border-border bg-card shadow-[0_1px_2px_rgb(15_23_42/0.03),0_14px_36px_rgb(15_23_42/0.04)] transition-[border-color,box-shadow] hover:border-primary/35 hover:shadow-[0_8px_26px_rgb(15_23_42/0.08)] focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/25 motion-reduce:transition-none">
       <div className="flex h-full flex-col @min-[34rem]:flex-row">
         <div aria-hidden="true" className={`relative flex h-32 shrink-0 items-center justify-center overflow-hidden bg-gradient-to-br ${listingTones[kind]} @min-[34rem]:h-auto @min-[34rem]:w-48`}>
-          <div className="absolute -right-6 -top-12 size-44 rounded-full border border-current opacity-10" />
-          <div className="absolute -bottom-16 -left-6 size-44 rounded-full border border-current opacity-10" />
-          <div className="absolute right-9 top-7 size-14 rotate-45 rounded-xl border border-current opacity-10" />
+          <div className="absolute inset-0"><CommunityPattern variant={kind === "events" ? "coral" : kind === "opportunities" ? "gold" : kind === "businesses" ? "blue" : "indigo"} /></div>
           <div className="relative flex size-16 -rotate-6 items-center justify-center rounded-2xl border border-white/90 bg-white/75 shadow-[0_8px_24px_rgb(15_23_42/0.06)] transition-transform duration-300 group-hover:rotate-0 group-focus-within:rotate-0 motion-reduce:transform-none motion-reduce:transition-none">
             <Icon className="size-8" strokeWidth={1.5} />
           </div>
