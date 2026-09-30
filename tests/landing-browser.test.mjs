@@ -157,6 +157,12 @@ test("landing responsive layout, keyboard and accessibility in sandboxed Chrome"
       assert.equal(layout.targets.length, 4);
       assert.ok(layout.targets.every(target => target.clickable && target.height >= 44), `Blocked/small hero targets at ${width}`);
       assert.ok(layout.covers >= 12, "Populated listing covers must render");
+      const defaultCenter=await page.evaluate("(()=>{const r=document.querySelector('[data-discovery-active] > div').getBoundingClientRect();return [r.width,r.height]})()");
+      for (const key of ["people","organizations","events","opportunities"]) {
+        await page.evaluate(`document.querySelector('[data-discovery-link=${key}]').focus({preventScroll:true})`);
+        assert.deepEqual(await page.evaluate("(()=>{const r=document.querySelector('[data-discovery-active] > div').getBoundingClientRect();return [r.width,r.height]})()"),defaultCenter,`Fixed center at ${width}/${key}`);
+      }
+      await page.evaluate("document.activeElement.blur()");
       await page.evaluate(axeSource);
       const audit = await page.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>r.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)})))");
       assert.deepEqual(audit, [], `Accessibility violations at ${width}: ${JSON.stringify(audit)}`);
