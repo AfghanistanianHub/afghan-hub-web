@@ -15,9 +15,9 @@ const cards = [
 
 export function CommunityEcosystem() {
   return <div className={styles.ecosystem} role="group" aria-label="People connected to organizations, events, and opportunities">
-    <svg aria-hidden="true" className={styles.connections} viewBox="0 0 540 510" fill="none"><circle cx="270" cy="255" r="190" stroke="currentColor" strokeDasharray="4 9"/><path d="M140 255 140 100M140 255 430 235M140 255 180 425" stroke="currentColor" strokeWidth="2"/><circle cx="140" cy="255" r="75" stroke="currentColor"/></svg>
+    <svg aria-hidden="true" className={styles.connections} viewBox="0 0 540 510" fill="none"><circle cx="270" cy="255" r="190" stroke="currentColor" strokeDasharray="4 9"/><path d="M140 275 140 100M140 275 400 275M140 275 140 450M140 275 400 450" stroke="currentColor" strokeWidth="2"/><circle cx="140" cy="275" r="75" stroke="currentColor"/></svg>
     <div className={styles.people}><div aria-hidden="true" className={styles.avatars}><span/><span/><span/></div><UsersRound aria-hidden="true" size={18}/><strong>People at the heart</strong><span>A community of possibilities</span></div>
-    {cards.map(({key, label, text, Icon, variant}) => <Link key={key} href={`/explore?type=${key}`} className={`${styles.card} ${styles[key]}`}><CommunityPattern variant={variant}/><div className={styles.cardBody}><span className={styles.cardLabel}><Icon aria-hidden="true" size={16}/>{label}<ArrowUpRight aria-hidden="true" size={16}/></span><strong>{text}</strong></div></Link>)}
+    {cards.map(({key, label, text, Icon, variant}) => <Link key={key} href={`/explore?type=${key}`} className={`${styles.card} ${styles[key]}`}><CommunityPattern variant={variant}/><div className={styles.cardBody}><span className={styles.cardLabel}><Icon aria-hidden="true" size={16}/><span>{label}</span><ArrowUpRight aria-hidden="true" size={16}/></span><strong>{text}</strong></div></Link>)}
     <Link href="/explore?type=businesses" className={styles.businesses}><Building2 aria-hidden="true" size={18}/><span>Discover Afghan businesses</span><ArrowUpRight aria-hidden="true" size={16}/></Link>
     <span aria-hidden="true" className={styles.spark}>✳</span>
   </div>;

@@ -18,7 +18,12 @@ New CommunityEcosystem/CommunityPattern components provide connected, photo-free
 
 Passed: ESLint (0 errors; existing unused `_userId` warning in profile-access.ts), TypeScript, production build, 27 relevant regression tests, git diff --check. Local production `/` and event/organization Explore return 200; rendered hero/category/join destinations verified. Calculated new text contrast: primary 10.14:1, muted 5.85:1, card labels 6.64:1, caption 6.33:1. These do not replace a full accessibility audit.
 
+## Browser QA continuation
+Added tests/landing-browser.test.mjs to the existing Linux Node CI test step; no workflow/dependency changes. It builds the actual app against a GET-only loopback fixture service, runs sandbox-enabled Chrome, checks 320/375/768/1024/1440px, populated covers, axe AA, keyboard/skip/focus, reduced motion, text resizing and category navigation. Node 24 logs contain screenshots for review; no production data/credentials used. It explicitly skips on local macOS, so local test success does not imply a browser pass. CI execution is pending for this update.
+
+Hero positioning now uses content-sized CSS grid rows rather than fixed top/bottom offsets, preserving tilted/layered artwork while preventing text growth from occluding the people caption.
+
 ## Limits and next task
 Browser automation cannot initialize/launch normally. Automatic approval review rejected sandbox-disabled Chrome and command-line sign-in input. GitHub connector access works. Review also rejected copying the old environment file due to possible secrets; no environment file transferred. Local preview http://localhost:3001 therefore shows unavailable listing states without live configuration. No populated-data, authenticated, visual or keyboard browser pass claimed.
 
-Next: inspect the draft's Vercel preview at 320/375/768/1024/1440px, keyboard/zoom/reduced motion and populated covers; fix any defects, confirm exact-head CI/Vercel. Keep draft until that QA is complete. Do not merge/deploy automatically. Existing current-state file retained.
+Next: inspect the draft's Vercel preview at 320/375/768/1024/1440px, keyboard/zoom/reduced motion and populated covers; fix any defects, confirm exact-head CI/Vercel. Keep draft until the new CI browser evidence has been inspected. Do not merge/deploy automatically. Existing current-state file retained.
