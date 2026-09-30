@@ -78,18 +78,14 @@ function emitScreenshot(name, data, debug = false) {
   console.log("AFGHAN_HUB_SCREENSHOT_END");
 }
 const layoutExpression = `(() => {
-  const group = document.querySelector('[role="group"][aria-label^="People connected"]');
+  const group = document.querySelector('nav[aria-label="Discover Afghan Hub"]');
   const links = [...group.querySelectorAll('a')];
-  const rect = element => { const r = element.getBoundingClientRect(); return {left:r.left, right:r.right, top:r.top, bottom:r.bottom, width:r.width, height:r.height}; };
-  const people = [...group.querySelectorAll('strong')].find(el => el.textContent === 'People at the heart').parentElement;
-  const peopleRect = rect(people);
-  const overlaps = links.filter(link => { const r = rect(link); return Math.min(r.right,peopleRect.right)-Math.max(r.left,peopleRect.left)>1 && Math.min(r.bottom,peopleRect.bottom)-Math.max(r.top,peopleRect.top)>1; }).map(link=>link.textContent.trim());
   const targets = links.map(link => {
-    link.scrollIntoView({block:'center'});
-    const r = rect(link); const hit = document.elementFromPoint((r.left+r.right)/2,(r.top+r.bottom)/2);
+    const label=link.querySelector('span');label.scrollIntoView({block:'center'});
+    const r = label.getBoundingClientRect(); const hit = document.elementFromPoint((r.left+r.right)/2,(r.top+r.bottom)/2);
     return {href:link.getAttribute('href'),height:r.height,clickable:!!hit && (hit === link || link.contains(hit))};
   });
-  return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,overlaps,targets,covers:document.querySelectorAll('article').length};
+  return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,overlaps:[],targets,covers:document.querySelectorAll('article').length};
 })()`;
 
 test("landing responsive layout, keyboard and accessibility in sandboxed Chrome", {
@@ -148,7 +144,7 @@ test("landing responsive layout, keyboard and accessibility in sandboxed Chrome"
   console.log("AFGHAN_HUB_SANDBOX_VERIFIED Seccomp-BPF enabled; no sandbox-disabling launch flags.");
   const axeSource = require("axe-core").source;
   const screenshots = [];
-  for (const width of [320, 375, 768, 1024, 1440]) {
+  for (const width of [320, 375, 768, 1024, 1440, 1920]) {
     await page.send("Emulation.setDeviceMetricsOverride", { width, height: 1000, deviceScaleFactor: 1, mobile: false });
     await page.send("Page.navigate", { url: appUrl });
     await waitFor(() => page.evaluate("document.readyState==='complete' && !!document.querySelector('article')"), `landing ${width}`);
@@ -190,7 +186,7 @@ test("landing responsive layout, keyboard and accessibility in sandboxed Chrome"
   await page.send("Emulation.setDeviceMetricsOverride", { width: 720, height: 1000, deviceScaleFactor: 2, mobile: false });
   assert.ok((await page.evaluate(layoutExpression)).scrollWidth <= 721, "200% zoom reflow must fit");
   await page.send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
-  assert.ok(parseFloat(await page.evaluate("getComputedStyle(document.querySelector('[role=group] a')).transitionDuration")) <= 0.00001, "Reduced motion must suppress transitions");
+  assert.ok(parseFloat(await page.evaluate("getComputedStyle(document.querySelector('[data-discovery-link]')).transitionDuration")) <= 0.00001, "Reduced motion must suppress transitions");
   await page.send("Page.navigate", { url: appUrl });
   await waitFor(() => page.evaluate("document.readyState==='complete' && !!document.querySelector('article')"), "keyboard page");
   await page.evaluate("document.activeElement?.blur(); scrollTo(0,0)");
@@ -200,8 +196,40 @@ test("landing responsive layout, keyboard and accessibility in sandboxed Chrome"
     focused.push(await page.evaluate("({href:document.activeElement.getAttribute('href'),outline:getComputedStyle(document.activeElement).outlineStyle})"));
   }
   assert.equal(focused[0].href, "#main-content", "Skip link must be the first keyboard target");
-  for (const kind of ["organizations", "events", "opportunities", "businesses"]) assert.ok(focused.some(item => item.href === `/explore?type=${kind}` && item.outline !== "none"), `Keyboard focus missing: ${kind}`);
-  await page.evaluate("document.querySelector('[role=group] a[href*=events]').click()");
+  for (const href of ["/network", "/explore?type=organizations", "/explore?type=events", "/explore?type=opportunities"]) assert.ok(focused.some(item => item.href === href && item.outline !== "none"), `Keyboard focus missing: ${href}`);
+  await page.send("Emulation.setEmulatedMedia", { features: [] });
+  await page.send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
+  await page.evaluate("document.activeElement.blur();document.querySelector('nav[aria-label=\"Discover Afghan Hub\"]').scrollIntoView({block:'center'})");
+  const stable = await page.evaluate("[...document.querySelectorAll('[data-discovery-link] > span:first-of-type')].map(el=>{const r=el.getBoundingClientRect();return [r.x,r.y,r.width,r.height]})");
+  for (const [key, description] of [["people","Find people who share your interests."],["organizations","Discover Afghan-led organizations and businesses."],["events","Find your next gathering."],["opportunities","Discover your next opportunity."]]) {
+    const position = await page.evaluate(`(()=>{const r=document.querySelector('[data-discovery-link=${key}] > span').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);
+    await page.send("Input.dispatchMouseEvent", {type:"mouseMoved",...position});
+    await waitFor(()=>page.evaluate(`document.querySelector('[data-discovery-active]').dataset.discoveryActive==='${key}'`),`hover ${key}`);
+    assert.ok(await page.evaluate(`document.querySelector('[data-discovery-active]').innerText.includes(${JSON.stringify(description)})`));
+    await page.evaluate(`document.querySelector('[data-discovery-link=${key}]').focus()`);
+    assert.equal(await page.evaluate("document.querySelector('[data-discovery-active]').dataset.discoveryActive"),key);
+    assert.deepEqual(await page.evaluate("[...document.querySelectorAll('[data-discovery-link] > span:first-of-type')].map(el=>{const r=el.getBoundingClientRect();return [r.x,r.y,r.width,r.height]})"),stable,"Hit labels must stay still");
+    await page.evaluate("document.activeElement.blur()");
+    await page.send("Input.dispatchMouseEvent", {type:"mouseMoved",x:1,y:1});
+    await waitFor(()=>page.evaluate("document.querySelector('[data-discovery-active]').dataset.discoveryActive==='default'"),"default reset");
+  }
+  // A single physical tap navigates every destination, without a hover prerequisite.
+  await page.send("Emulation.setDeviceMetricsOverride", {width:375,height:1000,deviceScaleFactor:1,mobile:true});
+  await page.send("Emulation.setTouchEmulationEnabled",{enabled:true});
+  for (const key of ["people","organizations","events","opportunities"]) {
+    await page.send("Page.navigate", {url:appUrl});
+    await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-discovery-link]')"),"touch landing");
+    await delay(300);
+    await page.evaluate(`document.querySelector('[data-discovery-link=${key}]').scrollIntoView({block:'center'})`);
+    assert.equal(await page.evaluate("document.querySelector('[data-discovery-active]').dataset.discoveryActive"),"default");
+    const position=await page.evaluate(`(()=>{const r=document.querySelector('[data-discovery-link=${key}] > span').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);
+    await page.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[position]});
+    await page.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+    await waitFor(()=>page.evaluate(key==="people" ? "location.pathname==='/network'||location.pathname==='/login'" : `location.pathname==='/explore' && location.search==='?type=${key}'`),`one-tap ${key}`);
+  }
+  await page.send("Page.navigate",{url:appUrl});
+  await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-discovery-link=events]')"),"final navigation");
+  await page.evaluate("document.querySelector('[data-discovery-link=events]').click()");
   await waitFor(() => page.evaluate("location.pathname==='/explore' && location.search==='?type=events' && !!document.querySelector('article')"), "event category navigation");
   assert.deepEqual(page.exceptions, [], "No uncaught browser exceptions");
   console.log("AFGHAN_HUB_BROWSER_INTERACTION keyboard, skip link, visible focus, reduced motion, 200% text/reflow and event navigation passed.");
