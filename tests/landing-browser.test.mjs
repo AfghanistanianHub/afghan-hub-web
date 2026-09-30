@@ -200,12 +200,23 @@ test("landing responsive layout, keyboard and accessibility in sandboxed Chrome"
   await page.send("Emulation.setEmulatedMedia", { features: [] });
   await page.send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   await page.evaluate("document.activeElement.blur();document.querySelector('nav[aria-label=\"Discover Afghan Hub\"]').scrollIntoView({block:'center'})");
+  const centerRect = await page.evaluate("(()=>{const r=document.querySelector('[data-discovery-active] > div').getBoundingClientRect();return [r.x,r.y,r.width,r.height]})()");
   const stable = await page.evaluate("[...document.querySelectorAll('[data-discovery-link] > span:first-of-type')].map(el=>{const r=el.getBoundingClientRect();return [r.x,r.y,r.width,r.height]})");
   for (const [key, description] of [["people","Find people who share your interests."],["organizations","Discover Afghan-led organizations and businesses."],["events","Find your next gathering."],["opportunities","Discover your next opportunity."]]) {
     const position = await page.evaluate(`(()=>{const r=document.querySelector('[data-discovery-link=${key}] > span').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);
     await page.send("Input.dispatchMouseEvent", {type:"mouseMoved",...position});
     await waitFor(()=>page.evaluate(`document.querySelector('[data-discovery-active]').dataset.discoveryActive==='${key}'`),`hover ${key}`);
     assert.ok(await page.evaluate(`document.querySelector('[data-discovery-active]').innerText.includes(${JSON.stringify(description)})`));
+    assert.deepEqual(await page.evaluate("(()=>{const r=document.querySelector('[data-discovery-active] > div').getBoundingClientRect();return [r.x,r.y,r.width,r.height]})()"),centerRect,"Center dimensions must stay fixed");
+    if (key === "organizations") {
+      await delay(250);
+      screenshots.push({name:"landing_hover_organizations.jpg",data:(await page.send("Page.captureScreenshot",{format:"jpeg",quality:75})).data});
+    }
+    // Move to both sides of the label: highlighting cannot move the hit region.
+    for (const dx of [-8,8]) {
+      await page.send("Input.dispatchMouseEvent", {type:"mouseMoved",x:position.x+dx,y:position.y});
+      assert.equal(await page.evaluate("document.querySelector('[data-discovery-active]').dataset.discoveryActive"),key);
+    }
     await page.evaluate(`document.querySelector('[data-discovery-link=${key}]').focus()`);
     assert.equal(await page.evaluate("document.querySelector('[data-discovery-active]').dataset.discoveryActive"),key);
     assert.deepEqual(await page.evaluate("[...document.querySelectorAll('[data-discovery-link] > span:first-of-type')].map(el=>{const r=el.getBoundingClientRect();return [r.x,r.y,r.width,r.height]})"),stable,"Hit labels must stay still");
@@ -213,6 +224,16 @@ test("landing responsive layout, keyboard and accessibility in sandboxed Chrome"
     await page.send("Input.dispatchMouseEvent", {type:"mouseMoved",x:1,y:1});
     await waitFor(()=>page.evaluate("document.querySelector('[data-discovery-active]').dataset.discoveryActive==='default'"),"default reset");
   }
+  const gaps = await page.evaluate("(()=>{const r=document.querySelector('[data-discovery-active]').getBoundingClientRect();return [{x:r.x+r.width/2,y:r.y+20},{x:r.x+r.width/2,y:r.y+r.height/2},{x:r.right-20,y:r.y+r.height/2}]})()");
+  for (const position of gaps) {
+    await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",...position});
+    assert.equal(await page.evaluate("document.querySelector('[data-discovery-active]').dataset.discoveryActive"),"default","Ring gaps/center must clear hover");
+  }
+  await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
+  await page.evaluate("document.querySelector('[data-discovery-link=events]').focus()");
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-discovery-link=events] svg')).transform"),"none","Reduced motion must suppress outward translation");
+  await page.evaluate("document.activeElement.blur()");
+  await page.send("Emulation.setEmulatedMedia",{features:[]});
   // A single physical tap navigates every destination, without a hover prerequisite.
   await page.send("Emulation.setDeviceMetricsOverride", {width:375,height:1000,deviceScaleFactor:1,mobile:true});
   await page.send("Emulation.setTouchEmulationEnabled",{enabled:true});
