@@ -1,19 +1,17 @@
 # Afghan Hub visual roadmap
 
-Updated 2026-09-30. Visual design/frontend UX only; preserve existing functionality.
+Updated 2026-09-30. Visual/frontend UX only; preserve working functionality.
 
-## Landing milestone
-- Verified current main: `419e11c92f8bd4cd0d5e7e00008a5b11fe222086`; Vercel status successful; no open PRs at start.
-- Implemented connected people/organizations/events/opportunities hero with linked business path, reusable SVG/CSS covers, public-scoped indigo/coral/gold palette and larger header touch targets.
-- Preserved community pathways, pulse, listing data/empty/error states, metadata and all existing destinations.
-- Checks passed: lint (one existing warning), TypeScript, build, 27 relevant regression tests, HTTP/rendered-link smoke, new text-color AA contrast calculations.
-- Added sandbox-enabled browser QA to the existing Linux test step, with a local-only content fixture and screenshot evidence; executed successfully on both Node 22/24 (195 tests, zero skips). Hero rows now grow with text to prevent occlusion.
-- Passed in actual sandbox-enabled Chrome: 320/375/768/1024/1440px; zero overflow/occlusion/axe AA violations; keyboard, 200% text/reflow, reduced motion, populated listing covers and category navigation. Mobile/tablet/desktop screenshots inspected.
-- Follow-up: improve caption backing over connection lines and inspect a populated-card screenshot; verify final-head CI.
+## Completed landing milestone — PR #337
+- Verified current repository and reconciled the older local draft with main.
+- Connected ecosystem hero; shared geometric SVG/CSS covers; public indigo/coral/gold palette; 44px header targets.
+- Content-sized rows support enlarged text; caption backing prevents decorative lines crossing text.
+- Preserved pathways, pulse, metadata, listing states and account/discovery links.
+- Actual sandboxed Chrome: 320/375/768/1024/1440px; zero overflow/occlusion/axe AA violations; keyboard, reduced motion, enlarged text/reflow and category navigation pass.
+- Hero and populated mobile-card screenshots visually reviewed.
+- Both Node 22/24 CI: 195 tests, zero failures/skips; lint/type/build/Vercel pass. Evidence code commit: 684fdb3b9047af7c497775bda4ad9a63fdf37b39.
 
-Review artifact: draft PR #337; Vercel code build passed. Preview is protected by Vercel login from this session.
+## Next milestone
+After the focused landing PR is accepted, inspect Explore/search/category states and public detail hierarchy. Reuse the artwork and verify the full responsive browsing flow; change only observed UX gaps.
 
-## Next
-Confirm final caption/card evidence, then refine discovery/detail visual consistency using the same artwork.
-
-Local browser remains unavailable; CI browser QA supplies the verified evidence. No production deployment or merge authorized/performed.
+No landing QA blocker remains. Local browser tools still fail, so use the existing Linux CI browser harness. Preview requires Vercel login. No automatic merge/production deployment.
