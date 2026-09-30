@@ -8,6 +8,11 @@ Base: main `419e11c92f8bd4cd0d5e7e00008a5b11fe222086` (Vercel successful). Read 
 
 Current source is under `work/afghan-hub-current` in the September 30 Codex chat workspace. Application source/config/public assets were retrieved through the GitHub connector and verified against remote blob hashes. This is a source snapshot with local synthetic history, not a complete Git clone. Existing public/member-entry and navigation/layout regression tests were retrieved; the full repository test suite must run in CI. Dependencies installed from the current unchanged lockfile (Next 16.3.4).
 
+## Review artifact
+Draft PR: https://github.com/loadsnft/afghan-hub-web/pull/337
+Preview: https://afghan-hub-web-git-design-connecte-979249-afghan-hub-s-projects.vercel.app
+Code commit: `c6c497e53b5bc653c0f7566fa74fc0097ed71860`; Vercel build passed. Preview requests from this session return the Vercel login page, so rendered hosted UI is not verified. Check the final PR head for CI status; documentation updates advance it.
+
 ## Changes and checks
 New CommunityEcosystem/CommunityPattern components provide connected, photo-free hero cards and default listing artwork. Public-only palette avoids changing member styling. Hero retains current title/CTAs; pathways, pulse, listing states, data queries and account flows remain intact. Header targets now have 44px minimum height. Compact grid below 400px avoids layered card collisions; tablet/desktop use layered cards. Decorative art hidden from assistive technology; hero links retain category names; existing focus and reduced-motion support retained. No client hooks or new client-side JavaScript.
 

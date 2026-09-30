@@ -9,6 +9,8 @@ Updated 2026-09-30. Visual design/frontend UX only; preserve existing functional
 - Checks passed: lint (one existing warning), TypeScript, build, 27 relevant regression tests, HTTP/rendered-link smoke, new text-color AA contrast calculations.
 - Pending: actual browser checks at 320/375, 768, 1024 and 1440px; keyboard, 200% zoom, reduced motion and populated listing covers. Source-level responsive/accessibility review is not a visual pass.
 
+Review artifact: draft PR #337; Vercel code build passed. Preview is protected by Vercel login from this session.
+
 ## Next
 Finish browser QA on the draft preview and resolve any layout issues before marking the landing milestone complete. Then refine discovery/detail visual consistency using the same artwork.
 
