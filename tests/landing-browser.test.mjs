@@ -274,12 +274,13 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     const geometry=await page.evaluate(`(()=>{const r=document.querySelector('[data-discovery-panel=${key}]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()`);
     const resting=await page.evaluate(motionState(key));
     const recording=[];
+    const documentScroll=await page.evaluate("scrollY");
     const point={x:geometry.x+geometry.width/2,y:geometry.y+90};
     const started=Date.now();
     for(let frame=0;frame<48;frame++) {
       if(frame===9) await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",...point});
       if(frame===30) await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:10,y:20});
-      const shot=await page.send("Page.captureScreenshot",{format:"jpeg",quality:80,clip:{...geometry,x:geometry.x-7,y:geometry.y-7,width:geometry.width+14,height:geometry.height+14,scale:1}});
+      const shot=await page.send("Page.captureScreenshot",{format:"jpeg",quality:80,captureBeyondViewport:true,clip:{...geometry,x:geometry.x-7,y:geometry.y+documentScroll-7,width:geometry.width+14,height:geometry.height+14,scale:1}});
       recording.push(shot.data);
       if(frame===18) assert.notDeepEqual(await page.evaluate(motionState(key)),resting,`Visible SVG hover activation: ${key}`);
       await delay(Math.max(0,started+(frame+1)*1000/15-Date.now()));
