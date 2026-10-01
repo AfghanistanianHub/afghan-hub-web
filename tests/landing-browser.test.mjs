@@ -420,7 +420,13 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   await waitFor(()=>page.evaluate("location.search.includes('no-match-verification')&&document.body.textContent.includes('No listings match your search.')"),"search submits existing GET form");
   await page.evaluate("[...document.querySelectorAll('a')].find(a=>a.textContent.trim()==='Clear search').click()");
   await waitFor(()=>page.evaluate("!location.search.includes('q=')&&!!document.querySelector('article h3 a')"),"clear search restores listings");
+  // Clear-search is a streamed navigation: wait for its loading boundary and DOM commit
+  // before focusing a link, otherwise a replaced node can swallow the key event.
+  await waitFor(()=>page.evaluate("!document.querySelector('main[aria-busy=true]')&&!!document.querySelector('article h3 a')"),"clear-search loading boundary settled");
+  await delay(300);
   await page.evaluate("document.querySelector('article h3 a').focus()");
+  await delay(50);
+  assert.ok(await page.evaluate("document.activeElement===document.querySelector('article h3 a')"),"Listing link retains focus after streamed clear-search");
   await page.send("Input.dispatchKeyEvent",{type:"keyDown",key:"Enter",code:"Enter",windowsVirtualKeyCode:13});
   await page.send("Input.dispatchKeyEvent",{type:"keyUp",key:"Enter",code:"Enter",windowsVirtualKeyCode:13});
   await waitFor(()=>page.evaluate("location.pathname.includes('layout-sample-organizations-0')&&document.body.textContent.includes('Local browser QA fixture')"),"keyboard detail navigation");
