@@ -12,8 +12,8 @@ const destinations = [
 
 export function DiscoveryPanels() {
   return (
-    <section className={styles.discovery} aria-labelledby="discovery-heading">
-      <div className={styles.heading}><h2 id="discovery-heading">Find your place in the community</h2><p>Four ways to begin.</p></div>
+    <section className={styles.discovery} aria-labelledby="community-discovery">
+      <div className={styles.heading}><h2 id="community-discovery">Find your place in the community</h2><p>Four ways to begin.</p></div>
       <div className={styles.panels}>
         {destinations.map(({ key, title, description, link, href, Illustration }) => (
           <article className={styles.panel} key={key} data-discovery-panel={key}>

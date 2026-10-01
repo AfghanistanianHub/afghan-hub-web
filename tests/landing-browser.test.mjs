@@ -78,7 +78,7 @@ function emitScreenshot(name, data, debug = false) {
   console.log("AFGHAN_HUB_SCREENSHOT_END");
 }
 const layoutExpression = `(() => {
-  const group = document.querySelector('[aria-labelledby="discovery-heading"]');
+  const group = document.querySelector('[aria-labelledby="community-discovery"]');
   const links = [...group.querySelectorAll('[data-discovery-link]')];
   const targets = links.map(link => {
     link.scrollIntoView({block:'center'});
@@ -162,7 +162,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
       const audit = await page.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>r.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)})))");
       assert.deepEqual(audit, [], `Accessibility violations at ${width}: ${JSON.stringify(audit)}`);
       await page.evaluate("scrollTo(0,0)");
-      const bottom = await page.evaluate("Math.ceil(document.querySelector('[aria-labelledby=discovery-heading]').getBoundingClientRect().bottom)");
+      const bottom = await page.evaluate("Math.ceil(document.querySelector('[aria-labelledby=community-discovery]').getBoundingClientRect().bottom)");
       const screenshot = await page.send("Page.captureScreenshot", { format: "jpeg", quality: 80, captureBeyondViewport: true, clip: { x: 0, y: 0, width, height: bottom, scale: 1 } });
       screenshots.push({ name: `geometric_${width}.jpg`, data: screenshot.data });
       console.log(`AFGHAN_HUB_BROWSER_RESULT ${JSON.stringify({width,horizontalOverflow:false,discoveryTargets:4,peopleGlyphs:9,axeViolations:0,populatedCovers:true})}`);
