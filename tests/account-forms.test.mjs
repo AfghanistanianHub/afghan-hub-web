@@ -41,7 +41,7 @@ test("password policy requires 12 characters and at least three character groups
 
 test("login accepts an existing password while signup enforces the shared new-password minimum", async () => {
   const login = () => {}, signup = () => {};
-  const page = load("../src/app/login/page.tsx", { "next/link": {}, "lucide-react": iconStubs, "@/components/public/support-links": { SupportLinks: "support-links" }, "./actions": { login, signup }, "@/components/auth/submit-button": { SubmitButton: "submit-control" }, "@/lib/password-policy": passwordPolicy }).default;
+  const page = load("../src/app/login/page.tsx", { "next/link": {}, "lucide-react": iconStubs, "@/components/public/community-illustrations": { CommunityIllustration: "community-artwork" }, "@/components/public/support-links": { SupportLinks: "support-links" }, "./actions": { login, signup }, "@/components/auth/submit-button": { SubmitButton: "submit-control" }, "@/lib/password-policy": passwordPolicy }).default;
   for (const joining of [false, true]) {
     const tree = await page({ searchParams: Promise.resolve({ mode: joining ? "join" : undefined, error: "Try again", message: "Check your email" }) });
     const password = elements(tree, "input").find(el => el.props.name === "password");
@@ -70,3 +70,4 @@ test("submit control disables repeat submissions and announces progress only whi
     assert.equal(button.props.children.props.role, "status");
   }
 });
+
