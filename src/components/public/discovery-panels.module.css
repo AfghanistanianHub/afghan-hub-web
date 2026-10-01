@@ -14,7 +14,7 @@
 .panel a:hover { text-decoration: underline; text-underline-offset: 4px; }
 .panel a:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
 .panel:focus-within { border-color: var(--primary); background: #f4eff8; }
-@media (hover: hover) { .panel:hover { border-color: #a896bc; background: #f5f1e9; } }
+.panel:hover { border-color: #a896bc; background: #f5f1e9; }
 @media (max-width: 1279px) { .discovery { margin-inline: 24px; } }
 @media (max-width: 1050px) { .panels { grid-template-columns: repeat(2, minmax(0, 1fr)); } .art { height: 240px; } .art svg { max-height: 220px; } }
 @media (max-width: 550px) {
