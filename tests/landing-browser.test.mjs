@@ -208,6 +208,9 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   await browser.send("Target.activateTarget",{targetId:other.targetId});
   await waitFor(()=>page.evaluate("document.hidden"),"actual background tab visibility");
   await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='false'"),"hidden-tab pause");
+  // Let the renderer apply the paused style before sampling its committed timeline.
+  await waitFor(()=>page.evaluate("[...document.querySelectorAll('[data-hero-pulse],[data-hero-node]')].flatMap(e=>e.getAnimations()).every(a=>a.playState==='paused')"),"hidden renderer timelines paused");
+  await delay(100);
   const hidden=await page.evaluate(ambientTimes);await delay(350);assert.deepEqual(await page.evaluate(ambientTimes),hidden,"Hidden-tab timeline must stop");
   await browser.send("Target.activateTarget",{targetId:tabs.find(tab=>tab.type==='page').id});
   await browser.send("Target.closeTarget",{targetId:other.targetId});browser.close();
