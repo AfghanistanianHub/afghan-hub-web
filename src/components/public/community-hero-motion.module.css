@@ -1,4 +1,5 @@
 .motion { --depth-x: 0px; --depth-y: 0px; }
+.motion svg { overflow: visible; }
 .motion [data-hero-layer] { transition: transform 240ms ease-out; }
 .motion [data-hero-layer="architecture"] { transform: translate(var(--depth-x), var(--depth-y)); }
 .motion [data-hero-layer="network"] { transform: translate(calc(var(--depth-x) * .6), calc(var(--depth-y) * .6)); }
