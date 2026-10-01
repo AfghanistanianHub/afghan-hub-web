@@ -5,8 +5,8 @@ Updated 2026-09-30. Visual/frontend UX only; preserve working functionality.
 ## Implemented — approved landing and interaction pass, PR #337
 - Warm-neutral composition, restrained violet, calm typography and original geometric hero retained. People network uses nine thin person glyphs, violet/white main person, warm-gray neighbors and opaque backings.
 - Four full-surface semantic discovery links and existing hero CTAs retained. Lower public sections and member functionality preserved.
-- People connections activate in sequence; organization structures converge; gathering paths meet; branching opportunity route reveals an opening. Reversible CSS transitions finish within 520 ms; stable link boxes, hover/focus parity, no loops or client interaction bundle.
-- Hero has one 550 ms introductory animation; reduced motion uses static feedback and suppresses translation/introduction.
+- Discovery illustrations: People connections activate in sequence; organization structures converge; gathering paths meet; branching opportunity route reveals an opening. Reversible CSS transitions finish within 520 ms; stable link boxes, hover/focus parity, no loops or client interaction bundle.
+- Hero instruction superseded: staged path drawing → architecture reveal → violet accents, followed by restrained ambient pulses with pauses. Small selected-layer pointer depth and brief primary-CTA keyboard connection highlight; fully static reduced-motion state and visibility suspension.
 - Poolside inspected in actual sandboxed Chrome; Careers puzzle separation/reset and violet link highlights observed. No copied artwork or inferred behavior.
 
 ## Verification
@@ -17,3 +17,11 @@ READY preview https://afghan-hub-ch33tlrfq-afghan-hub-s-projects.vercel.app — 
 
 ## Next task / limits
 Review actual recordings/current preview, then inspect Explore and public detail interactions. Refine observed gaps only; do not revive circular/orbital designs or merge/deploy automatically. Native local browser unavailable; actual CI browser uses public-content fixtures. Remote protected-preview interactions and authenticated live-data flows are not verified. Production remains unchanged.
+
+## Hero milestone — current
+Small client controller, server-rendered original SVG artwork, CSS animation; no animation library. Hero frame, text and CTA bounds stay fixed. Discovery interactions preserved.
+Verified hero code/test head `be31430a55c362528aaf07318ac5b70a8ed07e29`. Workflow https://github.com/loadsnft/afghan-hub-web/actions/runs/36806275900 — Node 22 job 110191202625 and Node 24 job 110191202905 each passed 195 tests, zero failures/skips, lint/type/build and existing checks. Local lint/type passed; existing unrelated `_userId` warning remains.
+Real sandboxed Chrome verified staged timing order, actual Tab-key CTA highlight/settling, selected-layer pointer movement and exact reset, stationary hero frame/text/buttons, zero layout shifts, offscreen pause/resume, actual background-tab pause/resume, and fully static reduced motion. Desktop 1440px/mobile 390px emulation: approximately 60 fps, p95 frame interval 16.7 ms, no measured long tasks. Six responsive widths, axe accessibility, existing mouse/keyboard/first-tap routes and all discovery interactions passed. These pacing measurements are CI browser emulation, not physical-device benchmarks.
+13-second actual implementation recording visually reviewed with mobile/desktop captures. GIF encodes unaltered browser frames with their captured time intervals (12.94 s playback); includes intro, ambient pulses, pointer response around 4.3–6.3 s and CTA focus around 9.5 s. It is CI implementation evidence with public-content fixtures, not hosted-preview recording evidence.
+READY hosted preview https://afghan-hub-glylsjcq7-afghan-hub-s-projects.vercel.app — deployment `dpl_ERTyHPEc8kGadZT3jKeLBAhN15gJ`, preview target, metadata matches verified head. Temporary access available through Vercel for 23 hours; do not persist share tokens. No merge/production deployment.
+Actual hosted-preview recording is blocked by browser startup failure. CI recording must be labelled as CI implementation evidence, not a hosted-preview recording. Next task: capture the requested hosted-preview recording when browser access works; retain production unchanged.
