@@ -148,9 +148,21 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     await page.send("Emulation.setDeviceMetricsOverride", {width:1440,height:1000,deviceScaleFactor:1,mobile:false});
     await page.send("Page.navigate", {url:"https://poolside.ai/"});
     await delay(5000);
-    console.log("POOLSIDE_BROWSER_OBSERVATION " + JSON.stringify(await page.evaluate(`({url:location.href,title:document.title,text:document.body.innerText.slice(0,9000),art:[...document.querySelectorAll('svg,canvas,video')].map(e=>{const r=e.getBoundingClientRect();return {tag:e.tagName,cls:e.getAttribute('class'),parent:e.parentElement.outerHTML.slice(0,1000),x:r.x,y:r.y,w:r.width,h:r.height}}).filter(r=>r.w>120&&r.h>100).slice(0,30)})`)));
-    await page.evaluate("scrollTo(0,0)");
-    emitScreenshot("poolside_initial.jpg",(await page.send("Page.captureScreenshot",{format:"jpeg",quality:70,captureBeyondViewport:true})).data);
+    const referenceSelectors=['svg[viewBox="0 0 310 348"]','svg[viewBox="0 0 1215 463"]','canvas.svelte-1btwwqy','video'];
+    for(let index=0;index<referenceSelectors.length;index++) {
+      const selector=referenceSelectors[index];
+      const bounds=await page.evaluate(`(()=>{const e=document.querySelector(${JSON.stringify(selector)});if(!e)return null;e.scrollIntoView({block:'center'});let p=e;while(p.parentElement&&p.getBoundingClientRect().height<350)p=p.parentElement;const r=p.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,text:p.innerText?.slice(0,500)}})()`);
+      console.log("POOLSIDE_PANEL " + JSON.stringify({index,selector,bounds}));
+      if(!bounds)continue;
+      await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:10,y:20});await delay(900);
+      emitScreenshot(`poolside_${index}_before.jpg`,(await page.send("Page.captureScreenshot",{format:"jpeg",quality:75})).data);
+      await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:Math.max(250,Math.min(1300,bounds.x+bounds.w/2)),y:500});await delay(300);
+      emitScreenshot(`poolside_${index}_during.jpg`,(await page.send("Page.captureScreenshot",{format:"jpeg",quality:75})).data);
+      await delay(500);
+      emitScreenshot(`poolside_${index}_held.jpg`,(await page.send("Page.captureScreenshot",{format:"jpeg",quality:75})).data);
+      await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:10,y:20});await delay(700);
+      emitScreenshot(`poolside_${index}_after.jpg`,(await page.send("Page.captureScreenshot",{format:"jpeg",quality:75})).data);
+    }
     page.exceptions=[];
   }
   const axeSource = require("axe-core").source;
