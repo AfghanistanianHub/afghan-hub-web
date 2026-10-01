@@ -143,28 +143,6 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   const sandbox = await waitFor(() => page.evaluate("document.body?.innerText.includes('Seccomp') && document.body.innerText"), "sandbox status");
   assert.match(sandbox, /Seccomp-BPF sandbox\s+Yes/, "Renderer sandbox must be enabled");
   console.log("AFGHAN_HUB_SANDBOX_VERIFIED Seccomp-BPF enabled; no sandbox-disabling launch flags.");
-  // Read-only motion reference inspection in the real sandboxed browser.
-  if (process.versions.node.startsWith("24.")) {
-    await page.send("Emulation.setDeviceMetricsOverride", {width:1440,height:1000,deviceScaleFactor:1,mobile:false});
-    await page.send("Page.navigate", {url:"https://poolside.ai/"});
-    await delay(5000);
-    const referenceSelectors=['svg[viewBox="0 0 310 348"]','svg[viewBox="0 0 1215 463"]','canvas.svelte-1btwwqy','video'];
-    for(let index=0;index<referenceSelectors.length;index++) {
-      const selector=referenceSelectors[index];
-      const bounds=await page.evaluate(`(()=>{const e=document.querySelector(${JSON.stringify(selector)});if(!e)return null;e.scrollIntoView({block:'center'});let p=e;while(p.parentElement&&p.getBoundingClientRect().height<350)p=p.parentElement;const r=p.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,text:p.innerText?.slice(0,500)}})()`);
-      console.log("POOLSIDE_PANEL " + JSON.stringify({index,selector,bounds}));
-      if(!bounds)continue;
-      await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:10,y:20});await delay(900);
-      emitScreenshot(`poolside_${index}_before.jpg`,(await page.send("Page.captureScreenshot",{format:"jpeg",quality:75})).data);
-      await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:Math.max(250,Math.min(1300,bounds.x+bounds.w/2)),y:500});await delay(300);
-      emitScreenshot(`poolside_${index}_during.jpg`,(await page.send("Page.captureScreenshot",{format:"jpeg",quality:75})).data);
-      await delay(500);
-      emitScreenshot(`poolside_${index}_held.jpg`,(await page.send("Page.captureScreenshot",{format:"jpeg",quality:75})).data);
-      await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:10,y:20});await delay(700);
-      emitScreenshot(`poolside_${index}_after.jpg`,(await page.send("Page.captureScreenshot",{format:"jpeg",quality:75})).data);
-    }
-    page.exceptions=[];
-  }
   const axeSource = require("axe-core").source;
   const screenshots = [];
   for (const width of [320, 390, 768, 1024, 1440, 1920]) {
@@ -224,7 +202,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   await delay(250);
   screenshots.push({name:"geometric_people_focus.jpg",data:(await page.send("Page.captureScreenshot",{format:"jpeg",quality:80})).data});
   await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
-  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-discovery-link=people] svg')).transform"),"none","Reduced motion must suppress arrow movement");
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-discovery-link=people] span svg')).transform"),"none","Reduced motion must suppress arrow movement");
   assert.ok(parseFloat(await page.evaluate("getComputedStyle(document.querySelector('[data-discovery-panel=people]')).transitionDuration"))<=0.00001);
   await page.send("Emulation.setEmulatedMedia",{features:[]});
   // Physical mouse presses provide feedback and navigate without changing target bounds.
@@ -276,6 +254,53 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     await page.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
     await waitFor(()=>page.evaluate(key==="people" ? "location.pathname==='/network'||location.pathname==='/login'" : `location.pathname==='/explore' && location.search==='?type=${key}'`),`one-tap ${key}`);
   }
+  // Record the actual default → hover → reset frames and validate reversible SVG transitions.
+  await page.send("Emulation.setDeviceMetricsOverride",{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await page.send("Emulation.setTouchEmulationEnabled",{enabled:false});
+  await page.send("Emulation.setEmulatedMedia",{features:[]});
+  await page.send("Page.navigate",{url:appUrl});
+  await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-motion]')"),"illustration motion landing");
+  const intro=await page.evaluate("(()=>{const s=getComputedStyle(document.querySelector('[data-landing-hero] svg'));return {name:s.animationName,duration:s.animationDuration,iterations:s.animationIterationCount}})()");
+  assert.notEqual(intro.name,"none");assert.equal(intro.duration,"0.55s");assert.equal(intro.iterations,"1");
+  await delay(700);
+  assert.ok(await page.evaluate("document.querySelector('[data-landing-hero] svg').getAnimations().every(a=>a.playState==='finished')"),"Hero must settle after one intro");
+  await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-landing-hero] svg')).animationName"),"none");
+  await page.send("Emulation.setEmulatedMedia",{features:[]});
+  const motionState=key=>`(()=>{const e=document.querySelector('[data-discovery-panel=${key}]');return [...e.querySelectorAll('[data-motion]')].map(n=>{const s=getComputedStyle(n);return [s.strokeDashoffset,s.opacity,s.transform,s.stroke,s.fill]})})()`;
+  for(const key of ["people","organizations","events","opportunities"]) {
+    await page.evaluate(`document.activeElement?.blur();document.querySelector('[data-discovery-panel=${key}]').scrollIntoView({block:'center'})`);
+    await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:10,y:20});await delay(650);
+    const geometry=await page.evaluate(`(()=>{const r=document.querySelector('[data-discovery-panel=${key}]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()`);
+    const resting=await page.evaluate(motionState(key));
+    const recording=[];
+    const point={x:geometry.x+geometry.width/2,y:geometry.y+90};
+    const started=Date.now();
+    for(let frame=0;frame<48;frame++) {
+      if(frame===9) await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",...point});
+      if(frame===30) await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:10,y:20});
+      const shot=await page.send("Page.captureScreenshot",{format:"jpeg",quality:80,clip:{...geometry,x:geometry.x-7,y:geometry.y-7,width:geometry.width+14,height:geometry.height+14,scale:1}});
+      recording.push(shot.data);
+      if(frame===18) assert.notDeepEqual(await page.evaluate(motionState(key)),resting,`Visible SVG hover activation: ${key}`);
+      await delay(Math.max(0,started+(frame+1)*1000/15-Date.now()));
+    }
+    assert.deepEqual(await page.evaluate(motionState(key)),resting,`Clean hover reset: ${key}`);
+    assert.deepEqual(await page.evaluate(`(()=>{const r=document.querySelector('[data-discovery-panel=${key}]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()`),geometry,`Stable hit area: ${key}`);
+    await page.evaluate(`document.querySelector('[data-discovery-panel=${key}]').focus({preventScroll:true})`);await delay(650);
+    assert.notDeepEqual(await page.evaluate(motionState(key)),resting,`Equivalent focus feedback: ${key}`);
+    await page.evaluate("document.activeElement.blur()");await delay(650);
+    assert.deepEqual(await page.evaluate(motionState(key)),resting,`Focus reset: ${key}`);
+    for(let i=0;i<6;i++) {await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",...point});await delay(45);await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:10,y:20});await delay(45);}
+    await delay(650);assert.deepEqual(await page.evaluate(motionState(key)),resting,`No queued motion after rapid reversals: ${key}`);
+    await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
+    await page.evaluate(`document.querySelector('[data-discovery-panel=${key}]').focus({preventScroll:true})`);
+    assert.ok(await page.evaluate(`(()=>{const e=document.querySelector('[data-discovery-panel=${key}]');return [...e.querySelectorAll('[data-motion]')].every(n=>getComputedStyle(n).transitionDuration.split(',').every(v=>parseFloat(v)===0)&&getComputedStyle(n).animationName==='none')})()`),`Static reduced motion: ${key}`);
+    await page.evaluate("document.activeElement.blur()");
+    await page.send("Emulation.setEmulatedMedia",{features:[]});
+    console.log(`AFGHAN_HUB_MOTION_RESULT ${key} hover/focus/reset/rapid reversals/reduced motion/stable bounds passed`);
+    if(process.versions.node.startsWith("24.")) for(let frame=0;frame<recording.length;frame++) emitScreenshot(`motion_${key}_${String(frame).padStart(3,'0')}.jpg`,recording[frame]);
+  }
+
   assert.deepEqual(page.exceptions,[],"No uncaught browser exceptions");
   console.log("AFGHAN_HUB_BROWSER_INTERACTION keyboard/skip/focus, stable hover, reduced motion, text resizing/reflow all four single-tap routes, CTA mouse/keyboard activation, whole-panel artwork click and press feedback passed.");
   if(process.versions.node.startsWith("24.")) for(const screenshot of screenshots) emitScreenshot(screenshot.name,screenshot.data);

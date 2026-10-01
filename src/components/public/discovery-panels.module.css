@@ -32,3 +32,21 @@
   .panel h3 { font-size: 1.4375rem; margin-top: 24px; }
 }
 @media (prefers-reduced-motion: reduce) { .panel, .destination svg { transition: none; } .panel:hover .destination svg { transform: none; } }
+
+/* SVG-only transitions reverse from their current state; the link box never moves. */
+.art [data-motion] { transition: transform 420ms cubic-bezier(.22,.68,.3,1), stroke-dashoffset 380ms ease, opacity 320ms ease, fill 350ms ease, stroke 350ms ease; }
+.art [data-motion="connection"], .art [data-motion="gathering"], .art [data-motion="branch"] { stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0; }
+.art [data-motion="focal"], .art [data-motion="doorway"] { opacity: 0; }
+.panel:is(:hover, :focus-visible) .art :is([data-motion="connection"], [data-motion="gathering"], [data-motion="branch"]) { stroke-dashoffset: 0; opacity: 1; }
+.panel:is(:hover, :focus-visible) .art [data-step="1"] { transition-delay: 70ms; }
+.panel:is(:hover, :focus-visible) .art [data-step="2"] { transition-delay: 140ms; }
+.panel:is(:hover, :focus-visible) .art [data-motion="module-left"] { transform: translate(12px, -6px); }
+.panel:is(:hover, :focus-visible) .art [data-motion="module-top"] { transform: translate(0, 8px); }
+.panel:is(:hover, :focus-visible) .art [data-motion="module-right"] { transform: translate(-12px, -7px); }
+.panel:is(:hover, :focus-visible) .art [data-motion="focal"] { opacity: 1; transition-delay: 170ms; }
+.panel:is(:hover, :focus-visible) .art [data-motion="opening"] { fill: #ede5f4; stroke: #624291; transition-delay: 150ms; }
+.panel:is(:hover, :focus-visible) .art [data-motion="doorway"] { opacity: 1; transition-delay: 180ms; }
+@media (prefers-reduced-motion: reduce) {
+ .art [data-motion] { transition: none !important; animation: none !important; }
+ .panel:is(:hover, :focus-visible) .art :is([data-motion="module-left"], [data-motion="module-top"], [data-motion="module-right"]) { transform: none; stroke: #624291; }
+}
