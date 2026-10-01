@@ -70,10 +70,10 @@ export default async function PublicHome() {
 
   return (
     <main id="main-content">
-      <section className={styles.hero} aria-labelledby="landing-heading">
+      <section className={styles.hero} aria-labelledby="landing-title">
         <div className={styles.heroCopy}>
           <p className={styles.eyebrow}>A place to connect</p>
-          <h1 id="landing-heading">Rooted in community.<span>Growing together.</span></h1>
+          <h1 id="landing-title">Rooted in community.<span>Growing together.</span></h1>
           <p className={styles.intro}>Discover people, gatherings, and Afghan-led work. Find a place for what you bring.</p>
           <div className={styles.actions}>
             <Link href="/explore" className={styles.primary}>Explore the community<ArrowRight size={17} aria-hidden="true" /></Link>
