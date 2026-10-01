@@ -7,10 +7,11 @@ import {
   Building2,
   CalendarDays,
   MapPin,
-  Sparkles,
   UsersRound,
 } from "lucide-react";
-import { CommunityEcosystem } from "@/components/public/community-ecosystem";
+import { CommunityIllustration } from "@/components/public/community-illustrations";
+import { DiscoveryPanels } from "@/components/public/discovery-panels";
+import styles from "./landing.module.css";
 import { ListingCard } from "@/components/public/listing-card";
 import { publicCategories, publicKinds, publicHref, type PublicKind } from "@/lib/public-catalog";
 import { getPublicListings } from "@/lib/public-content";
@@ -69,77 +70,21 @@ export default async function PublicHome() {
 
   return (
     <main id="main-content">
-      <section className="relative overflow-hidden border-b border-border/70">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_82%_12%,color-mix(in_oklab,var(--primary)_14%,transparent),transparent_28%),radial-gradient(circle_at_12%_88%,color-mix(in_oklab,var(--accent)_65%,transparent),transparent_32%)]"
-        />
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.025] [background-image:linear-gradient(to_right,var(--foreground)_1px,transparent_1px),linear-gradient(to_bottom,var(--foreground)_1px,transparent_1px)] [background-size:42px_42px]" />
-
-        <div className="relative mx-auto grid max-w-7xl gap-10 px-5 py-12 sm:gap-14 sm:px-8 sm:py-16 lg:grid-cols-[0.93fr_1.07fr] lg:items-center lg:gap-10 lg:py-20">
-          <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary">
-              <Sparkles aria-hidden="true" className="size-3.5" />
-              People. Possibilities. Belonging.
-            </div>
-            <h1 className="mt-6 max-w-3xl text-4xl font-semibold leading-[1.02] tracking-[-0.04em] sm:text-6xl lg:text-[4rem]">
-              Rooted in community.
-              <span className="mt-1 block text-primary">Growing together.</span>
-            </h1>
-            <p className="mt-7 max-w-lg text-lg leading-8 text-muted-foreground">
-              One place to discover people, opportunities, gatherings, and Afghan-led work around you.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/explore"
-                className="inline-flex items-center gap-3 rounded-xl bg-primary px-6 py-3.5 font-semibold text-primary-foreground shadow-sm transition-transform hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-              >
-                Explore the community
-                <ArrowRight aria-hidden="true" className="size-4" />
-              </Link>
-              <Link
-                href="/login?mode=join"
-                className="rounded-xl border border-border bg-background/72 px-6 py-3.5 font-semibold backdrop-blur transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-              >
-                Join Afghan Hub
-              </Link>
-            </div>
-            <div className="mt-7 grid gap-1.5 text-xs font-medium text-muted-foreground sm:flex sm:flex-wrap sm:gap-x-5 sm:gap-y-2">
-              <span>No account needed to explore</span>
-              <span aria-hidden="true" className="hidden sm:inline">•</span>
-              <span>Built for Afghan community connections</span>
-            </div>
+      <section className={styles.hero} aria-labelledby="landing-heading">
+        <div className={styles.heroCopy}>
+          <p className={styles.eyebrow}>A place to connect</p>
+          <h1 id="landing-heading">Rooted in community.<span>Growing together.</span></h1>
+          <p className={styles.intro}>Discover people, gatherings, and Afghan-led work. Find a place for what you bring.</p>
+          <div className={styles.actions}>
+            <Link href="/explore" className={styles.primary}>Explore the community<ArrowRight size={17} aria-hidden="true" /></Link>
+            <Link href="/login?mode=join" className={styles.join}>Join Afghan Hub<ArrowRight size={17} aria-hidden="true" /></Link>
           </div>
-
-          <CommunityEcosystem />
+          <p className={styles.note}>No account needed to explore.</p>
         </div>
+        <div className={styles.heroArt}><CommunityIllustration /></div>
       </section>
 
-      <section className="relative border-b border-border bg-card/65" aria-label="Browse community categories">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-px overflow-hidden border-x border-border bg-border sm:grid-cols-4">
-          {publicKinds.map(kind => {
-            const Icon = icons[kind];
-            return (
-              <Link
-                key={kind}
-                href={`/explore?type=${kind}`}
-                className="group flex min-h-36 flex-col justify-between bg-background px-5 py-5 transition-colors hover:bg-secondary/55 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary sm:min-h-40 sm:px-6"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <span className="flex size-10 items-center justify-center rounded-2xl bg-secondary text-primary transition-transform group-hover:scale-105">
-                    <Icon aria-hidden="true" className="size-5" />
-                  </span>
-                  <ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
-                </div>
-                <div>
-                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-primary">{categoryKicker[kind]}</p>
-                  <h2 className="mt-1 text-lg font-semibold tracking-tight">{publicCategories[kind].label}</h2>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+      <DiscoveryPanels />
 
       <section className="border-b border-border/70 bg-background" aria-labelledby="community-pathways-heading">
         <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-16">
