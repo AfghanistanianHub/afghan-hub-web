@@ -145,6 +145,82 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   console.log("AFGHAN_HUB_SANDBOX_VERIFIED Seccomp-BPF enabled; no sandbox-disabling launch flags.");
   const axeSource = require("axe-core").source;
   const screenshots = [];
+  // Hero SVG sequence, actual pointer/keyboard feedback, suspension and frame pacing.
+  await page.send("Emulation.setScrollbarsHidden",{hidden:true});
+  await page.send("Emulation.setDeviceMetricsOverride",{width:1440,height:900,deviceScaleFactor:1,mobile:false});
+  await page.send("Emulation.setTouchEmulationEnabled",{enabled:false});
+  await page.send("Emulation.setEmulatedMedia",{features:[]});
+  await page.send("Page.navigate",{url:appUrl});
+  await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]')?.dataset.running==='true'"),"hero controller hydration");
+  await page.evaluate(`window.__heroShifts=0;window.__heroLongTasks=[];new PerformanceObserver(l=>{for(const e of l.getEntries())if(!e.hadRecentInput)window.__heroShifts+=e.value}).observe({type:'layout-shift'});new PerformanceObserver(l=>window.__heroLongTasks.push(...l.getEntries().map(e=>e.duration))).observe({type:'longtask'})`);
+  const heroGeometry=await page.evaluate("(()=>{const e=document.querySelector('[data-hero-region]');const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()");
+  const illustration=await page.evaluate("(()=>{const r=document.querySelector('[data-community-motion]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()");
+  const capture=[];const captureTimes=[];const began=Date.now();let phase=0;
+  const depth=[];
+  while(Date.now()-began<13000) {
+    const elapsed=Date.now()-began;
+    if(elapsed>=4300&&phase===0){await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:illustration.x+30,y:illustration.y+30});phase=1;}
+    if(elapsed>=5200&&phase===1){depth.push(await page.evaluate("getComputedStyle(document.querySelector('[data-hero-layer=architecture]')).transform"));await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:illustration.x+illustration.width-30,y:illustration.y+illustration.height-30});phase=2;}
+    if(elapsed>=6300&&phase===2){depth.push(await page.evaluate("getComputedStyle(document.querySelector('[data-hero-layer=architecture]')).transform"));await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:10,y:20});phase=3;}
+    if(elapsed>=9500&&phase===3){
+      await page.evaluate("document.activeElement?.blur()");
+      for(let i=0;i<16;i++) {
+        for(const type of ["keyDown","keyUp"])await page.send("Input.dispatchKeyEvent",{type,key:"Tab",code:"Tab",windowsVirtualKeyCode:9});
+        if(await page.evaluate("document.activeElement?.dataset.landingCta==='explore'"))break;
+      }
+      assert.ok(await page.evaluate("document.querySelector('[data-landing-cta=explore]').matches(':focus-visible')"),"Actual primary CTA keyboard focus");
+      await delay(220);
+      assert.ok(await page.evaluate("parseFloat(getComputedStyle(document.querySelector('[data-hero-focus]')).opacity)>.5"),"Brief CTA connection highlight");
+      phase=4;
+    }
+    if(elapsed>=11200&&phase===4){assert.ok(await page.evaluate("parseFloat(getComputedStyle(document.querySelector('[data-hero-focus]')).opacity)<.01"),"CTA highlight must settle even while focused");await page.evaluate("document.activeElement.blur()");phase=5;}
+    captureTimes.push(Date.now()-began);
+    capture.push((await page.send("Page.captureScreenshot",{format:"jpeg",quality:72,captureBeyondViewport:true,clip:{...heroGeometry,scale:1}})).data);
+    await delay(Math.max(0,100-(Date.now()-began-elapsed)));
+  }
+  assert.equal(phase,5);assert.equal(depth.length,2);assert.notEqual(depth[0],depth[1],"Pointer must move selected layers");
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-community-motion] svg')).transform"),"none","Never move the whole SVG");
+  assert.deepEqual(await page.evaluate("(()=>{const r=document.querySelector('[data-hero-region]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()"),heroGeometry,"Hero frame must remain fixed");
+  assert.equal(await page.evaluate("window.__heroShifts"),0,"No animation layout shifts");
+  assert.ok(await page.evaluate("[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===1).every(a=>a.playState==='finished')"),"Intro must finish");
+  const ambientTimes="[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===Infinity).map(a=>a.currentTime)";
+  await page.evaluate("scrollTo(0,document.documentElement.scrollHeight)");
+  await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='false'"),"offscreen pause");
+  const paused=await page.evaluate(ambientTimes);await delay(350);assert.deepEqual(await page.evaluate(ambientTimes),paused,"Offscreen ambient timeline must stop");
+  await page.evaluate("scrollTo(0,0)");await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='true'"),"on-screen resume");
+  await delay(150);assert.notDeepEqual(await page.evaluate(ambientTimes),paused,"Visible ambient timeline must resume");
+  // Use actual tab visibility rather than dispatching a synthetic visibility event.
+  await page.send("Emulation.setFocusEmulationEnabled",{enabled:false});
+  const browser = new DevTools();await browser.connect(`ws://127.0.0.1:${debugPort}${portFile.split('\n')[1]}`);
+  const other=await browser.send("Target.createTarget",{url:"about:blank"});
+  await browser.send("Target.activateTarget",{targetId:other.targetId});
+  await waitFor(()=>page.evaluate("document.hidden"),"actual background tab visibility");
+  await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='false'"),"hidden-tab pause");
+  const hidden=await page.evaluate(ambientTimes);await delay(350);assert.deepEqual(await page.evaluate(ambientTimes),hidden,"Hidden-tab timeline must stop");
+  await browser.send("Target.activateTarget",{targetId:tabs.find(tab=>tab.type==='page').id});
+  await browser.send("Target.closeTarget",{targetId:other.targetId});browser.close();
+  await page.send("Emulation.setFocusEmulationEnabled",{enabled:true});
+  await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='true'"),"visible-tab resume");
+  for(const width of [1440,390]) {
+    await page.send("Emulation.setDeviceMetricsOverride",{width,height:1000,deviceScaleFactor:1,mobile:width===390});
+    await page.evaluate("document.querySelector('[data-community-motion]').scrollIntoView({block:'center'})");
+    await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='true'"),"performance visibility");
+    const pacing=await page.evaluate("new Promise(resolve=>{const samples=[];let previous=performance.now();const start=previous;function tick(now){samples.push(now-previous);previous=now;if(now-start<2000)requestAnimationFrame(tick);else{samples.sort((a,b)=>a-b);resolve({frames:samples.length,p95:samples[Math.floor(samples.length*.95)],maximum:samples.at(-1)})}}requestAnimationFrame(tick)})");
+    assert.ok(pacing.p95<100,`Sustained animation frame stalls at ${width}: ${JSON.stringify(pacing)}`);
+    console.log(`AFGHAN_HUB_HERO_PERFORMANCE ${JSON.stringify({width,...pacing,layoutShifts:await page.evaluate('window.__heroShifts'),longTasks:await page.evaluate('window.__heroLongTasks')})}`);
+  }
+  await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
+  await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='false'"),"reduced motion controller");
+  assert.equal(await page.evaluate("document.querySelector('[data-community-motion]').getAnimations({subtree:true}).length"),0,"Reduced motion must disable every hero animation");
+  assert.ok(await page.evaluate("[...document.querySelectorAll('[data-hero-layer]')].every(e=>getComputedStyle(e).transform==='none')"),"Reduced motion must disable pointer depth");
+  assert.ok(await page.evaluate("[...document.querySelectorAll('[data-hero-draw],[data-hero-reveal],[data-hero-accent]')].every(e=>parseFloat(getComputedStyle(e).opacity)===1)"),"Intentional fully visible static artwork");
+  await page.send("Emulation.setEmulatedMedia",{features:[]});
+  console.log("AFGHAN_HUB_HERO_VERIFIED staged intro, paused ambient pulses, pointer depth/reset, primary CTA keyboard highlight, actual hidden-tab/offscreen suspension, desktop/mobile pacing, zero layout shifts and static reduced motion passed.");
+  if(process.versions.node.startsWith("24.")) {
+    console.log(`AFGHAN_HUB_HERO_CAPTURE_TIMES ${JSON.stringify(captureTimes)}`);
+    for(let frame=0;frame<capture.length;frame++)emitScreenshot(`hero_${String(frame).padStart(3,'0')}.jpg`,capture[frame]);
+  }
+
   for (const width of [320, 390, 768, 1024, 1440, 1920]) {
     await page.send("Emulation.setDeviceMetricsOverride", { width, height: 1000, deviceScaleFactor: 1, mobile: false });
     await page.send("Page.navigate", { url: appUrl });
@@ -162,6 +238,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
       const audit = await page.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>r.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)})))");
       assert.deepEqual(audit, [], `Accessibility violations at ${width}: ${JSON.stringify(audit)}`);
       await page.evaluate("scrollTo(0,0)");
+      await delay(2300);
       const bottom = await page.evaluate("Math.ceil(document.querySelector('[aria-labelledby=community-discovery]').getBoundingClientRect().bottom)");
       const screenshot = await page.send("Page.captureScreenshot", { format: "jpeg", quality: 80, captureBeyondViewport: true, clip: { x: 0, y: 0, width, height: bottom, scale: 1 } });
       screenshots.push({ name: `geometric_${width}.jpg`, data: screenshot.data });
@@ -262,13 +339,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   await page.send("Emulation.setEmulatedMedia",{features:[]});
   await page.send("Page.navigate",{url:appUrl});
   await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-motion]')"),"illustration motion landing");
-  const intro=await page.evaluate("(()=>{const s=getComputedStyle(document.querySelector('[data-landing-hero] svg'));return {name:s.animationName,duration:s.animationDuration,iterations:s.animationIterationCount}})()");
-  assert.notEqual(intro.name,"none");assert.equal(intro.duration,"0.55s");assert.equal(intro.iterations,"1");
   await delay(700);
-  assert.ok(await page.evaluate("document.querySelector('[data-landing-hero] svg').getAnimations().every(a=>a.playState==='finished')"),"Hero must settle after one intro");
-  await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
-  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-landing-hero] svg')).animationName"),"none");
-  await page.send("Emulation.setEmulatedMedia",{features:[]});
   const motionState=key=>`(()=>{const e=document.querySelector('[data-discovery-panel=${key}]');return [...e.querySelectorAll('[data-motion]')].map(n=>{const s=getComputedStyle(n);return [s.strokeDashoffset,s.opacity,s.transform,s.stroke,s.fill]})})()`;
   for(const key of ["people","organizations","events","opportunities"]) {
     await page.evaluate(`document.activeElement?.blur();document.querySelector('[data-discovery-panel=${key}]').scrollIntoView({block:'center'})`);

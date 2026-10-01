@@ -9,6 +9,7 @@ import {
   MapPin,
   UsersRound,
 } from "lucide-react";
+import { CommunityHeroMotion } from "@/components/public/community-hero-motion";
 import { CommunityIllustration } from "@/components/public/community-illustrations";
 import { DiscoveryPanels } from "@/components/public/discovery-panels";
 import styles from "./landing.module.css";
@@ -70,7 +71,7 @@ export default async function PublicHome() {
 
   return (
     <main id="main-content">
-      <section className={styles.hero} aria-labelledby="landing-title">
+      <section className={styles.hero} data-hero-region aria-labelledby="landing-title">
         <div className={styles.heroCopy}>
           <p className={styles.eyebrow}>A place to connect</p>
           <h1 id="landing-title">Rooted in community.<span>Growing together.</span></h1>
@@ -81,7 +82,7 @@ export default async function PublicHome() {
           </div>
           <p className={styles.note}>No account needed to explore.</p>
         </div>
-        <div className={styles.heroArt} data-landing-hero><CommunityIllustration /></div>
+        <CommunityHeroMotion className={styles.heroArt}><CommunityIllustration /></CommunityHeroMotion>
       </section>
 
       <DiscoveryPanels />

@@ -1,0 +1,32 @@
+.motion { --depth-x: 0px; --depth-y: 0px; }
+.motion [data-hero-layer] { transition: transform 240ms ease-out; }
+.motion [data-hero-layer="architecture"] { transform: translate(var(--depth-x), var(--depth-y)); }
+.motion [data-hero-layer="network"] { transform: translate(calc(var(--depth-x) * .6), calc(var(--depth-y) * .6)); }
+.motion [data-hero-layer="openings"] { transform: translate(calc(var(--depth-x) * 1.2), calc(var(--depth-y) * 1.2)); }
+.motion [data-hero-draw] { stroke-dasharray: 1; animation: draw-path 850ms ease-out both; }
+.motion [data-hero-reveal] { animation: reveal-form 650ms ease-out 850ms both; }
+.motion [data-hero-accent] { animation: reveal-form 600ms ease-out 1500ms both; }
+.motion [data-hero-pulse] { stroke-dasharray: .09 .91; opacity: 0; animation: travel 10s linear 2500ms infinite both; }
+.motion [data-hero-pulse="opening"] { animation-delay: 6800ms; }
+.motion [data-hero-node] { opacity: 0; animation: activate-node 10s ease-in-out 4100ms infinite both; }
+.motion [data-hero-node="opening"] { animation-delay: 8400ms; }
+.motion [data-hero-focus] { opacity: 0; }
+:global([data-hero-region]:has([data-landing-cta="explore"]:focus-visible)) .motion [data-hero-focus] { animation: focus-connection 1100ms ease-out both; }
+.motion[data-running="false"] :is([data-hero-draw], [data-hero-reveal], [data-hero-accent], [data-hero-pulse], [data-hero-node], [data-hero-focus]) { animation-play-state: paused; }
+@keyframes draw-path { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes reveal-form { from { opacity: 0; } to { opacity: 1; } }
+@keyframes travel {
+  0% { opacity: 0; stroke-dashoffset: 1; }
+  3% { opacity: 1; }
+  19% { opacity: 1; stroke-dashoffset: 0; }
+  23%, 100% { opacity: 0; stroke-dashoffset: 0; }
+}
+@keyframes activate-node { 0%, 15%, 100% { opacity: 0; } 4%, 10% { opacity: .9; } }
+@keyframes focus-connection { 0%, 100% { opacity: 0; } 18%, 65% { opacity: .85; } }
+@media (prefers-reduced-motion: reduce) {
+ .motion [data-hero-layer] { transform: none; transition: none; }
+ .motion :is([data-hero-draw], [data-hero-reveal], [data-hero-accent], [data-hero-pulse], [data-hero-node], [data-hero-focus]) { animation: none !important; }
+ .motion :is([data-hero-draw], [data-hero-reveal], [data-hero-accent]) { opacity: 1; stroke-dashoffset: 0; }
+ .motion :is([data-hero-pulse], [data-hero-node]) { opacity: 0; }
+ :global([data-hero-region]:has([data-landing-cta="explore"]:focus-visible)) .motion [data-hero-focus] { opacity: .85; }
+}
