@@ -81,7 +81,7 @@ export default async function PublicHome() {
           </div>
           <p className={styles.note}>No account needed to explore.</p>
         </div>
-        <div className={styles.heroArt}><CommunityIllustration /></div>
+        <div className={styles.heroArt} data-landing-hero><CommunityIllustration /></div>
       </section>
 
       <DiscoveryPanels />
