@@ -62,6 +62,10 @@ export function OpportunitiesIllustration() { return (
 export function CommunityIllustration() { return (
 <svg viewBox="0 0 600 430" fill="none" aria-hidden="true">
  <g strokeLinecap="round" strokeLinejoin="round">
+  <g data-environment-contour stroke="#c8c4b6" strokeWidth=".9" opacity=".6">
+   <path d="M20 214q36-18 68-62l26 18 42-62 40 23 34-34 M12 224q51-13 89-52l22 11 38-48 37 15 28-22" />
+   <path d="M421 395q30-14 65-11t82-29 M443 405q25-9 49-8t65-16" />
+  </g>
   <path d="M32 278 279 417 568 251 321 111Z" stroke="#d9d2c6" strokeWidth="1.17" />
   <path d="M83 249l247 139 M81 305l289-166 M181 193l247 139 M179 361l289-166 M279 137l247 139 M277 417l289-166" stroke="#d9d2c6" strokeWidth=".82" />
   <g data-hero-layer="architecture">
@@ -82,11 +86,14 @@ export function CommunityIllustration() { return (
    <path data-hero-draw pathLength="1" d="M75 312 133 342 198 304 254 336 M133 342 141 392 M198 304 174 267" stroke="#9e978e" strokeWidth="1.4" />
    <path data-hero-pulse="network" pathLength="1" d="M75 312 133 342 198 304 254 336" stroke="#624291" strokeWidth="3.5" />
    <path data-hero-focus pathLength="1" d="M75 312 133 342 198 304 254 336 M133 342 141 392 M198 304 174 267" stroke="#624291" strokeWidth="2.6" />
-   <circle cx="75" cy="312" r="9" fill="#f8f5ee" stroke="#9e978e" />
-   <circle data-hero-accent cx="133" cy="342" r="11" fill="#624291" stroke="#624291" />
-   <circle cx="198" cy="304" r="9" fill="#f8f5ee" stroke="#9e978e" />
-   <circle cx="254" cy="336" r="7" fill="#f8f5ee" stroke="#9e978e" />
-   <circle data-hero-node="network" cx="254" cy="336" r="11" stroke="#624291" strokeWidth="2" fill="#ede5f4" />
+   <rect data-hero-node="network" x="239" y="318" width="30" height="36" rx="5" stroke="#624291" strokeWidth="2" fill="#ede5f4" />
+   {[[75,312],[133,342],[198,304],[254,336]].map(([x,y],index) => <g key={index} data-constellation-person transform={`translate(${x} ${y})`}>
+    <rect x="-12" y="-15" width="24" height="30" rx="4" fill={index === 1 ? "#624291" : "#f8f5ee"} stroke={index === 1 ? "#624291" : "#b4aa9e"} />
+    <g stroke={index === 1 ? "#fff" : "#938b81"} strokeWidth="1.5">
+     <circle cy="-5" r="3.5" />
+     <path d="M-7 9V6a7 7 0 0 1 14 0v3Z" />
+    </g>
+   </g>)}
    <circle cx="141" cy="392" r="6" fill="#f8f5ee" stroke="#9e978e" />
    <circle cx="174" cy="267" r="6" fill="#f8f5ee" stroke="#9e978e" />
    <circle cx="174" cy="267" r="3" fill="#d8ac40" stroke="#d8ac40" />

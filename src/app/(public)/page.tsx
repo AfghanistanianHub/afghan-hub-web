@@ -9,6 +9,8 @@ import {
   MapPin,
   UsersRound,
 } from "lucide-react";
+import { CommunitySignature } from "@/components/public/community-signature";
+import { CommunityStoryMotion } from "@/components/public/community-story-motion";
 import { CommunityHeroMotion } from "@/components/public/community-hero-motion";
 import { CommunityIllustration } from "@/components/public/community-illustrations";
 import { DiscoveryPanels } from "@/components/public/discovery-panels";
@@ -70,21 +72,23 @@ export default async function PublicHome() {
   );
 
   return (
-    <main id="main-content">
+    <main id="main-content" data-community-story>
+      <CommunityStoryMotion />
       <section className={styles.hero} data-hero-region aria-labelledby="landing-title">
         <div className={styles.heroCopy}>
-          <p className={styles.eyebrow}>A place to connect</p>
+          <p className={styles.eyebrow}>Afghan roots. Global connections.</p>
           <h1 id="landing-title">Rooted in community.<span>Growing together.</span></h1>
-          <p className={styles.intro}>Discover people, gatherings, and Afghan-led work. Find a place for what you bring.</p>
+          <p className={styles.intro}>Connect with people, Afghan-led organizations, events, and opportunities. Bring your roots. Find your next possibility.</p>
           <div className={styles.actions}>
             <Link href="/explore" data-landing-cta="explore" className={styles.primary}>Explore the community<ArrowRight size={17} aria-hidden="true" /></Link>
             <Link href="/login?mode=join" data-landing-cta="join" className={styles.join}>Join Afghan Hub<ArrowRight size={17} aria-hidden="true" /></Link>
           </div>
           <p className={styles.note}>No account needed to explore.</p>
         </div>
-        <CommunityHeroMotion className={styles.heroArt}><CommunityIllustration /></CommunityHeroMotion>
+        <CommunityHeroMotion className={styles.heroArt} depth={8} scrollDepth><CommunityIllustration /></CommunityHeroMotion>
       </section>
 
+      <div className={styles.signatureBridge}><CommunitySignature /><span>Rooted in British Columbia. Open to the world.</span></div>
       <DiscoveryPanels />
 
       <section className="border-b border-border/70 bg-background" aria-labelledby="community-pathways-heading">
@@ -137,13 +141,12 @@ export default async function PublicHome() {
                 <Link
                   key={pathway.title}
                   href={pathway.href}
-                  className="group relative min-h-56 overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-5 transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.06)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                  className={`group relative min-h-56 overflow-hidden border border-border bg-card p-5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${styles.pathway}`}
                 >
-                  <div aria-hidden="true" className="absolute -right-12 -top-12 size-36 rounded-full border border-primary/10 transition-transform duration-300 group-hover:scale-110" />
-                  <div aria-hidden="true" className="absolute right-8 top-8 size-14 rounded-full border border-dashed border-primary/10" />
+                  <CommunitySignature className={styles.pathwaySignature} />
                   <div className="relative flex h-full flex-col justify-between gap-8">
                     <div className="flex items-start justify-between gap-4">
-                      <span className="flex size-11 items-center justify-center rounded-2xl bg-secondary text-primary shadow-sm">
+                      <span className="flex size-11 items-center justify-center rounded-sm bg-secondary text-primary">
                         <Icon aria-hidden="true" className="size-5" />
                       </span>
                       <span aria-hidden="true" className="text-3xl font-black tracking-[-0.06em] text-foreground/[0.07]">

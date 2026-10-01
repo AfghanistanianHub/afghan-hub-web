@@ -10,8 +10,8 @@
 .panel h3 { font-size: 1.3125rem; font-weight: 500; letter-spacing: -.02em; margin: 22px 0 12px; }
 .panel p { font-size: .9375rem; line-height: 1.5; color: var(--muted-foreground); margin: 0 0 12px; }
 .destination { min-height: 48px; margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: .8125rem; font-weight: 600; color: var(--primary); border-radius: 2px; }
-.destination svg { flex-shrink: 0; transition: transform .18s; }
-.panel:hover .destination svg { transform: translateX(3px); }
+.destination svg { flex-shrink: 0; transition: transform var(--motion-step) var(--motion-ease); }
+.panel:is(:hover, :focus-visible) .destination svg { transform: translateX(3px); }
 .panel:hover .destination { text-decoration: underline; text-underline-offset: 4px; }
 .panel:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
 .panel:hover { border-color: #a896bc; }
@@ -31,5 +31,5 @@
   .art svg { max-height: 220px; }
   .panel h3 { font-size: 1.4375rem; margin-top: 24px; }
 }
-@media (prefers-reduced-motion: reduce) { .panel, .destination svg { transition: none; } .panel:hover .destination svg { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .panel, .destination svg { transition: none; } .panel:is(:hover, :focus-visible) .destination svg { transform: none; } }
 
