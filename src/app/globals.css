@@ -174,4 +174,4 @@
 }
 
 /* Public discovery palette; member surfaces keep their existing tokens. */
-.public-shell { --primary:#624291; --primary-foreground:#fff; --secondary:#eee7f3; --secondary-foreground:#624291; --accent:#eee7dc; --accent-foreground:#6d4935; --ring:#624291; --background:#f8f5ee; --foreground:#302b35; --muted-foreground:#625b65; --border:#d9d2c6; }
+.public-shell { background:var(--background); color:var(--foreground); --primary:#624291; --primary-foreground:#fff; --secondary:#eee7f3; --secondary-foreground:#624291; --accent:#eee7dc; --accent-foreground:#6d4935; --ring:#624291; --background:#f8f5ee; --foreground:#302b35; --muted-foreground:#625b65; --border:#d9d2c6; }
