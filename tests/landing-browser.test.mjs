@@ -406,6 +406,12 @@ test("geometric landing responsive layout, discovery links and accessibility in 
       const point={x:bounds.x+bounds.width/2,y:bounds.y+bounds.height/2};
       await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',...point});await delay(650);
       assert.notDeepEqual(await page.evaluate(sectionMotion(kind)),resting,`Visible page artwork response ${kind} at ${width}`);
+      await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:bounds.x+20,y:bounds.y+20});await delay(350);
+      const near=await page.evaluate(sectionMotion(kind));
+      await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:bounds.x+bounds.width-20,y:bounds.y+bounds.height-20});await delay(350);
+      assert.notDeepEqual(await page.evaluate(sectionMotion(kind)),near,`Actual pointer position changes selected illustration layers ${kind}`);
+      await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',...point});await delay(350);
+
       assert.deepEqual(await page.evaluate(`(()=>{const r=document.querySelector('[data-category-illustration=${kind}]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()`),bounds,'Stable category illustration bounds');
       await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:8,y:8});await delay(650);
       assert.deepEqual(await page.evaluate(sectionMotion(kind)),resting,`Page artwork returns to rest ${kind}`);

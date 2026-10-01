@@ -1,11 +1,13 @@
+import { CommunityHeroMotion } from "./community-hero-motion";
 import type { PublicKind } from "@/lib/public-catalog";
 import { EventsIllustration, OpportunitiesIllustration, OrganizationsIllustration, PeopleIllustration } from "./community-illustrations";
 
 import motion from "./illustration-motion.module.css";
 
 // Public category covers use the same drawing vocabulary as discovery panels.
-export function CatalogIllustration({ kind }: { kind: PublicKind | "people" }) {
-  return <div className={motion.art} data-category-illustration={kind}><CategoryArtwork kind={kind} /></div>;
+export function CatalogIllustration({ kind, interactive = false }: { kind: PublicKind | "people"; interactive?: boolean }) {
+  const artwork = <div className={motion.art} data-category-illustration={kind}><CategoryArtwork kind={kind} /></div>;
+  return interactive ? <CommunityHeroMotion className={motion.depth} depth={10}>{artwork}</CommunityHeroMotion> : artwork;
 }
 
 function CategoryArtwork({ kind }: { kind: PublicKind | "people" }) {

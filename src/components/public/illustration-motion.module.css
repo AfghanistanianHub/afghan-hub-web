@@ -7,9 +7,9 @@
 :is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art :is([data-motion="connection"], [data-motion="gathering"], [data-motion="branch"]) { stroke-dashoffset: 0; opacity: 1; }
 :is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-step="1"] { transition-delay: 70ms; }
 :is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-step="2"] { transition-delay: 140ms; }
-:is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-motion="module-left"] { transform: translate(12px, -6px); }
-:is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-motion="module-top"] { transform: translate(0, 8px); }
-:is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-motion="module-right"] { transform: translate(-12px, -7px); }
+:is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-motion="module-left"] { transform: translate(calc(18px + var(--depth-x, 0px) * .8), calc(-9px + var(--depth-y, 0px) * .8)); }
+:is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-motion="module-top"] { transform: translate(calc(var(--depth-x, 0px) * -.6), calc(12px + var(--depth-y, 0px) * -.6)); }
+:is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-motion="module-right"] { transform: translate(calc(-18px + var(--depth-x, 0px) * .6), calc(-10px + var(--depth-y, 0px) * .6)); }
 :is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-motion="focal"] { opacity: 1; transition-delay: 170ms; }
 :is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-motion="opening"] { fill: #ede5f4; stroke: #624291; transition-delay: 150ms; }
 :is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-motion="doorway"] { opacity: 1; transition-delay: 180ms; }
@@ -20,8 +20,18 @@
 
 .art [data-motion="shop-route"] { stroke-dasharray:1; stroke-dashoffset:1; opacity:0; }
 :is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-motion="shop-route"] { stroke-dashoffset:0; opacity:1; }
-:is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-motion="shop-awning"] { transform:translate(0,5px); }
+:is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-motion="shop-awning"] { transform:translate(calc(var(--depth-x, 0px) * .8),calc(8px + var(--depth-y, 0px) * .8)); }
 :is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-motion="shop-door"] { fill:#624291; }
 @media (prefers-reduced-motion:reduce) {
  :is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art [data-motion="shop-awning"] { transform:none; stroke:#624291; }
+}
+
+/* Live pointer depth affects selected SVG surfaces, never the frame, text or controls. */
+.depth { width:100%; }
+.depth .art :is([data-motion="opening"],[data-motion="doorway"]) { transform:translate(calc(var(--depth-x,0px) * .55),calc(var(--depth-y,0px) * .55)); transition:transform 260ms ease-out,fill 350ms ease,stroke 350ms ease,opacity 320ms ease; }
+.depth .art [data-motion="gathering"] { transform:translate(calc(var(--depth-x,0px) * .4),calc(var(--depth-y,0px) * .4)); }
+.depth .art [data-motion="focal"] { transform:translate(calc(var(--depth-x,0px) * .4),calc(var(--depth-y,0px) * .4)); }
+.depth .art [data-person-node="main"] { translate:calc(var(--depth-x,0px) * .6) calc(var(--depth-y,0px) * .6); transition:translate 260ms ease-out; }
+@media(prefers-reduced-motion:reduce) {
+ .depth .art :is([data-motion],[data-person-node]) { transform:none !important; translate:none !important; transition:none !important; }
 }
