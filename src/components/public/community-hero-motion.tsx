@@ -4,7 +4,7 @@ import { useEffect, useRef, type PointerEvent, type ReactNode } from "react";
 import styles from "./community-hero-motion.module.css";
 
 // The SVG arrives as server-rendered children; only visibility and pointer input need JS.
-export function CommunityHeroMotion({ children, className, depth = 3 }: { children: ReactNode; className: string; depth?: number }) {
+export function CommunityHeroMotion({ children, className, depth = 3, scrollDepth = false }: { children: ReactNode; className: string; depth?: number; scrollDepth?: boolean }) {
   const root = useRef<HTMLDivElement>(null);
   const frame = useRef<number | null>(null);
   const reduced = useRef(true);
@@ -15,8 +15,18 @@ export function CommunityHeroMotion({ children, className, depth = 3 }: { childr
     if (!element) return;
     const preference = matchMedia("(prefers-reduced-motion: reduce)");
     let visible = false;
+    let scrollFrame: number | null = null;
+    const scroll = () => {
+      if (!scrollDepth || scrollFrame !== null) return;
+      scrollFrame = requestAnimationFrame(() => {
+        scrollFrame = null;
+        const distance = visible && !document.hidden && !preference.matches ? Math.min(16, Math.max(0, -element.getBoundingClientRect().top * .035)) : 0;
+        element.style.setProperty("--scroll-depth", `${distance.toFixed(2)}px`);
+      });
+    };
     const update = () => {
       reduced.current = preference.matches;
+      scroll();
       element.dataset.running = String(visible && !document.hidden && !preference.matches);
       if (document.hidden || !visible || preference.matches) {
         if (frame.current !== null) cancelAnimationFrame(frame.current);
@@ -32,14 +42,17 @@ export function CommunityHeroMotion({ children, className, depth = 3 }: { childr
     observer.observe(element);
     preference.addEventListener("change", update);
     document.addEventListener("visibilitychange", update);
+    if (scrollDepth) window.addEventListener("scroll", scroll, { passive: true });
     update();
     return () => {
       observer.disconnect();
+      window.removeEventListener("scroll", scroll);
+      if (scrollFrame !== null) cancelAnimationFrame(scrollFrame);
       preference.removeEventListener("change", update);
       document.removeEventListener("visibilitychange", update);
       if (frame.current !== null) cancelAnimationFrame(frame.current);
     };
-  }, []);
+  }, [scrollDepth]);
 
   const move = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType !== "mouse" || reduced.current || root.current?.dataset.running !== "true") return;

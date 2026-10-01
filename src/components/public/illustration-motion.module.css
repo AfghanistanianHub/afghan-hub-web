@@ -1,7 +1,7 @@
 .art { width:100%; min-width:0; }
 .art svg { display:block; width:100%; height:auto; overflow:visible; }
 /* SVG-only transitions reverse from their current state; the link box never moves. */
-.art [data-motion] { transition: transform 420ms cubic-bezier(.22,.68,.3,1), stroke-dashoffset 380ms ease, opacity 320ms ease, fill 350ms ease, stroke 350ms ease; }
+.art [data-motion] { transition: transform var(--motion-step, 420ms) var(--motion-ease, cubic-bezier(.22,.68,.3,1)), stroke-dashoffset 380ms ease, opacity 320ms ease, fill 350ms ease, stroke 350ms ease; }
 .art [data-motion="connection"], .art [data-motion="gathering"], .art [data-motion="branch"] { stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0; }
 .art [data-motion="focal"], .art [data-motion="doorway"] { opacity: 0; }
 :is(:global([data-illustration-trigger]):is(:hover, :focus-within), :global([data-illustration-focus-scope]):focus-within) .art :is([data-motion="connection"], [data-motion="gathering"], [data-motion="branch"]) { stroke-dashoffset: 0; opacity: 1; }
@@ -34,4 +34,9 @@
 .depth .art [data-person-node="main"] { translate:calc(var(--depth-x,0px) * .6) calc(var(--depth-y,0px) * .6); transition:translate 260ms ease-out; }
 @media(prefers-reduced-motion:reduce) {
  .depth .art :is([data-motion],[data-person-node]) { transform:none !important; translate:none !important; transition:none !important; }
+}
+
+/* Touch gives immediate artwork feedback without intercepting the first navigation tap. */
+@media (hover:none) {
+ :global([data-illustration-trigger]):active .art :is([data-motion="connection"],[data-motion="gathering"],[data-motion="branch"],[data-motion="shop-route"],[data-motion="focal"],[data-motion="doorway"]) { opacity:1; stroke-dashoffset:0; transition:none; }
 }

@@ -1,7 +1,8 @@
-.motion { --depth-x: 0px; --depth-y: 0px; }
+.motion { --depth-x: 0px; --depth-y: 0px; --scroll-depth: 0px; }
 .motion svg { overflow: visible; }
-.motion [data-hero-layer] { transition: transform 240ms ease-out; }
-.motion [data-hero-layer="architecture"] { transform: translate(var(--depth-x), var(--depth-y)); }
+.motion [data-hero-layer] { transition: transform var(--motion-step, 420ms) var(--motion-ease, ease-out); }
+.motion [data-hero-layer="architecture"] { transform: translate(var(--depth-x), calc(var(--depth-y) + var(--scroll-depth))); }
+.motion [data-hero-layer="gathering"] { transform: translate(calc(var(--depth-x) * -.35), calc(var(--depth-y) * -.35)); }
 .motion [data-hero-layer="network"] { transform: translate(calc(var(--depth-x) * .6), calc(var(--depth-y) * .6)); }
 .motion [data-hero-layer="openings"] { transform: translate(calc(var(--depth-x) * 1.2), calc(var(--depth-y) * 1.2)); }
 .motion [data-hero-draw] { stroke-dasharray: 1; animation: draw-path 850ms ease-out both; }
