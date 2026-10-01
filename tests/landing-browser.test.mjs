@@ -227,6 +227,10 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     assert.ok(pacing.p95<100,`Sustained animation frame stalls at ${width}: ${JSON.stringify(pacing)}`);
     console.log(`AFGHAN_HUB_HERO_PERFORMANCE ${JSON.stringify({width,...pacing,layoutShifts:await page.evaluate('window.__heroShifts'),longTasks:await page.evaluate('window.__heroLongTasks')})}`);
   }
+  // Real mobile scroll advances only selected SVG depth, without moving text or controls.
+  await page.evaluate("scrollTo(0,document.querySelector('[data-community-motion]').getBoundingClientRect().top+scrollY+40)");
+  await waitFor(()=>page.evaluate("parseFloat(document.querySelector('[data-community-motion]').style.getPropertyValue('--scroll-depth'))>0"),"mobile scroll depth feedback");
+  assert.ok(await page.evaluate("[...document.querySelectorAll('[data-community-story] section')].every(e=>getComputedStyle(e).opacity==='1')"),"Scroll entrances never fade readable content");
   await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
   await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='false'"),"reduced motion controller");
   assert.equal(await page.evaluate("document.querySelector('[data-community-motion]').getAnimations({subtree:true}).length"),0,"Reduced motion must disable every hero animation");
