@@ -1,3 +1,4 @@
+import { MemberListingArtwork } from "@/components/public/member-listing-artwork";
 import {
   toggleSavedOpportunity,
 } from "@/app/(dashboard)/opportunities/actions";
@@ -106,7 +107,7 @@ export default async function OpportunityPage({
   );
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10">
+    <main data-illustration-focus-scope className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10">
       <Link
         href="/opportunities"
         className="inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
@@ -141,12 +142,9 @@ export default async function OpportunityPage({
         ) : null}
       </div>
 
-      <section className="relative mt-6 overflow-hidden rounded-[2rem] border border-border/80 bg-card shadow-[0_18px_60px_rgb(15_23_42/0.055)]">
-        <div aria-hidden="true" className="absolute inset-x-0 top-0 h-72 bg-[radial-gradient(circle_at_82%_10%,color-mix(in_oklab,var(--primary)_14%,transparent),transparent_30%),linear-gradient(to_bottom,color-mix(in_oklab,var(--primary)_4%,transparent),transparent)]" />
-        <div aria-hidden="true" className="absolute right-8 top-8 size-40 rounded-full border border-primary/10" />
-        <div aria-hidden="true" className="absolute right-20 top-20 size-20 rounded-full border border-dashed border-primary/15" />
-
-        <div className="relative px-6 py-8 md:px-9 md:py-11">
+      <section data-illustration-trigger className="relative mt-6 overflow-hidden rounded-sm border border-border bg-card">
+      <MemberListingArtwork kind="opportunities" />
+      <div className="relative px-6 py-8 md:px-9 md:py-11">
           <div className="flex flex-wrap items-start justify-between gap-6">
             <div className="max-w-3xl">
               <div className="flex flex-wrap items-center gap-2">
@@ -161,7 +159,7 @@ export default async function OpportunityPage({
                 ) : null}
               </div>
 
-              <h1 className="mt-5 break-words text-3xl font-bold leading-[1.08] tracking-[-0.035em] text-foreground md:text-5xl">
+              <h1 className="mt-5 break-words text-3xl font-medium leading-[1.08] tracking-[-0.035em] text-foreground md:text-4xl">
                 {opportunity.title}
               </h1>
               {opportunity.summary ? (
