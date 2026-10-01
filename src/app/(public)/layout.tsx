@@ -15,29 +15,29 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         Skip to content
       </a>
 
-      <header className="sticky top-0 z-40 border-b border-border/80 bg-background/88 backdrop-blur-xl supports-[backdrop-filter]:bg-background/76">
+      <header className="sticky top-0 z-40 border-b border-border/80 bg-background">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2.5 sm:gap-x-6 sm:gap-y-3 sm:px-8 sm:py-3.5">
           <Link href="/" aria-label="Afghan Hub home" className="group inline-flex min-w-0 items-center gap-2.5 rounded-xl sm:gap-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
-            <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-[0.7rem] bg-primary text-primary-foreground shadow-sm sm:size-9 sm:rounded-xl">
-              <span aria-hidden="true" className="absolute inset-x-1.5 bottom-1.5 h-1 rounded-full bg-primary-foreground/35" />
-              <span aria-hidden="true" className="text-[0.78rem] font-black tracking-[-0.08em] sm:text-sm">AH</span>
+            <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-[0.3rem] bg-primary text-primary-foreground sm:size-8">
+              
+              <span aria-hidden="true" className="text-[0.68rem] font-semibold sm:text-xs">AH</span>
             </span>
-            <span className="truncate text-[0.72rem] font-extrabold tracking-[0.13em] text-foreground transition-colors group-hover:text-primary sm:text-sm sm:tracking-[0.15em]">
+            <span className="truncate text-[0.72rem] font-semibold tracking-[0.13em] text-foreground transition-colors group-hover:text-primary sm:text-sm sm:tracking-[0.15em]">
               AFGHAN HUB
             </span>
           </Link>
 
           <nav
             aria-label="Public navigation"
-            className="order-3 grid w-full grid-cols-3 gap-1 rounded-xl border border-border/70 bg-muted/35 p-1 text-xs font-semibold sm:flex sm:flex-wrap sm:border-0 sm:bg-transparent sm:p-0 sm:text-sm sm:font-medium md:order-none md:w-auto"
+            className="order-3 grid w-full grid-cols-3 gap-1 border-t border-border/70 pt-1 text-xs font-medium sm:flex sm:flex-wrap sm:border-0 sm:bg-transparent sm:p-0 sm:text-sm sm:font-medium md:order-none md:w-auto"
           >
-            <Link href="/explore" className="inline-flex min-h-11 items-center justify-center rounded-lg px-2 text-center transition hover:bg-background hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-11 sm:px-3 sm:hover:bg-muted">
+            <Link href="/explore" className="inline-flex min-h-11 items-center justify-center rounded-sm px-2 text-center transition hover:bg-background hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-11 sm:px-3 sm:hover:bg-muted">
               Explore
             </Link>
-            <Link href="/about" className="inline-flex min-h-11 items-center justify-center rounded-lg px-2 text-center transition hover:bg-background hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-11 sm:px-3 sm:hover:bg-muted">
+            <Link href="/about" className="inline-flex min-h-11 items-center justify-center rounded-sm px-2 text-center transition hover:bg-background hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-11 sm:px-3 sm:hover:bg-muted">
               Our mission
             </Link>
-            <Link href="/dashboard" className="inline-flex min-h-11 items-center justify-center rounded-lg px-2 text-center transition hover:bg-background hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-11 sm:px-3 sm:hover:bg-muted">
+            <Link href="/dashboard" className="inline-flex min-h-11 items-center justify-center rounded-sm px-2 text-center transition hover:bg-background hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-11 sm:px-3 sm:hover:bg-muted">
               Member home
             </Link>
           </nav>
@@ -48,7 +48,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             </Link>
             <Link
               href="/login?mode=join"
-              className="inline-flex min-h-11 items-center rounded-lg bg-primary px-3 py-2 text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:rounded-xl sm:px-4 sm:py-2.5"
+              className="inline-flex min-h-11 items-center rounded-sm border border-border px-3 py-2 text-foreground transition hover:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-4 sm:py-2.5"
             >
               Join us
             </Link>
