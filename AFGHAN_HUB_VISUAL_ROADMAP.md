@@ -2,16 +2,15 @@
 
 Updated 2026-09-30. Visual/frontend UX only; preserve working functionality.
 
-## Completed landing milestone — PR #337
-- Replaced floating cards with an airy circular discovery menu: community center, four curved lavender/peach/gold surfaces, horizontal labels and fine geometric detail.
-- Hover and keyboard focus show the requested icon/title/description; stable semantic link hit regions, visible focus, default reset, reduced-motion support and no live announcements.
-- Compact container-based layout preserves all four destinations on phones and enlarged text. Reserved center/text space prevents interaction-driven layout shifts.
-- Existing routes: People `/network` (member directory), Organizations/Events/Opportunities via their existing Explore category queries. One-tap navigation verified.
-- Preserved headline, CTA structure, all lower landing sections and shared server-rendered listing artwork. No dependency/workflow/auth/data/config changes.
-- Production-rendered sandboxed Chrome at 320/375/768/1024/1440/1920px: no horizontal overflow; four usable destinations; zero axe WCAG AA violations. Hover/focus/reset, ring gaps, stable center/labels, touch routes, reduced motion and 200% text/reflow passed. Screenshots visually reviewed, including Organizations hover.
-- Node 22/24: 195 tests each, zero failures/skips; lint/type/build and Vercel success. Verified code `e0671b87f07d32b8c82157cce1c7c08ec0ab9653`; workflow 36787338094.
+## Completed — approved geometric landing, PR #337
+- Implemented the approved warm-neutral composition, restrained violet, calm typography and original geometric community hero. Slightly stronger key strokes; removed duplicate arch and excess base-plane guides.
+- Replaced the rejected wheel with four illustrated discovery panels. People keeps the nine-node network with thin head-and-shoulders glyphs, violet/white main person, warm-gray surrounding people and two small accents. Connections remain behind opaque glyph backings.
+- Server-rendered reusable SVG/React components; CSS hover borders/link cues and visible keyboard focus; reduced-motion support. Deleted the obsolete circular client component; no added dependencies or client interaction bundle.
+- Existing People/member directory, Explore categories, join/sign-in, business catalogue, lower pathways/pulse/listings and metadata preserved. Public warm canvas applied explicitly; member palette unchanged.
+- Actual sandboxed Chrome production renders at 320/390/768/1024/1440/1920px visually reviewed. No horizontal overflow; four usable 44px+ links; nine person glyphs; populated lower listings; zero axe WCAG AA violations. Keyboard/skip/focus, stable hover, reduced motion, 200% text/reflow and all four physical single-tap routes passed.
+- Node 22/24 each passed 195 tests with zero failures/skips; lint/type/build and Vercel passed. Verified code `8bf40fd191badebf1ae03e93851c34c212df6f43`; workflow 36794916277.
 
 ## Next task
-Review the focused landing PR, then inspect Explore/search/category states and public detail hierarchy using the existing browser harness. Refine observed visual/UX gaps while preserving behavior.
+Review the implemented screenshots/current PR, then inspect Explore and public detail hierarchy using the same browser harness. Refine observed visual/UX gaps only. Do not revive the superseded circular/orbital direction or merge/deploy automatically.
 
-No implementation blocker. Native browser tools remain unavailable; CI supplied actual browser evidence. Protected preview requires Vercel login; authenticated production-data flows were not tested. No automatic merge/production deployment.
+Native local browser tools remain unavailable; CI supplied actual browser evidence. Protected preview needs Vercel login. Authenticated member/live-data flows were not tested; no required visual verification remains blocked. No production deployment.

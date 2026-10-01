@@ -1,22 +1,25 @@
 # Afghan Hub visual handoff
 
-Updated 2026-09-30. Circular landing discovery complete and verified; no merge/production deployment performed.
+Updated 2026-09-30. Approved geometric landing implemented and verified; no merge/production deployment performed.
 
-## Current implementation
+## Current work
 Repository: https://github.com/loadsnft/afghan-hub-web
 PR: https://github.com/loadsnft/afghan-hub-web/pull/337
 Branch: `design/connected-community-hero`; base main `419e11c92f8bd4cd0d5e7e00008a5b11fe222086`.
-Verified code: `e0671b87f07d32b8c82157cce1c7c08ec0ab9653`. Documentation commits may advance the PR; verify current head/checks on continuation.
+Verified application code: `8bf40fd191badebf1ae03e93851c34c212df6f43`. A documentation-only follow-up may advance head; verify current PR/checks on continuation.
 Preview: https://afghan-hub-web-git-design-connecte-979249-afghan-hub-s-projects.vercel.app (requires Vercel login).
 
-`CircularDiscovery` is the isolated client component; React state handles hover/focus, CSS/SVG draws four stable clipped link regions, and only decorative surfaces move. Center has no live announcement; static link descriptions remain accessible. Container-based compact alternative reserves center space. People links to existing protected `/network`; other links use existing `/explore?type=organizations|events|opportunities`. Headline, CTAs and below-hero sections preserved. `CommunityPattern` remains a server export for listing covers. No added dependencies or auth/data/workflow/config changes.
+The user approved the geometric mockup and superseded all wheel/orbital directions. `community-illustrations.tsx` supplies five original server-rendered SVG illustrations. The hero keeps approved warm canvas, balanced headline/CTAs, violet, neutral borders and drawing-led depth; duplicate arch/grid overlaps simplified. `DiscoveryPanels` has People, Organizations, Events and Opportunities with existing direct routes. People preserves its network/lines, replaces dot nodes with nine consistent person glyphs, and uses opaque warm backings so connections cannot cross the icons. Main person is white on violet; surrounding strokes warm-gray with two restrained details. Hover/focus use CSS; panels do not move; reduced motion supported. Obsolete circular client component removed.
 
-## Verified checks
-Local lint/type checks passed; 27 local tests passed and the Linux-only browser test explicitly skipped. Existing unused `_userId` warning remains outside scope.
-Full Node 22/24 CI: 195 tests each, zero failures/skips, lint/type/build passed; Vercel succeeded. Evidence workflow 36787338094, Node 24 job 110131889919, Node 22 job 110131890100.
-Browser test uses the actual production app with GET-only loopback public-content fixtures and sandbox-enabled Chrome (Seccomp-BPF verified). At 320/375/768/1024/1440/1920px: no overflow, all four link labels reachable, populated lower listings and zero axe WCAG AA violations. Hover/focus descriptions, default resets/gaps, fixed center dimensions at every width, stationary labels/hit targets, visible keyboard focus/skip link, four single-tap routes, reduced-motion translation suppression and 200% text/reflow passed; no uncaught browser exceptions. Final screenshots reviewed at every width and Organizations hover.
-Fixtures are QA content, not live records. No authenticated member-directory or live-data verification claimed. Native browser tools remain unavailable; CI provides verified browser evidence. Preview protection remains a viewing limitation, not an implementation blocker.
+`landing.module.css` and discovery panel CSS implement one/two/four-column responsive composition. Heading IDs avoid legacy catalogue selectors. Public header retains working navigation on mobile; lower pathways/pulse/listing feeds, business routes, listing cover artwork, metadata, auth/data rules and member palette preserved. No dependencies, workflows or production configuration changed.
 
-## Continuation
-GitHub connector works; do not request another CLI sign-in. Local snapshot `work/afghan-hub-current` in the September 30 chat has synthetic history: do not push it. Remote Git tree/commit operations preserve authentic repository history and the full tree. Existing current-state file retained. Browser screenshot markers are in Node 24 logs; final screenshots/report are in this chat's outputs directory.
-Next task: review existing PR/checks, then refine Explore and public details only after inspecting observed responsive UX gaps. Do not merge/deploy automatically.
+## Verified checks and evidence
+Local lint/type checks passed; 27 local tests passed, with the Linux-only browser test explicitly skipped. Existing unrelated unused `_userId` lint warning remains.
+Full Node 22/24 CI each passed 195 tests with zero failures/skips; lint/type/build passed, Vercel succeeded. Evidence workflow 36794916277; Node 24 job 110156040062, Node 22 job 110156040418.
+The browser harness builds/runs the actual production app with GET-only loopback public-content fixtures and sandbox-enabled Chrome (Seccomp-BPF verified). At 320/390/768/1024/1440/1920px: no horizontal overflow, four reachable 44px+ destinations, all nine person glyphs, twelve populated listing cards, zero axe WCAG AA violations. Real keyboard/skip/visible focus, physical pointer hover with stationary panel geometry, reduced-motion arrow suppression, 200% text resizing/reflow and all four single-tap routes passed; no uncaught browser exceptions. Final screenshots visually inspected at every width plus People focus.
+Screenshot review caught missing explicit warm canvas; fixed and reran verification. The pointer test caught hover media gating in headless Chrome; corrected and final runs passed. Report only final successful evidence above.
+
+## Limits / continuation
+Native local browser tools remain unavailable; CI resolves required browser verification. These are actual app screenshots, not SVG mockup renders. Browser data is local QA fixtures, not production content. Authenticated member directory/live-data flows were not exercised. Preview login is a viewing limitation, not an implementation blocker.
+GitHub connector works; do not request CLI sign-in. Local `work/afghan-hub-current` snapshot has synthetic history and must not be pushed as repository history; use authentic remote Git trees/parents. Current-state context retained. Screenshot markers are in Node 24 logs, with final user-facing captures/report in this chat's outputs directory.
+Next task: review current PR/screenshots; then inspect Explore/detail responsive hierarchy and refine only observed gaps. Do not merge/deploy automatically.
