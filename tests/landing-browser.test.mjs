@@ -143,6 +143,16 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   const sandbox = await waitFor(() => page.evaluate("document.body?.innerText.includes('Seccomp') && document.body.innerText"), "sandbox status");
   assert.match(sandbox, /Seccomp-BPF sandbox\s+Yes/, "Renderer sandbox must be enabled");
   console.log("AFGHAN_HUB_SANDBOX_VERIFIED Seccomp-BPF enabled; no sandbox-disabling launch flags.");
+  // Read-only motion reference inspection in the real sandboxed browser.
+  if (process.versions.node.startsWith("24.")) {
+    await page.send("Emulation.setDeviceMetricsOverride", {width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+    await page.send("Page.navigate", {url:"https://poolside.ai/"});
+    await delay(5000);
+    console.log("POOLSIDE_BROWSER_OBSERVATION " + JSON.stringify(await page.evaluate(`({url:location.href,title:document.title,text:document.body.innerText.slice(0,9000),art:[...document.querySelectorAll('svg,canvas,video')].map(e=>{const r=e.getBoundingClientRect();return {tag:e.tagName,cls:e.getAttribute('class'),parent:e.parentElement.outerHTML.slice(0,1000),x:r.x,y:r.y,w:r.width,h:r.height}}).filter(r=>r.w>120&&r.h>100).slice(0,30)})`)));
+    await page.evaluate("scrollTo(0,0)");
+    emitScreenshot("poolside_initial.jpg",(await page.send("Page.captureScreenshot",{format:"jpeg",quality:70,captureBeyondViewport:true})).data);
+    page.exceptions=[];
+  }
   const axeSource = require("axe-core").source;
   const screenshots = [];
   for (const width of [320, 390, 768, 1024, 1440, 1920]) {
