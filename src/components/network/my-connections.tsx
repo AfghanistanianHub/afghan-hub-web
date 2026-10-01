@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { CommunitySignature } from "@/components/public/community-signature";
+import styles from "./network-surfaces.module.css";
+
 import { ArrowUpRight, MapPin, UserRound } from "lucide-react";
 import { ExternalImage } from "@/components/ui/external-image";
 
@@ -76,9 +79,9 @@ export function MyConnections({
             <Link
               key={member.id}
               href={"/members/" + member.id}
-              className="group relative overflow-hidden rounded-[1.5rem] border border-border/80 bg-card p-5 shadow-[0_8px_26px_rgb(15_23_42/0.03)] transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_16px_36px_rgb(15_23_42/0.06)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className={`group relative overflow-hidden border p-5 ${styles.surface} ${styles.profile}`}
             >
-              <div aria-hidden="true" className="absolute -right-8 -top-8 size-24 rounded-full border border-primary/10" />
+              <CommunitySignature className={styles.signature} />
               <div className="relative flex items-center gap-3">
                 {member.avatar_url ? (
                   <ExternalImage
@@ -86,10 +89,10 @@ export function MyConnections({
                     alt={name}
                     width={48}
                     height={48}
-                    className="size-12 shrink-0 rounded-2xl border border-border/70 object-cover shadow-sm"
+                    className="size-12 shrink-0 rounded-sm border border-border object-cover"
                   />
                 ) : (
-                  <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/[0.10] font-bold text-primary transition group-hover:bg-primary/[0.14]">
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-sm bg-secondary font-bold text-primary transition group-hover:bg-primary/[0.14]">
                     {name.charAt(0).toUpperCase() || <UserRound aria-hidden="true" className="size-5" />}
                   </div>
                 )}
@@ -105,7 +108,7 @@ export function MyConnections({
                     </p>
                   ) : null}
                 </div>
-                <ArrowUpRight aria-hidden="true" className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                <ArrowUpRight aria-hidden="true" data-profile-arrow className="size-4 shrink-0 text-muted-foreground" />
               </div>
 
               {location ? (

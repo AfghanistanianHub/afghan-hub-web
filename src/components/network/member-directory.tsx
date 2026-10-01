@@ -1,5 +1,8 @@
 "use client";
 import Link from "next/link";
+import { CommunitySignature } from "@/components/public/community-signature";
+import styles from "./network-surfaces.module.css";
+
 
 import { useMemo, useRef, useState } from "react";
 import {
@@ -98,7 +101,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
             onChange={(event) => setSearchQuery(event.target.value)}
             aria-label="Search members"
             placeholder="Search people, skills, companies..."
-            className="w-full rounded-2xl border border-border/80 bg-card/88 py-3.5 pl-11 pr-4 text-sm text-foreground shadow-[0_8px_24px_rgb(15_23_42/0.035)] outline-none transition placeholder:text-muted-foreground hover:border-primary/20 focus:border-primary/40 focus:ring-4 focus:ring-primary/10"
+            className={`${styles.search} w-full border border-border bg-card py-3.5 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground hover:border-primary/40`}
           />
         </div>
       </div>
@@ -121,9 +124,9 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
               .join(" at ");
 
             return (
-              <Link key={member.id} href={`/members/${member.id}`} className="group block rounded-[1.75rem] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
-                <article className="relative h-full overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)] transition duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 group-hover:shadow-[0_18px_42px_rgb(15_23_42/0.07)]">
-                  <div aria-hidden="true" className="absolute -right-10 -top-10 size-28 rounded-full border border-primary/10" />
+              <Link key={member.id} href={`/members/${member.id}`} className={`group block ${styles.profile}`}>
+                <article className={`relative h-full overflow-hidden border p-6 ${styles.surface}`}>
+                  <CommunitySignature className={styles.signature} />
                   <div className="relative flex items-start gap-4">
                     {member.avatar_url ? (
                       <ExternalImage
@@ -131,10 +134,10 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                         alt={memberName}
                         width={56}
                         height={56}
-                        className="size-14 rounded-2xl object-cover"
+                        className="size-14 rounded-sm object-cover"
                       />
                     ) : (
-                      <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 font-bold text-primary">
+                      <div className="flex size-14 shrink-0 items-center justify-center rounded-sm bg-secondary font-bold text-primary">
                         {getInitials(memberName) || <UserRound aria-hidden="true" className="size-6" />}
                       </div>
                     )}
@@ -145,7 +148,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                         <p className="mt-1 line-clamp-2 break-words text-sm leading-5 text-muted-foreground">{member.headline}</p>
                       ) : null}
                     </div>
-                    <ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                    <ArrowUpRight aria-hidden="true" data-profile-arrow className="mt-1 size-4 shrink-0 text-muted-foreground" />
                   </div>
 
                   <div className="relative mt-5 space-y-3 text-sm text-muted-foreground">
@@ -179,8 +182,8 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
           })}
         </div>
       ) : (
-        <div className="relative mt-6 flex min-h-72 flex-col items-center justify-center overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-card px-6 text-center shadow-[0_12px_36px_rgb(15_23_42/0.035)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-36 rounded-full bg-primary/[0.06] blur-3xl"/>
-          <span className="relative flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+        <div className={`relative mt-6 flex min-h-72 flex-col items-center justify-center overflow-hidden border px-6 text-center ${styles.surface}`}><CommunitySignature className={styles.signature} />
+          <span className="relative flex size-14 items-center justify-center rounded-sm bg-secondary text-primary">
             <UserRound aria-hidden="true" className="size-7" />
           </span>
           <h2 className="relative mt-4 text-lg font-bold text-foreground">
@@ -195,7 +198,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
             <button
               type="button"
               onClick={clearSearch}
-              className="relative mt-5 inline-flex min-h-10 items-center justify-center rounded-xl border border-border/80 bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className={`relative mt-5 inline-flex items-center justify-center border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted ${styles.control}`}
             >
               Clear search
             </button>
