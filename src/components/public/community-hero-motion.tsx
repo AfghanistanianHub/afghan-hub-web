@@ -4,7 +4,7 @@ import { useEffect, useRef, type PointerEvent, type ReactNode } from "react";
 import styles from "./community-hero-motion.module.css";
 
 // The SVG arrives as server-rendered children; only visibility and pointer input need JS.
-export function CommunityHeroMotion({ children, className }: { children: ReactNode; className: string }) {
+export function CommunityHeroMotion({ children, className, depth = 3 }: { children: ReactNode; className: string; depth?: number }) {
   const root = useRef<HTMLDivElement>(null);
   const frame = useRef<number | null>(null);
   const reduced = useRef(true);
@@ -52,8 +52,8 @@ export function CommunityHeroMotion({ children, className }: { children: ReactNo
       const bounds = element.getBoundingClientRect();
       const x = Math.max(-1, Math.min(1, (point.current.x - bounds.left) / bounds.width * 2 - 1));
       const y = Math.max(-1, Math.min(1, (point.current.y - bounds.top) / bounds.height * 2 - 1));
-      element.style.setProperty("--depth-x", `${(x * 3).toFixed(2)}px`);
-      element.style.setProperty("--depth-y", `${(y * 3).toFixed(2)}px`);
+      element.style.setProperty("--depth-x", `${(x * depth).toFixed(2)}px`);
+      element.style.setProperty("--depth-y", `${(y * depth).toFixed(2)}px`);
     });
   };
   const reset = () => {

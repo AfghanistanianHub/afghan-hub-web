@@ -131,7 +131,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
           <h1 className="mt-5 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">Opportunities</h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
             Discover jobs, volunteering, scholarships, mentorship, education, investment, and community opportunities.
-          </p><div className="mt-5 w-48 max-w-full" aria-hidden="true"><CatalogIllustration kind="opportunities" /></div>
+          </p><div className="mt-5 w-48 max-w-full" aria-hidden="true"><CatalogIllustration interactive kind="opportunities" /></div>
         </div>
 
         <Link

@@ -71,7 +71,7 @@ export default async function ExplorePage({ searchParams }: Props) {
               Afghan-led work, gatherings, and new possibilities. Find a place to connect.
             </p>
             </div>
-            <div className={styles.introArt}><CatalogIllustration kind={kind} /></div>
+            <div className={styles.introArt}><CatalogIllustration interactive kind={kind} /></div>
           </div>
 
           <nav aria-label="Listing categories" className={`${styles.categories} mt-9 grid grid-cols-2 gap-3 lg:grid-cols-4`}>

@@ -123,7 +123,7 @@ export default async function PublicDetailPage({ params }: Props) {
             </div>
 
             <div>
-              <div className={styles.detailArt}><CatalogIllustration kind={kind} /></div>
+              <div className={styles.detailArt}><CatalogIllustration interactive kind={kind} /></div>
               <div className="border-t border-border pt-5">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">At a glance</p>
               <div className="mt-4 space-y-4 text-sm">
