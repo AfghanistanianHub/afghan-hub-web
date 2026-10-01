@@ -61,20 +61,45 @@ export function OpportunitiesIllustration() { return (
 
 export function CommunityIllustration() { return (
 <svg viewBox="0 0 600 430" fill="none" aria-hidden="true">
-<path d="M32 278 279 417 568 251 321 111Z" stroke="#d9d2c6" strokeWidth="1.17" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-<path d="M83 249l247 139 M81 305l289-166" stroke="#d9d2c6" strokeWidth="0.82" fill="none" strokeLinecap="round" strokeLinejoin="round" /><path d="M181 193l247 139 M179 361l289-166" stroke="#d9d2c6" strokeWidth="0.82" fill="none" strokeLinecap="round" strokeLinejoin="round" /><path d="M279 137l247 139 M277 417l289-166" stroke="#d9d2c6" strokeWidth="0.82" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-<path d="M108 192 193 143 278 192 193 241Z M108 192v74l85 49 85-49v-74 M193 241v74" stroke="#9e978e" strokeWidth="1.52" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-<path d="M140 136 193 105 246 136 193 167Z M140 136v57l53 30 53-30v-57 M193 167v56" stroke="#9e978e" strokeWidth="1.52" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-<path d="M140 136 193 105 246 136 193 167Z" stroke="#9e978e" strokeWidth="1.17" fill="#eee7dc" strokeLinecap="round" strokeLinejoin="round" />
-
-<path d="M271 313v-86q0-42 36-63l24-14q37-21 37 23v84 M284 320v-88q0-30 25-45l21-12q25-14 25 17v58 M271 313l13 7 M368 257l-13-7" stroke="#624291" strokeWidth="1.87" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-<path d="M305 329 394 380 505 317 M325 304 394 344 485 291 M347 281 394 308 464 267 M368 258 394 273 445 244" stroke="#9e978e" strokeWidth="1.52" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-<path d="M394 273v-72 M424 282l31-84 M359 287l-34-58" stroke="#9e978e" strokeWidth="1.17" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-<path d="M75 312 133 342 198 304 254 336 M133 342 141 392 M198 304 174 267" stroke="#9e978e" strokeWidth="1.40" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-<circle cx="75" cy="312" r="9" fill="#f8f5ee" stroke="#9e978e"/><circle cx="133" cy="342" r="11" fill="#624291" stroke="#624291"/><circle cx="198" cy="304" r="9" fill="#f8f5ee" stroke="#9e978e"/><circle cx="254" cy="336" r="7" fill="#f8f5ee" stroke="#9e978e"/><circle cx="141" cy="392" r="6" fill="#f8f5ee" stroke="#9e978e"/><circle cx="174" cy="267" r="6" fill="#f8f5ee" stroke="#9e978e"/>
-<path d="M379 169v-22q0-16 16-25l71-41q19-11 19-28V22 M417 192v-24q0-15 16-24l66-38q17-10 17-26V42 M466 81l-37-21q-13-7-13-21V18" stroke="#9e978e" strokeWidth="1.52" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-<rect x="469" y="8" width="31" height="31" rx="0" fill="#f8f5ee" stroke="#9e978e"/><rect x="500" y="26" width="31" height="31" rx="0" fill="#ede5f4" stroke="#624291"/><rect x="401" y="3" width="30" height="30" rx="0" fill="#f8f5ee" stroke="#9e978e"/>
-<path d="M425 277 441 268 457 277 441 286Z" stroke="#c46640" strokeWidth="1.75" fill="#dd7851" strokeLinecap="round" strokeLinejoin="round" /><circle cx="174" cy="267" r="3" fill="#d8ac40" stroke="#d8ac40"/><path d="M152 202v28m16-18v28 M211 257v28" stroke="#9e978e" strokeWidth="1.17" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-<path d="M516 346h23m-11-11v22" stroke="#624291" strokeWidth="1.29" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-</svg>
-); }
+ <g strokeLinecap="round" strokeLinejoin="round">
+  <path d="M32 278 279 417 568 251 321 111Z" stroke="#d9d2c6" strokeWidth="1.17" />
+  <path d="M83 249l247 139 M81 305l289-166 M181 193l247 139 M179 361l289-166 M279 137l247 139 M277 417l289-166" stroke="#d9d2c6" strokeWidth=".82" />
+  <g data-hero-layer="architecture">
+   <g data-hero-reveal stroke="#9e978e">
+    <path d="M108 192 193 143 278 192 193 241Z M108 192v74l85 49 85-49v-74 M193 241v74" strokeWidth="1.52" />
+    <path d="M140 136 193 105 246 136 193 167Z M140 136v57l53 30 53-30v-57 M193 167v56" strokeWidth="1.52" />
+    <path d="M140 136 193 105 246 136 193 167Z" strokeWidth="1.17" fill="#eee7dc" />
+    <path d="M152 202v28m16-18v28 M211 257v28" strokeWidth="1.17" />
+   </g>
+  </g>
+  <g data-hero-layer="gathering">
+   <path data-hero-accent d="M271 313v-86q0-42 36-63l24-14q37-21 37 23v84 M284 320v-88q0-30 25-45l21-12q25-14 25 17v58 M271 313l13 7 M368 257l-13-7" stroke="#624291" strokeWidth="1.87" />
+   <path data-hero-draw pathLength="1" d="M305 329 394 380 505 317 M325 304 394 344 485 291 M347 281 394 308 464 267 M368 258 394 273 445 244" stroke="#9e978e" strokeWidth="1.52" />
+   <path data-hero-draw pathLength="1" d="M394 273v-72 M424 282l31-84 M359 287l-34-58" stroke="#9e978e" strokeWidth="1.17" />
+   <path d="M425 277 441 268 457 277 441 286Z" stroke="#c46640" strokeWidth="1.75" fill="#dd7851" />
+  </g>
+  <g data-hero-layer="network">
+   <path data-hero-draw pathLength="1" d="M75 312 133 342 198 304 254 336 M133 342 141 392 M198 304 174 267" stroke="#9e978e" strokeWidth="1.4" />
+   <path data-hero-pulse="network" pathLength="1" d="M75 312 133 342 198 304 254 336" stroke="#624291" strokeWidth="3.5" />
+   <path data-hero-focus pathLength="1" d="M75 312 133 342 198 304 254 336 M133 342 141 392 M198 304 174 267" stroke="#624291" strokeWidth="2.6" />
+   <circle cx="75" cy="312" r="9" fill="#f8f5ee" stroke="#9e978e" />
+   <circle data-hero-accent cx="133" cy="342" r="11" fill="#624291" stroke="#624291" />
+   <circle cx="198" cy="304" r="9" fill="#f8f5ee" stroke="#9e978e" />
+   <circle cx="254" cy="336" r="7" fill="#f8f5ee" stroke="#9e978e" />
+   <circle data-hero-node="network" cx="254" cy="336" r="11" stroke="#624291" strokeWidth="2" fill="#ede5f4" />
+   <circle cx="141" cy="392" r="6" fill="#f8f5ee" stroke="#9e978e" />
+   <circle cx="174" cy="267" r="6" fill="#f8f5ee" stroke="#9e978e" />
+   <circle cx="174" cy="267" r="3" fill="#d8ac40" stroke="#d8ac40" />
+  </g>
+  <g data-hero-layer="openings">
+   <path data-hero-draw pathLength="1" d="M379 169v-22q0-16 16-25l71-41q19-11 19-28V22 M417 192v-24q0-15 16-24l66-38q17-10 17-26V42 M466 81l-37-21q-13-7-13-21V18" stroke="#9e978e" strokeWidth="1.52" />
+   <path data-hero-pulse="opening" pathLength="1" d="M379 169v-22q0-16 16-25l71-41q19-11 19-28V22" stroke="#624291" strokeWidth="3.5" />
+   <path data-hero-focus d="M379 169v-22q0-16 16-25l71-41q19-11 19-28V22" stroke="#624291" strokeWidth="2.6" />
+   <rect x="469" y="8" width="31" height="31" fill="#f8f5ee" stroke="#9e978e" />
+   <rect data-hero-accent x="500" y="26" width="31" height="31" fill="#ede5f4" stroke="#624291" />
+   <rect x="401" y="3" width="30" height="30" fill="#f8f5ee" stroke="#9e978e" />
+   <rect data-hero-node="opening" x="469" y="8" width="31" height="31" fill="#ede5f4" stroke="#624291" strokeWidth="2" />
+  </g>
+  <path data-hero-accent d="M516 346h23m-11-11v22" stroke="#624291" strokeWidth="1.29" />
+ </g>
+</svg>); }

@@ -33,7 +33,3 @@
   .heroArt { width: calc(100% + 24px); margin-inline: -12px; }
 }
 @media (prefers-reduced-motion: reduce) { .actions a { transition: none; } }
-
-@keyframes community-arrive { from { opacity: .75; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-.heroArt svg { animation: community-arrive 550ms cubic-bezier(.22,.68,.3,1) 1 both; }
-@media (prefers-reduced-motion: reduce) { .heroArt svg { animation: none; } }
