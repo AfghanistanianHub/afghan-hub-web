@@ -1,3 +1,4 @@
+import { MemberListingArtwork } from "@/components/public/member-listing-artwork";
 import { cancelEventRsvp, rsvpEvent } from "@/app/(dashboard)/events/actions";
 import { DeleteEventButton } from "@/components/events/delete-event-button";
 import Link from "next/link";
@@ -63,7 +64,7 @@ export default async function EventPage({ params, searchParams }: Props) {
     : { data: [] };
   const relatedEvents = rankRelatedEvents(event, relatedCandidates ?? [], 3);
 
-  return <main className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10">
+  return <main data-illustration-focus-scope className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10">
     <Link href="/events" className="inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"><ArrowLeft aria-hidden="true" className="size-4"/>Back to events</Link>
 
     <div className="mt-6 space-y-4">
@@ -74,11 +75,8 @@ export default async function EventPage({ params, searchParams }: Props) {
       {event.status !== "published" ? <div role="status" aria-live="polite" className="rounded-2xl border border-accent/50 bg-accent/40 p-4 text-sm leading-6 text-accent-foreground">{event.status === "draft" ? "This event is waiting for moderator approval and is not visible to the community yet." : `This event was not approved.${event.moderation_note ? ` Reason: ${event.moderation_note}` : ""} Edit it to submit it for review again.`}</div> : null}
     </div>
 
-    <section className="relative mt-6 overflow-hidden rounded-[2rem] border border-border/80 bg-card shadow-[0_18px_60px_rgb(15_23_42/0.055)]">
-      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-80 bg-[radial-gradient(circle_at_82%_10%,color-mix(in_oklab,var(--primary)_14%,transparent),transparent_30%),radial-gradient(circle_at_15%_75%,color-mix(in_oklab,var(--accent)_52%,transparent),transparent_30%)]"/>
-      <div aria-hidden="true" className="absolute right-8 top-8 size-44 rounded-full border border-primary/10"/>
-      <div aria-hidden="true" className="absolute right-20 top-20 size-24 rounded-full border border-dashed border-primary/15"/>
-
+    <section data-illustration-trigger className="relative mt-6 overflow-hidden rounded-sm border border-border bg-card">
+      <MemberListingArtwork kind="events" />
       <div className="relative grid gap-7 px-6 py-8 md:px-9 md:py-11 lg:grid-cols-[120px_minmax(0,1fr)_auto] lg:items-start">
         <div className="flex size-24 flex-col items-center justify-center rounded-[1.7rem] border border-primary/15 bg-background/88 text-center shadow-sm backdrop-blur lg:size-28">
           <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary">{dateParts.month}</span>
@@ -93,7 +91,7 @@ export default async function EventPage({ params, searchParams }: Props) {
             </span>
             {!hasStarted && event.status === "published" ? <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-background/75 px-3 py-1.5 text-xs font-medium text-primary"><Sparkles aria-hidden="true" className="size-3"/>Upcoming</span> : null}
           </div>
-          <h1 className="mt-5 break-words text-3xl font-bold leading-[1.08] tracking-[-0.035em] text-foreground md:text-5xl">{event.title}</h1>
+          <h1 className="mt-5 break-words text-3xl font-medium leading-[1.08] tracking-[-0.035em] text-foreground md:text-4xl">{event.title}</h1>
           {event.organization ? <p className="mt-4 text-sm text-muted-foreground">Hosted by <Link href={`/organizations/${event.organization.slug}`} className="rounded-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">{event.organization.name}</Link></p> : <p className="mt-4 text-sm text-muted-foreground">Community event</p>}
           {event.summary ? <p className="mt-5 max-w-2xl break-words text-lg leading-8 text-muted-foreground">{event.summary}</p> : null}
         </div>
