@@ -1,3 +1,4 @@
+import { CommunityIllustration } from "@/components/public/community-illustrations";
 import { SubmitButton } from "@/components/auth/submit-button";
 import Link from "next/link";
 import { requestPasswordReset } from "./actions";
@@ -17,15 +18,13 @@ export default async function ForgotPasswordPage({
   return (
     <main className="min-h-screen bg-background text-foreground lg:grid lg:grid-cols-[0.95fr_1.05fr]">
       <section className="relative hidden min-h-screen overflow-hidden border-r border-border/80 bg-card p-10 text-foreground lg:flex lg:flex-col lg:justify-between xl:p-14">
-        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,color-mix(in_oklab,var(--primary)_14%,transparent),transparent_30%),radial-gradient(circle_at_85%_86%,color-mix(in_oklab,var(--accent)_48%,transparent),transparent_28%)]" />
-        <div aria-hidden="true" className="absolute -right-24 top-24 size-[30rem] rounded-full border border-primary/10" />
-        <div aria-hidden="true" className="absolute right-12 top-40 size-72 rounded-full border border-dashed border-primary/10" />
 
         <Link href="/" className="relative z-10 rounded-sm text-sm font-semibold uppercase tracking-[0.22em] text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Afghan Hub</Link>
 
+        <div aria-hidden="true" className="relative mx-auto my-6 w-full max-w-sm"><CommunityIllustration /></div>
         <div className="relative z-10 max-w-xl">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Secure account recovery</p>
-          <h1 className="mt-4 text-5xl font-semibold leading-[1.03] tracking-[-0.045em] xl:text-6xl">Get back to your community.</h1>
+          <h1 className="mt-4 text-4xl font-medium leading-tight tracking-tight">Get back to your community.</h1>
           <p className="mt-5 max-w-lg text-base leading-7 text-muted-foreground">We will send the recovery link only through the email connected to your Afghan Hub account.</p>
         </div>
 
