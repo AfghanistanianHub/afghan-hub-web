@@ -46,10 +46,7 @@
 .pathway:active { background:#eee7f3; }
 .pathwaySignature { position:absolute; width:180px; right:-22px; top:2px; color:#d9d2c6; transition:color var(--motion-step); }
 .pathway:is(:hover,:focus-visible) .pathwaySignature { color:#aa92bd; }
-.heroCopy > :is(.eyebrow,h1,.intro,.actions) { animation:copy-entrance var(--motion-reveal) var(--motion-ease) both; }
-.heroCopy h1 { animation-delay:80ms; }
-.heroCopy .intro { animation-delay:160ms; }
-.heroCopy .actions { animation-delay:240ms; }
-@keyframes copy-entrance { from { opacity:.25; } to { opacity:1; } }
+.heroCopy h1 { animation:title-entrance var(--motion-reveal) var(--motion-ease) both; }
+@keyframes title-entrance { from { color:var(--muted-foreground); } to { color:var(--foreground); } }
 @media(max-width:550px) { .signatureBridge { flex-direction:column; align-items:flex-start; gap:4px; margin-bottom:20px; } .signatureBridge svg { width:148px; height:35px; } }
 @media(prefers-reduced-motion:reduce) { .heroCopy > :is(.eyebrow,h1,.intro,.actions) { animation:none !important; } .actions svg,.pathway,.pathwaySignature { transition:none; } .actions a:is(:hover,:focus-visible,:active) svg { transform:none; } }
