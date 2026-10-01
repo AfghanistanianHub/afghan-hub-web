@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { PeopleIllustration, OrganizationsIllustration, EventsIllustration, OpportunitiesIllustration } from "./community-illustrations";
 import styles from "./discovery-panels.module.css";
+import motion from "./illustration-motion.module.css";
 
 const destinations = [
   { key: "people", title: "People", description: "Find people who share your interests.", link: "Find your people", href: "/network", Illustration: PeopleIllustration },
@@ -19,8 +20,8 @@ export function DiscoveryPanels() {
           <article className={styles.panelWrapper} key={key}>
             <Link className={styles.panel} href={href} prefetch={false}
               aria-labelledby={`discovery-${key}-title`} aria-describedby={`discovery-${key}-description`}
-              data-discovery-panel={key} data-discovery-link={key}>
-              <div className={styles.art}><Illustration /></div>
+              data-illustration-trigger data-discovery-panel={key} data-discovery-link={key}>
+              <div className={`${styles.art} ${motion.art}`}><Illustration /></div>
               <h3 id={`discovery-${key}-title`}>{title}</h3><p id={`discovery-${key}-description`}>{description}</p>
               <span className={styles.destination}>{link}<ArrowRight size={17} aria-hidden="true" /></span>
             </Link>

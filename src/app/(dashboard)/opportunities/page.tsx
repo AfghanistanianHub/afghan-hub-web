@@ -1,3 +1,4 @@
+import { CatalogIllustration } from "@/components/public/catalog-illustration";
 import Link from "next/link";
 import { ArrowUpRight, BriefcaseBusiness, Search } from "lucide-react";
 import {
@@ -119,25 +120,23 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
   const hasFilters = Boolean(search || city || type !== "all" || format !== "all");
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8 md:px-8 lg:px-10">
-      <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
-        <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/50 blur-3xl" />
+    <main data-illustration-focus-scope className="mx-auto max-w-7xl px-4 py-8 md:px-8 lg:px-10">
+      <section data-illustration-trigger className="relative overflow-hidden rounded-sm border border-border/80 bg-card px-6 py-8 md:px-8 md:py-10">
         <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             <BriefcaseBusiness aria-hidden="true" className="size-3.5" />
             Opportunity board
           </div>
-          <h1 className="mt-5 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Opportunities</h1>
+          <h1 className="mt-5 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">Opportunities</h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
             Discover jobs, volunteering, scholarships, mentorship, education, investment, and community opportunities.
-          </p>
+          </p><div className="mt-5 w-48 max-w-full" aria-hidden="true"><CatalogIllustration kind="opportunities" /></div>
         </div>
 
         <Link
           href="/opportunities/new"
-          className="inline-flex w-fit items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_18%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          className="inline-flex w-fit items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           Post opportunity
           <ArrowUpRight aria-hidden="true" className="size-4" />

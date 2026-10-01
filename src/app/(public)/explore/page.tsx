@@ -58,7 +58,7 @@ export default async function ExplorePage({ searchParams }: Props) {
 
   return (
     <main id="main-content" data-catalog className={styles.catalog}>
-      <section className="relative overflow-hidden border-b border-border/70">
+      <section data-illustration-trigger className="relative overflow-hidden border-b border-border/70">
         <div className="relative mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
           <div className={styles.intro}>
             <div>

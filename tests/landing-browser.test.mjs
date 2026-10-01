@@ -91,7 +91,7 @@ const layoutExpression = `(() => {
 
 test("geometric landing responsive layout, discovery links and accessibility in sandboxed Chrome", {
   skip: enabled ? false : "Browser QA executes in existing Linux CI; local browser verification is not implied.",
-  timeout: 300000,
+  timeout: 420000,
 }, async t => {
   assert.ok(chromePath, "Linux CI must provide Chrome for browser verification");
   const nextCli = path.join(root, "node_modules/next/dist/bin/next");
@@ -388,6 +388,62 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     await page.send("Emulation.setEmulatedMedia",{features:[]});
     console.log(`AFGHAN_HUB_MOTION_RESULT ${key} hover/focus/reset/rapid reversals/reduced motion/stable bounds passed`);
     if(process.versions.node.startsWith("24.")) for(let frame=0;frame<recording.length;frame++) emitScreenshot(`motion_${key}_${String(frame).padStart(3,'0')}.jpg`,recording[frame]);
+  }
+
+  // Matching category artwork on each actual public index/detail, not a mockup route.
+  const sectionMotion = kind => `(()=>{const e=document.querySelector('[data-category-illustration=${kind}]');return [...e.querySelectorAll('[data-motion]')].map(n=>{const s=getComputedStyle(n);return [s.strokeDashoffset,s.opacity,s.transform,s.stroke,s.fill]})})()`;
+  for (const width of [390,1440]) {
+    await page.send("Emulation.setDeviceMetricsOverride",{width,height:1000,deviceScaleFactor:1,mobile:width===390});
+    await page.send("Emulation.setTouchEmulationEnabled",{enabled:false});
+    for(const kind of ['organizations','events','opportunities','businesses']) {
+      await page.send('Emulation.setEmulatedMedia',{features:[]});
+      await page.send('Page.navigate',{url:appUrl+'/explore?type='+kind});
+      await waitFor(()=>page.evaluate(`document.readyState==='complete'&&!!document.querySelector('[data-category-illustration=${kind}]')`),'animated category '+kind);
+      await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:8,y:8});
+      await delay(650);
+      const resting=await page.evaluate(sectionMotion(kind));
+      const bounds=await page.evaluate(`(()=>{const r=document.querySelector('[data-category-illustration=${kind}]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()`);
+      const point={x:bounds.x+bounds.width/2,y:bounds.y+bounds.height/2};
+      await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',...point});await delay(650);
+      assert.notDeepEqual(await page.evaluate(sectionMotion(kind)),resting,`Visible page artwork response ${kind} at ${width}`);
+      assert.deepEqual(await page.evaluate(`(()=>{const r=document.querySelector('[data-category-illustration=${kind}]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()`),bounds,'Stable category illustration bounds');
+      await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:8,y:8});await delay(650);
+      assert.deepEqual(await page.evaluate(sectionMotion(kind)),resting,`Page artwork returns to rest ${kind}`);
+      await page.evaluate("document.querySelector('nav[aria-label=\"Listing categories\"] a[aria-current=page]').focus({preventScroll:true})");await delay(650);
+      assert.notDeepEqual(await page.evaluate(sectionMotion(kind)),resting,`Equivalent category keyboard feedback ${kind}`);
+      await page.evaluate('document.activeElement.blur()');await delay(650);
+      for(let reversal=0;reversal<4;reversal++){await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',...point});await delay(25);await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:8,y:8});await delay(25);}
+      await delay(650);assert.deepEqual(await page.evaluate(sectionMotion(kind)),resting,`No queued category animation ${kind}`);
+      if(width===1440&&process.versions.node.startsWith('24.')) {
+        const clip=await page.evaluate("(()=>{const r=document.querySelector('main > section').getBoundingClientRect();return {x:0,y:Math.max(0,r.y+scrollY),width:innerWidth,height:r.height,scale:1}})()");
+        const frames=[];const times=[];const began=Date.now();
+        for(let frame=0;frame<24;frame++){
+          if(frame===5)await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',...point});
+          if(frame===15)await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:8,y:8});
+          times.push(Date.now()-began);
+          const shot=await page.send('Page.captureScreenshot',{format:'jpeg',quality:75,captureBeyondViewport:true,clip});frames.push(shot.data);await delay(85);
+        }
+        console.log(`AFGHAN_HUB_SECTION_TIMES ${kind} ${JSON.stringify(times)}`);
+        for(let frame=0;frame<frames.length;frame++)emitScreenshot(`section_${kind}_${String(frame).padStart(2,'0')}.jpg`,frames[frame]);
+      }
+      await page.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+      await page.evaluate("document.querySelector('nav[aria-label=\"Listing categories\"] a[aria-current=page]').focus({preventScroll:true})");
+      assert.ok(await page.evaluate(`(()=>{const e=document.querySelector('[data-category-illustration=${kind}]');return [...e.querySelectorAll('[data-motion]')].every(n=>getComputedStyle(n).transitionDuration.split(',').every(v=>parseFloat(v)===0)&&getComputedStyle(n).animationName==='none')})()`),`Static reduced-motion category ${kind}`);
+      // Existing listing link remains the single actionable target; its cover shares the same motion.
+      await page.evaluate("document.activeElement.blur();document.querySelector('article h3 a').focus()");
+      const card=await page.evaluate(`(()=>{const e=document.querySelector('article');return {href:e.querySelector('h3 a').getAttribute('href'),motions:e.querySelectorAll('[data-motion]').length,focus:e.matches(':focus-within')}})()`);
+      assert.equal(card.href,`/explore/${kind}/layout-sample-${kind}-0`);assert.ok(card.motions>0&&card.focus,'Listing cover has semantic link and animated artwork');
+      await page.send('Page.navigate',{url:appUrl+card.href});
+      await waitFor(()=>page.evaluate(`document.readyState==='complete'&&!!document.querySelector('[data-category-illustration=${kind}]')`),'animated detail '+kind);
+      await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:8,y:8});
+      await page.send('Emulation.setEmulatedMedia',{features:[]});await delay(650);
+      const detailRest=await page.evaluate(sectionMotion(kind));
+      await page.evaluate("[...document.querySelectorAll('a')].find(a=>a.textContent.trim().startsWith('Join Afghan Hub')).focus({preventScroll:true})");await delay(650);
+      assert.notDeepEqual(await page.evaluate(sectionMotion(kind)),detailRest,`Detail CTA keyboard feedback ${kind}`);
+      assert.ok(await page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'Animated detail fits viewport');
+      await page.evaluate(axeSource);const audit=await page.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>r.violations.map(v=>v.id))");assert.deepEqual(audit,[],`Animated detail accessibility ${kind}`);
+      console.log(`AFGHAN_HUB_SECTION_RESULT ${kind} ${width}: index/detail hover/focus/reset/reversals/stable bounds/reduced motion/links/axe passed`);
+    }
   }
 
   // Verify the same identity throughout public navigation, forms and catalogue details.
