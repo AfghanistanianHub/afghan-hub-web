@@ -391,7 +391,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   for (const width of [320,390,768,1024,1440,1920]) {
     await page.send("Emulation.setDeviceMetricsOverride",{width,height:1000,deviceScaleFactor:1,mobile:width<640});
     await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
-    for (const route of ["/explore?type=organizations", "/explore/organizations/layout-sample-organizations-0", "/about", "/login", "/login?mode=join", "/support", "/privacy", "/terms"]) {
+    for (const route of ["/explore?type=organizations", "/explore/organizations/layout-sample-organizations-0", "/about", "/login", "/login?mode=join", "/forgot-password", "/support", "/privacy", "/terms"]) {
       await page.send("Page.navigate",{url:appUrl+route});
       await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('h1')"),"public consistency route "+route);
       await delay(150);
@@ -406,7 +406,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
         screenshots.push({name:`consistency_${name}_${width}.jpg`,data:shot.data});
       }
     }
-    console.log(`AFGHAN_HUB_CONSISTENCY_RESULT ${width}: eight public/auth routes, no overflow, zero axe violations, shared violet passed`);
+    console.log(`AFGHAN_HUB_CONSISTENCY_RESULT ${width}: nine public/auth routes, no overflow, zero axe violations, shared violet passed`);
   }
   await page.send("Emulation.setDeviceMetricsOverride",{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   await page.send("Page.navigate",{url:appUrl+'/explore?type=organizations'});

@@ -1,3 +1,4 @@
+import { CommunityIllustration } from "@/components/public/community-illustrations";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -36,19 +37,17 @@ export default async function UpdatePasswordPage({
   return (
     <main className="min-h-screen bg-background text-foreground lg:grid lg:grid-cols-[0.95fr_1.05fr]">
       <section className="relative hidden min-h-screen overflow-hidden border-r border-border/80 bg-card p-10 text-foreground lg:flex lg:flex-col lg:justify-between xl:p-14">
-        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,color-mix(in_oklab,var(--primary)_14%,transparent),transparent_30%),radial-gradient(circle_at_85%_86%,color-mix(in_oklab,var(--accent)_48%,transparent),transparent_28%)]" />
-        <div aria-hidden="true" className="absolute -right-24 top-24 size-[30rem] rounded-full border border-primary/10" />
-        <div aria-hidden="true" className="absolute right-12 top-40 size-72 rounded-full border border-dashed border-primary/10" />
 
         <p className="relative z-10 text-sm font-semibold uppercase tracking-[0.22em] text-primary">Afghan Hub</p>
 
+        <div aria-hidden="true" className="relative mx-auto my-6 w-full max-w-sm"><CommunityIllustration /></div>
         <div className="relative z-10 max-w-xl">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Finish account recovery</p>
-          <h1 className="mt-4 text-5xl font-semibold leading-[1.03] tracking-[-0.045em] xl:text-6xl">Choose a password built to last.</h1>
+          <h1 className="mt-4 text-4xl font-medium leading-tight tracking-tight">Choose a password built to last.</h1>
           <p className="mt-5 max-w-lg text-base leading-7 text-muted-foreground">A stronger password protects your profile, conversations, connections, and the work you share with the community.</p>
         </div>
 
-        <div className="relative z-10 rounded-[1.75rem] border border-primary/10 bg-background/72 p-5 text-sm leading-6 text-muted-foreground">
+        <div className="relative z-10 rounded-sm border border-primary/10 bg-background/72 p-5 text-sm leading-6 text-muted-foreground">
           <p className="font-semibold text-foreground">Password baseline</p>
           <p className="mt-2">{PASSWORD_POLICY_HINT}</p>
         </div>
