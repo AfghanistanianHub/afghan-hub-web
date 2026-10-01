@@ -168,7 +168,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   assert.ok(stages[2].delay>=stages[1].delay+stages[1].duration,"Violet accents activate after architectural reveal");
   assert.equal(await page.evaluate("document.querySelectorAll('[data-constellation-person]').length"),4,"Hero constellation remains human-first without invented members");
   assert.ok(await page.evaluate("!!document.querySelector('[data-community-signature]') && !!document.querySelector('[data-environment-contour]')"),"Original geometric signature and environmental contour render");
-  assert.equal(await page.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--motion-step').trim()"),"420ms","Shared motion timing is consistent");
+  assert.equal(await page.evaluate("(()=>{const t=getComputedStyle(document.documentElement).getPropertyValue('--motion-step').trim();return parseFloat(t)*(t.endsWith('ms')?1:1000)})()"),420,"Shared motion timing is consistent");
   const capture=[];const captureTimes=[];const began=Date.now();let phase=0;
   const depth=[];
   while(Date.now()-began<13000) {

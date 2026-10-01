@@ -87,7 +87,7 @@ export function CommunityIllustration() { return (
    <path data-hero-pulse="network" pathLength="1" d="M75 312 133 342 198 304 254 336" stroke="#624291" strokeWidth="3.5" />
    <path data-hero-focus pathLength="1" d="M75 312 133 342 198 304 254 336 M133 342 141 392 M198 304 174 267" stroke="#624291" strokeWidth="2.6" />
    <rect data-hero-node="network" x="239" y="318" width="30" height="36" rx="5" stroke="#624291" strokeWidth="2" fill="#ede5f4" />
-   {[[75,312],[133,342],[198,304],[254,336]].map(([x,y],index) => <g key={index} data-constellation-person transform={`translate(${x} ${y})`}>
+   {[[75,312],[133,342],[198,304],[254,336]].map(([x,y],index) => <g key={index} data-constellation-person data-hero-accent={index === 1 ? "" : undefined} transform={`translate(${x} ${y})`}>
     <rect x="-12" y="-15" width="24" height="30" rx="4" fill={index === 1 ? "#624291" : "#f8f5ee"} stroke={index === 1 ? "#624291" : "#b4aa9e"} />
     <g stroke={index === 1 ? "#fff" : "#938b81"} strokeWidth="1.5">
      <circle cy="-5" r="3.5" />
