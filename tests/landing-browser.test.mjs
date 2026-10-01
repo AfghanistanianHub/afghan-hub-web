@@ -155,6 +155,9 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   await page.evaluate(`window.__heroShifts=0;window.__heroLongTasks=[];new PerformanceObserver(l=>{for(const e of l.getEntries())if(!e.hadRecentInput)window.__heroShifts+=e.value}).observe({type:'layout-shift'});new PerformanceObserver(l=>window.__heroLongTasks.push(...l.getEntries().map(e=>e.duration))).observe({type:'longtask'})`);
   const heroGeometry=await page.evaluate("(()=>{const e=document.querySelector('[data-hero-region]');const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()");
   const illustration=await page.evaluate("(()=>{const r=document.querySelector('[data-community-motion]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()");
+  const stages=await page.evaluate("(()=>{const e=document.querySelector('[data-community-motion]');return ['[data-hero-draw]','[data-hero-reveal]','[data-hero-accent]'].map(s=>e.querySelector(s).getAnimations()[0].effect.getTiming())})()");
+  assert.ok(stages[1].delay>=stages[0].duration,"Forms reveal after main path drawing");
+  assert.ok(stages[2].delay>=stages[1].delay+stages[1].duration,"Violet accents activate after architectural reveal");
   const capture=[];const captureTimes=[];const began=Date.now();let phase=0;
   const depth=[];
   while(Date.now()-began<13000) {
@@ -178,6 +181,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     capture.push((await page.send("Page.captureScreenshot",{format:"jpeg",quality:72,captureBeyondViewport:true,clip:{...heroGeometry,scale:1}})).data);
     await delay(Math.max(0,100-(Date.now()-began-elapsed)));
   }
+  assert.ok(await page.evaluate("[...document.querySelectorAll('[data-hero-layer=architecture],[data-hero-layer=network],[data-hero-layer=openings]')].every(e=>{const m=new DOMMatrix(getComputedStyle(e).transform);return m.m41===0&&m.m42===0})"),"Selected depth layers return to rest after pointer exit");
   assert.equal(phase,5);assert.equal(depth.length,2);assert.notEqual(depth[0],depth[1],"Pointer must move selected layers");
   assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-community-motion] svg')).transform"),"none","Never move the whole SVG");
   assert.deepEqual(await page.evaluate("(()=>{const r=document.querySelector('[data-hero-region]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()"),heroGeometry,"Hero frame must remain fixed");
