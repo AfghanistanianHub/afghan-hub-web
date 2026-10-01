@@ -405,7 +405,8 @@ test("geometric landing responsive layout, discovery links and accessibility in 
       assert.deepEqual(audit,[],`Accessibility ${route} at ${width}: ${JSON.stringify(audit)}`);
       if ([390,1440].includes(width) && ["/explore?type=organizations","/explore/organizations/layout-sample-organizations-0","/about","/login"].includes(route)) {
         const name=route.startsWith('/explore/')?'detail':route.startsWith('/explore?')?'explore':route.slice(1);
-        const shot=await page.send("Page.captureScreenshot",{format:"jpeg",quality:80});
+        const height=await page.evaluate("Math.ceil(document.querySelector('main').getBoundingClientRect().bottom)");
+        const shot=await page.send("Page.captureScreenshot",{format:"jpeg",quality:80,captureBeyondViewport:true,clip:{x:0,y:0,width,height:route.startsWith('/explore')?height:1000,scale:1}});
         screenshots.push({name:`consistency_${name}_${width}.jpg`,data:shot.data});
       }
     }

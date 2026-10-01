@@ -74,7 +74,7 @@ export default async function ExplorePage({ searchParams }: Props) {
             <div className={styles.introArt}><CatalogIllustration kind={kind} /></div>
           </div>
 
-          <nav aria-label="Listing categories" className="mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <nav aria-label="Listing categories" className={`${styles.categories} mt-9 grid grid-cols-2 gap-3 lg:grid-cols-4`}>
             {publicKinds.map(value => {
               const Icon = icons[value];
               const active = value === kind;
