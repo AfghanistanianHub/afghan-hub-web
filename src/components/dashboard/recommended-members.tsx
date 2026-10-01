@@ -1,4 +1,5 @@
 import Link from "next/link";
+import styles from "@/components/network/network-surfaces.module.css";
 import { ArrowRight, BriefcaseBusiness, MapPin, UserRound } from "lucide-react";
 import { ExternalImage } from "@/components/ui/external-image";
 import type { RecommendedMember } from "@/lib/member-recommendations";
@@ -34,7 +35,7 @@ export function RecommendedMembers({
   if (!members.length) return null;
 
   return (
-    <section className="rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_12px_38px_rgb(15_23_42/0.04)] md:p-7">
+    <section className={`border p-6 md:p-7 ${styles.surface}`}>
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
@@ -46,7 +47,7 @@ export function RecommendedMembers({
         </div>
         <Link
           href="/network"
-          className="hidden items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:text-primary/80 sm:inline-flex focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          className="hidden min-h-11 items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:text-primary/80 sm:inline-flex focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           Explore network
           <ArrowRight aria-hidden="true" className="size-4" />
@@ -63,7 +64,7 @@ export function RecommendedMembers({
             <Link
               key={member.id}
               href={`/members/${member.id}`}
-              className="group rounded-2xl border border-border bg-background p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className={`group border p-5 ${styles.surface} ${styles.profile}`}
             >
               <div className="flex items-start gap-3.5">
                 {member.avatar_url ? (
@@ -72,10 +73,10 @@ export function RecommendedMembers({
                     alt={memberName}
                     width={48}
                     height={48}
-                    className="size-12 rounded-2xl object-cover"
+                    className="size-12 rounded-sm object-cover"
                   />
                 ) : (
-                  <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-sm font-bold text-primary">
+                  <span className="flex size-12 shrink-0 items-center justify-center rounded-sm bg-secondary text-sm font-bold text-primary">
                     {getInitials(memberName) || <UserRound aria-hidden="true" className="size-5" />}
                   </span>
                 )}
@@ -119,7 +120,7 @@ export function RecommendedMembers({
 
       <Link
         href="/network"
-        className="mt-5 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:hidden"
+        className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:hidden"
       >
         Explore network
         <ArrowRight aria-hidden="true" className="size-4" />
