@@ -255,6 +255,8 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     await waitFor(()=>page.evaluate(key==="people" ? "location.pathname==='/network'||location.pathname==='/login'" : `location.pathname==='/explore' && location.search==='?type=${key}'`),`one-tap ${key}`);
   }
   // Record the actual default → hover → reset frames and validate reversible SVG transitions.
+  // Keep Chrome's capture-only scrollbar removal from changing viewport geometry.
+  await page.send("Emulation.setScrollbarsHidden",{hidden:true});
   await page.send("Emulation.setDeviceMetricsOverride",{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   await page.send("Emulation.setTouchEmulationEnabled",{enabled:false});
   await page.send("Emulation.setEmulatedMedia",{features:[]});
