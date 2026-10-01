@@ -16,10 +16,14 @@ export function DiscoveryPanels() {
       <div className={styles.heading}><h2 id="community-discovery">Find your place in the community</h2><p>Four ways to begin.</p></div>
       <div className={styles.panels}>
         {destinations.map(({ key, title, description, link, href, Illustration }) => (
-          <article className={styles.panel} key={key} data-discovery-panel={key}>
-            <div className={styles.art}><Illustration /></div>
-            <h3>{title}</h3><p id={`discovery-${key}-description`}>{description}</p>
-            <Link href={href} prefetch={false} aria-describedby={`discovery-${key}-description`} data-discovery-link={key}>{link}<ArrowRight size={17} aria-hidden="true" /></Link>
+          <article className={styles.panelWrapper} key={key}>
+            <Link className={styles.panel} href={href} prefetch={false}
+              aria-labelledby={`discovery-${key}-title`} aria-describedby={`discovery-${key}-description`}
+              data-discovery-panel={key} data-discovery-link={key}>
+              <div className={styles.art}><Illustration /></div>
+              <h3 id={`discovery-${key}-title`}>{title}</h3><p id={`discovery-${key}-description`}>{description}</p>
+              <span className={styles.destination}>{link}<ArrowRight size={17} aria-hidden="true" /></span>
+            </Link>
           </article>
         ))}
       </div>

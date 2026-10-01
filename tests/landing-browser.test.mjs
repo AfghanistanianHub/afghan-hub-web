@@ -205,6 +205,42 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-discovery-link=people] svg')).transform"),"none","Reduced motion must suppress arrow movement");
   assert.ok(parseFloat(await page.evaluate("getComputedStyle(document.querySelector('[data-discovery-panel=people]')).transitionDuration"))<=0.00001);
   await page.send("Emulation.setEmulatedMedia",{features:[]});
+  // Physical mouse presses provide feedback and navigate without changing target bounds.
+  await page.send("Page.navigate",{url:appUrl});
+  await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-landing-cta]')"),"CTA landing");
+  await delay(300);
+  const ctaPoint=await page.evaluate("(()=>{const r=document.querySelector('[data-landing-cta=explore]').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()");
+  await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",...ctaPoint});
+  await delay(250);
+  const hoverColor=await page.evaluate("getComputedStyle(document.querySelector('[data-landing-cta=explore]')).backgroundColor");
+  await page.send("Input.dispatchMouseEvent",{type:"mousePressed",button:"left",clickCount:1,...ctaPoint});
+  await delay(250);
+  assert.notEqual(await page.evaluate("getComputedStyle(document.querySelector('[data-landing-cta=explore]')).backgroundColor"),hoverColor,"CTA press feedback must be visible");
+  await page.send("Input.dispatchMouseEvent",{type:"mouseReleased",button:"left",clickCount:1,...ctaPoint});
+  await waitFor(()=>page.evaluate("location.pathname==='/explore'"),"Explore CTA click");
+  await page.send("Page.navigate",{url:appUrl});
+  await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-landing-cta=join]')"),"Join CTA landing");
+  await delay(300);
+  await page.evaluate("document.querySelector('[data-landing-cta=join]').focus()");
+  for(const type of ["keyDown","keyUp"]) await page.send("Input.dispatchKeyEvent",{type,key:"Enter",code:"Enter",windowsVirtualKeyCode:13});
+  await waitFor(()=>page.evaluate("location.pathname==='/login' && new URLSearchParams(location.search).get('mode')==='join'"),"Join CTA keyboard activation");
+  await page.send("Page.navigate",{url:appUrl});
+  await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-discovery-panel=events]')"),"panel keyboard landing");
+  await delay(300);
+  await page.evaluate("document.querySelector('[data-discovery-panel=events]').focus()");
+  for(const type of ["keyDown","keyUp"]) await page.send("Input.dispatchKeyEvent",{type,key:"Enter",code:"Enter",windowsVirtualKeyCode:13});
+  await waitFor(()=>page.evaluate("location.pathname==='/explore' && location.search==='?type=events'"),"panel keyboard navigation");
+  await page.send("Page.navigate",{url:appUrl});
+  await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-discovery-panel=organizations]')"),"panel press landing");
+  await delay(300);
+  await page.evaluate("document.querySelector('[data-discovery-panel=organizations]').scrollIntoView({block:'center'})");
+  const panelPoint=await page.evaluate("(()=>{const r=document.querySelector('[data-discovery-panel=organizations]').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+80}})()");
+  await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",...panelPoint});
+  await page.send("Input.dispatchMouseEvent",{type:"mousePressed",button:"left",clickCount:1,...panelPoint});
+  assert.ok(await page.evaluate("document.querySelector('[data-discovery-panel=organizations]').matches(':active')"),"Artwork area must activate the whole panel");
+  assert.notEqual(await page.evaluate("getComputedStyle(document.querySelector('[data-discovery-panel=organizations]')).outlineStyle"),"none","Panel press feedback must appear");
+  await page.send("Input.dispatchMouseEvent",{type:"mouseReleased",button:"left",clickCount:1,...panelPoint});
+  await waitFor(()=>page.evaluate("location.pathname==='/explore' && location.search==='?type=organizations'"),"panel artwork click");
   // Single physical taps use the real existing destinations, including signed-out member routing.
   await page.send("Emulation.setDeviceMetricsOverride",{width:390,height:1000,deviceScaleFactor:1,mobile:true});
   await page.send("Emulation.setTouchEmulationEnabled",{enabled:true});
@@ -219,6 +255,6 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     await waitFor(()=>page.evaluate(key==="people" ? "location.pathname==='/network'||location.pathname==='/login'" : `location.pathname==='/explore' && location.search==='?type=${key}'`),`one-tap ${key}`);
   }
   assert.deepEqual(page.exceptions,[],"No uncaught browser exceptions");
-  console.log("AFGHAN_HUB_BROWSER_INTERACTION keyboard/skip/focus, stable hover, reduced motion, text resizing/reflow and all four single-tap routes passed.");
+  console.log("AFGHAN_HUB_BROWSER_INTERACTION keyboard/skip/focus, stable hover, reduced motion, text resizing/reflow all four single-tap routes, CTA mouse/keyboard activation, whole-panel artwork click and press feedback passed.");
   if(process.versions.node.startsWith("24.")) for(const screenshot of screenshots) emitScreenshot(screenshot.name,screenshot.data);
 });
