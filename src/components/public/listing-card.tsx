@@ -13,7 +13,7 @@ export function ListingDate({ item, kind }: { item: PublicListing; kind: PublicK
 
 export function ListingCard({ item, kind }: { item: PublicListing; kind: PublicKind }) {
   return (
-    <article className={`@container group relative min-w-0 overflow-hidden ${styles.listing}`}> 
+    <article data-illustration-trigger className={`@container group relative min-w-0 overflow-hidden ${styles.listing}`}> 
       <div className="flex h-full flex-col @min-[34rem]:flex-row">
         <div aria-hidden="true" className={`${styles.cover} relative flex h-40 shrink-0 items-center justify-center overflow-hidden @min-[34rem]:h-auto @min-[34rem]:w-48`}>
           <CatalogIllustration kind={kind} />

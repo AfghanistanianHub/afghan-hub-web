@@ -87,8 +87,8 @@ export default async function PublicDetailPage({ params }: Props) {
   const Icon = icons[kind];
 
   return (
-    <main id="main-content" data-catalog className={styles.catalog}>
-      <section className="relative overflow-hidden border-b border-border/70">
+    <main id="main-content" data-illustration-focus-scope data-catalog className={styles.catalog}>
+      <section data-illustration-trigger className="relative overflow-hidden border-b border-border/70">
         <div className="relative mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
           <Link href={`/explore?type=${kind}`} className="inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
             <ArrowLeft aria-hidden="true" className="size-4" />
