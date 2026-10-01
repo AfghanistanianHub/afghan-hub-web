@@ -1,0 +1,16 @@
+.surface { border-radius:var(--radius); background:var(--card); border-color:var(--border); box-shadow:none; }
+.profile { border-radius:var(--radius); transition:border-color var(--motion-fast),background var(--motion-fast); }
+.profile .surface { transition:border-color var(--motion-fast),background var(--motion-fast); }
+.profile:is(:hover,:focus-visible), .profile:is(:hover,:focus-visible) .surface { border-color:#a896bc; background:#f5f0e8; }
+.profile:active, .profile:active .surface { background:var(--secondary); }
+.profile:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
+.signature { position:absolute; right:8px; top:0; width:116px; height:20px; color:var(--border); pointer-events:none; transition:color var(--motion-step); }
+.profile:is(:hover,:focus-visible) .signature { color:#a896bc; }
+.profile [data-profile-arrow] { transition:transform var(--motion-step) var(--motion-ease),color var(--motion-fast); }
+.profile:is(:hover,:focus-visible) [data-profile-arrow] { transform:translate(3px,-3px); color:var(--primary); }
+.control { min-height:44px; border-radius:var(--radius); transition:background var(--motion-fast),border-color var(--motion-fast),box-shadow var(--motion-fast); }
+.control:active { box-shadow:inset 0 2px 4px #302b3520; }
+.control:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
+.search { min-height:48px; border-radius:var(--radius); box-shadow:none; }
+.search:focus { outline:2px solid var(--primary); outline-offset:2px; }
+@media(prefers-reduced-motion:reduce) { .profile,.profile .surface,.signature,.control,.profile [data-profile-arrow] { transition:none; } .profile:is(:hover,:focus-visible) [data-profile-arrow] { transform:none; } }

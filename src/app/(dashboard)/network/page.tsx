@@ -112,18 +112,18 @@ export default async function NetworkPage() {
           </div>
 
           <div className="relative mt-7 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:mt-0">
-            <div className="rounded-2xl border border-border/80 bg-background/90 p-4 backdrop-blur">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"><UsersRound aria-hidden="true" className="size-4" /></span>
+            <div className="rounded-sm border border-border bg-background p-4">
+              <span className="flex size-9 items-center justify-center rounded-sm bg-secondary text-primary"><UsersRound aria-hidden="true" className="size-4" /></span>
               <p className="mt-4 text-2xl font-bold tracking-tight">{memberCount}</p>
               <p className="mt-0.5 text-xs text-muted-foreground">members visible</p>
             </div>
-            <div className="rounded-2xl border border-border/80 bg-background/90 p-4 backdrop-blur">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"><ArrowRight aria-hidden="true" className="size-4" /></span>
+            <div className="rounded-sm border border-border bg-background p-4">
+              <span className="flex size-9 items-center justify-center rounded-sm bg-secondary text-primary"><ArrowRight aria-hidden="true" className="size-4" /></span>
               <p className="mt-4 text-2xl font-bold tracking-tight">{connectionCount}</p>
               <p className="mt-0.5 text-xs text-muted-foreground">connections</p>
             </div>
-            <div className="rounded-2xl border border-border/80 bg-background/90 p-4 backdrop-blur">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"><UserPlus aria-hidden="true" className="size-4" /></span>
+            <div className="rounded-sm border border-border bg-background p-4">
+              <span className="flex size-9 items-center justify-center rounded-sm bg-secondary text-primary"><UserPlus aria-hidden="true" className="size-4" /></span>
               <p className="mt-4 text-2xl font-bold tracking-tight">{requestCount}</p>
               <p className="mt-0.5 text-xs text-muted-foreground">new requests</p>
             </div>
@@ -138,7 +138,7 @@ export default async function NetworkPage() {
           ) : null}
 
           {error ? (
-            <div role="alert" aria-live="assertive" className="relative overflow-hidden rounded-2xl border border-destructive/20 bg-destructive/[0.05] p-4 text-sm text-destructive"><div aria-hidden="true" className="pointer-events-none absolute -right-8 -top-8 size-24 rounded-full bg-destructive/[0.06] blur-2xl"/><span className="relative">
+            <div role="alert" aria-live="assertive" className="relative overflow-hidden rounded-sm border border-destructive/20 bg-destructive/[0.05] p-4 text-sm text-destructive"><span className="relative">
               We could not load the member directory right now. Please try again shortly.</span>
             </div>
           ) : (
