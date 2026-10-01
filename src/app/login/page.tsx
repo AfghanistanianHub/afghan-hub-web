@@ -1,3 +1,4 @@
+import { CommunityIllustration } from "@/components/public/community-illustrations";
 import { SupportLinks } from "@/components/public/support-links";
 import { SubmitButton } from "@/components/auth/submit-button";
 import Link from "next/link";
@@ -41,10 +42,6 @@ export default async function LoginPage({
   return (
     <main className="min-h-screen bg-background text-foreground lg:grid lg:grid-cols-[1.08fr_0.92fr]">
       <section className="relative hidden min-h-screen overflow-hidden border-r border-border/80 bg-card text-foreground lg:flex lg:flex-col lg:justify-between lg:p-10 xl:p-14">
-        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_18%_8%,color-mix(in_oklab,var(--primary)_14%,transparent),transparent_30%),radial-gradient(circle_at_86%_86%,color-mix(in_oklab,var(--accent)_48%,transparent),transparent_30%)]" />
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 text-primary opacity-[0.035] [background-image:linear-gradient(to_right,currentColor_1px,transparent_1px),linear-gradient(to_bottom,currentColor_1px,transparent_1px)] [background-size:44px_44px]" />
-        <div aria-hidden="true" className="absolute -right-20 top-24 size-[28rem] rounded-full border border-primary/10" />
-        <div aria-hidden="true" className="absolute right-12 top-40 size-72 rounded-full border border-dashed border-primary/10" />
 
         <div className="relative z-10">
           <Link href="/" className="inline-flex items-center gap-2 rounded-sm text-sm font-semibold uppercase tracking-[0.22em] text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
@@ -52,12 +49,12 @@ export default async function LoginPage({
             Afghan Hub
           </Link>
 
-          <div className="mt-20 max-w-xl xl:mt-28">
+          <div className="mt-12 max-w-xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-primary/[0.055] px-3 py-1.5 text-xs font-semibold">
               <Sparkles aria-hidden="true" className="size-3.5" />
               People. Possibilities. Belonging.
             </div>
-            <h1 className="mt-6 text-5xl font-semibold leading-[1.02] tracking-[-0.045em] xl:text-6xl">
+            <h1 className="mt-6 text-4xl font-medium leading-tight tracking-tight">
               A place to find your people — and your next step.
             </h1>
             <p className="mt-5 max-w-lg text-base leading-7 text-muted-foreground">
@@ -66,11 +63,12 @@ export default async function LoginPage({
           </div>
         </div>
 
+        <div aria-hidden="true" className="relative mx-auto my-8 w-full max-w-md"><CommunityIllustration /></div>
         <div className="relative z-10 grid grid-cols-2 gap-3">
           {communityPaths.map(path => {
             const Icon = path.icon;
             return (
-              <div key={path.label} className="rounded-2xl border border-primary/10 bg-background/72 p-4 backdrop-blur-sm">
+              <div key={path.label} className="rounded-2xl border border-primary/10 bg-background/72 p-4">
                 <div className="flex items-center gap-3">
                   <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
                     <Icon aria-hidden="true" className="size-4.5" />

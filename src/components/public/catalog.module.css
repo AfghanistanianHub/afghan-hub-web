@@ -1,0 +1,15 @@
+.catalog { background: var(--background); }
+.intro { display:grid; grid-template-columns:minmax(0,1fr) 19rem; align-items:center; gap:3rem; }
+.introArt { width:100%; max-width:19rem; }
+.introArt svg, .detailArt svg { display:block; width:100%; height:auto; }
+.detailArt { max-width:18rem; margin:0 auto 1.5rem; }
+.listing { border:1px solid var(--border); border-radius:.3rem; background:var(--card); transition:border-color 250ms, background-color 250ms; }
+.listing:hover, .listing:focus-within { border-color:var(--primary); background:#fffdf8; }
+.listing:focus-within { outline:2px solid var(--primary); outline-offset:3px; }
+.listing:active { background:var(--secondary); }
+.cover { background:var(--background); border-bottom:1px solid var(--border); }
+.cover svg { width:100%; max-width:15rem; height:100%; max-height:10rem; }
+@container (min-width:34rem) { .cover { border-bottom:0; border-right:1px solid var(--border); } }
+@media (max-width:639px) { .intro { grid-template-columns:minmax(0,1fr) 7rem; gap:.8rem; } .introArt { align-self:start; } }
+@media (max-width:359px) { .intro { grid-template-columns:1fr; } .introArt { width:10rem; margin-left:auto; } }
+@media (prefers-reduced-motion:reduce) { .listing { transition:none; } }

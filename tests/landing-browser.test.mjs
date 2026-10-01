@@ -108,7 +108,15 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     const kind = url.pathname.replace("/rest/v1/", "");
     if (request.method !== "GET" || !rows[kind] || url.searchParams.get("status") !== "eq.published") { response.writeHead(404); response.end(); return; }
     response.writeHead(200, { "Content-Type": "application/json", "Content-Range": "0-2/3" });
-    response.end(JSON.stringify(rows[kind]));
+    let selected = rows[kind];
+    const slug = url.searchParams.get("slug");
+    if (slug?.startsWith("eq.")) selected = selected.filter(row => row.slug === slug.slice(3));
+    const pattern = url.searchParams.get("title") ?? url.searchParams.get("name");
+    if (pattern?.startsWith("ilike.")) {
+      const keyword = pattern.slice(6).replaceAll("%", "").toLowerCase();
+      selected = selected.filter(row => (row.title + " " + row.name).toLowerCase().includes(keyword));
+    }
+    response.end(JSON.stringify(selected));
   });
   t.after(() => new Promise(resolve => fixture.close(resolve)));
   const fixturePort = await listen(fixture);
@@ -379,6 +387,41 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     if(process.versions.node.startsWith("24.")) for(let frame=0;frame<recording.length;frame++) emitScreenshot(`motion_${key}_${String(frame).padStart(3,'0')}.jpg`,recording[frame]);
   }
 
+  // Verify the same identity throughout public navigation, forms and catalogue details.
+  for (const width of [320,390,768,1024,1440,1920]) {
+    await page.send("Emulation.setDeviceMetricsOverride",{width,height:1000,deviceScaleFactor:1,mobile:width<640});
+    await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
+    for (const route of ["/explore?type=organizations", "/explore/organizations/layout-sample-organizations-0", "/about", "/login", "/login?mode=join", "/support", "/privacy", "/terms"]) {
+      await page.send("Page.navigate",{url:appUrl+route});
+      await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('h1')"),"public consistency route "+route);
+      await delay(150);
+      assert.ok(await page.evaluate("document.documentElement.scrollWidth<=innerWidth+1"),`No overflow ${route} at ${width}`);
+      assert.equal(await page.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--primary').trim()"),"#624291",`Consistent violet ${route}`);
+      await page.evaluate(axeSource);
+      const audit = await page.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>r.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})))");
+      assert.deepEqual(audit,[],`Accessibility ${route} at ${width}: ${JSON.stringify(audit)}`);
+      if ([390,1440].includes(width) && ["/explore?type=organizations","/explore/organizations/layout-sample-organizations-0","/about","/login"].includes(route)) {
+        const name=route.startsWith('/explore/')?'detail':route.startsWith('/explore?')?'explore':route.slice(1);
+        const shot=await page.send("Page.captureScreenshot",{format:"jpeg",quality:80});
+        screenshots.push({name:`consistency_${name}_${width}.jpg`,data:shot.data});
+      }
+    }
+    console.log(`AFGHAN_HUB_CONSISTENCY_RESULT ${width}: eight public/auth routes, no overflow, zero axe violations, shared violet passed`);
+  }
+  await page.send("Emulation.setDeviceMetricsOverride",{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await page.send("Page.navigate",{url:appUrl+'/explore?type=organizations'});
+  await waitFor(()=>page.evaluate("document.readyState==='complete'&&!!document.querySelector('input[name=q]')"),"catalogue interactions");
+  assert.equal(await page.evaluate("document.querySelector('nav[aria-label=\"Listing categories\"] a[aria-current=page]').getAttribute('href')"),'/explore?type=organizations');
+  await page.evaluate("document.querySelector('input[name=q]').value='no-match-verification';document.querySelector('form').requestSubmit()");
+  await waitFor(()=>page.evaluate("location.search.includes('no-match-verification')&&document.body.textContent.includes('No listings match your search.')"),"search submits existing GET form");
+  await page.evaluate("[...document.querySelectorAll('a')].find(a=>a.textContent.trim()==='Clear search').click()");
+  await waitFor(()=>page.evaluate("!location.search.includes('q=')&&!!document.querySelector('article h3 a')"),"clear search restores listings");
+  await page.evaluate("document.querySelector('article h3 a').focus()");
+  await page.send("Input.dispatchKeyEvent",{type:"keyDown",key:"Enter",code:"Enter",windowsVirtualKeyCode:13});
+  await page.send("Input.dispatchKeyEvent",{type:"keyUp",key:"Enter",code:"Enter",windowsVirtualKeyCode:13});
+  await waitFor(()=>page.evaluate("location.pathname.includes('layout-sample-organizations-0')&&document.body.textContent.includes('Local browser QA fixture')"),"keyboard detail navigation");
+  assert.equal(await page.evaluate("[...document.querySelectorAll('a')].find(a=>a.textContent.trim()==='Open member view').getAttribute('href')"),'/organizations/layout-sample-organizations-0');
+  console.log("AFGHAN_HUB_CONSISTENCY_INTERACTION category routes/search/empty state/clear/keyboard detail/member destination passed; auth submissions and authenticated flows not exercised.");
   assert.deepEqual(page.exceptions,[],"No uncaught browser exceptions");
   console.log("AFGHAN_HUB_BROWSER_INTERACTION keyboard/skip/focus, stable hover, reduced motion, text resizing/reflow all four single-tap routes, CTA mouse/keyboard activation, whole-panel artwork click and press feedback passed.");
   if(process.versions.node.startsWith("24.")) for(const screenshot of screenshots) emitScreenshot(screenshot.name,screenshot.data);

@@ -49,38 +49,38 @@
 }
 
 :root {
-  --background: oklch(0.985 0.006 88);
-  --foreground: oklch(0.22 0.018 215);
-  --card: oklch(0.998 0.002 90);
-  --card-foreground: oklch(0.22 0.018 215);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.018 215);
-  --primary: oklch(0.43 0.055 205);
-  --primary-foreground: oklch(0.99 0.002 90);
-  --secondary: oklch(0.955 0.012 205);
-  --secondary-foreground: oklch(0.31 0.035 205);
-  --muted: oklch(0.965 0.008 90);
-  --muted-foreground: oklch(0.52 0.018 215);
-  --accent: oklch(0.935 0.035 82);
-  --accent-foreground: oklch(0.35 0.035 68);
+  --background: #f8f5ee;
+  --foreground: #302b35;
+  --card: #fcfaf5;
+  --card-foreground: #302b35;
+  --popover: #fcfaf5;
+  --popover-foreground: #302b35;
+  --primary: #624291;
+  --primary-foreground: #fff;
+  --secondary: #eee7f3;
+  --secondary-foreground: #624291;
+  --muted: #eee9e0;
+  --muted-foreground: #625b65;
+  --accent: #eee7dc;
+  --accent-foreground: #6d4935;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.91 0.012 95);
-  --input: oklch(0.91 0.012 95);
-  --ring: oklch(0.54 0.055 205);
-  --chart-1: oklch(0.43 0.055 205);
-  --chart-2: oklch(0.61 0.06 185);
-  --chart-3: oklch(0.70 0.09 82);
-  --chart-4: oklch(0.58 0.06 235);
-  --chart-5: oklch(0.37 0.04 205);
-  --radius: 0.75rem;
-  --sidebar: oklch(0.974 0.008 90);
-  --sidebar-foreground: oklch(0.27 0.025 215);
-  --sidebar-primary: oklch(0.43 0.055 205);
-  --sidebar-primary-foreground: oklch(0.99 0.002 90);
-  --sidebar-accent: oklch(0.945 0.016 205);
-  --sidebar-accent-foreground: oklch(0.31 0.035 205);
-  --sidebar-border: oklch(0.90 0.012 95);
-  --sidebar-ring: oklch(0.54 0.055 205);
+  --border: #d9d2c6;
+  --input: #b4aa9e;
+  --ring: #624291;
+  --chart-1: #624291;
+  --chart-2: #9378b5;
+  --chart-3: #b68c28;
+  --chart-4: #be6443;
+  --chart-5: #625b65;
+  --radius: 0.3rem;
+  --sidebar: #f4f0e8;
+  --sidebar-foreground: #302b35;
+  --sidebar-primary: #624291;
+  --sidebar-primary-foreground: #fff;
+  --sidebar-accent: #eee7f3;
+  --sidebar-accent-foreground: #624291;
+  --sidebar-border: #d9d2c6;
+  --sidebar-ring: #624291;
 }
 
 @layer base {
@@ -131,27 +131,27 @@
    to alternate category/content columns and constrain single listing cards,
    which created large empty areas when a feed contained only zero or one item. */
 @media (min-width: 1024px) {
-  main#main-content section[aria-labelledby$="-heading"] + section[aria-labelledby$="-heading"] {
+  main#main-content:not([data-catalog]) section[aria-labelledby$="-heading"] + section[aria-labelledby$="-heading"] {
     margin-top: 2rem !important;
   }
 
-  main#main-content section[aria-labelledby$="-heading"] > div {
+  main#main-content:not([data-catalog]) section[aria-labelledby$="-heading"] > div {
     grid-template-columns: minmax(15rem, 0.3fr) minmax(0, 0.7fr) !important;
     align-items: stretch !important;
     gap: 2rem !important;
   }
 
-  main#main-content section[aria-labelledby$="-heading"] > div > div {
+  main#main-content:not([data-catalog]) section[aria-labelledby$="-heading"] > div > div {
     min-width: 0;
     order: 0 !important;
   }
 
-  main#main-content section[aria-labelledby$="-heading"] > div > div:first-child > div {
+  main#main-content:not([data-catalog]) section[aria-labelledby$="-heading"] > div > div:first-child > div {
     position: static !important;
     height: 100%;
   }
 
-  main#main-content section[aria-labelledby$="-heading"] > div > div:nth-child(2) > div.grid > div {
+  main#main-content:not([data-catalog]) section[aria-labelledby$="-heading"] > div > div:nth-child(2) > div.grid > div {
     width: 100%;
     max-width: none !important;
   }
@@ -173,5 +173,5 @@
   }
 }
 
-/* Public discovery palette; member surfaces keep their existing tokens. */
-.public-shell { background:var(--background); color:var(--foreground); --primary:#624291; --primary-foreground:#fff; --secondary:#eee7f3; --secondary-foreground:#624291; --accent:#eee7dc; --accent-foreground:#6d4935; --ring:#624291; --background:#f8f5ee; --foreground:#302b35; --muted-foreground:#625b65; --border:#d9d2c6; }
+/* Public, authentication and member shells share the approved identity. */
+.public-shell { background:var(--background); color:var(--foreground); }
