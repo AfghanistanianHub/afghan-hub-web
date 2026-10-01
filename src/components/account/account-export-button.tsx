@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "@/components/network/network-surfaces.module.css";
+
 import { useState } from "react";
 
 export function AccountExportButton() {
@@ -42,7 +44,7 @@ export function AccountExportButton() {
   return (
     <div>
       <button type="button" onClick={download} disabled={pending} aria-busy={pending}
-        className="rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary disabled:cursor-wait disabled:opacity-60">
+        className={`border border-border bg-background px-4 py-2.5 text-sm font-semibold hover:bg-secondary disabled:cursor-wait disabled:opacity-60 ${styles.control}`}>
         {pending ? "Preparing download…" : "Download account and profile"}
       </button>
       {message ? (
@@ -51,8 +53,8 @@ export function AccountExportButton() {
           aria-live={failed ? "assertive" : "polite"}
           className={
             failed
-              ? "mt-3 rounded-xl border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm leading-6 text-destructive"
-              : "mt-3 rounded-xl border border-primary/15 bg-primary/[0.05] px-3 py-2 text-sm leading-6 text-primary"
+              ? "mt-3 rounded-sm border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm leading-6 text-destructive"
+              : "mt-3 rounded-sm border border-primary/15 bg-primary/[0.05] px-3 py-2 text-sm leading-6 text-primary"
           }
         >
           {message}
