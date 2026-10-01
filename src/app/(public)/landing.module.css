@@ -9,8 +9,10 @@
 .actions svg { flex-shrink: 0; }
 .primary { padding: 14px 20px; background: var(--primary); color: var(--primary-foreground); font-weight: 600; }
 .primary:hover { background: #503375; }
+.primary:active { background: #43236a; }
 .join { padding: 12px 6px; }
 .join:hover { color: var(--primary); background: var(--secondary); }
+.join:active { color: #43236a; background: #e6dced; }
 .actions a:focus-visible { outline: 2px solid var(--primary); outline-offset: 5px; }
 .note { margin: 30px 0 0; color: var(--muted-foreground); font-size: .75rem; }
 .heroArt { min-width: 0; }
