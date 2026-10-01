@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "@/components/network/network-surfaces.module.css";
+
 import { useActionState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 
@@ -37,6 +39,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         <textarea
           ref={textareaRef}
           name="message"
+          aria-label="Message"
           required
           maxLength={4000}
           rows={1}
@@ -54,14 +57,14 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
               formRef.current?.requestSubmit();
             }
           }}
-          className="min-h-12 min-w-0 flex-1 resize-none rounded-2xl border border-border bg-muted/45 px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/50 focus:bg-card focus:ring-4 focus:ring-primary/10 disabled:cursor-wait disabled:opacity-70"
+          className={`${styles.search} min-h-12 min-w-0 flex-1 resize-none border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground disabled:cursor-wait disabled:opacity-70`}
         />
 
         <button
           type="submit"
           disabled={isPending}
           aria-label={isPending ? "Sending message" : "Send message"}
-          className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary disabled:cursor-wait disabled:opacity-60"
+          className={`flex size-12 shrink-0 items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 disabled:cursor-wait disabled:opacity-60 ${styles.control}`}
         >
           {isPending ? (
             <span aria-hidden="true" className="size-5 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground motion-reduce:animate-none" />
@@ -73,7 +76,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
       <div className="mt-2 flex flex-col items-start gap-1.5 text-xs sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         {state.error ? (
-          <p id="message-error" role="alert" aria-live="assertive" className="rounded-lg border border-destructive/20 bg-destructive/[0.05] px-2.5 py-1.5 text-destructive">
+          <p id="message-error" role="alert" aria-live="assertive" className="rounded-sm border border-destructive/20 bg-destructive/[0.05] px-2.5 py-1.5 text-destructive">
             {state.error}
           </p>
         ) : (

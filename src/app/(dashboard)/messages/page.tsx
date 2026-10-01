@@ -1,3 +1,5 @@
+import { CommunitySignature } from "@/components/public/community-signature";
+import styles from "@/components/network/network-surfaces.module.css";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowUpRight, MessageSquare, Sparkles, UserRound, UsersRound } from "lucide-react";
@@ -54,16 +56,15 @@ export default async function MessagesPage() {
   return (
     <main className="px-4 py-8 md:px-8 lg:px-10">
       <div className="mx-auto max-w-5xl">
-        <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
-          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/50 blur-3xl" />
+        <section className={`relative overflow-hidden border px-6 py-8 md:px-8 md:py-10 ${styles.surface}`}>
+          <CommunitySignature className={styles.signature} />
           <div className="relative flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
                 <Sparkles aria-hidden="true" className="size-3.5" />
                 Community conversations
               </div>
-              <h1 className="mt-5 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Messages</h1>
+              <h1 className="mt-5 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">Messages</h1>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
                 Keep conversations with your Afghan Hub connections organized in one place.
               </p>
@@ -71,7 +72,7 @@ export default async function MessagesPage() {
 
             <Link
               href="/network"
-              className="inline-flex w-fit items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_18%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className={`inline-flex w-fit items-center gap-2 bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 ${styles.control}`}
             >
               Find people
               <UsersRound aria-hidden="true" className="size-4" />
@@ -90,9 +91,9 @@ export default async function MessagesPage() {
         ) : null}
 
         {!error && (inboxRows ?? []).length === 0 ? (
-          <div className="relative mt-8 overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-16 text-center shadow-[0_14px_42px_rgb(15_23_42/0.04)]">
-            <div aria-hidden="true" className="absolute -right-12 -top-12 size-36 rounded-full border border-primary/10" />
-            <span className="relative mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <div className={`relative mt-8 overflow-hidden border px-6 py-16 text-center ${styles.surface}`}>
+            <CommunitySignature className={styles.signature} />
+            <span className="relative mx-auto flex size-14 items-center justify-center rounded-sm bg-secondary text-primary">
               <MessageSquare aria-hidden="true" className="size-7" />
             </span>
             <h2 className="mt-5 text-lg font-semibold text-foreground">No conversations yet</h2>
@@ -101,7 +102,7 @@ export default async function MessagesPage() {
             </p>
             <Link
               href="/network"
-              className="mt-6 inline-flex rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className={`mt-6 inline-flex items-center bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 ${styles.control}`}
             >
               Browse the network
             </Link>
@@ -109,7 +110,7 @@ export default async function MessagesPage() {
         ) : null}
 
         {!error && (inboxRows ?? []).length > 0 ? (
-          <div className="mt-8 overflow-hidden rounded-[2rem] border border-border/80 bg-card shadow-[0_14px_42px_rgb(15_23_42/0.04)]">
+          <div className={`mt-8 overflow-hidden border ${styles.surface}`}>
             {(inboxRows ?? []).map((conversation) => {
               const profile = conversation.other_member_id
                 ? profilesById.get(conversation.other_member_id)
@@ -122,7 +123,7 @@ export default async function MessagesPage() {
                 <Link
                   key={conversation.conversation_id}
                   href={`/messages/${conversation.conversation_id}`}
-                  className={`group relative flex items-center gap-4 border-b border-border/80 px-5 py-5 transition last:border-b-0 hover:bg-primary/[0.035] focus-visible:relative focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary ${
+                  className={`group relative flex items-center gap-4 border-b border-border px-5 py-5 last:border-b-0 ${styles.inboxRow} ${
                     unreadCount > 0 ? "bg-primary/[0.035]" : ""
                   }`}
                 >
@@ -132,16 +133,16 @@ export default async function MessagesPage() {
                       alt=""
                       width={48}
                       height={48}
-                      className="size-12 shrink-0 rounded-2xl object-cover"
+                      className="size-12 shrink-0 rounded-sm object-cover"
                     />
                   ) : (
-                    <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary text-primary">
+                    <div className="flex size-12 shrink-0 items-center justify-center rounded-sm bg-secondary text-primary">
                       <UserRound aria-hidden="true" className="size-6" />
                     </div>
                   )}
 
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex flex-col items-start gap-1 sm:flex-row sm:justify-between sm:gap-4">
                       <h2 className={`line-clamp-2 break-words leading-5 text-foreground ${unreadCount > 0 ? "font-bold" : "font-semibold"}`}>
                         {memberName}
                       </h2>
@@ -169,7 +170,7 @@ export default async function MessagesPage() {
                       ) : null}
                     </div>
                   </div>
-                  <ArrowUpRight aria-hidden="true" className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                  <ArrowUpRight aria-hidden="true" data-profile-arrow className="size-4 shrink-0 text-muted-foreground" />
                 </Link>
               );
             })}
