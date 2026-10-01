@@ -31,15 +31,14 @@ export function Sidebar({
     : dashboardNavigation;
 
   return (
-    <aside className="relative hidden min-h-screen w-64 shrink-0 overflow-hidden border-r border-sidebar-border/80 bg-sidebar/82 shadow-[8px_0_32px_rgb(15_23_42/0.025)] backdrop-blur-2xl lg:flex lg:flex-col">
-      <div aria-hidden="true" className="pointer-events-none absolute -left-20 -top-24 size-64 rounded-full bg-primary/[0.055] blur-3xl" />
+    <aside className="relative hidden min-h-screen w-64 shrink-0 overflow-hidden border-r border-sidebar-border/80 bg-sidebar lg:flex lg:flex-col">
       <div className="relative flex h-20 items-center border-b border-sidebar-border/80 px-5">
         <Link href="/dashboard" className="group inline-flex items-center gap-3 rounded-xl px-1 py-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
-          <span className="flex size-9 items-center justify-center rounded-2xl border border-primary-foreground/10 bg-primary text-sm font-black text-primary-foreground shadow-[0_8px_20px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition-transform group-hover:-rotate-3">
-            A
+          <span className="flex size-9 items-center justify-center rounded-2xl border border-primary-foreground/10 bg-primary text-sm font-medium text-primary-foreground transition-colors group-hover:bg-primary/90">
+            AH
           </span>
           <span>
-            <span className="block text-sm font-extrabold tracking-[0.16em] text-foreground">
+            <span className="block text-sm font-semibold tracking-[0.16em] text-foreground">
               AFGHAN HUB
             </span>
             <span className="mt-0.5 block text-[0.65rem] font-medium tracking-wide text-muted-foreground">
