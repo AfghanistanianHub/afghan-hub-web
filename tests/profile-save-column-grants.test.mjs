@@ -7,7 +7,7 @@ const ts = require("typescript");
 const source = await readFile(new URL("../src/app/profile/actions.ts", import.meta.url), "utf8");
 const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
 
-function harness({ missing = false, updateError = null, insertError = null, signedIn = true } = {}) {
+function harness({ missing = false, updateError = null, insertError = null, mentorshipUpdateError = null, signedIn = true } = {}) {
   const calls = [];
   const user = { id: "trusted-member", email: "member@example.test" };
   const client = {
@@ -20,7 +20,7 @@ function harness({ missing = false, updateError = null, insertError = null, sign
           for (const key of ["id", "email", "updated_at", "created_at", "role"]) assert.ok(!(key in payload), "protected update: " + key);
           return { eq(key, value) {
             assert.equal(key, "id"); assert.equal(value, user.id);
-            return { select(columns) {
+            return { error: mentorshipUpdateError, select(columns) {
               assert.equal(columns, "id");
               return { maybeSingle: async () => ({ data: missing ? null : { id: user.id }, error: updateError }) };
             } };
@@ -69,7 +69,9 @@ test("existing profile saves with column-restricted UPDATE permissions and trust
 test("missing own profile inserts with authenticated identity after zero-row update", async () => {
   const h = harness({ missing: true });
   await assert.rejects(h.save(form()), { message: "/dashboard" });
-  assert.deepEqual(h.calls.map(c => c.operation), ["update", "insert"]);
+  assert.deepEqual(h.calls.map(c => c.operation), ["update", "insert", "update"]);
+  assert.ok(!("mentorship_topics" in h.calls[1].payload));
+  assert.deepEqual(h.calls[2].payload, { open_to_mentoring: false, looking_for_mentor: false, mentorship_topics: [] });
 });
 
 test("failed update never falls back to insert or exposes database details", async () => {
@@ -93,4 +95,10 @@ test("invalid links fail before any profile write", async () => {
   const h = harness(); const data = form(); data.set("website_url", "javascript:alert(1)");
   await assert.rejects(h.save(data), /Enter%20a%20valid%20website%20URL/);
   assert.equal(h.calls.length, 0);
+});
+
+test("failed mentorship update after insert does not report success or expose details", async () => {
+  const h = harness({ missing: true, mentorshipUpdateError: { message: "sensitive detail" } });
+  await assert.rejects(h.save(form()), /We%20could%20not%20save%20your%20mentorship%20preferences/);
+  assert.deepEqual(h.calls.map(c => c.operation), ["update", "insert", "update"]);
 });
