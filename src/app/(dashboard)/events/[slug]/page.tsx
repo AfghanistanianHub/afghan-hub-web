@@ -1,3 +1,4 @@
+import { ContextualAssistantPrompt } from "@/components/assistant/contextual-assistant-prompt";
 import { MemberListingArtwork } from "@/components/public/member-listing-artwork";
 import { cancelEventRsvp, rsvpEvent } from "@/app/(dashboard)/events/actions";
 import { DeleteEventButton } from "@/components/events/delete-event-button";
@@ -117,6 +118,19 @@ export default async function EventPage({ params, searchParams }: Props) {
         </article>
 
         <aside className="bg-muted/25 px-6 py-8 md:px-8 lg:sticky lg:top-20 lg:h-fit">
+          {event.status === "published" ? (
+            <div className="mb-6 flex flex-wrap gap-2">
+              <ContextualAssistantPrompt
+                label="Find similar events"
+                query={`Find events similar to ${event.title}`}
+              />
+              <ContextualAssistantPrompt
+                label="Find related organizations"
+                query={`Find organizations related to ${event.title}`}
+              />
+            </div>
+          ) : null}
+
           {event.status === "published" ? <>
             <div className="flex items-center gap-3"><span className="flex size-10 items-center justify-center rounded-2xl bg-secondary text-primary"><UsersRound aria-hidden="true" className="size-4.5"/></span><div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Attendance</p><p className="mt-0.5 text-lg font-bold text-foreground">{rsvpCount} {rsvpCount === 1 ? "person" : "people"} going</p></div></div>
             {event.capacity !== null ? <p className="mt-3 text-sm text-muted-foreground">{Math.max(event.capacity-rsvpCount,0)} spots remaining</p> : null}
