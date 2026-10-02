@@ -69,7 +69,12 @@ test("existing profile saves with column-restricted UPDATE permissions and trust
 test("missing own profile inserts with authenticated identity after zero-row update", async () => {
   const h = harness({ missing: true });
   await assert.rejects(h.save(form()), { message: "/dashboard" });
-  assert.deepEqual(h.calls.map(c => c.operation), ["update", "insert"]);
+  assert.deepEqual(h.calls.map(c => c.operation), ["update", "insert", "update"]);
+  assert.deepEqual(Object.keys(h.calls[2].payload).sort(), [
+    "looking_for_mentor",
+    "mentorship_topics",
+    "open_to_mentoring",
+  ]);
 });
 
 test("failed update never falls back to insert or exposes database details", async () => {
