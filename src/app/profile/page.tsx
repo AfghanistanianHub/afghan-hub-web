@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   BriefcaseBusiness,
   Globe2,
+  HandHeart,
   MapPin,
   Sparkles,
   UserRound,
@@ -34,7 +35,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("first_name,last_name,headline,profession,company,city,province_state,country,bio,linkedin_url,website_url,languages,skills,avatar_url")
+    .select("first_name,last_name,headline,profession,company,city,province_state,country,bio,linkedin_url,website_url,languages,skills,avatar_url,open_to_mentoring,looking_for_mentor,mentorship_topics")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -116,6 +117,22 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                   </div>
                   <label className="block"><span className="text-sm font-medium">Skills</span><input name="skills" defaultValue={profile?.skills?.join(", ") ?? ""} placeholder="Computer repair, Filmmaking, Community organizing" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each skill with a comma.</span></label>
                   <label className="block"><span className="text-sm font-medium">Languages</span><input name="languages" defaultValue={profile?.languages?.join(", ") ?? ""} placeholder="Dari, English, Persian" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each language with a comma.</span></label>
+                </fieldset>
+
+                <fieldset className="space-y-6 border-t border-border/70 pt-8">
+                  <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><HandHeart aria-hidden="true" className="size-4" /></span>Mentorship</legend>
+                  <p className="text-sm leading-6 text-muted-foreground">Mentorship preferences are optional and member-selected. They are not credentials or endorsements by Afghan Hub.</p>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <label className={`${styles.control} flex min-h-12 cursor-pointer items-start gap-3 rounded-[var(--radius)] border border-border/80 bg-background/72 p-4 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary`}>
+                      <input name="open_to_mentoring" type="checkbox" defaultChecked={profile?.open_to_mentoring ?? false} className="mt-1 size-4 accent-primary" />
+                      <span><span className="block text-sm font-semibold">Open to mentoring</span><span className="mt-1 block text-xs leading-5 text-muted-foreground">Let members know you are open to sharing experience or guidance.</span></span>
+                    </label>
+                    <label className={`${styles.control} flex min-h-12 cursor-pointer items-start gap-3 rounded-[var(--radius)] border border-border/80 bg-background/72 p-4 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary`}>
+                      <input name="looking_for_mentor" type="checkbox" defaultChecked={profile?.looking_for_mentor ?? false} className="mt-1 size-4 accent-primary" />
+                      <span><span className="block text-sm font-semibold">Looking for a mentor</span><span className="mt-1 block text-xs leading-5 text-muted-foreground">Show that you are interested in finding guidance from another member.</span></span>
+                    </label>
+                  </div>
+                  <label className="block"><span className="text-sm font-medium">Mentorship topics</span><input name="mentorship_topics" defaultValue={profile?.mentorship_topics?.join(", ") ?? ""} placeholder="Career growth, Technology, Filmmaking" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Optional. Separate topics with commas; up to 12 topics, 60 characters each.</span></label>
                 </fieldset>
 
                 <fieldset className="space-y-6 border-t border-border/70 pt-8">
