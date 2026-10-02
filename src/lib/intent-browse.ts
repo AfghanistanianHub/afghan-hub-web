@@ -113,6 +113,42 @@ export async function getIntentBrowseItems(
     }));
   }
 
+  if (intent === "find_mentor" || intent === "offer_mentorship") {
+    let query = supabase
+      .from("profiles")
+      .select(
+        "id,display_name,first_name,last_name,headline,profession,city,country,open_to_mentoring,looking_for_mentor,mentorship_topics",
+      )
+      .eq("is_public", true)
+      .eq("onboarding_completed", true)
+      .eq(
+        intent === "find_mentor" ? "open_to_mentoring" : "looking_for_mentor",
+        true,
+      )
+      .order("display_name")
+      .limit(safeLimit);
+
+    if (options.viewerId) {
+      query = query.neq("id", options.viewerId);
+    }
+
+    const { data } = await query;
+
+    return (data ?? []).map((item) => ({
+      id: item.id,
+      entityType: "member" as const,
+      title: memberTitle(item),
+      subtitle:
+        item.mentorship_topics.length > 0
+          ? item.mentorship_topics.join(" · ")
+          : item.headline ?? item.profession,
+      slug: null,
+      city: item.city,
+      country: item.country,
+      isVerified: false,
+    }));
+  }
+
   if (intent === "volunteer") {
     const [{ data: roles }, { data: organizations }] = await Promise.all([
       supabase
