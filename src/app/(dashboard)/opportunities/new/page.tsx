@@ -1,3 +1,4 @@
+import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import formStyles from "@/components/forms/listing-form.module.css";
 import { CommunitySignature } from "@/components/public/community-signature";
 import { redirect } from "next/navigation";
@@ -114,9 +115,9 @@ export default async function NewOpportunityPage() {
         </div>
 
         <div className="flex justify-end border-t border-border pt-6">
-          <button type="submit" className="rounded-[var(--radius)] bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+          <PendingSubmitButton pendingLabel="Submitting for review…" className="rounded-[var(--radius)] bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
             Submit for Review
-          </button>
+          </PendingSubmitButton>
         </div>
       </form>
     </main>
