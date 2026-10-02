@@ -1,3 +1,4 @@
+import { ContextualAssistantPrompt } from "@/components/assistant/contextual-assistant-prompt";
 import { CatalogIllustration } from "@/components/public/catalog-illustration";
 import {
   ArrowRight,
@@ -108,7 +109,22 @@ export default async function NetworkPage() {
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
               Find professionals, entrepreneurs, artists, students, and community leaders — then turn discovery into a real connection.
-            </p><div className="mt-5 w-48 max-w-full" aria-hidden="true"><CatalogIllustration interactive kind="people" /></div>
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <ContextualAssistantPrompt
+                label="Find tech professionals"
+                query="Find professionals working in technology"
+              />
+              <ContextualAssistantPrompt
+                label="Find filmmakers"
+                query="Find professionals working in film and media"
+              />
+              <ContextualAssistantPrompt
+                label="Find mentors"
+                query="Find mentors in the community"
+              />
+            </div>
+            <div className="mt-5 w-48 max-w-full" aria-hidden="true"><CatalogIllustration interactive kind="people" /></div>
           </div>
 
           <div className="relative mt-7 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:mt-0">
