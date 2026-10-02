@@ -162,7 +162,6 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]')?.dataset.running==='true'"),"hero controller hydration");
   await page.evaluate(`window.__heroShifts=0;window.__heroLongTasks=[];new PerformanceObserver(l=>{for(const e of l.getEntries())if(!e.hadRecentInput)window.__heroShifts+=e.value}).observe({type:'layout-shift'});new PerformanceObserver(l=>window.__heroLongTasks.push(...l.getEntries().map(e=>e.duration))).observe({type:'longtask'})`);
   const heroGeometry=await page.evaluate("(()=>{const e=document.querySelector('[data-hero-region]');const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()");
-  const illustration=await page.evaluate("(()=>{const r=document.querySelector('[data-community-motion]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()");
   const stages=await page.evaluate("(()=>{const e=document.querySelector('[data-community-motion]');return ['[data-hero-draw]','[data-hero-reveal]','[data-hero-accent]'].map(s=>e.querySelector(s).getAnimations()[0].effect.getTiming())})()");
   assert.ok(stages[1].delay>=stages[0].duration,"Forms reveal after main path drawing");
   assert.ok(stages[2].delay>=stages[1].delay+stages[1].duration,"Violet accents activate after architectural reveal");
