@@ -31,7 +31,7 @@ test("profile action keeps mentorship topics bounded before database write", () 
   assert.match(action, /mentorshipTopics\.length > 12/);
   assert.match(action, /topic\.length > 60/);
   assert.match(action, /new Set<string>\(\)/);
-  assert.match(action, /topic\.trim\(\)/);
+  assert.match(action, /rawTopic\.trim\(\)\.normalize\("NFC"\)/);
 });
 
 test("new profile creation does not require mentorship INSERT grants", () => {
