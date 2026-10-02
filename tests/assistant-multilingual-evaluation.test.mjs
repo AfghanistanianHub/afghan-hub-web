@@ -56,7 +56,7 @@ const rules = [
   {
     intent: "find_events",
     entityType: "event",
-    keywords: ["event","events","workshop","conference","meetup","gathering","رویداد","رویدادها","برنامه","کارگاه","کنفرانس","ایونت","پروګرام","غونډه","غونډې"],
+    keywords: ["event","events","workshop","workshops","conference","meetup","gathering","رویداد","رویدادها","رویدادهای","برنامه","کارگاه","کارگاه‌ها","کنفرانس","ایونت","پروګرام","پروګرامونه","پروګرامونو","غونډه","غونډې"],
   },
 ];
 
