@@ -1,3 +1,4 @@
+import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import { ContextualAssistantPrompt } from "@/components/assistant/contextual-assistant-prompt";
 import { MemberListingArtwork } from "@/components/public/member-listing-artwork";
 import {
@@ -191,18 +192,18 @@ export default async function OpportunityPage({
                   <form action={toggleSavedOpportunity}>
                     <input type="hidden" name="opportunity_id" value={opportunity.id} />
                     <input type="hidden" name="opportunity_slug" value={opportunity.slug} />
-                    <button
-                      type="submit"
+                    <PendingSubmitButton
+                      pendingLabel={isSaved ? "Removing…" : "Saving…"}
                       aria-pressed={isSaved}
-                      className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${
+                      className={`inline-flex min-h-11 min-w-28 items-center gap-2 rounded-[var(--radius)] border px-4 py-2.5 text-sm font-semibold transition-colors motion-reduce:transition-none active:bg-primary/15 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${
                         isSaved
                           ? "border-primary/30 bg-primary/10 text-primary"
                           : "border-border bg-background/85 text-foreground hover:bg-muted"
                       }`}
                     >
-                      <Bookmark aria-hidden="true" className="size-4" fill={isSaved ? "currentColor" : "none"} />
-                      {isSaved ? "Saved" : "Save"}
-                    </button>
+                      <span className="inline-flex items-center gap-2"><Bookmark aria-hidden="true" className="size-4" fill={isSaved ? "currentColor" : "none"} />
+                      {isSaved ? "Saved" : "Save"}</span>
+                    </PendingSubmitButton>
                   </form>
                 ) : null}
 
