@@ -109,16 +109,21 @@ const rules: IntentRule[] = [
       "event",
       "events",
       "workshop",
+      "workshops",
       "conference",
       "meetup",
       "gathering",
       "رویداد",
       "رویدادها",
+      "رویدادهای",
       "برنامه",
       "کارگاه",
+      "کارگاه‌ها",
       "کنفرانس",
       "ایونت",
       "پروګرام",
+      "پروګرامونه",
+      "پروګرامونو",
       "غونډه",
       "غونډې",
       "کنفرانس",
@@ -134,6 +139,20 @@ function normalize(value: string) {
     .trim();
 }
 
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function containsKeyword(value: string, keyword: string) {
+  const normalizedKeyword = normalize(keyword);
+  const keywordPattern = escapeRegExp(normalizedKeyword).replace(/\s+/g, "\\s+");
+
+  return new RegExp(
+    `(^|[^\\p{L}\\p{N}_])${keywordPattern}(?=$|[^\\p{L}\\p{N}_])`,
+    "u",
+  ).test(value);
+}
+
 export function inferAssistantIntent(query: string): {
   intent: AssistantIntent;
   entityType?: IntentRule["entityType"];
@@ -141,11 +160,7 @@ export function inferAssistantIntent(query: string): {
   const normalized = normalize(query);
 
   for (const rule of rules) {
-    if (
-      rule.keywords.some((keyword) =>
-        normalized.includes(normalize(keyword)),
-      )
-    ) {
+    if (rule.keywords.some((keyword) => containsKeyword(normalized, keyword))) {
       return { intent: rule.intent, entityType: rule.entityType };
     }
   }
