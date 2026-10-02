@@ -23,3 +23,5 @@
 .action:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
 .catalog h2[id] { scroll-margin-top:2rem; outline-color:var(--primary); }
 @media(prefers-reduced-motion:reduce) { .category,.category svg:last-child { transition:none; } .category:is(:hover,:focus-visible) svg:last-child { transform:none; } }
+
+@media(max-width:639px) { .category { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:.65rem; } .category > span { grid-column:1; grid-row:1; } .category > div { grid-column:1 / -1; grid-row:2; } .category > svg { grid-column:2; grid-row:1; } .category > div > p:first-child { font-size:.875rem; } .category > div > p:last-child { display:none; } }
