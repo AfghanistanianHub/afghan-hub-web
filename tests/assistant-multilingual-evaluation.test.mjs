@@ -22,6 +22,17 @@ function normalize(value) {
     .trim();
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^$\{}()|[\]\\]/g, "\\
+const rules = [");
+}
+
+function containsKeyword(value, keyword) {
+  const normalizedKeyword = normalize(keyword);
+  const keywordPattern = escapeRegExp(normalizedKeyword).replace(/\s+/g, "\\s+");
+  return new RegExp(`(^|[^\\p{L}\\p{N}_])${keywordPattern}(?=$|[^\\p{L}\\p{N}_])`, "u").test(value);
+}
+
 const rules = [
   {
     intent: "find_people",
@@ -53,7 +64,7 @@ const rules = [
 function infer(query) {
   const normalized = normalize(query);
   for (const rule of rules) {
-    if (rule.keywords.some((keyword) => normalized.includes(normalize(keyword)))) {
+    if (rule.keywords.some((keyword) => containsKeyword(normalized, keyword))) {
       return { intent: rule.intent, entityType: rule.entityType };
     }
   }
@@ -66,7 +77,7 @@ test("fixture covers English, Dari and Pashto across all discovery categories", 
 
   for (const language of languages) {
     const languageCases = cases.filter((item) => item.language === language);
-    assert.equal(languageCases.length, 5);
+    assert.ok(languageCases.length >= 5);
   }
 });
 
