@@ -76,11 +76,11 @@ export default async function ExplorePage({ searchParams }: Props) {
             {publicKinds.map(value => {
               const Icon = icons[value];
               const active = value === kind;
-              return <a key={value} href={`/explore?type=${value}#results-heading`} aria-current={active ? "page" : undefined} className={`${styles.category} flex items-center gap-3 rounded-sm border p-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${active ? "border-primary bg-secondary" : "border-border bg-card hover:border-primary"}`}>
+              return <Link key={value} href={`/explore?type=${value}#results-heading`} scroll aria-current={active ? "page" : undefined} className={`${styles.category} flex items-center gap-3 rounded-sm border p-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${active ? "border-primary bg-secondary" : "border-border bg-card hover:border-primary"}`}>
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-secondary text-primary"><Icon aria-hidden="true" className="size-5" /></span>
                 <div className="min-w-0 flex-1"><p className="font-semibold">{publicCategories[value].label}</p><p className="mt-1 text-xs text-muted-foreground">{active ? "Viewing this category" : "Browse listings"}</p></div>
                 <ArrowRight aria-hidden="true" className="size-4 shrink-0 text-primary" />
-              </a>;
+              </Link>;
             })}
           </nav>
         </div>
