@@ -15,6 +15,36 @@ function getOptionalString(formData: FormData, field: string) {
   return cleanedValue.length > 0 ? cleanedValue : null;
 }
 
+function getMentorshipTopics(formData: FormData) {
+  const value = getOptionalString(formData, "mentorship_topics");
+
+  if (!value) {
+    return [];
+  }
+
+  const seen = new Set<string>();
+  const topics: string[] = [];
+
+  for (const rawTopic of value.split(",")) {
+    const topic = rawTopic.trim();
+
+    if (!topic) {
+      continue;
+    }
+
+    const normalized = topic.toLocaleLowerCase();
+
+    if (seen.has(normalized)) {
+      continue;
+    }
+
+    seen.add(normalized);
+    topics.push(topic);
+  }
+
+  return topics;
+}
+
 export async function saveProfile(formData: FormData) {
   const supabase = await createClient();
 
@@ -56,6 +86,18 @@ export async function saveProfile(formData: FormData) {
   const provinceState = getOptionalString(formData, "province_state");
   const country = getOptionalString(formData, "country");
   const bio = getOptionalString(formData, "bio");
+  const mentorshipTopics = getMentorshipTopics(formData);
+  const openToMentoring = formData.get("open_to_mentoring") === "on";
+  const lookingForMentor = formData.get("looking_for_mentor") === "on";
+
+  if (
+    mentorshipTopics.length > 12 ||
+    mentorshipTopics.some((topic) => topic.length > 60)
+  ) {
+    redirect(
+      "/profile?error=Add%20up%20to%2012%20mentorship%20topics%2C%20each%2060%20characters%20or%20less.",
+    );
+  }
 
   const displayName =
     [firstName, lastName].filter(Boolean).join(" ") || "Member";
@@ -78,10 +120,16 @@ export async function saveProfile(formData: FormData) {
     onboarding_completed: true,
   };
 
+  const mentorshipUpdate = {
+    open_to_mentoring: openToMentoring,
+    looking_for_mentor: lookingForMentor,
+    mentorship_topics: mentorshipTopics,
+  };
+
   // Identity columns are insert-only; the database maintains updated_at.
   const { data: updatedProfile, error: updateError } = await supabase
     .from("profiles")
-    .update(editableProfile)
+    .update({ ...editableProfile, ...mentorshipUpdate })
     .eq("id", user.id)
     .select("id")
     .maybeSingle();
@@ -99,6 +147,15 @@ export async function saveProfile(formData: FormData) {
 
     if (insertError) {
       redirect("/profile?error=We%20could%20not%20save%20your%20profile.%20Please%20try%20again.");
+    }
+
+    const { error: mentorshipUpdateError } = await supabase
+      .from("profiles")
+      .update(mentorshipUpdate)
+      .eq("id", user.id);
+
+    if (mentorshipUpdateError) {
+      redirect("/profile?error=We%20could%20not%20save%20your%20mentorship%20preferences.%20Please%20try%20again.");
     }
   }
 
