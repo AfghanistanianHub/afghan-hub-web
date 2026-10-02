@@ -18,7 +18,7 @@
 .inboxRow { transition:background var(--motion-fast); }
 .inboxRow:is(:hover,:focus-visible) { background:#f5f0e8; }
 .inboxRow:active { background:var(--secondary); }
-.inboxRow:focus-visible { z-index:1; outline:2px solid var(--primary); outline-offset:-2px; }
+.inboxRow:focus-visible { z-index:10; outline:2px solid var(--primary); outline-offset:-2px; }
 .inboxRow [data-profile-arrow] { transition:transform var(--motion-step) var(--motion-ease),color var(--motion-fast); }
 .inboxRow:is(:hover,:focus-visible) [data-profile-arrow] { transform:translate(3px,-3px); color:var(--primary); }
 @media(prefers-reduced-motion:reduce) { .inboxRow,.inboxRow [data-profile-arrow] { transition:none; } .inboxRow:is(:hover,:focus-visible) [data-profile-arrow] { transform:none; } }

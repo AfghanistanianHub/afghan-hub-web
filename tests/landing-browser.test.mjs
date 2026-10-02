@@ -198,7 +198,8 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-community-motion] svg')).transform"),"none","Never move the whole SVG");
   assert.deepEqual(await page.evaluate("(()=>{const r=document.querySelector('[data-hero-region]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()"),heroGeometry,"Hero frame must remain fixed");
   assert.equal(await page.evaluate("window.__heroShifts"),0,"No animation layout shifts");
-  assert.ok(await page.evaluate("[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===1).every(a=>a.playState==='finished')"),"Intro must finish");
+  // Screenshot clipping can commit a final visibility/transform frame asynchronously.
+  await waitFor(()=>page.evaluate("[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===1).every(a=>a.playState==='finished')"),"Intro and final pointer frame must finish",5000);
   const ambientTimes="[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===Infinity).map(a=>a.currentTime)";
   await page.evaluate("scrollTo(0,document.documentElement.scrollHeight)");
   await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='false'"),"offscreen pause");
