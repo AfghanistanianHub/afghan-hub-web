@@ -35,6 +35,7 @@ test("assistant analytics only captures discovery KPI events", () => {
     "assistant_language_change",
     "assistant_search",
     "assistant_result_click",
+    "assistant_recovery_click",
   ]) {
     assert.match(route, new RegExp(event));
     assert.match(client, new RegExp(event));
