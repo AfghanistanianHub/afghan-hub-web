@@ -1,6 +1,6 @@
 .catalog { background: var(--background); }
-.intro { display:grid; grid-template-columns:minmax(0,1fr) 19rem; align-items:center; gap:3rem; }
-.introArt { width:100%; max-width:19rem; }
+.intro { display:grid; grid-template-columns:minmax(0,1fr) 14rem; align-items:center; gap:3rem; }
+.introArt { width:100%; max-width:14rem; }
 .introArt svg, .detailArt svg { display:block; width:100%; height:auto; }
 .detailArt { max-width:18rem; margin:0 auto 1.5rem; }
 .listing { border:1px solid var(--border); border-radius:.3rem; background:var(--card); transition:border-color 250ms, background-color 250ms; }
@@ -13,3 +13,15 @@
 @media (max-width:639px) { .intro { grid-template-columns:1fr; gap:1rem; } .introArt { width:11rem; margin-left:auto; } .categories a > p:last-child { display:none; } .categories a { padding:.9rem; } }
 @media (max-width:359px) { .categories { gap:.5rem; } .categories a { padding:.75rem; } }
 @media (prefers-reduced-motion:reduce) { .listing { transition:none; } }
+
+.category { min-height:88px; transition:background var(--motion-fast),border-color var(--motion-fast); }
+.category:active { background:var(--secondary); box-shadow:inset 0 2px 4px #302b3520; }
+.category svg:last-child { transition:transform var(--motion-step) var(--motion-ease); }
+.category:is(:hover,:focus-visible) svg:last-child { transform:translateX(4px); }
+.searchForm { max-width:52rem; }
+.action { min-height:44px; border-radius:var(--radius); }
+.action:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
+.catalog h2[id] { scroll-margin-top:2rem; outline-color:var(--primary); }
+@media(prefers-reduced-motion:reduce) { .category,.category svg:last-child { transition:none; } .category:is(:hover,:focus-visible) svg:last-child { transform:none; } }
+
+@media(max-width:639px) { .category { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:.65rem; } .category > span { grid-column:1; grid-row:1; } .category > div { grid-column:1 / -1; grid-row:2; } .category > svg { grid-column:2; grid-row:1; } .category > div > p:first-child { font-size:.875rem; } .category > div > p:last-child { display:none; } }

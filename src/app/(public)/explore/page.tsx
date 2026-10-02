@@ -8,7 +8,6 @@ import {
   BriefcaseBusiness,
   Building2,
   CalendarDays,
-  Search,
   Sparkles,
   UsersRound,
 } from "lucide-react";
@@ -49,7 +48,6 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 export default async function ExplorePage({ searchParams }: Props) {
   const { kind, search, page } = filters(await searchParams);
   const result = await getPublicListings(kind, { search, page });
-  const ActiveIcon = icons[kind];
   const pageHref = (number: number) => {
     const query = new URLSearchParams({ type: kind, page: String(number) });
     if (search) query.set("q", search);
@@ -59,7 +57,7 @@ export default async function ExplorePage({ searchParams }: Props) {
   return (
     <main id="main-content" data-catalog className={styles.catalog}>
       <section data-illustration-trigger className="relative overflow-hidden border-b border-border/70">
-        <div className="relative mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
+        <div className="relative mx-auto max-w-7xl px-5 py-8 sm:px-8 sm:py-10">
           <div className={styles.intro}>
             <div>
             <div className="inline-flex items-center gap-2 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
@@ -74,81 +72,33 @@ export default async function ExplorePage({ searchParams }: Props) {
             <div className={styles.introArt}><CatalogIllustration interactive kind={kind} /></div>
           </div>
 
-          <nav aria-label="Listing categories" className={`${styles.categories} mt-9 grid grid-cols-2 gap-3 lg:grid-cols-4`}>
+          <nav aria-label="Listing categories" className={`${styles.categories} mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4`}>
             {publicKinds.map(value => {
               const Icon = icons[value];
               const active = value === kind;
-              return (
-                <Link
-                  key={value}
-                  href={`/explore?type=${value}`}
-                  aria-current={active ? "page" : undefined}
-                  className={`group rounded-sm border p-4 transition-[border-color,background-color] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${
-                    active
-                      ? "border-primary bg-secondary text-foreground"
-                      : "border-border bg-card hover:border-primary hover:bg-secondary/40"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <span className={`flex size-10 items-center justify-center rounded-xl ${active ? "bg-background text-primary" : "bg-secondary text-primary"}`}>
-                      <Icon aria-hidden="true" className="size-5" />
-                    </span>
-                    <ArrowRight aria-hidden="true" className={`mt-1 size-4 transition-transform group-hover:translate-x-0.5 ${active ? "text-primary" : "text-primary"}`} />
-                  </div>
-                  <p className="mt-4 font-semibold">{publicCategories[value].label}</p>
-                  <p className={`mt-1 text-sm leading-6 ${active ? "text-muted-foreground" : "text-muted-foreground"}`}>
-                    {publicCategories[value].description}
-                  </p>
-                </Link>
-              );
+              return <a key={value} href={`/explore?type=${value}#results-heading`} aria-current={active ? "page" : undefined} className={`${styles.category} flex items-center gap-3 rounded-sm border p-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${active ? "border-primary bg-secondary" : "border-border bg-card hover:border-primary"}`}>
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-secondary text-primary"><Icon aria-hidden="true" className="size-5" /></span>
+                <div className="min-w-0 flex-1"><p className="font-semibold">{publicCategories[value].label}</p><p className="mt-1 text-xs text-muted-foreground">{active ? "Viewing this category" : "Browse listings"}</p></div>
+                <ArrowRight aria-hidden="true" className="size-4 shrink-0 text-primary" />
+              </a>;
             })}
           </nav>
         </div>
       </section>
-
-      <section aria-labelledby="results-heading" className="mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
-          <form action="/explore" className="rounded-3xl border border-border bg-card p-5">
-            <input type="hidden" name="type" value={kind} />
-            <div className="flex items-center gap-3">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary"><Search aria-hidden="true" className="size-5" /></span>
-              <div>
-                <p className="font-semibold">Search this category</p>
-                <p className="text-xs text-muted-foreground">Name, title, or keyword</p>
-              </div>
-            </div>
-            <div className="mt-5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-              <label className="grid min-w-0 gap-2 text-sm font-medium">
-                Search {publicCategories[kind].label.toLowerCase()}
-                <input type="search" name="q" defaultValue={search} maxLength={100} placeholder="Type a keyword" className="min-w-0 rounded-xl border border-input bg-background px-4 py-3 outline-offset-2 focus-visible:outline-2" />
-              </label>
-              <button className="min-h-11 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Search</button>
-            </div>
-            {search && <Link href={`/explore?type=${kind}`} className="mt-3 inline-flex rounded-sm text-sm font-medium text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Clear search</Link>}
-          </form>
-
-          <div className="rounded-3xl border border-border bg-muted/35 p-5">
-            <p className="text-sm font-semibold">Want to add something?</p>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">Join Afghan Hub to contribute listings and connect with other members.</p>
-            <Link href="/login?mode=join" className="relative mt-4 inline-flex items-center gap-2 rounded-xl border border-primary/15 bg-primary/[0.06] px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Join the community <ArrowRight aria-hidden="true" className="size-4" /></Link>
-          </div>
+      <section aria-labelledby="results-heading" className="mx-auto max-w-7xl px-5 py-8 sm:px-8 sm:py-10">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Browse listings</p><h2 id="results-heading" tabIndex={-1} className="mt-2 text-2xl font-medium tracking-tight sm:text-3xl">{publicCategories[kind].label}</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">{publicCategories[kind].description}</p></div>
+          {search && <p className="break-words text-sm text-muted-foreground">Search: “{search}”</p>}
         </div>
-
-        <div className="mt-10 min-w-0">
-          <div className="flex flex-wrap items-end justify-between gap-5">
-            <div>
-              <div className="flex items-center gap-3">
-                <span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-primary"><ActiveIcon aria-hidden="true" className="size-5" /></span>
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Currently browsing</p>
-                  <h2 id="results-heading" className="mt-1 text-3xl font-semibold tracking-tight">{publicCategories[kind].label}</h2>
-                </div>
-              </div>
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground">{publicCategories[kind].description}</p>
-            </div>
-            {search && <p className="rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground">Search: “{search}”</p>}
+        <form action="/explore" className={`${styles.searchForm} mt-6`}>
+          <input type="hidden" name="type" value={kind} />
+          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+            <label className="grid min-w-0 gap-2 text-sm font-medium">Search {publicCategories[kind].label.toLowerCase()}<input type="search" name="q" defaultValue={search} maxLength={100} placeholder="Name, title, or keyword" className="min-w-0 rounded-sm border border-input bg-card px-4 py-3 outline-offset-2 focus-visible:outline-2 focus-visible:outline-primary" /></label>
+            <button className={`${styles.action} rounded-sm bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 active:bg-primary/80`}>Search</button>
           </div>
-
+          {search && <Link href={`/explore?type=${kind}`} className={`${styles.action} mt-2 inline-flex items-center text-sm font-medium text-primary hover:underline`}>Clear search</Link>}
+        </form>
+        <div className="min-w-0">
           <div className="mt-8">
             {result.unavailable ? (
               <div role="status" aria-live="polite" className="relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-8">
@@ -186,6 +136,7 @@ export default async function ExplorePage({ searchParams }: Props) {
             </nav>
           )}
         </div>
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6"><p className="text-sm text-muted-foreground">Have something to share with the community?</p><Link href="/login?mode=join" className={`${styles.action} inline-flex items-center gap-2 text-sm font-semibold text-primary`}>Join to contribute <ArrowRight aria-hidden="true" className="size-4" /></Link></div>
       </section>
     </main>
   );
