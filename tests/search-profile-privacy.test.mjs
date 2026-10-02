@@ -9,10 +9,17 @@ const source = await readFile(
 
 test("member search rechecks public and onboarding eligibility", () => {
   assert.match(source, /\.from\("profiles"\)/);
-  assert.match(source, /\.select\("id"\)/);
+  assert.match(
+    source,
+    /\.select\("id,open_to_mentoring,looking_for_mentor"\)/,
+  );
   assert.match(source, /\.eq\("is_public", true\)/);
   assert.match(source, /\.eq\("onboarding_completed", true\)/);
   assert.match(source, /visibleMemberIds\.has\(result\.entity_id\)/);
+  assert.doesNotMatch(
+    source,
+    /\.select\([^)]*(?:email|role|created_at|updated_at)[^)]*\)/,
+  );
 });
 
 test("member search never renders an email-like title", () => {
