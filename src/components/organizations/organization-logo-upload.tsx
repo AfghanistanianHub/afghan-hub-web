@@ -78,25 +78,25 @@ export function OrganizationLogoUpload({
     window.location.reload();
   }
 
-  const uploadClass = "inline-flex min-h-11 cursor-pointer items-center justify-center rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary";
+  const uploadClass = "inline-flex min-h-11 cursor-pointer items-center justify-center rounded-[var(--radius)] bg-primary px-5 py-3 font-semibold text-primary-foreground  transition-[background,box-shadow,opacity] duration-[var(--motion-fast)] motion-reduce:transition-none active:shadow-[inset_0_2px_4px_#302b3520] has-disabled:cursor-wait has-disabled:opacity-60 has-disabled:shadow-none hover:bg-primary/90 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary";
 
   return (
     <div className="space-y-6" aria-busy={uploading}>
-      <section className="surface-panel relative overflow-hidden rounded-[1.75rem] p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)]">
+      <section className="relative border border-border bg-card overflow-hidden rounded-[var(--radius)] p-6 ">
         <h2 className="text-xl font-semibold">Organization cover</h2>
         <div className="mt-5">
-          {currentCoverUrl ? <ExternalImage src={currentCoverUrl} alt={`${organizationName} cover`} width={1200} height={400} className="h-48 w-full rounded-[1.5rem] border border-border/70 object-cover shadow-sm" /> : <div className="flex h-48 w-full items-center justify-center rounded-[1.5rem] border border-dashed border-border bg-muted/45 text-sm text-muted-foreground">No cover image</div>}
+          {currentCoverUrl ? <ExternalImage src={currentCoverUrl} alt={`${organizationName} cover`} width={1200} height={400} className="h-48 w-full rounded-[var(--radius)] border border-border/70 object-cover " /> : <div className="flex h-48 w-full items-center justify-center rounded-[var(--radius)] border border-dashed border-border bg-muted/45 text-sm text-muted-foreground">No cover image</div>}
           <div className="mt-4"><label className={uploadClass}><span role="status" aria-live="polite">{uploading ? "Uploading…" : "Upload cover"}</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading} aria-describedby="organization-cover-help organization-media-message" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadImage(file, "cover", 8); }} /></label><p id="organization-cover-help" className="mt-2 text-xs text-muted-foreground">Recommended ratio: 3:1. Maximum size: 8 MB.</p></div>
         </div>
       </section>
-      <section className="surface-panel relative overflow-hidden rounded-[1.75rem] p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)]">
+      <section className="relative border border-border bg-card overflow-hidden rounded-[var(--radius)] p-6 ">
         <h2 className="text-xl font-semibold">Organization logo</h2>
         <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
-          {currentLogoUrl ? <ExternalImage src={currentLogoUrl} alt={`${organizationName} logo`} width={96} height={96} className="h-24 w-24 rounded-[1.4rem] border border-border/70 object-cover shadow-sm" /> : <div className="flex h-24 w-24 items-center justify-center rounded-[1.4rem] border border-border bg-primary/10 text-3xl font-bold text-primary shadow-sm">{organizationName.charAt(0).toUpperCase()}</div>}
+          {currentLogoUrl ? <ExternalImage src={currentLogoUrl} alt={`${organizationName} logo`} width={96} height={96} className="h-24 w-24 rounded-[var(--radius)] border border-border/70 object-cover " /> : <div className="flex h-24 w-24 items-center justify-center rounded-[var(--radius)] border border-border bg-primary/10 text-3xl font-bold text-primary ">{organizationName.charAt(0).toUpperCase()}</div>}
           <div><label className={uploadClass}><span role="status" aria-live="polite">{uploading ? "Uploading…" : "Upload logo"}</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading} aria-describedby="organization-logo-help organization-media-message" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadImage(file, "logo", 5); }} /></label><p id="organization-logo-help" className="mt-2 text-xs text-muted-foreground">JPG, PNG, or WebP. Maximum size: 5 MB.</p></div>
         </div>
       </section>
-      {message ? <p id="organization-media-message" role={message.kind === "error" ? "alert" : "status"} aria-live={message.kind === "error" ? "assertive" : "polite"} className={message.kind === "error" ? "rounded-xl border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm text-destructive" : "rounded-xl border border-primary/15 bg-primary/[0.05] px-3 py-2 text-sm text-primary"}>{message.text}</p> : null}
+      {message ? <p id="organization-media-message" role={message.kind === "error" ? "alert" : "status"} aria-live={message.kind === "error" ? "assertive" : "polite"} className={message.kind === "error" ? "rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm text-destructive" : "rounded-[var(--radius)] border border-primary/15 bg-primary/[0.05] px-3 py-2 text-sm text-primary"}>{message.text}</p> : null}
     </div>
   );
 }
