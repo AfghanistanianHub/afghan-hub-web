@@ -1,3 +1,4 @@
+import { ContextualAssistantPrompt } from "@/components/assistant/contextual-assistant-prompt";
 import { MemberListingArtwork } from "@/components/public/member-listing-artwork";
 import {
   toggleSavedOpportunity,
@@ -231,6 +232,19 @@ export default async function OpportunityPage({
 
           <aside className="h-fit bg-muted/25 px-6 py-8 md:px-8 lg:sticky lg:top-20">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Take the next step</p>
+
+            {opportunity.status === "published" ? (
+              <div className="mt-4 flex flex-wrap gap-2">
+                <ContextualAssistantPrompt
+                  label="Find similar opportunities"
+                  query={`Find opportunities similar to ${opportunity.title}`}
+                />
+                <ContextualAssistantPrompt
+                  label="Find people in this field"
+                  query={`Find professionals related to ${opportunity.title}`}
+                />
+              </div>
+            ) : null}
 
             {opportunity.external_url && !isExpired ? (
               <a
