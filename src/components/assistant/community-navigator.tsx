@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { trackAssistantEvent } from "@/lib/assistant/analytics";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
@@ -159,6 +160,7 @@ export function CommunityNavigator() {
 
   useEffect(() => {
     if (open) {
+      trackAssistantEvent({ event: "assistant_open", language });
       window.requestAnimationFrame(() => inputRef.current?.focus());
     }
   }, [open]);
@@ -190,7 +192,16 @@ export function CommunityNavigator() {
         throw new Error(data.error ?? "Assistant search failed");
       }
 
-      setResults(data.results ?? []);
+      const nextResults = data.results ?? [];
+      setResults(nextResults);
+      trackAssistantEvent({
+        event: "assistant_search",
+        language,
+        intent: data.intent,
+        entityType: data.entityType,
+        resultCount: nextResults.length,
+        hadResults: nextResults.length > 0,
+      });
     } catch {
       setResults([]);
       setFailed(true);
@@ -268,7 +279,13 @@ export function CommunityNavigator() {
                   <button
                     key={option}
                     type="button"
-                    onClick={() => setLanguage(option)}
+                    onClick={() => {
+                      setLanguage(option);
+                      trackAssistantEvent({
+                        event: "assistant_language_change",
+                        language: option,
+                      });
+                    }}
                     aria-pressed={language === option}
                     className={`min-h-9 rounded-full border px-3 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                       language === option
@@ -318,7 +335,14 @@ export function CommunityNavigator() {
                         <Link
                           key={`${result.entityType}:${result.entityId}`}
                           href={result.href}
-                          onClick={() => setOpen(false)}
+                          onClick={() => {
+                            trackAssistantEvent({
+                              event: "assistant_result_click",
+                              language,
+                              entityType: result.entityType,
+                            });
+                            setOpen(false);
+                          }}
                           className="group flex items-start gap-3 rounded-2xl border border-border bg-background/55 p-4 transition hover:border-primary/30 hover:bg-primary/[0.035] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                         >
                           <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
