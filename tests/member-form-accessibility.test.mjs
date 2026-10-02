@@ -37,8 +37,8 @@ test("settings feedback is announced and save action exposes pending state", () 
 
 test("pending submit button prevents repeat submission while announcing progress", () => {
   assert.match(submitSource, /useFormStatus/);
-  assert.match(submitSource, /disabled=\{pending\}/);
-  assert.match(submitSource, /aria-disabled=\{pending\}/);
+  assert.match(submitSource, /disabled=\{pending \|\| disabled\}/);
+  assert.match(submitSource, /aria-disabled=\{pending \|\| disabled\}/);
   assert.match(submitSource, /role="status"/);
   assert.match(submitSource, /aria-live="polite"/);
 });
