@@ -170,12 +170,19 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   assert.ok(await page.evaluate("!!document.querySelector('[data-community-signature]') && !!document.querySelector('[data-environment-contour]')"),"Original geometric signature and environmental contour render");
   assert.equal(await page.evaluate("(()=>{const t=getComputedStyle(document.documentElement).getPropertyValue('--motion-step').trim();return parseFloat(t)*(t.endsWith('ms')?1:1000)})()"),420,"Shared motion timing is consistent");
   const capture=[];const captureTimes=[];const began=Date.now();let phase=0;
-  // Capture latency must not collapse multiple pointer stages into one pre-render frame.
+  // Use current viewport hit geometry; do not resize the viewport to record a visible hero.
   const depth=[];
+  const pointHero = async fraction => {
+    const point = await page.evaluate(`(()=>{const e=document.querySelector('[data-community-motion]');const r=e.getBoundingClientRect();const x=r.left+r.width*${fraction};const y=r.top+r.height*.5;return {x,y,hit:e.contains(document.elementFromPoint(x,y)),running:e.dataset.running,hidden:document.hidden,scrollY,viewport:[innerWidth,innerHeight]}})()`);
+    console.log(`AFGHAN_HUB_HERO_POINTER_TARGET ${JSON.stringify(point)}`);
+    assert.ok(point.hit && point.running==='true' && !point.hidden,'Pointer must hit the visible running hero');
+    await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:point.x,y:point.y});
+    return waitFor(()=>page.evaluate(`(()=>{const t=getComputedStyle(document.querySelector('[data-hero-layer=architecture]')).transform;const x=new DOMMatrix(t).m41;return ${fraction < .5 ? 'x < -1' : 'x > 1'} && t})()`),'actual pointer frame committed');
+  };
   while(Date.now()-began<13000) {
     const elapsed=Date.now()-began;
-    if(elapsed>=4300&&phase===0){await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:illustration.x+30,y:illustration.y+30});depth.push(await waitFor(()=>page.evaluate("(()=>{const t=getComputedStyle(document.querySelector('[data-hero-layer=architecture]')).transform;return new DOMMatrix(t).m41 < -1 && t})()"),"near pointer frame committed"));phase=1;}
-    else if(elapsed>=5200&&phase===1){await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:illustration.x+illustration.width-30,y:illustration.y+illustration.height-30});depth.push(await waitFor(()=>page.evaluate("(()=>{const t=getComputedStyle(document.querySelector('[data-hero-layer=architecture]')).transform;return new DOMMatrix(t).m41 > 1 && t})()"),"far pointer frame committed"));phase=2;}
+    if(elapsed>=4300&&phase===0){depth.push(await pointHero(.2));phase=1;}
+    else if(elapsed>=5200&&phase===1){depth.push(await pointHero(.8));phase=2;}
     else if(elapsed>=6300&&phase===2){await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:10,y:20});phase=3;}
     else if(elapsed>=9500&&phase===3){
       await page.evaluate("document.activeElement?.blur()");
@@ -190,7 +197,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     }
     else if(elapsed>=11200&&phase===4){assert.ok(await page.evaluate("parseFloat(getComputedStyle(document.querySelector('[data-hero-focus]')).opacity)<.01"),"CTA highlight must settle even while focused");await page.evaluate("document.activeElement.blur()");phase=5;}
     captureTimes.push(Date.now()-began);
-    capture.push((await page.send("Page.captureScreenshot",{format:"jpeg",quality:72,captureBeyondViewport:true,clip:{...heroGeometry,scale:1}})).data);
+    capture.push((await page.send("Page.captureScreenshot",{format:"jpeg",quality:72,captureBeyondViewport:false,clip:{...heroGeometry,scale:1}})).data);
     await delay(Math.max(0,100-(Date.now()-began-elapsed)));
   }
   assert.ok(await page.evaluate("[...document.querySelectorAll('[data-hero-layer=architecture],[data-hero-layer=network],[data-hero-layer=openings]')].every(e=>{const m=new DOMMatrix(getComputedStyle(e).transform);return m.m41===0&&m.m42===0})"),"Selected depth layers return to rest after pointer exit");
