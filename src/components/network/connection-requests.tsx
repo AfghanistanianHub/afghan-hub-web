@@ -1,3 +1,4 @@
+import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import Link from "next/link";
 import { CommunitySignature } from "@/components/public/community-signature";
 import styles from "./network-surfaces.module.css";
@@ -99,23 +100,23 @@ export function ConnectionRequests({
                   value={request.id}
                 />
 
-                <button
-                  type="submit"
+                <PendingSubmitButton
                   name="decision"
                   value="accepted"
-                  className={`bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 ${styles.control}`}
+                  pendingLabel="Accepting…"
+                  className={`min-w-32 bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 ${styles.control}`}
                 >
                   Accept
-                </button>
+                </PendingSubmitButton>
 
-                <button
-                  type="submit"
+                <PendingSubmitButton
                   name="decision"
                   value="declined"
-                  className={`border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted ${styles.control}`}
+                  pendingLabel="Declining…"
+                  className={`min-w-32 border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted ${styles.control}`}
                 >
                   Decline
-                </button>
+                </PendingSubmitButton>
               </form>
             </div>
           );

@@ -26,3 +26,23 @@ test('pending button preserves unavailable and toggle states before, during and 
   assert.equal(full.props.children.props.children, 'Event full');
   assert.ok(full.props.className.includes('cursor-not-allowed'));
 });
+
+test('named decisions disable both controls while only the chosen decision announces progress', () => {
+  let pending = true;
+  const data = new FormData();
+  const exports = {};
+  const source = readFileSync(new URL('../src/components/forms/pending-submit-button.tsx', import.meta.url), 'utf8');
+  new Function('require', 'exports', ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX } }).outputText)(name => name === 'react-dom' ? { useFormStatus: () => ({pending, data}) } : require(name), exports);
+  for (const chosen of ['accepted', 'declined']) {
+    data.set('decision', chosen);
+    for (const value of ['accepted', 'declined']) {
+      const button = exports.PendingSubmitButton({ name: 'decision', value, children: value, pendingLabel: 'Working…' });
+      assert.equal(button.props.name, 'decision');
+      assert.equal(button.props.value, value);
+      assert.equal(button.props.disabled, true);
+      assert.equal(button.props.children.props.children, chosen === value ? 'Working…' : value);
+    }
+  }
+  pending = false;
+  assert.equal(exports.PendingSubmitButton({ name: 'decision', value: 'accepted', children: 'Accept', pendingLabel: 'Working…' }).props.disabled, false);
+});
