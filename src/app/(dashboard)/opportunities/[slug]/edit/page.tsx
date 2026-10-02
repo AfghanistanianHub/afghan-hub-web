@@ -1,3 +1,4 @@
+import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import formStyles from "@/components/forms/listing-form.module.css";
 import { CommunitySignature } from "@/components/public/community-signature";
 import Link from "next/link";
@@ -158,9 +159,9 @@ export default async function EditOpportunityPage({
         </div>
 
         <div className="flex flex-wrap gap-3 border-t border-border pt-6">
-          <button type="submit" className="rounded-[var(--radius)] bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+          <PendingSubmitButton pendingLabel="Saving changes…" className="rounded-[var(--radius)] bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
             Save and submit for review
-          </button>
+          </PendingSubmitButton>
           <Link href={`/opportunities/${opportunity.slug}`} className="rounded-[var(--radius)] border border-border/80 bg-background px-5 py-3 text-sm font-semibold transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
             Cancel
           </Link>

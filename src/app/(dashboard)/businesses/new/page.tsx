@@ -1,3 +1,4 @@
+import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import formStyles from "@/components/forms/listing-form.module.css";
 import { CommunitySignature } from "@/components/public/community-signature";
 import Link from "next/link";
@@ -136,7 +137,7 @@ export default async function NewBusinessPage({
 
           <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:justify-end">
             <Link href="/businesses" className="rounded-[var(--radius)] border border-border/80 bg-background px-5 py-3 text-center font-semibold text-foreground transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Cancel</Link>
-            <button type="submit" className="rounded-[var(--radius)] bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Create business</button>
+            <PendingSubmitButton pendingLabel="Creating business…" className="rounded-[var(--radius)] bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Create business</PendingSubmitButton>
           </div>
         </form>
       </div>
