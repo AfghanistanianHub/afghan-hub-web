@@ -1,97 +1,86 @@
 # Afghan Hub current state
 
-## Authoritative checkpoint — 2026-09-16
+## Authoritative checkpoint — 2026-10-02
 
-This is the concise continuation checkpoint for Afghan Hub. Detailed evidence lives in GitHub issues/PRs, workflow runs, and Supabase records. On every continuation, verify live `main`, open PRs, CI and Vercel before mutating anything. Do not treat a hard-coded commit SHA in documentation as a permanent source of truth because the documentation merge itself advances `main`.
+This is the continuation checkpoint for Afghan Hub. Always verify live `main`, open PRs, CI and Vercel before mutating anything. Hard-coded SHAs in this file are evidence snapshots only because updating this document advances `main`.
 
-## Current operational state
+## Verified operational state
 
-- Verify the live `main` branch at the start of each continuation; #241 refreshed this checkpoint and later commits may advance it.
-- `main` is still unprotected; #152 remains open.
-- Vercel previews are working.
-- GitHub Actions is currently the active operational blocker: several unrelated jobs terminate before checkout/setup with no workflow steps (`steps: []` / `steps: null`). This is tracked in #239.
-- Do not interpret those pre-step runner failures as product/test failures and do not weaken CI to bypass them.
+- Repository: `AfghanistanianHub/afghan-hub-web`.
+- Latest verified application commit before this documentation refresh: `f77f28b42eb963df58a391cff17f29f5e411f679`.
+- Open pull requests at this checkpoint: **none**.
+- Vercel previews/deployments are working.
+- GitHub Actions runner allocation has recovered. Issue #239 is **closed** after representative Node 22/24 execution returned to normal.
+- Main launch acceptance gate #120 is **closed** with final hosted acceptance, cleanup/restore evidence and anonymous protected-route smoke recorded.
+- `main` remains unprotected; #152 is still open and procedural PR + CI + Vercel gating remains the zero-cost control.
+
+## Recent shipped work
+
+Recent merged work includes:
+
+- #251 final launch acceptance workflow/evidence;
+- #253 related opportunities/events on detail pages;
+- #356 unified listing forms, media controls, calendar/date UX and pending-submit feedback;
+- #357 improved Assistant retrieval and zero-result recovery;
+- #359 Unicode-safe multilingual Assistant intent matching;
+- #360 pending/deleting feedback for Event/Opportunity destructive actions;
+- #361 follow-up multilingual Assistant query cleanup.
+
+Assistant discovery now includes:
+- English/Dari/Pashto intent routing;
+- Unicode-safe boundaries;
+- natural-language query cleanup;
+- removal of common grammatical connectives that would otherwise over-constrain PostgreSQL full-text search;
+- handling of Persian ZWNJ plural forms including `ها`, `های`, `هایی`;
+- zero-result recovery links and broader prompt retries;
+- privacy-minimal recovery analytics without raw query text or record IDs.
 
 ## Product / visual state
 
-Afghan Hub uses a modern, minimal, light visual system. Avoid dark-first treatment and harsh/bright green. The product should feel like a contemporary community/product platform rather than a text directory.
+Afghan Hub uses a modern, minimal, light visual system with warm off-white surfaces, restrained violet accents, readable dark text, fine borders and the approved geometric artwork. Avoid dark-first treatment and harsh/bright green.
 
-Major shipped product/visual work includes:
+Major public/member surfaces have already received substantial passes:
+- landing/public home;
+- dashboard;
+- login/join;
+- listing create/edit/detail flows;
+- Explore/search;
+- People/network/profile/connections;
+- Messages;
+- Settings;
+- Saved Opportunities;
+- My Submissions;
+- loading/recovery/404;
+- profile completeness;
+- related opportunity/event discovery.
 
-- #180 public home;
-- #182 dashboard command center;
-- #184 login/join identity;
-- #186 listing detail hierarchy;
-- #188 profile/network;
-- #190 recovery/settings;
-- #194 loading/recovery/404 alignment;
-- #195 dashboard navigation/mobile hierarchy;
-- #220 profile strength/completeness guidance;
-- #235 personalized dashboard opportunity/event ranking using existing profile signals.
+Do not redesign stable surfaces without a concrete UX or accessibility gap.
 
-Dashboard now uses the reusable `ProfileStrength` component and full completeness fields. Member, opportunity and event recommendations use existing profile/location/skill signals with deterministic fallbacks.
+## Launch acceptance — COMPLETE
 
-Open product work:
+Issue #120 is closed.
 
-- #237 clarifies business/organization trust semantics: `Verified listing`, reusable badge/note, and an explicit statement that verification is not an endorsement or guarantee. It intentionally does not claim member identity verification. Manual review found its regression test is included by the existing `node --test tests/*.test.mjs` CI step. Keep it unmerged until executable CI returns.
-- #243 adds zero-schema related opportunities/events on detail pages using existing type/topic/location/online signals. Vercel build is green; GitHub Actions is blocked by #239, so keep it unmerged until executable CI returns.
-
-Messages, Member Directory, Saved Opportunities, Search, Moderation and My Submissions have already received substantial passes. Avoid redesign churn without a specific UX gap.
-
-## Secondary acceptance environment
-
-Secondary Supabase: `rurgmyiiytesknsfwjjl`.
-Production source of truth: `yussznmwjsvfvpabmwdc`.
-
-Secondary is aligned for launch-critical acceptance without production mutation:
-
-- all 12 launch tables have RLS enabled and production-equivalent policy counts;
-- workflow-critical connection/messaging/RSVP/moderation semantics are aligned;
-- Realtime publishes `conversation_members`, `messages`, `notifications`;
-- Storage bucket configuration/policies match production for `avatars`, `business-media`, `organization-media`;
-- launch-critical constraints and enums are aligned;
-- Search is production-equivalent for `search_vector`, updater functions/triggers, GIN indexes and `search_afghan_hub()`; #197 is closed;
-- `pg_trgm` 1.6 relocation to `extensions` was rehearsed successfully and remains hardened on secondary;
-- SECURITY DEFINER search-path hardening is rehearsed on secondary.
-
-Never infer that an existing account is disposable merely because its role matches a required persona.
-
-## Hosted acceptance — verified evidence
-
-### Core hosted matrix — PASS
-
-Run `35028458491` (attempt 2) passed:
-
-- exact non-production target qualification;
-- role/persona authorization;
-- Member A/B connection request and recipient acceptance;
+Verified hosted evidence includes:
+- discovery eligibility and hidden-profile behavior;
+- connection send/accept/decline/cancel/disconnect;
 - unauthorized responder denial;
-- one direct conversation from either direction;
-- message visibility and recipient-only notification isolation;
-- unread/read synchronization;
-- moderated RSVP lifecycle, creator restriction, duplicate handling and cancellation;
-- avatar Storage/profile behavior.
+- accepted direct conversation creation;
+- unrelated/hidden conversation denial;
+- messaging, unread/read synchronization and notification isolation;
+- RSVP lifecycle, capacity, duplicate and creator restrictions;
+- avatar Storage/profile behavior;
+- owner create/edit/delete/submission behavior for organization/business/opportunity/event;
+- incomplete-onboarding and unrelated-responder isolation;
+- admin business/organization listing verification;
+- disposable auth sign-in/refresh/sign-out/session-null verification;
+- anonymous protected-route smoke;
+- exact cleanup/restore assertions for remaining write fixtures.
 
-The exact journey fixture was verified by ID/cardinality, removed with assertion-guarded cleanup SQL, and post-cleanup verification returned zero matching connection/conversation/message/membership/notification rows.
+The secondary acceptance environment remains the place for controlled write-capable acceptance. Do not use unrelated real identities as disposable personas.
 
-### Connection/discovery lifecycle — PASS
+## Acceptance tooling
 
-Run `35061765698` passed:
-
-- public/onboarded eligibility;
-- unrelated direct-conversation denial;
-- temporarily hidden disposable Member B became unreadable and request-ineligible, then was restored;
-- decline;
-- requester cancel;
-- disconnect;
-- notification cleanup;
-- clean final A/B relationship state.
-
-### Avatar / Storage
-
-#198 is CLOSED. Behavioral avatar acceptance passed, including own-folder upload/update/delete, public read, cross-user denial, profile `avatar_url` update/restoration and cleanup.
-
-## Acceptance tooling now available
+Available commands include:
 
 - `npm run acceptance:auth`
 - `npm run acceptance:member-pair`
@@ -106,140 +95,121 @@ Run `35061765698` passed:
 - `npm run smoke:public`
 - `npm run security:qualify-target`
 
-All write-capable acceptance harnesses are scoped to designated disposable personas, use explicit acknowledgements and/or target hard-blocks, and must restore/clean exact fixtures.
+Write-capable acceptance harnesses must remain target-qualified, disposable-persona scoped and cleanup/restoration guarded.
 
-## Main launch gate — #120
+## GitHub Actions — recovered
 
-#120 remains OPEN, but most behavioral surface is already proven.
+Issue #239 is closed.
 
-Completed:
+Historical failures before checkout were runner/account-side allocation failures, not application-test failures. Hosted runners are currently allocating normally again and recent Node CI runs have completed successfully.
 
-- discovery/request eligibility;
-- send/accept connection;
-- unauthorized responder denial;
-- decline/cancel/disconnect;
-- hidden/unrelated direct-conversation denial;
-- messaging, unread/read and notification isolation;
-- roles/persona authorization;
-- RSVP behavior;
-- avatar Storage/profile behavior.
+Do not weaken Node 22/24 coverage. Continue conserving unnecessary workflow runs and avoid diagnostic pushes with no product value.
 
-Remaining execution evidence:
+## Migration / data safety
 
-1. owner create/edit/delete/submission behavior for organization/business/opportunity/event;
-2. consolidated incomplete-onboarding/unrelated-responder evidence on the current acceptance base;
-3. admin business/organization listing-verification behavior;
-4. disposable auth sign-in/refresh/sign-out with session-null verification;
-5. hosted anonymous protected-route smoke (`/dashboard`, `/messages`, `/update-password` → `/login`);
-6. exact cleanup/restore evidence for any remaining write fixtures.
+#199 migration reproducibility is closed. Fresh isolated replay and launch-critical migration/storage guards exist.
 
-PR #242 is the current fresh-main acceptance PR. It extends the temporary one-shot workflow to run auth/sign-out and protected-route smoke alongside owner/discovery/admin suites. It supersedes closed PR #238. Vercel is green; Node CI is blocked by #239 pre-step GitHub Actions failures. Keep #242 unmerged until CI can actually execute.
-
-Do not treat #134 or #136 as cleared for production until #120 evidence is complete and separate production authorization is given.
-
-## GitHub Actions blocker — #239
-
-Observed across #242/#243 and earlier #238, the one-shot acceptance workflow and unrelated PRs:
-
-- jobs fail/cancel before checkout/setup;
-- job step lists are empty;
-- reruns reproduce the same pattern;
-- Vercel succeeds independently;
-- public GitHub status reports Actions operational.
-
-This suggests a repository/account/runner-specific operational problem rather than an application regression, but do not claim an exact billing/entitlement cause without account evidence. Zero-cost-first checks are documented in #239. Once jobs can start normally, rerun a representative Node 22/24 matrix first, then run the #120 one-shot acceptance.
-
-## Migration reproducibility — #199 CLOSED
-
-Repository migration history has been repaired and protected. Fresh isolated replay run `35005042328` passed on main `bff0b27528e70785d2bbf879d916823784d7014b`:
-
-- local Supabase startup;
-- `supabase db reset --local --no-seed`;
-- launch-critical verifier;
-- cleanup;
-- exact-main Node 22/24 CI and Vercel.
-
-Recovered baseline and repair PRs include #200-#205 and #214-#217. CI includes migration/storage replay guards. Do not rewrite production migration history by guesswork.
+Do not:
+- rewrite production migration history by guesswork;
+- create fake Auth users directly in SQL;
+- repurpose unrelated real users for tests;
+- weaken RLS/Auth/CI for convenience.
 
 ## Production security gates
 
-### #134 — SECURITY DEFINER hardening
+Launch acceptance no longer blocks production hardening, but **explicit production authorization is still required before any production mutation**.
 
-20 authenticated-callable SECURITY DEFINER functions remain the production advisor surface. Their caller/role boundaries were reviewed. Secondary has all 20 with `search_path=''`; production still has 10 already empty and 10 holdouts using `search_path=public`. Exact forward/rollback change material is documented. Do not apply production function changes before #120 completes and explicit production authorization is given.
+### #134 — SECURITY DEFINER hardening — OPEN
 
-### #136 / #80 — Phase B DML least privilege
+Production SECURITY DEFINER search-path hardening remains a separate controlled change. Secondary rehearsal evidence exists. Before any production change:
+- recapture exact current production function fingerprints;
+- verify signatures/owners/ACLs/body are unchanged except intended `search_path`;
+- keep rollback SQL paired with the forward change;
+- obtain explicit production authorization.
 
-Production direct DML reduction remains unexecuted. Secondary has the intended narrower ACL matrix and a reversible production package is documented.
+No blanket EXECUTE revoke or SECURITY INVOKER conversion.
 
-Important invariant: `profiles` is excluded from Phase B. Capture the production profile table+column ACL fingerprint immediately before and after any approved change and require it unchanged.
+### #136 / #80 — direct DML least privilege — OPEN
 
-No production GRANT/REVOKE before #120 and explicit authorization.
+Secondary contains the intended narrower ACL matrix. Production direct-DML reduction remains a separate authorization step.
 
-### #135 — platform/Auth hardening
+Important invariant:
+- `profiles` is excluded from this phase;
+- capture the profile table + column ACL fingerprint immediately before and after;
+- require that fingerprint to remain unchanged.
 
-- Production `pg_trgm` 1.6 remains in `public`.
-- Secondary relocation to `extensions` passed and removed that advisor warning.
-- No Afghan Hub trigram index/function dependency was found; Search uses PostgreSQL full-text search.
-- Production relocation is a separate production DDL decision with rollback.
-- Supabase leaked-password/HIBP protection is unavailable on the current Free plan; the stronger application password baseline is mitigation, not an equivalent replacement.
+Do not execute issue-body SQL without a same-window production metadata check and explicit authorization.
 
-### #152 — repository hardening
+### #135 — Auth/platform hardening — OPEN
 
-`main` remains unprotected and the current connector does not have repository administration capability to configure branch protection. Continue procedural PR + Node 22/24 + Vercel gating in zero-cost mode. Do not bypass CI merely because native protection is unavailable.
+Platform/Auth hardening remains open. Treat extension placement and leaked-password protection as separate platform decisions. Re-read current issue evidence before acting; do not assume older production fingerprints remain current.
 
-## Privacy operations — #132
+### #152 — repository hardening — OPEN
 
-Technical mechanics are substantially complete. Remaining items are deliberate policy/legal/product decisions and must not be invented merely to close the issue:
+`main` is still procedurally PR-only rather than natively protected under the current zero-cost/private-repository constraints.
 
+Until native protection becomes available:
+- use focused PRs for runtime/application changes;
+- require Node 22/24 CI + Vercel before merge;
+- do not force-push/delete `main`;
+- do not make the repository public merely to obtain free branch-protection features.
+
+## Privacy operations — #132 OPEN
+
+Technical mechanics are substantially implemented, but policy/legal decisions remain intentionally unresolved, including:
 - retention periods by data class;
-- privacy-request SLA/target;
+- privacy-request SLA;
 - governing jurisdiction;
 - shared-content treatment on deletion;
 - abuse/safety evidence retention;
 - broader export scope;
 - self-service deletion vs verified-support flow.
 
-Current self-export intentionally contains account/profile data only. Production deletion remains a verified-support flow with Storage-first cleanup and Auth identity last.
+Do not invent policy values merely to close the issue.
 
 ## Release / recovery
 
-- manual anonymous production smoke exists (`npm run smoke:public`);
+- anonymous production smoke exists;
 - `npm run backup:free-plan` exists;
 - encrypted/off-site logical backup guidance exists;
-- Supabase Free has no automatic backups/PITR;
-- database dumps do not contain Storage object bytes;
-- never restore over production merely to prove recovery.
+- Supabase Free does not provide automatic backups/PITR;
+- database dumps do not include Storage object bytes;
+- never restore over production merely to demonstrate recovery.
 
 ## Operating constraints
 
 - Zero-cost mode unless the user explicitly approves paid infrastructure/features.
-- No production mutation without exact scope, evidence, rollback/cleanup and explicit authorization.
+- No production mutation without exact scope, current evidence, rollback/cleanup and explicit authorization.
 - Never commit passwords, tokens, service-role keys, cookies, reset/confirmation links or DB credentials.
-- Do not create fake Auth users by SQL or repurpose unrelated real identities.
-- Do not weaken RLS/Auth/CI for convenience.
-- Keep evidence current in #80, #120, #132, #134, #135, #136, #152, #198/#199 history, and #239.
-- Visual changes should target real hierarchy/state/trust gaps and preserve the modern/minimal/light Afghan Hub identity.
+- Keep security/privacy evidence current in #80, #132, #134, #135, #136 and #152.
+- Visual changes should address real hierarchy/state/accessibility gaps and preserve the approved light Afghan Hub identity.
 
 ## Immediate continuation order
 
-1. Check #239 / GitHub Actions runner health.
-2. When Actions can execute steps, get green Node 22/24 CI for #242 and merge it.
-3. Run the final one-shot #120 acceptance and capture exact cleanup/restore evidence.
-4. Remove the temporary one-shot workflow after evidence is captured.
-5. Close #120 only when all remaining boxes are proven.
-6. Then review #134/#136 production change-control separately; do not auto-apply them.
-7. Merge product PRs #237 and #243 only after executable CI + Vercel are green.
-8. Continue product roadmap with existing-profile-signal personalization/related-content improvements before adding new preference schema.
+1. Keep `main` healthy: focused PRs, Node 22/24 CI and Vercel gating.
+2. Continue product work from concrete UX gaps rather than broad redesign churn.
+3. Prioritize Assistant/discovery quality using existing profile/content signals before introducing new preference schema.
+4. Perform authorized private rendered review of signed-in listing/detail flows when browser access is available.
+5. Treat #134, #135 and #136 as separate production change-control projects; do not auto-apply them.
+6. Resolve #132 privacy-policy decisions with explicit product/legal choices.
+7. Keep #152 as the repository-hardening track until native branch protection becomes viable or the procedural limitation is explicitly accepted as final.
 
 ## Verified checkpoint
 
-- live `main` must be verified at continuation time rather than trusted from this file;
-- #120 open with majority of behavioral acceptance already passed;
-- #198 closed;
-- #199 closed;
-- PR #237 open (verification trust semantics);
-- PR #242 open (final acceptance evidence consolidation), Vercel green, CI blocked by #239;
-- PR #243 open (related opportunities/events), Vercel green, CI blocked by #239;
-- #239 open for pre-checkout Actions failures;
-- #238 closed/superseded;
-- production unchanged by the remaining acceptance and product work.
+- #120 closed — launch acceptance complete.
+- #198 closed — avatar/Storage behavioral acceptance complete.
+- #199 closed — migration reproducibility complete.
+- #239 closed — GitHub Actions runner health recovered.
+- #251 merged.
+- #253 merged.
+- #356 merged.
+- #357 merged.
+- #359 merged.
+- #360 merged.
+- #361 merged with successful Node CI.
+- #132 open.
+- #134 open.
+- #135 open.
+- #136 open.
+- #152 open.
+- open PRs: none at the time of this checkpoint.
