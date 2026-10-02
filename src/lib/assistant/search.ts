@@ -93,7 +93,7 @@ export async function searchAssistantCatalog(
   return (data ?? [])
     .filter((row) => isAssistantEntityType(row.entity_type))
     .filter((row) => !options.entityType || row.entity_type === options.entityType)
-    .map((row) => {
+    .map<AssistantSearchResult | null>((row) => {
       const href = resultHref(row);
 
       if (!href) {
