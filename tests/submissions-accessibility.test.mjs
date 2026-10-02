@@ -20,5 +20,5 @@ test("submission links expose visible keyboard focus", async () => {
 
   assert.match(source, /const focusClass =/);
   assert.match(source, /focus-visible:outline-2/);
-  assert.match(source, /focus-within:shadow-md/);
+  assert.match(source, /focus-within:border-primary\/50/);
 });

@@ -1,7 +1,5 @@
 "use client";
 
-import styles from "@/components/network/network-surfaces.module.css";
-
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -85,7 +83,7 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
         </div>
       )}
 
-      <label className={`${styles.control} relative inline-flex min-h-11 cursor-pointer items-center justify-center rounded-[var(--radius)] bg-primary px-4 py-2 font-medium text-primary-foreground  transition  hover:bg-primary/90 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary`}>
+      <label className={`relative inline-flex min-h-11 cursor-pointer items-center justify-center rounded-[var(--radius)] bg-primary px-4 py-2 font-medium text-primary-foreground  transition-[background,border-color,box-shadow] duration-[var(--motion-fast)] motion-reduce:transition-none active:shadow-[inset_0_2px_4px_#302b3520] hover:bg-primary/90 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary`}>
         <span role="status" aria-live="polite">
           {uploading ?"Uploading…" :"Upload photo"}
         </span>
@@ -93,7 +91,7 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
           type="file"
           accept="image/jpeg,image/png,image/webp"
           disabled={uploading}
-          aria-describedby={message ?"avatar-upload-message" : undefined}
+          aria-describedby={message ? "avatar-upload-message" : undefined}
           className="sr-only"
           onChange={(event) => {
             const file = event.target.files?.[0];
@@ -105,8 +103,8 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
       {message ? (
         <p
           id="avatar-upload-message"
-          role={message.kind ==="error" ?"alert" :"status"}
-          aria-live={message.kind ==="error" ?"assertive" :"polite"}
+          role={message.kind === "error" ? "alert" : "status"}
+          aria-live={message.kind === "error" ? "assertive" : "polite"}
           className={message.kind ==="error" ?"relative rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm text-destructive" :"relative rounded-[var(--radius)] border border-primary/15 bg-primary/[0.05] px-3 py-2 text-sm text-primary"}
 >
           {message.text}

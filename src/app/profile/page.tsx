@@ -101,33 +101,33 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                 <fieldset className="space-y-6">
                   <legend className="flex items-center gap-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><UserRound aria-hidden="true" className="size-4" /></span>Identity</legend>
                   <div className="grid gap-6 sm:grid-cols-2">
-                    <label className="block"><span className="text-sm font-medium">First name</span><input name="first_name" defaultValue={profile?.first_name ??""} required className={fieldClassName} /></label>
-                    <label className="block"><span className="text-sm font-medium">Last name</span><input name="last_name" defaultValue={profile?.last_name ??""} required className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">First name</span><input name="first_name" defaultValue={profile?.first_name ?? ""} required className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Last name</span><input name="last_name" defaultValue={profile?.last_name ?? ""} required className={fieldClassName} /></label>
                   </div>
-                  <label className="block"><span className="text-sm font-medium">Headline</span><input name="headline" defaultValue={profile?.headline ??""} placeholder="Computer Technician | Founder of BC Computers" className={fieldClassName} /></label>
-                  <label className="block"><span className="text-sm font-medium">About you</span><textarea name="bio" defaultValue={profile?.bio ??""} rows={5} placeholder="Tell the community a little about yourself..." className={`${fieldClassName} resize-none`} /></label>
+                  <label className="block"><span className="text-sm font-medium">Headline</span><input name="headline" defaultValue={profile?.headline ?? ""} placeholder="Computer Technician | Founder of BC Computers" className={fieldClassName} /></label>
+                  <label className="block"><span className="text-sm font-medium">About you</span><textarea name="bio" defaultValue={profile?.bio ?? ""} rows={5} placeholder="Tell the community a little about yourself..." className={`${fieldClassName} resize-none`} /></label>
                 </fieldset>
 
                 <fieldset className="space-y-6 border-t border-border/70 pt-8">
                   <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><BriefcaseBusiness aria-hidden="true" className="size-4" /></span>Work and skills</legend>
                   <div className="grid gap-6 sm:grid-cols-2">
-                    <label className="block"><span className="text-sm font-medium">Profession</span><input name="profession" defaultValue={profile?.profession ??""} placeholder="Computer technician" className={fieldClassName} /></label>
-                    <label className="block"><span className="text-sm font-medium">Company</span><input name="company" defaultValue={profile?.company ??""} placeholder="BC Computers" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Profession</span><input name="profession" defaultValue={profile?.profession ?? ""} placeholder="Computer technician" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Company</span><input name="company" defaultValue={profile?.company ?? ""} placeholder="BC Computers" className={fieldClassName} /></label>
                   </div>
-                  <label className="block"><span className="text-sm font-medium">Skills</span><input name="skills" defaultValue={profile?.skills?.join(",") ??""} placeholder="Computer repair, Filmmaking, Community organizing" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each skill with a comma.</span></label>
-                  <label className="block"><span className="text-sm font-medium">Languages</span><input name="languages" defaultValue={profile?.languages?.join(",") ??""} placeholder="Dari, English, Persian" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each language with a comma.</span></label>
+                  <label className="block"><span className="text-sm font-medium">Skills</span><input name="skills" defaultValue={profile?.skills?.join(", ") ?? ""} placeholder="Computer repair, Filmmaking, Community organizing" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each skill with a comma.</span></label>
+                  <label className="block"><span className="text-sm font-medium">Languages</span><input name="languages" defaultValue={profile?.languages?.join(", ") ?? ""} placeholder="Dari, English, Persian" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each language with a comma.</span></label>
                 </fieldset>
 
                 <fieldset className="space-y-6 border-t border-border/70 pt-8">
                   <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><Globe2 aria-hidden="true" className="size-4" /></span>Location and links</legend>
                   <div className="grid gap-6 sm:grid-cols-3">
-                    <label className="block"><span className="text-sm font-medium">City</span><input name="city" defaultValue={profile?.city ??""} placeholder="Vancouver" className={fieldClassName} /></label>
-                    <label className="block"><span className="text-sm font-medium">Province/State</span><input name="province_state" defaultValue={profile?.province_state ??""} placeholder="British Columbia" className={fieldClassName} /></label>
-                    <label className="block"><span className="text-sm font-medium">Country</span><input name="country" defaultValue={profile?.country ??""} placeholder="Canada" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">City</span><input name="city" defaultValue={profile?.city ?? ""} placeholder="Vancouver" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Province/State</span><input name="province_state" defaultValue={profile?.province_state ?? ""} placeholder="British Columbia" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Country</span><input name="country" defaultValue={profile?.country ?? ""} placeholder="Canada" className={fieldClassName} /></label>
                   </div>
                   <div className="grid gap-6 sm:grid-cols-2">
-                    <label className="block"><span className="text-sm font-medium">LinkedIn</span><input name="linkedin_url" type="url" defaultValue={profile?.linkedin_url ??""} placeholder="https://www.linkedin.com/in/yourname" className={fieldClassName} /></label>
-                    <label className="block"><span className="text-sm font-medium">Website</span><input name="website_url" type="url" defaultValue={profile?.website_url ??""} placeholder="https://yourwebsite.com" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">LinkedIn</span><input name="linkedin_url" type="url" defaultValue={profile?.linkedin_url ?? ""} placeholder="https://www.linkedin.com/in/yourname" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Website</span><input name="website_url" type="url" defaultValue={profile?.website_url ?? ""} placeholder="https://yourwebsite.com" className={fieldClassName} /></label>
                   </div>
                 </fieldset>
 
