@@ -31,6 +31,7 @@ test("profile action keeps mentorship topics bounded before database write", () 
   assert.match(action, /mentorshipTopics\.length > 12/);
   assert.match(action, /topic\.length > 60/);
   assert.match(action, /new Set<string>\(\)/);
+  assert.match(action, /rawTopic\.trim\(\)\.normalize\("NFC"\)/);
   assert.match(action, /rawTopic\.trim\(\)/);
 });
 

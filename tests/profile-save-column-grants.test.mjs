@@ -70,6 +70,11 @@ test("missing own profile inserts with authenticated identity after zero-row upd
   const h = harness({ missing: true });
   await assert.rejects(h.save(form()), { message: "/dashboard" });
   assert.deepEqual(h.calls.map(c => c.operation), ["update", "insert", "update"]);
+  assert.deepEqual(Object.keys(h.calls[2].payload).sort(), [
+    "looking_for_mentor",
+    "mentorship_topics",
+    "open_to_mentoring",
+  ]);
   assert.ok(!("mentorship_topics" in h.calls[1].payload));
   assert.deepEqual(h.calls[2].payload, { open_to_mentoring: false, looking_for_mentor: false, mentorship_topics: [] });
 });
