@@ -23,8 +23,7 @@ function normalize(value) {
 }
 
 function escapeRegExp(value) {
-  return value.replace(/[.*+?^$\{}()|[\]\\]/g, "\\
-const rules = [");
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function containsKeyword(value, keyword) {
