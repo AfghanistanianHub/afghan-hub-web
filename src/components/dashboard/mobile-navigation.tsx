@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "@/components/network/network-surfaces.module.css";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -41,6 +43,7 @@ export function MobileNavigation({
       if (desktop.matches) setIsOpen(false);
     };
 
+    closeOnDesktop();
     desktop.addEventListener("change", closeOnDesktop);
     return () => desktop.removeEventListener("change", closeOnDesktop);
   }, [isOpen]);
@@ -50,26 +53,26 @@ export function MobileNavigation({
       <Dialog.Trigger
         type="button"
         aria-label="Open navigation"
-        className="rounded-2xl border border-border/80 bg-card/78 p-2.5 text-muted-foreground shadow-[0_8px_24px_rgb(15_23_42/0.035)] transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-card hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:hidden"
+        className={`flex size-11 items-center justify-center border border-border bg-card text-muted-foreground hover:border-primary/30 hover:bg-secondary hover:text-foreground lg:hidden ${styles.control}`}
       >
         <Menu aria-hidden="true" className="size-5" />
       </Dialog.Trigger>
 
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-50 bg-foreground/12 backdrop-blur-md" />
+        <Dialog.Backdrop className="fixed inset-0 z-50 bg-foreground/20" />
 
         <Dialog.Popup
           aria-label="Main navigation"
-          className="fixed inset-y-0 left-0 z-50 flex h-dvh w-[min(20rem,88vw)] flex-col overflow-hidden border-r border-border/80 bg-background/96 shadow-[18px_0_55px_rgb(15_23_42/0.12)] backdrop-blur-2xl"
+          className="fixed inset-y-0 left-0 z-50 flex h-dvh w-[min(20rem,88vw)] flex-col overflow-hidden border-r border-border bg-background shadow-[8px_0_24px_#302b3512]"
         >
-          <div className="relative flex h-20 shrink-0 items-center justify-between border-b border-border/80 px-5"><div aria-hidden="true" className="pointer-events-none absolute -left-16 -top-20 size-52 rounded-full bg-primary/[0.06] blur-3xl" />
+          <div className="relative flex h-20 shrink-0 items-center justify-between border-b border-border px-5">
             <Link
               href="/dashboard"
               onClick={() => setIsOpen(false)}
-              className="relative inline-flex items-center gap-3 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className="relative inline-flex items-center gap-3 rounded-[var(--radius)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
-              <span className="flex size-9 items-center justify-center rounded-2xl border border-primary-foreground/10 bg-primary text-sm font-black text-primary-foreground shadow-[0_8px_20px_color-mix(in_oklab,var(--primary)_16%,transparent)]">
-                A
+              <span className="flex size-9 items-center justify-center rounded-[var(--radius)] bg-primary text-xs font-semibold text-primary-foreground">
+                AH
               </span>
               <span>
                 <span className="block text-sm font-extrabold tracking-[0.16em] text-foreground">AFGHAN HUB</span>
@@ -80,7 +83,7 @@ export function MobileNavigation({
             <Dialog.Close
               type="button"
               aria-label="Close navigation"
-              className="relative rounded-xl border border-transparent p-2 text-muted-foreground transition hover:border-border hover:bg-card hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className={`relative flex size-11 items-center justify-center border border-transparent text-muted-foreground hover:border-border hover:bg-card hover:text-foreground ${styles.control}`}
             >
               <X aria-hidden="true" className="size-5" />
             </Dialog.Close>
@@ -101,26 +104,26 @@ export function MobileNavigation({
                   href={item.href}
                   onClick={() => setIsOpen(false)}
                   aria-current={active ? "page" : undefined}
-                  className={`group relative flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+                  className={`group relative flex min-h-11 items-center gap-3 rounded-[var(--radius)] px-3.5 py-3 text-sm font-medium transition-colors motion-reduce:transition-none active:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                     active
-                      ? "bg-primary/[0.09] text-foreground shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--primary)_12%,transparent)]"
+                      ? "bg-secondary text-foreground"
                       : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   }`}
                 >
                   {active ? <span aria-hidden="true" className="absolute left-1 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-primary" /> : null}
                   <span
-                    className={`flex size-9 items-center justify-center rounded-xl ${
-                      active ? "bg-primary text-primary-foreground shadow-sm" : "bg-transparent text-muted-foreground group-hover:bg-background/70"
+                    className={`flex size-9 items-center justify-center rounded-[var(--radius)] ${
+                      active ? "bg-primary/10 text-primary" : "bg-transparent text-muted-foreground group-hover:bg-background/70"
                     }`}
                   >
                     <Icon aria-hidden="true" className="size-4.5" />
                   </span>
-                  <span className="truncate">{item.label}</span>
+                  <span className="min-w-0 flex-1 break-words">{item.label}</span>
 
                   {item.href === "/messages" && unreadMessageCount > 0 ? (
                     <span
                       aria-label={`${unreadMessageCount} unread messages`}
-                      className="ml-auto flex min-w-6 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-foreground"
+                      className="ml-auto flex min-w-6 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-foreground"
                     >
                       {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
                     </span>
@@ -129,7 +132,7 @@ export function MobileNavigation({
                   {item.href === "/moderation" && pendingModerationCount > 0 ? (
                     <span
                       aria-label={`${pendingModerationCount} submissions pending moderation`}
-                      className="ml-auto flex min-w-6 items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-xs font-bold text-accent-foreground"
+                      className="ml-auto flex min-w-6 shrink-0 items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-xs font-bold text-accent-foreground"
                     >
                       {pendingModerationCount > 99 ? "99+" : pendingModerationCount}
                     </span>
@@ -139,15 +142,15 @@ export function MobileNavigation({
             })}
           </nav>
 
-          <div className="relative shrink-0 border-t border-border/80 bg-background/82 p-3 backdrop-blur">
+          <div className="relative shrink-0 border-t border-border bg-background p-3">
             <p className="px-3 pb-2 pt-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Account</p>
             <div className="space-y-1">
               <Link
                 href="/profile"
                 onClick={() => setIsOpen(false)}
                 aria-current={isActivePath(pathname, "/profile") ? "page" : undefined}
-                className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-                  isActivePath(pathname, "/profile") ? "bg-primary/[0.09] text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                className={`flex min-h-11 items-center gap-3 rounded-[var(--radius)] px-3.5 py-3 text-sm font-medium transition-colors motion-reduce:transition-none active:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+                  isActivePath(pathname, "/profile") ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
               >
                 <UserRound aria-hidden="true" className="size-5" />
@@ -158,8 +161,8 @@ export function MobileNavigation({
                 href="/settings"
                 onClick={() => setIsOpen(false)}
                 aria-current={isActivePath(pathname, "/settings") ? "page" : undefined}
-                className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-                  isActivePath(pathname, "/settings") ? "bg-primary/[0.09] text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                className={`flex min-h-11 items-center gap-3 rounded-[var(--radius)] px-3.5 py-3 text-sm font-medium transition-colors motion-reduce:transition-none active:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+                  isActivePath(pathname, "/settings") ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
               >
                 <Settings aria-hidden="true" className="size-5" />
