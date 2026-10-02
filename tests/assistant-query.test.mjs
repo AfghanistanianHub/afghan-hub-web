@@ -21,9 +21,11 @@ const phrasePatterns = [
   /\b(?:working\s+in|that\s+support|that\s+supports)\b/gi,
   /\b(?:people|person|members?|professionals?|mentors?|organizations?|non-?profits?|businesses?|companies|opportunities?|jobs?|events?|workshops?|conferences?)\b/gi,
   /^\s*(?:لطفاً\s+|لطفا\s+)?(?:پیدا\s+کن|نشان\s+بده|جستجو\s+کن|جست‌وجو\s+کن)\s*/i,
+  /\s+(?:را\s+)?(?:پیدا\s+کن|نشان\s+بده|جستجو\s+کن|جست‌وجو\s+کن)\s*$/i,
   /\b(?:افراد|اشخاص|اعضا|عضو|متخصصان|متخصص|سازمان‌ها|سازمان|نهادها|نهاد|کسب‌وکارها|کسب‌وکار|شرکت‌ها|شرکت|فرصت‌ها|فرصت|رویدادها|رویداد|برنامه‌ها|برنامه)\b/gi,
   /\b(?:مرتبط\s+با|مشابه\s+با|در\s+زمینه|حوزه)\b/gi,
   /^\s*(?:مهرباني\s+وکړه\s+)?(?:پیدا\s+کړه|را\s+وښیه|وښیه)\s*/i,
+  /\s+(?:پیدا\s+کړه|را\s+وښیه|وښیه)\s*$/i,
   /\b(?:خلک|غړي|مسلکي\s+کسان|مسلکي|سازمانونه|سازمان|کاروبارونه|کاروبار|فرصتونه|فرصت|غونډې|غونډه|پروګرامونه|پروګرام)\b/gi,
   /\b(?:اړوند|ورته)\b/gi,
 ];
@@ -47,8 +49,8 @@ test("English natural-language framing reduces to useful retrieval terms", () =>
 });
 
 test("Dari and Pashto framing preserves the useful topic", () => {
-  assert.equal(extract("متخصصان حوزه تکنولوژی را پیدا کن"), "تکنولوژی را");
-  assert.equal(extract("سازمان‌های مرتبط با کاریابی را پیدا کن"), "کاریابی را");
+  assert.equal(extract("متخصصان حوزه تکنولوژی را پیدا کن"), "تکنولوژی");
+  assert.equal(extract("سازمان‌های مرتبط با کاریابی را پیدا کن"), "کاریابی");
   assert.match(extract("د ټکنالوژۍ مسلکي کسان پیدا کړه"), /ټکنالوژۍ/);
 });
 
