@@ -320,7 +320,7 @@ function SubmissionCard({
   const StatusIcon = presentation.icon;
 
   return (
-    <article className={`${styles.surface} border border-border bg-card relative overflow-hidden rounded-[var(--radius)] p-6 transition  hover:border-primary/30`}>
+    <article className={`${styles.surface} border border-border bg-card relative overflow-hidden rounded-[var(--radius)] p-6 transition  hover:border-primary/30 focus-within:border-primary/50`}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <span
           className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${presentation.className}`}
