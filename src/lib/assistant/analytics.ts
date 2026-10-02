@@ -29,6 +29,11 @@ export type AssistantAnalyticsEvent =
       event: "assistant_result_click";
       language: AssistantAnalyticsLanguage;
       entityType: AssistantAnalyticsEntityType;
+    }
+  | {
+      event: "assistant_recovery_click";
+      language: AssistantAnalyticsLanguage;
+      destination: "network" | "organizations" | "opportunities" | "events";
     };
 
 const SESSION_KEY = "afghan-hub-assistant-session";
