@@ -1,0 +1,19 @@
+[
+  {"language":"en","query":"Find software professionals in Vancouver","expectedIntent":"find_people","expectedEntityType":"profile"},
+  {"language":"en","query":"Show me community organizations","expectedIntent":"find_organizations","expectedEntityType":"organization"},
+  {"language":"en","query":"Find Afghan-owned businesses","expectedIntent":"find_businesses","expectedEntityType":"business"},
+  {"language":"en","query":"Show me volunteer opportunities","expectedIntent":"find_opportunities","expectedEntityType":"opportunity"},
+  {"language":"en","query":"What events are coming up?","expectedIntent":"find_events","expectedEntityType":"event"},
+
+  {"language":"fa","query":"متخصصان تکنولوژی در ونکوور را پیدا کن","expectedIntent":"find_people","expectedEntityType":"profile"},
+  {"language":"fa","query":"سازمان‌های اجتماعی را نشان بده","expectedIntent":"find_organizations","expectedEntityType":"organization"},
+  {"language":"fa","query":"کسب‌وکارهای افغان را پیدا کن","expectedIntent":"find_businesses","expectedEntityType":"business"},
+  {"language":"fa","query":"فرصت‌های داوطلبی را پیدا کن","expectedIntent":"find_opportunities","expectedEntityType":"opportunity"},
+  {"language":"fa","query":"رویدادهای آینده را نشان بده","expectedIntent":"find_events","expectedEntityType":"event"},
+
+  {"language":"ps","query":"د ټکنالوژۍ مسلکي کسان پیدا کړه","expectedIntent":"find_people","expectedEntityType":"profile"},
+  {"language":"ps","query":"ټولنیز سازمانونه پیدا کړه","expectedIntent":"find_organizations","expectedEntityType":"organization"},
+  {"language":"ps","query":"افغان کاروبارونه پیدا کړه","expectedIntent":"find_businesses","expectedEntityType":"business"},
+  {"language":"ps","query":"د رضاکارۍ فرصتونه پیدا کړه","expectedIntent":"find_opportunities","expectedEntityType":"opportunity"},
+  {"language":"ps","query":"راتلونکې غونډې را وښیه","expectedIntent":"find_events","expectedEntityType":"event"}
+]
