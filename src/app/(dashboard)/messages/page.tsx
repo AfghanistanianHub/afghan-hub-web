@@ -72,7 +72,7 @@ export default async function MessagesPage() {
 
             <Link
               href="/network"
-              className={`inline-flex w-fit items-center gap-2 bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 ${styles.control}`}
+              className={`inline-flex w-fit items-center gap-2 bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${styles.control}`}
             >
               Find people
               <UsersRound aria-hidden="true" className="size-4" />
@@ -102,7 +102,7 @@ export default async function MessagesPage() {
             </p>
             <Link
               href="/network"
-              className={`mt-6 inline-flex items-center bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 ${styles.control}`}
+              className={`mt-6 inline-flex items-center bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${styles.control}`}
             >
               Browse the network
             </Link>
@@ -123,7 +123,7 @@ export default async function MessagesPage() {
                 <Link
                   key={conversation.conversation_id}
                   href={`/messages/${conversation.conversation_id}`}
-                  className={`group relative flex items-center gap-4 border-b border-border px-5 py-5 last:border-b-0 ${styles.inboxRow} ${
+                  className={`group relative flex items-center gap-4 border-b border-border px-5 py-5 last:border-b-0 focus-visible:relative focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary ${styles.inboxRow} ${
                     unreadCount > 0 ? "bg-primary/[0.035]" : ""
                   }`}
                 >
