@@ -7,6 +7,8 @@ type PendingSubmitButtonProps = {
   pendingLabel: string;
   className?: string;
   disabled?: boolean;
+  name?: string;
+  value?: string;
   "aria-pressed"?: boolean;
 };
 
@@ -15,20 +17,25 @@ export function PendingSubmitButton({
   pendingLabel,
   className = "",
   disabled = false,
+  name,
+  value,
   "aria-pressed": pressed,
 }: PendingSubmitButtonProps) {
-  const { pending } = useFormStatus();
+  const { pending, data } = useFormStatus();
+  const isSubmitting = pending && (!name || value === undefined || data?.get(name) === value);
 
   return (
     <button
       type="submit"
+      name={name}
+      value={value}
       disabled={pending || disabled}
       aria-disabled={pending || disabled}
       aria-pressed={pressed}
       className={`${className} disabled:opacity-60 ${pending ? "cursor-wait" : disabled ? "cursor-not-allowed" : ""}`}
     >
       <span role="status" aria-live="polite">
-        {pending ? pendingLabel : children}
+        {isSubmitting ? pendingLabel : children}
       </span>
     </button>
   );
