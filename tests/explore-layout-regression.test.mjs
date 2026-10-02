@@ -20,7 +20,7 @@ test("Explore search and results stay in normal document flow", () => {
   assert.doesNotMatch(source, /lg:grid-cols-\[minmax\(0,1fr\)_20rem\] lg:items-start/);
   assert.match(source, /<div className="min-w-0">/);
   assert.ok(
-    source.indexOf('id="results-heading"') < source.indexOf('<form action="/explore"') && source.indexOf('<form action="/explore"') < source.indexOf('result.items.map'),
+    source.indexOf('<CatalogResultsHeading') < source.indexOf('<form action="/explore"') && source.indexOf('<form action="/explore"') < source.indexOf('result.items.map'),
     "category heading and search should precede result cards",
   );
 });
