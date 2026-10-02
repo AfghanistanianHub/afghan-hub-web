@@ -492,7 +492,33 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   await page.send("Emulation.setDeviceMetricsOverride",{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   await page.send("Page.navigate",{url:appUrl+'/explore?type=organizations'});
   await waitFor(()=>page.evaluate("document.readyState==='complete'&&!!document.querySelector('input[name=q]')"),"catalogue interactions");
-  assert.equal(await page.evaluate("document.querySelector('nav[aria-label=\"Listing categories\"] a[aria-current=page]').getAttribute('href')"),'/explore?type=organizations');
+  assert.equal(await page.evaluate("document.querySelector('nav[aria-label=\"Listing categories\"] a[aria-current=page]').getAttribute('href')"),'/explore?type=organizations#results-heading');
+  // Exercise the category controls themselves with real pointer, keyboard and first tap.
+  for (const [width,touch] of [[1440,false],[390,true]]) {
+    await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:touch});
+    await page.send('Emulation.setTouchEmulationEnabled',{enabled:touch});
+    for (const kind of ['opportunities','events','businesses','organizations']) {
+      await page.evaluate("window.scrollTo(0,0)");
+      const point=await page.evaluate(`(()=>{const a=document.querySelector('nav[aria-label="Listing categories"] a[href="/explore?type=${kind}#results-heading"]');const r=a.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);
+      if(touch) {
+        await page.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[point]});
+        await page.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+      } else {
+        await page.send('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...point});
+        await page.send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});
+      }
+      await waitFor(()=>page.evaluate(`document.readyState==='complete'&&location.search==='?type=${kind}'&&document.querySelector('nav[aria-label="Listing categories"] a[aria-current=page]')?.getAttribute('href')==='/explore?type=${kind}#results-heading'&&document.querySelector('input[name=type]')?.value==='${kind}'`),'actual category navigation '+kind+' at '+width);
+      assert.ok(await page.evaluate("document.querySelector('#results-heading').getBoundingClientRect().top<200"),'Category navigation reveals results');
+    }
+  }
+  await page.send('Emulation.setTouchEmulationEnabled',{enabled:false});
+  await page.send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await page.evaluate("document.querySelector('nav[aria-label=\"Listing categories\"] a').focus({preventScroll:true})");
+  await page.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});
+  await page.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});
+  await waitFor(()=>page.evaluate("location.search==='?type=opportunities'&&document.querySelector('input[name=type]')?.value==='opportunities'"),'category keyboard navigation');
+  await page.send('Page.navigate',{url:appUrl+'/explore?type=organizations'});
+  await waitFor(()=>page.evaluate("document.readyState==='complete'&&document.querySelector('input[name=type]')?.value==='organizations'"),'restore category search');
   await page.evaluate("document.querySelector('input[name=q]').value='no-match-verification';document.querySelector('form').requestSubmit()");
   await waitFor(()=>page.evaluate("location.search.includes('no-match-verification')&&document.body.textContent.includes('No listings match your search.')"),"search submits existing GET form");
   await page.evaluate("[...document.querySelectorAll('a')].find(a=>a.textContent.trim()==='Clear search').click()");
