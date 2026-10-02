@@ -9,7 +9,7 @@ Latest application/test a6b0d793320ae0f6ca68b00cf0d25e466c687130: https://github
 Next: remaining detail/action states and authorized private rendered review.
 
 
-Updated 2026-10-01. Repository: AfghanistanianHub/afghan-hub-web. Current continuation: design/listing-form-consistency, https://github.com/AfghanistanianHub/afghan-hub-web/pull/356 (merged). Local checkout is a partial synthetic snapshot: publish changed files against authentic remote parent/tree; never push its Git history. Read AGENTS.md and relevant bundled Next.js docs before editing.
+Updated 2026-10-01. Repository: AfghanistanianHub/afghan-hub-web. Current continuation: design/detail-action-feedback, https://github.com/AfghanistanianHub/afghan-hub-web/pull/360 (preview). Local checkout is a partial synthetic snapshot: publish changed files against authentic remote parent/tree; never push its Git history. Read AGENTS.md and relevant bundled Next.js docs before editing.
 
 ## Approved identity and preserved behavior
 Warm off-white, restrained violet, readable dark text, fine borders and original SVG geometry. Preserve People person glyphs, approved hero composition, real imagery and working content/routes. Original stepped signature and restrained ridge/coast contours; no copied cultural motifs or fake members/statistics. Shared180/420/600ms motion, stable click targets, direct first tap and static reduced motion. Hero staged intro, paused ambient pulses, selected-layer pointer/mobile-scroll depth, CTA focus and offscreen/hidden suspension are implemented. Public category artwork uses the same reversible interaction language.
@@ -27,3 +27,5 @@ Native Chrome/CUA startup remains unavailable. Signed-in/private visual review, 
 
 ## Detail action feedback — 2026-10-02
 Event/opportunity delete controls reuse the existing nested pending button: Deleting… status, disabled repeat activation, stable 44px+ targets, restrained press/focus and reduced-motion feedback. Confirmation, hidden slug and server action remain unchanged. Local typecheck, scoped lint, production build and two cancellation/confirmation callback tests passed; no real deletion performed. Signed-in browser/touch/visual verification remains blocked by browser startup. This continuation is a separate preview change; PR356 was verified merged before starting. Next: authorized private detail/action review; preserve approved artwork and public functionality.
+
+Verification: application 1d116838b79f655e5654005b131b28b681c551e6; https://github.com/AfghanistanianHub/afghan-hub-web/actions/runs/37047724435 — Node22/24 lint/type/build and full regression jobs successful. Inspected Node22 log:226 tests/pass,0 fail. READY preview https://afghan-hub-pos74lnip-afghan-hub-s-projects.vercel.app (target=null). Native browser retried this turn and still exited during sandbox initialization; private visual/touch/actual-delete verification blocked. Current continuation PR360; do not publish or claim private recordings.
