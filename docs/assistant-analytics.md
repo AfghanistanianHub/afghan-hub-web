@@ -41,6 +41,16 @@ Fields:
 - result entity type
 - anonymous per-tab/session UUID
 
+### assistant_recovery_click
+Measures which browse destination a user chooses after a zero-result search.
+
+Fields:
+- language
+- broad destination category only
+- anonymous per-tab/session UUID
+
+Raw search text and destination record IDs are not included.
+
 ## Deliberately excluded
 
 The analytics endpoint does not emit:
@@ -71,6 +81,7 @@ From these events we can compute or estimate:
 - result-producing search rate;
 - zero-result rate;
 - result click-through;
+- recovery click-through after zero results;
 - destination mix by entity type;
 - language mix;
 - session-level repeat use.
