@@ -1,4 +1,6 @@
 import Link from "next/link";
+import styles from "@/components/network/network-surfaces.module.css";
+import { CommunitySignature } from "@/components/public/community-signature";
 import { ArrowRight, CheckCircle2, Circle } from "lucide-react";
 import {
   getProfileCompleteness,
@@ -20,19 +22,17 @@ export function ProfileStrength({
   const nextSteps = strength.missing.slice(0, compact ? 2 : 3);
 
   return (
-    <div className="relative overflow-hidden rounded-[1.65rem] border border-border/80 bg-card p-5 shadow-[0_12px_38px_rgb(15_23_42/0.04)]">
-      <div
-        aria-hidden="true"
-        className="absolute -right-12 -top-12 size-36 rounded-full border border-primary/10"
-      />
+    <div className={`${styles.surface} relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card p-5`}>
+      
 
+      <CommunitySignature className={styles.signature} />
       <div className="relative flex items-start justify-between gap-5">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
             Profile strength
           </p>
           <h2 className="mt-1 text-xl font-bold tracking-[-0.02em] text-foreground">
-            {strength.complete ? "You are ready to be discovered" : "Make your profile work harder"}
+            {strength.complete ?"You are ready to be discovered" :"Make your profile work harder"}
           </h2>
         </div>
         <span className="shrink-0 text-2xl font-bold tracking-tight text-foreground">
@@ -48,7 +48,7 @@ export function ProfileStrength({
       </div>
 
       {strength.complete ? (
-        <div className="relative mt-5 flex items-start gap-3 rounded-2xl bg-primary/[0.06] p-4 text-sm leading-6 text-foreground">
+        <div className="relative mt-5 flex items-start gap-3 rounded-[var(--radius)] bg-primary/[0.06] p-4 text-sm leading-6 text-foreground">
           <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4.5 shrink-0 text-primary" />
           Your profile includes the core signals members use to understand and discover you.
         </div>
@@ -73,8 +73,8 @@ export function ProfileStrength({
       {showAction && !strength.complete ? (
         <Link
           href="/profile"
-          className="relative mt-5 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-        >
+          className={`${styles.control} relative mt-5 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
+>
           Complete profile
           <ArrowRight aria-hidden="true" className="size-4" />
         </Link>
