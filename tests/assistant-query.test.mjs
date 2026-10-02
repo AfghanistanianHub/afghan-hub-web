@@ -22,7 +22,8 @@ function removeOrphanPersianPluralSuffix(value) {
 const phrasePatterns = [
   /^\s*(?:please\s+)?(?:find|show(?:\s+me)?|search(?:\s+for)?|look\s+for)\s+/i,
   /\b(?:similar\s+to|related\s+to)\b/gi,
-  /\b(?:working\s+in|that\s+support|that\s+supports)\b/gi,\n  /\b(?:upcoming|future)\b/gi,
+  /\b(?:working\s+in|that\s+support|that\s+supports)\b/gi,
+  /\b(?:upcoming|future)\b/gi,
   /\b(?:people|person|members?|professionals?|mentors?|organizations?|non-?profits?|businesses?|companies|opportunities?|jobs?|events?|workshops?|conferences?)\b/gi,
   /^\s*(?:لطفاً\s+|لطفا\s+)?(?:پیدا\s+کن|نشان\s+بده|جستجو\s+کن|جست‌وجو\s+کن)\s*/i,
   /\s+(?:را\s+)?(?:پیدا\s+کن|نشان\s+بده|جستجو\s+کن|جست‌وجو\s+کن)\s*$/i,
@@ -67,12 +68,15 @@ test("Dari and Pashto framing preserves useful topic and location terms", () => 
   assert.equal(extract("متخصصان حوزه تکنولوژی را پیدا کن"), "تکنولوژی");
   assert.equal(extract("سازمان‌های مرتبط با کاریابی را پیدا کن"), "کاریابی");
   assert.equal(extract("فرصت‌های کاریابی را پیدا کن"), "کاریابی");
-  assert.equal(extract("فرصت‌های داوطلبی در ونکوور را پیدا کن"), "داوطلبی ونکوور");\n  assert.equal(extract("رویدادها برای زنان در ونکوور"), "زنان ونکوور");\n  assert.equal(extract("سازمان‌هایی مرتبط با کاریابی را پیدا کن"), "کاریابی");
+  assert.equal(extract("فرصت‌های داوطلبی در ونکوور را پیدا کن"), "داوطلبی ونکوور");
+  assert.equal(extract("رویدادها برای زنان در ونکوور"), "زنان ونکوور");
+  assert.equal(extract("سازمان‌هایی مرتبط با کاریابی را پیدا کن"), "کاریابی");
   assert.match(extract("د ټکنالوژۍ مسلکي کسان پیدا کړه"), /ټکنالوژۍ/);
   assert.equal(
     extract("په ونکوور کې د رضاکارۍ فرصتونه پیدا کړه"),
     "ونکوور رضاکارۍ",
   );
+  assert.equal(extract("په ونکوور کې د ښځو لپاره غونډې"), "ونکوور ښځو");
 });
 
 test("cleanup never turns a valid short request into an empty search", () => {
