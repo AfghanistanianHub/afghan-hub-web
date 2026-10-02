@@ -115,6 +115,10 @@ function getIntentEmptyCopy(intent: ReturnType<typeof getPhaseOneSearchIntent>) 
       return "No current jobs or explicitly hiring businesses match this view yet.";
     case "hire_talent":
       return "No eligible public member profiles are available in this view yet.";
+    case "find_mentor":
+      return "No eligible public members have opted in to offer mentorship in this view yet.";
+    case "offer_mentorship":
+      return "No eligible public members have said they are looking for a mentor in this view yet.";
     case "volunteer":
       return "No current volunteer roles or organizations explicitly accepting volunteers are available yet.";
     case "find_services":
@@ -138,8 +142,12 @@ export default async function SearchPage({
   const intent = getPhaseOneSearchIntent(rawIntent);
   const supabase = await createClient();
   const isIntentOnlyBrowse = intent !== null && query.length === 0;
+  const memberBrowseIntent =
+    intent === "hire_talent" ||
+    intent === "find_mentor" ||
+    intent === "offer_mentorship";
   const user =
-    intent === "hire_talent" && query.length === 0
+    memberBrowseIntent && query.length === 0
       ? (await supabase.auth.getUser()).data.user
       : null;
   const browseItems =
@@ -202,11 +210,17 @@ export default async function SearchPage({
     memberIds.length > 0
       ? supabase
           .from("profiles")
-          .select("id")
+          .select("id,open_to_mentoring,looking_for_mentor")
           .in("id", memberIds)
           .eq("is_public", true)
           .eq("onboarding_completed", true)
-      : Promise.resolve({ data: [] as { id: string }[] }),
+      : Promise.resolve({
+          data: [] as {
+            id: string;
+            open_to_mentoring: boolean;
+            looking_for_mentor: boolean;
+          }[],
+        }),
     opportunityIds.length > 0
       ? supabase
           .from("opportunities")
@@ -298,6 +312,9 @@ export default async function SearchPage({
     return false;
   });
 
+  const memberSignalById = new Map(
+    (visibleMembers ?? []).map((item) => [item.id, item]),
+  );
   const businessSignalById = new Map(
     (businessSignals ?? []).map((item) => [item.id, item]),
   );
@@ -314,7 +331,11 @@ export default async function SearchPage({
       const key = getResultKey(result);
 
       if (isMemberResult(result)) {
-        return memberIntentCandidate(key);
+        const signals = memberSignalById.get(result.entity_id);
+        return memberIntentCandidate(key, {
+          openToMentoring: signals?.open_to_mentoring ?? false,
+          lookingForMentor: signals?.looking_for_mentor ?? false,
+        });
       }
 
       if (result.entity_type === "business") {
