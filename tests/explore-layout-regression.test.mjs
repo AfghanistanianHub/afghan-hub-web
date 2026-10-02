@@ -18,14 +18,16 @@ test("Explore listing grid sizes cards from available container width", () => {
 test("Explore search and results stay in normal document flow", () => {
   assert.doesNotMatch(source, /lg:sticky/);
   assert.doesNotMatch(source, /lg:grid-cols-\[minmax\(0,1fr\)_20rem\] lg:items-start/);
-  assert.match(source, /<div className="mt-10 min-w-0">/);
+  assert.match(source, /<div className="min-w-0">/);
   assert.ok(
-    source.indexOf('Search this category') < source.indexOf('id="results-heading"'),
-    "search controls should render before the results heading",
+    source.indexOf('id="results-heading"') < source.indexOf('<form action="/explore"') && source.indexOf('<form action="/explore"') < source.indexOf('result.items.map'),
+    "category heading and search should precede result cards",
   );
 });
 
 test("Explore search controls remain responsive without squeezing result cards", () => {
   assert.match(source, /sm:grid-cols-\[minmax\(0,1fr\)_auto\]/);
-  assert.match(source, /lg:grid-cols-\[minmax\(0,1fr\)_20rem\]/);
+  assert.match(source, /styles.searchForm/);
+  assert.doesNotMatch(source, /lg:grid-cols-\[minmax\(0,1fr\)_20rem\]/);
 });
+
