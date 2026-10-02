@@ -26,6 +26,10 @@ function cleanWhitespace(value: string) {
     .trim();
 }
 
+function removeOrphanPersianPluralSuffix(value: string) {
+  return value.replace(/(?:^|\s)\u200c?(?:ها|های)(?=\s|$)/gu, " ");
+}
+
 export function extractAssistantSearchTerms(query: string) {
   const original = cleanWhitespace(query).slice(0, 120);
   let candidate = original;
@@ -34,7 +38,7 @@ export function extractAssistantSearchTerms(query: string) {
     candidate = candidate.replace(pattern, " ");
   }
 
-  candidate = cleanWhitespace(candidate)
+  candidate = cleanWhitespace(removeOrphanPersianPluralSuffix(candidate))
     .replace(/^(?:in|at|for|to|of|the|a|an)\s+/i, "")
     .trim()
     .slice(0, 120);
