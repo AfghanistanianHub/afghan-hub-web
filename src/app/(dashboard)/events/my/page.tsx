@@ -1,4 +1,6 @@
 import Link from "next/link";
+import styles from "@/components/network/network-surfaces.module.css";
+import { CommunitySignature } from "@/components/public/community-signature";
 import { redirect } from "next/navigation";
 import { ArrowUpRight, CalendarDays, MapPin, Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -50,9 +52,9 @@ function EventCard({
   return (
     <Link
       href={`/events/${event.slug}`}
-      className="surface-panel group relative block overflow-hidden rounded-[1.5rem] p-5 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_16px_36px_rgb(15_23_42/0.06)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+      className={`${styles.surface} ${styles.profile} border border-border bg-card group relative block overflow-hidden rounded-[var(--radius)] p-5 transition  hover:border-primary/30  focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
     >
-      <div aria-hidden="true" className="absolute -right-8 -top-8 size-24 rounded-full border border-primary/10" />
+      
       <div className="relative flex flex-wrap items-center gap-2">
         <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
           {formatEventDate(event.starts_at)}
@@ -65,7 +67,7 @@ function EventCard({
         ) : null}
       </div>
 
-      <div className="relative mt-3 flex items-start justify-between gap-3"><h3 className="break-words text-lg font-bold leading-6 text-foreground transition group-hover:text-primary">{event.title}</h3><ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"/></div>
+      <div className="relative mt-3 flex items-start justify-between gap-3"><h3 className="break-words text-lg font-bold leading-6 text-foreground transition group-hover:text-primary">{event.title}</h3><ArrowUpRight data-profile-arrow aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground"/></div>
 
       {event.summary ? (
         <p className="relative mt-2 line-clamp-2 break-words text-sm leading-6 text-muted-foreground">
@@ -130,26 +132,27 @@ export default async function MyEventsPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
-      <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
-        <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
+      <section className={`${styles.surface} relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8  md:px-8 md:py-10`}>
+        
+        
+        <CommunitySignature className={styles.signature} />
         <div className="relative flex flex-wrap items-end justify-between gap-5">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary"><Sparkles aria-hidden="true" className="size-3.5"/>Events</div>
-          <h1 className="mt-5 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">My events</h1>
+          <h1 className="mt-5 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">My events</h1>
           <p className="mt-3 max-w-2xl text-muted-foreground">Keep track of events you registered for and events you are hosting.</p>
         </div>
 
         <div className="flex flex-wrap gap-3">
           <Link
             href="/events"
-            className="rounded-2xl border border-border/80 bg-background/80 px-5 py-3 font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+            className={`${styles.control} inline-flex items-center rounded-[var(--radius)] border border-border/80 bg-background/80 px-5 py-3 font-semibold text-foreground transition  hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
           >
             Browse events
           </Link>
           <Link
             href="/events/new"
-            className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+            className={`${styles.control} inline-flex items-center rounded-[var(--radius)] bg-primary px-5 py-3 font-semibold text-primary-foreground  transition  hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
           >
             Create Event
           </Link>
@@ -172,7 +175,7 @@ export default async function MyEventsPage() {
             ))}
           </div>
         ) : (
-          <div className="relative mt-5 overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-muted/25 px-6 py-10 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"/>
+          <div className="relative mt-5 overflow-hidden rounded-[var(--radius)] border border-dashed border-border/80 bg-muted/25 px-6 py-10 text-center ">
             <CalendarDays aria-hidden="true" className="relative mx-auto size-9 text-primary" />
             <h3 className="relative mt-3 font-semibold text-foreground">
               No upcoming registrations
@@ -184,8 +187,8 @@ export default async function MyEventsPage() {
         )}
 
         {pastRegistered.length ? (
-          <details className="mt-6 rounded-2xl border border-border bg-muted/30 p-5">
-            <summary className="cursor-pointer rounded-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+          <details className="mt-6 rounded-[var(--radius)] border border-border bg-muted/30 p-5">
+            <summary className={`${styles.control} cursor-pointer rounded-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}>
               Past registrations ({pastRegistered.length})
             </summary>
             <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -215,7 +218,7 @@ export default async function MyEventsPage() {
             ))}
           </div>
         ) : (
-          <div className="mt-5 rounded-3xl border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
+          <div className="mt-5 rounded-[var(--radius)] border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
             <CalendarDays aria-hidden="true" className="relative mx-auto size-9 text-primary" />
             <h3 className="relative mt-3 font-semibold text-foreground">
               You are not hosting any events yet
