@@ -1,5 +1,7 @@
+import { SignOutSubmit } from "@/components/dashboard/action-submit";
+import styles from "@/components/network/network-surfaces.module.css";
 import Link from "next/link";
-import { LogOut, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { logout } from "@/app/(dashboard)/actions";
 import { MobileNavigation } from "@/components/dashboard/mobile-navigation";
 import {
@@ -41,7 +43,7 @@ export function Header({
 
         <Link
           href="/dashboard"
-          className="rounded-sm font-extrabold tracking-[0.16em] text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:hidden"
+          className="rounded-sm font-extrabold tracking-[0.16em] text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary md:hidden"
         >
           <span className="text-base sm:hidden">AH</span>
           <span className="hidden text-sm sm:inline">AFGHAN HUB</span>
@@ -50,7 +52,7 @@ export function Header({
         <form
           action="/search"
           role="search"
-          className="relative hidden w-[22rem] md:block"
+          className="relative hidden md:block md:w-48 lg:w-[22rem]"
         >
           <Search aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
 
@@ -59,7 +61,7 @@ export function Header({
             type="search"
             placeholder="Search people, organizations, opportunities..."
             aria-label="Search Afghan Hub"
-            className="w-full rounded-2xl border border-border/80 bg-card/72 py-3 pl-11 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary/20 focus:border-primary/45 focus:bg-card focus:ring-4 focus:ring-primary/10"
+            className={`${styles.search} w-full border border-border bg-card py-3 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground`}
           />
         </form>
       </div>
@@ -72,8 +74,8 @@ export function Header({
         />
 
         <div className="hidden text-right sm:block">
-          <p className="text-sm font-semibold text-foreground">{displayName}</p>
-          <p className="max-w-48 truncate text-xs text-muted-foreground">{email}</p>
+          <p className="max-w-28 truncate text-sm font-semibold text-foreground lg:max-w-48">{displayName}</p>
+          <p className="max-w-28 truncate text-xs text-muted-foreground">{email}</p>
         </div>
 
         <div className="flex size-10 items-center justify-center rounded-full border border-primary/15 bg-primary font-bold text-primary-foreground ring-4 ring-primary/8 sm:size-11">
@@ -81,14 +83,7 @@ export function Header({
         </div>
 
         <form action={logout}>
-          <button
-            type="submit"
-            aria-label="Sign out"
-            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-2xl border border-border/80 bg-card/72 px-3 py-2.5 text-sm font-semibold text-foreground shadow-sm transition hover:border-primary/20 hover:bg-muted/70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:px-4"
-          >
-            <LogOut aria-hidden="true" className="size-4 sm:hidden" />
-            <span className="hidden sm:inline">Sign out</span>
-          </button>
+          <SignOutSubmit className={`inline-flex size-11 items-center justify-center gap-2 border border-border bg-card px-3 text-sm font-semibold text-foreground hover:border-primary/30 hover:bg-secondary sm:w-32 sm:px-4 ${styles.control}`} />
         </form>
       </div>
     </header>
