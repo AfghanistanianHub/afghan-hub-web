@@ -38,6 +38,12 @@ const eventSchema = z.discriminatedUnion("event", [
     entityType: entityTypeSchema,
     sessionId: z.string().uuid().nullable(),
   }),
+  z.object({
+    event: z.literal("assistant_recovery_click"),
+    language: languageSchema,
+    destination: z.enum(["network", "organizations", "opportunities", "events"]),
+    sessionId: z.string().uuid().nullable(),
+  }),
 ]);
 
 export async function POST(request: Request) {
