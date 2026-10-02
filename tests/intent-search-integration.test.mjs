@@ -24,6 +24,11 @@ test("search exposes supported intents and human-readable reasons", () => {
   assert.match(source, /getPhaseOneSearchIntent\(rawIntent\)/);
   assert.match(source, /intentReasonByKey/);
   assert.match(source, /VerificationBadge/);
+  assert.match(source, /find_mentor/);
+  assert.match(source, /offer_mentorship/);
+  assert.match(source, /open_to_mentoring/);
+  assert.match(source, /looking_for_mentor/);
+  assert.match(source, /memberIntentCandidate\(key, \{/);
 });
 
 test("intent-only browse stays bounded and keyword remains optional", () => {
