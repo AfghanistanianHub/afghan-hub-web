@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import styles from "./network-surfaces.module.css";
 import { startConversation } from "@/app/(dashboard)/messages/actions";
 import {
@@ -35,7 +36,7 @@ export function ConnectionButton({
     return (
       <form action={sendConnectionRequest}>
         <input type="hidden" name="recipient_id" value={memberId} />
-        <button type="submit" className={primaryButton}>Connect</button>
+        <PendingSubmitButton pendingLabel="Sending…" className={`${primaryButton} min-w-32`}>Connect</PendingSubmitButton>
       </form>
     );
   }
@@ -49,7 +50,7 @@ export function ConnectionButton({
 
         <form action={startConversation}>
           <input type="hidden" name="member_id" value={memberId} />
-          <button type="submit" className={primaryButton}>Message</button>
+          <PendingSubmitButton pendingLabel="Opening…" className={`${primaryButton} min-w-32`}>Message</PendingSubmitButton>
         </form>
 
         <form
@@ -59,12 +60,12 @@ export function ConnectionButton({
           }}
         >
           <input type="hidden" name="connection_id" value={connection.id} />
-          <button
-            type="submit"
-            className={`inline-flex items-center justify-center border border-destructive/25 bg-card px-4 py-2.5 text-sm font-semibold text-destructive hover:bg-destructive/10 ${styles.control}`}
+          <PendingSubmitButton
+            pendingLabel="Disconnecting…"
+            className={`inline-flex min-w-40 items-center justify-center border border-destructive/25 bg-card px-4 py-2.5 text-sm font-semibold text-destructive hover:bg-destructive/10 ${styles.control}`}
           >
             Disconnect
-          </button>
+          </PendingSubmitButton>
         </form>
       </div>
     );
@@ -80,7 +81,7 @@ export function ConnectionButton({
 
           <form action={removeConnection}>
             <input type="hidden" name="connection_id" value={connection.id} />
-            <button type="submit" className={secondaryButton}>Cancel request</button>
+            <PendingSubmitButton pendingLabel="Cancelling…" className={`${secondaryButton} min-w-40`}>Cancel request</PendingSubmitButton>
           </form>
         </div>
       );
