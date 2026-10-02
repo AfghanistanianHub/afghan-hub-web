@@ -1,3 +1,4 @@
+import { CatalogResultsHeading } from "@/components/public/catalog-results-heading";
 import { CatalogIllustration } from "@/components/public/catalog-illustration";
 import styles from "@/components/public/catalog.module.css";
 import type { Metadata } from "next";
@@ -87,7 +88,7 @@ export default async function ExplorePage({ searchParams }: Props) {
       </section>
       <section aria-labelledby="results-heading" className="mx-auto max-w-7xl px-5 py-8 sm:px-8 sm:py-10">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Browse listings</p><h2 id="results-heading" tabIndex={-1} className="mt-2 text-2xl font-medium tracking-tight sm:text-3xl">{publicCategories[kind].label}</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">{publicCategories[kind].description}</p></div>
+          <div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Browse listings</p><CatalogResultsHeading title={publicCategories[kind].label} /><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">{publicCategories[kind].description}</p></div>
           {search && <p className="break-words text-sm text-muted-foreground">Search: “{search}”</p>}
         </div>
         <form action="/explore" className={`${styles.searchForm} mt-6`}>

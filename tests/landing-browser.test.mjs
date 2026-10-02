@@ -508,7 +508,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
         await page.send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});
       }
       await waitFor(()=>page.evaluate(`document.readyState==='complete'&&location.search==='?type=${kind}'&&document.querySelector('nav[aria-label="Listing categories"] a[aria-current=page]')?.getAttribute('href')==='/explore?type=${kind}#results-heading'&&document.querySelector('input[name=type]')?.value==='${kind}'`),'actual category navigation '+kind+' at '+width);
-      assert.ok(await page.evaluate("document.querySelector('#results-heading').getBoundingClientRect().top<200"),'Category navigation reveals results');
+      await waitFor(()=>page.evaluate("(()=>{const r=document.querySelector('#results-heading').getBoundingClientRect();return r.top>=0&&r.bottom<innerHeight&&document.activeElement.id==='results-heading'})()"),'Category navigation reveals and focuses results');
     }
   }
   await page.send('Emulation.setTouchEmulationEnabled',{enabled:false});
