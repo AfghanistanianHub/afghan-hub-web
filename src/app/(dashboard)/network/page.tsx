@@ -84,7 +84,10 @@ export default async function NetworkPage() {
       province_state,
       country,
       avatar_url,
-      skills
+      skills,
+      open_to_mentoring,
+      looking_for_mentor,
+      mentorship_topics
     `)
     .eq("is_public", true)
     .eq("onboarding_completed", true)
