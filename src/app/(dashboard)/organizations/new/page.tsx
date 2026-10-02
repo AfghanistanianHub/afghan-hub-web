@@ -1,3 +1,5 @@
+import formStyles from "@/components/forms/listing-form.module.css";
+import { CommunitySignature } from "@/components/public/community-signature";
 import Link from "next/link";
 import { createOrganization } from "../actions";
 
@@ -15,18 +17,18 @@ export default async function NewOrganizationPage({
     "mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10";
 
   return (
-    <main className="px-4 py-8 md:px-8">
+    <main className={`${formStyles.page} px-4 py-8 md:px-8`}>
       <div className="mx-auto max-w-4xl">
         <Link href="/organizations" className="rounded-sm text-sm font-medium text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
           ← Back to organizations
         </Link>
 
-        <section className="relative mt-6 overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
-          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
-          <div className="relative">
+        <section className="relative mt-6 overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8 md:px-8 md:py-10">
+          
+          
+          <CommunitySignature className={formStyles.signature} /><div className="relative">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Create an organization</p>
-          <h1 className="mt-3 break-words text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Add your organization</h1>
+          <h1 className="mt-3 break-words text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">Add your organization</h1>
           <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">
             Create a public page for your nonprofit, association, cultural group, professional network, or community initiative.
           </p>
@@ -34,10 +36,10 @@ export default async function NewOrganizationPage({
         </section>
 
         {error ? (
-          <div role="alert" aria-live="assertive" className="mt-8 rounded-xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">{error}</div>
+          <div role="alert" aria-live="assertive" className="mt-8 rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">{error}</div>
         ) : null}
 
-        <form action={createOrganization} className="surface-panel mt-8 space-y-8 rounded-[2rem] p-6 md:p-8">
+        <form action={createOrganization} className="surface-panel mt-8 space-y-8 rounded-[var(--radius)] p-6 md:p-8">
           <section>
             <h2 className="text-xl font-semibold text-foreground">Basic information</h2>
             <div className="mt-5 grid gap-5 md:grid-cols-2">
@@ -87,7 +89,7 @@ export default async function NewOrganizationPage({
                 <span className="mt-2 block text-xs text-muted-foreground">Separate each program with a comma.</span>
               </label>
 
-              <label className="md:col-span-2 flex items-start gap-3 rounded-2xl border border-border/80 bg-muted/35 p-4">
+              <label className="md:col-span-2 flex items-start gap-3 rounded-[var(--radius)] border border-border/80 bg-muted/35 p-4">
                 <input
                   name="is_accepting_volunteers"
                   type="checkbox"
@@ -136,8 +138,8 @@ export default async function NewOrganizationPage({
           </section>
 
           <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:justify-end">
-            <Link href="/organizations" className="rounded-2xl border border-border/80 bg-background px-5 py-3 text-center font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Cancel</Link>
-            <button type="submit" className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Create organization</button>
+            <Link href="/organizations" className="rounded-[var(--radius)] border border-border/80 bg-background px-5 py-3 text-center font-semibold text-foreground transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Cancel</Link>
+            <button type="submit" className="rounded-[var(--radius)] bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Create organization</button>
           </div>
         </form>
       </div>

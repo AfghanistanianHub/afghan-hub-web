@@ -1,3 +1,5 @@
+import formStyles from "@/components/forms/listing-form.module.css";
+import { CommunitySignature } from "@/components/public/community-signature";
 import { redirect } from "next/navigation";
 import { DeadlinePicker } from "@/components/ui/deadline-picker";
 import { createClient } from "@/lib/supabase/server";
@@ -23,13 +25,13 @@ export default async function NewOpportunityPage() {
     "mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10";
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8 md:px-8 md:py-10">
-      <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
-        <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
-        <div className="relative">
+    <main className={`${formStyles.page} mx-auto max-w-4xl px-4 py-8 md:px-8 md:py-10`}>
+      <section className="relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8 md:px-8 md:py-10">
+        
+        
+        <CommunitySignature className={formStyles.signature} /><div className="relative">
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Create an opportunity</p>
-        <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Post an Opportunity</h1>
+        <h1 className="mt-3 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">Post an Opportunity</h1>
         <p className="mt-3 text-muted-foreground">
           Share a job, scholarship, volunteer role, mentorship, or another opportunity.
         </p>
@@ -39,7 +41,7 @@ export default async function NewOpportunityPage() {
         </div>
       </section>
 
-      <form action={createOpportunity} className="surface-panel mt-8 space-y-8 rounded-[2rem] p-6 md:p-8">
+      <form action={createOpportunity} className="surface-panel mt-8 space-y-8 rounded-[var(--radius)] p-6 md:p-8">
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-foreground">Title</label>
           <input id="title" name="title" type="text" required className={fieldClassName} />
@@ -91,7 +93,7 @@ export default async function NewOpportunityPage() {
           </div>
         </div>
 
-        <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border/80 bg-secondary/40 p-4 transition hover:border-primary/25 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15">
+        <label className="flex cursor-pointer items-center gap-3 rounded-[var(--radius)] border border-border/80 bg-secondary/40 p-4 transition hover:border-primary/25 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15">
           <input name="is_remote" type="checkbox" className="size-5 shrink-0 rounded border-input accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
           <span className="text-sm font-medium text-foreground">Remote opportunity</span>
         </label>
@@ -112,7 +114,7 @@ export default async function NewOpportunityPage() {
         </div>
 
         <div className="flex justify-end border-t border-border pt-6">
-          <button type="submit" className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+          <button type="submit" className="rounded-[var(--radius)] bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
             Submit for Review
           </button>
         </div>
