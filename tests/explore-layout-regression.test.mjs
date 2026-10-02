@@ -27,6 +27,7 @@ test("Explore search and results stay in normal document flow", () => {
 
 test("Explore search controls remain responsive without squeezing result cards", () => {
   assert.match(source, /sm:grid-cols-\[minmax\(0,1fr\)_auto\]/);
-  assert.match(source, /styles.searchForm/);\n  assert.doesNotMatch(source, /lg:grid-cols-\\[minmax\\(0,1fr\\)_20rem\\]/);
+  assert.match(source, /styles.searchForm/);
+  assert.doesNotMatch(source, /lg:grid-cols-\[minmax\(0,1fr\)_20rem\]/);
 });
 
