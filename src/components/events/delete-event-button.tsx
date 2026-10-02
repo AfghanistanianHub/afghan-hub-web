@@ -1,6 +1,7 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
+import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 
 import { deleteEvent } from "@/app/(dashboard)/events/actions";
 
@@ -24,13 +25,15 @@ export function DeleteEventButton({ slug }: DeleteEventButtonProps) {
     >
       <input type="hidden" name="slug" value={slug} />
 
-      <button
-        type="submit"
-        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-destructive/25 bg-destructive/[0.04] px-4 py-2 text-sm font-semibold text-destructive transition hover:-translate-y-0.5 hover:bg-destructive/[0.08] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-destructive"
+      <PendingSubmitButton
+        pendingLabel="Deleting…"
+        className="inline-flex min-h-11 min-w-28 items-center justify-center gap-2 rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.04] px-4 py-2 text-sm font-semibold text-destructive transition-colors motion-reduce:transition-none active:bg-destructive/15 hover:bg-destructive/[0.08] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-destructive"
       >
-        <Trash2 aria-hidden="true" className="size-4" />
-        Delete
-      </button>
+        <span className="inline-flex items-center gap-2">
+          <Trash2 aria-hidden="true" className="size-4" />
+          Delete
+        </span>
+      </PendingSubmitButton>
     </form>
   );
 }
