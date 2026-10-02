@@ -47,7 +47,12 @@ const copy = {
     placeholder: "Try “volunteer opportunities in Vancouver”…",
     search: "Search",
     searching: "Searching…",
-    empty: "No matching Afghan Hub results yet. Try a broader phrase.",
+    empty: "No matching Afghan Hub results yet.",
+    recovery: "Try a broader search or browse a section directly.",
+    browsePeople: "Browse people",
+    browseOrganizations: "Browse organizations",
+    browseOpportunities: "Browse opportunities",
+    browseEvents: "Browse events",
     error: "Search is temporarily unavailable. Please try again.",
     readOnly: "Discovery only · no actions will be taken",
   },
@@ -59,7 +64,12 @@ const copy = {
     placeholder: "مثلاً «فرصت‌های داوطلبی در ونکوور»…",
     search: "جست‌وجو",
     searching: "در حال جست‌وجو…",
-    empty: "نتیجه مرتبطی پیدا نشد. عبارت عمومی‌تری را امتحان کنید.",
+    empty: "نتیجه مرتبطی پیدا نشد.",
+    recovery: "عبارت عمومی‌تری را امتحان کنید یا مستقیماً یک بخش را مرور کنید.",
+    browsePeople: "مرور افراد",
+    browseOrganizations: "مرور سازمان‌ها",
+    browseOpportunities: "مرور فرصت‌ها",
+    browseEvents: "مرور رویدادها",
     error: "جست‌وجو فعلاً در دسترس نیست. دوباره تلاش کنید.",
     readOnly: "فقط برای پیدا کردن اطلاعات · هیچ اقدامی انجام نمی‌شود",
   },
@@ -71,7 +81,12 @@ const copy = {
     placeholder: "لکه «په ونکوور کې د رضاکارۍ فرصتونه»…",
     search: "لټون",
     searching: "لټون روان دی…",
-    empty: "اړوند پایله ونه موندل شوه. یوه پراخه جمله وازمویئ.",
+    empty: "اړوند پایله ونه موندل شوه.",
+    recovery: "پراخه لټون وازمویئ یا یوه برخه مستقیمه وګورئ.",
+    browsePeople: "خلک وګورئ",
+    browseOrganizations: "سازمانونه وګورئ",
+    browseOpportunities: "فرصتونه وګورئ",
+    browseEvents: "غونډې وګورئ",
     error: "لټون اوس مهال شتون نه لري. بیا هڅه وکړئ.",
     readOnly: "یوازې موندنه · هېڅ اقدام نه ترسره کېږي",
   },
@@ -402,8 +417,49 @@ export function CommunityNavigator() {
                       );
                     })
                   ) : (
-                    <div className="rounded-2xl border border-dashed border-border bg-muted/20 p-5 text-sm text-muted-foreground">
-                      {strings.empty}
+                    <div className="rounded-2xl border border-dashed border-border bg-muted/20 p-5">
+                      <p className="text-sm font-semibold text-foreground">{strings.empty}</p>
+                      <p className="mt-1 text-sm leading-6 text-muted-foreground">{strings.recovery}</p>
+                      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                        {[
+                          { href: "/network", label: strings.browsePeople, destination: "network" as const },
+                          { href: "/organizations", label: strings.browseOrganizations, destination: "organizations" as const },
+                          { href: "/opportunities", label: strings.browseOpportunities, destination: "opportunities" as const },
+                          { href: "/events", label: strings.browseEvents, destination: "events" as const },
+                        ].map((item) => (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={() => {
+                              trackAssistantEvent({
+                                event: "assistant_recovery_click",
+                                language,
+                                destination: item.destination,
+                              });
+                              setOpen(false);
+                            }}
+                            className="inline-flex min-h-10 items-center justify-between gap-2 rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm font-semibold text-foreground transition hover:border-primary/25 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                          >
+                            {item.label}
+                            <ArrowUpRight aria-hidden="true" className="size-3.5" />
+                          </Link>
+                        ))}
+                      </div>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {prompts[language].slice(0, 2).map((prompt) => (
+                          <button
+                            key={prompt}
+                            type="button"
+                            onClick={() => {
+                              setQuery(prompt);
+                              void runSearch(prompt);
+                            }}
+                            className="rounded-full border border-primary/20 bg-primary/[0.055] px-3 py-2 text-xs font-semibold text-primary transition hover:bg-primary/[0.09] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                          >
+                            {prompt}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
