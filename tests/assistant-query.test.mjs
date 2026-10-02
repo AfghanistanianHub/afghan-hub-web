@@ -15,6 +15,10 @@ function cleanWhitespace(value) {
     .trim();
 }
 
+function removeOrphanPersianPluralSuffix(value) {
+  return value.replace(/(?:^|\s)\u200c?(?:ها|های)(?=\s|$)/gu, " ");
+}
+
 const phrasePatterns = [
   /^\s*(?:please\s+)?(?:find|show|search(?:\s+for)?|look\s+for)\s+/i,
   /\b(?:similar\s+to|related\s+to)\b/gi,
@@ -34,7 +38,7 @@ function extract(query) {
   const original = cleanWhitespace(query).slice(0, 120);
   let candidate = original;
   for (const pattern of phrasePatterns) candidate = candidate.replace(pattern, " ");
-  candidate = cleanWhitespace(candidate)
+  candidate = cleanWhitespace(removeOrphanPersianPluralSuffix(candidate))
     .replace(/^(?:in|at|for|to|of|the|a|an)\s+/i, "")
     .trim()
     .slice(0, 120);
@@ -51,6 +55,7 @@ test("English natural-language framing reduces to useful retrieval terms", () =>
 test("Dari and Pashto framing preserves the useful topic", () => {
   assert.equal(extract("متخصصان حوزه تکنولوژی را پیدا کن"), "تکنولوژی");
   assert.equal(extract("سازمان‌های مرتبط با کاریابی را پیدا کن"), "کاریابی");
+  assert.equal(extract("فرصت‌های کاریابی را پیدا کن"), "کاریابی");
   assert.match(extract("د ټکنالوژۍ مسلکي کسان پیدا کړه"), /ټکنالوژۍ/);
 });
 
