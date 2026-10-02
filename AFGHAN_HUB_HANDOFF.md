@@ -1,4 +1,9 @@
 # Afghan Hub handoff
+## Calendar continuation — 2026-10-01
+Deadline and event date/time fields now use a shared scoped calendar CSS module, restrained icon/control surfaces, in-flow panels bounded by field width and container-responsive day cells. Narrow captions/nav use separate rows; no new dependency. DayPicker autoFocus, Escape close/return-to-trigger, deadline selection focus return and Clear/Done focus return added. Stored date-only/local date-time formats, AM/PM conversion, defaults, future-date limits and event Done requirements preserved. Panel expansion is intentional user-triggered reflow, not claimed zero-layout-shift evidence.
+Latest application/test a6b0d793320ae0f6ca68b00cf0d25e466c687130: https://github.com/AfghanistanianHub/afghan-hub-web/actions/runs/36974041597 — Node22/24 lint/type/build and full regression jobs passed; inspected Node22 counts # tests 217; # pass 217; # fail 0. Four component callback tests verify Escape/focus, leap-day date-only submission and event Clear reset without form submission; these are not browser or authenticated-flow tests. Native browser limitation still blocks rendered/private calendar, responsive/touch and actual submission verification. READY preview https://afghan-hub-jnohpvast-afghan-hub-s-projects.vercel.app; PR356 continuation remains separate from production.
+Next: pending-submit feedback across listing forms, remaining detail/action states and authorized private rendered review.
+
 
 Updated 2026-10-01. Repository: AfghanistanianHub/afghan-hub-web. Current continuation: design/listing-form-consistency, https://github.com/AfghanistanianHub/afghan-hub-web/pull/356 (open, merged=false). Local checkout is a partial synthetic snapshot: publish changed files against authentic remote parent/tree; never push its Git history. Read AGENTS.md and relevant bundled Next.js docs before editing.
 
