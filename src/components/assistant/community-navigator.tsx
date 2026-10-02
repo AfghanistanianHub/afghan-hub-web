@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { trackAssistantEvent } from "@/lib/assistant/analytics";
+import { ASSISTANT_OPEN_EVENT } from "@/components/assistant/contextual-assistant-prompt";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
@@ -143,6 +144,22 @@ export function CommunityNavigator() {
   const rtl = language === "fa" || language === "ps";
 
   useEffect(() => {
+    function onAssistantOpen(event: Event) {
+      const customEvent = event as CustomEvent<{ query?: string }>;
+      const nextQuery = customEvent.detail?.query?.trim().slice(0, 120);
+
+      if (nextQuery) {
+        setQuery(nextQuery);
+        setSubmitted(false);
+        setResults([]);
+        setFailed(false);
+      }
+
+      setOpen(true);
+    }
+
+    window.addEventListener(ASSISTANT_OPEN_EVENT, onAssistantOpen);
+
     function onKeyDown(event: KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
@@ -156,7 +173,10 @@ export function CommunityNavigator() {
     }
 
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener(ASSISTANT_OPEN_EVENT, onAssistantOpen);
+    };
   }, []);
 
   useEffect(() => {
