@@ -1,5 +1,8 @@
 "use client";
 
+import { NotificationSubmit } from "@/components/dashboard/action-submit";
+import styles from "@/components/network/network-surfaces.module.css";
+
 import { useEffect, useId, useRef, useState } from "react";
 import { Bell, CircleCheck, CircleX, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -75,6 +78,8 @@ function formatNotificationTime(value: string) {
 export function NotificationBell({ currentUserId, notifications, unreadCount }: NotificationBellProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const panelId = useId();
   const router = useRouter();
 
@@ -94,12 +99,17 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
 
   useEffect(() => {
     if (!isOpen) return;
+    panelRef.current?.focus();
 
     function handlePointerDown(event: PointerEvent) {
       if (event.target instanceof Node && !containerRef.current?.contains(event.target)) setIsOpen(false);
     }
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setIsOpen(false);
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setIsOpen(false);
+        triggerRef.current?.focus();
+      }
     }
 
     document.addEventListener("pointerdown", handlePointerDown);
@@ -115,13 +125,14 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
   return (
     <div ref={containerRef} className="relative">
       <button
+        ref={triggerRef}
         type="button"
         aria-label={bellLabel}
         aria-expanded={isOpen}
         aria-controls={panelId}
         aria-haspopup="dialog"
         onClick={() => setIsOpen((current) => !current)}
-        className="relative rounded-2xl border border-border/80 bg-card/78 p-3 text-muted-foreground shadow-[0_8px_24px_rgb(15_23_42/0.035)] transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-card hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+        className={`relative flex size-11 items-center justify-center border border-border bg-card text-muted-foreground hover:border-primary/30 hover:bg-secondary hover:text-foreground ${styles.control}`}
       >
         <Bell aria-hidden="true" className="size-5" />
         {unreadCount > 0 ? (
@@ -133,12 +144,14 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
 
       {isOpen ? (
         <div
+          ref={panelRef}
+          tabIndex={-1}
           id={panelId}
           role="dialog"
           aria-label="Notifications"
-          className="absolute right-0 z-50 mt-3 w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-[1.75rem] border border-border/80 bg-card/96 shadow-[0_24px_70px_rgb(15_23_42/0.16)] backdrop-blur-2xl"
+          className="fixed inset-x-4 top-[5.75rem] z-50 max-h-[calc(100dvh-7rem)] overflow-y-auto rounded-[var(--radius)] border border-border bg-card shadow-[0_8px_24px_#302b3512] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:absolute lg:inset-x-auto lg:right-0 lg:top-auto lg:mt-3 lg:w-96"
         >
-          <div className="relative flex items-center justify-between border-b border-border/80 px-5 py-4"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-28 rounded-full bg-primary/[0.06] blur-2xl" />
+          <div className="relative flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
             <div className="relative">
               <p className="font-semibold tracking-tight text-foreground">Notifications</p>
               <p className="mt-0.5 text-xs text-muted-foreground">
@@ -147,15 +160,15 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
             </div>
             {unreadCount > 0 ? (
               <form action={markAllNotificationsRead}>
-                <button type="submit" className="relative rounded-xl border border-primary/10 bg-primary/[0.04] px-3 py-2 text-xs font-semibold text-primary transition hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+                <NotificationSubmit className={`relative min-w-32 border border-primary/20 bg-secondary px-3 py-2 text-xs font-semibold text-primary hover:bg-primary/10 ${styles.control}`}>
                   Mark all read
-                </button>
+                </NotificationSubmit>
               </form>
             ) : null}
           </div>
 
           {notifications.length > 0 ? (
-            <div className="max-h-96 overflow-y-auto">
+            <div className="max-h-[min(24rem,calc(100dvh-12rem))] overflow-y-auto">
               {notifications.map((notification) => {
                 const actorName = getActorName(notification.actor);
                 const isUnread = !notification.readAt;
@@ -165,18 +178,18 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
                 return (
                   <form key={notification.id} action={markNotificationRead} className="border-b border-border/80 last:border-b-0">
                     <input type="hidden" name="notification_id" value={notification.id} />
-                    <button
-                      type="submit"
-                      className={`group flex w-full gap-3 px-5 py-4 text-left transition hover:bg-primary/[0.035] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary ${isUnread ? "bg-primary/[0.045]" : ""}`}
+                    <NotificationSubmit
+                      preserveContent
+                      className={`relative group flex min-h-20 w-full gap-3 px-5 py-4 text-left transition-colors motion-reduce:transition-none active:bg-secondary hover:bg-primary/[0.035] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary ${isUnread ? "bg-primary/[0.045]" : ""}`}
                     >
                       {isModerationNotification ? (
-                        <span className={`flex size-10 shrink-0 items-center justify-center rounded-2xl border ${notification.type === "content_approved" ? "border-primary/10 bg-primary/10 text-primary" : "border-destructive/10 bg-destructive/[0.06] text-destructive"}`}>
+                        <span className={`flex size-10 shrink-0 items-center justify-center rounded-[var(--radius)] border ${notification.type === "content_approved" ? "border-primary/10 bg-primary/10 text-primary" : "border-destructive/10 bg-destructive/[0.06] text-destructive"}`}>
                           <ModerationIcon aria-hidden="true" className="size-5" />
                         </span>
                       ) : notification.actor?.avatarUrl ? (
-                        <ExternalImage src={notification.actor.avatarUrl} alt="" width={40} height={40} className="size-10 shrink-0 rounded-2xl border border-border/70 object-cover shadow-sm" />
+                        <ExternalImage src={notification.actor.avatarUrl} alt="" width={40} height={40} className="size-10 shrink-0 rounded-[var(--radius)] border border-border/70 object-cover" />
                       ) : (
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-secondary text-primary">
+                        <span className="flex size-10 shrink-0 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary">
                           {notification.actor ? (
                             <span className="text-sm font-bold text-primary">{actorName.charAt(0).toUpperCase()}</span>
                           ) : (
@@ -191,14 +204,14 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
                       </span>
 
                       {isUnread ? <span aria-label="Unread" className="mt-2 size-2 shrink-0 rounded-full bg-primary" /> : null}
-                    </button>
+                    </NotificationSubmit>
                   </form>
                 );
               })}
             </div>
           ) : (
-            <div className="relative px-6 py-12 text-center"><div aria-hidden="true" className="absolute left-1/2 top-4 size-28 -translate-x-1/2 rounded-full bg-primary/[0.05] blur-2xl" />
-              <span className="relative mx-auto flex size-12 items-center justify-center rounded-2xl bg-secondary text-primary">
+            <div className="relative px-6 py-10 text-center">
+              <span className="relative mx-auto flex size-12 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary">
                 <Bell aria-hidden="true" className="size-6" />
               </span>
               <p className="mt-4 text-sm font-semibold text-foreground">No notifications yet</p>
