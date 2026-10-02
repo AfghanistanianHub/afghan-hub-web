@@ -20,13 +20,13 @@ function removeOrphanPersianPluralSuffix(value) {
 }
 
 const phrasePatterns = [
-  /^\s*(?:please\s+)?(?:find|show|search(?:\s+for)?|look\s+for)\s+/i,
+  /^\s*(?:please\s+)?(?:find|show(?:\s+me)?|search(?:\s+for)?|look\s+for)\s+/i,
   /\b(?:similar\s+to|related\s+to)\b/gi,
   /\b(?:working\s+in|that\s+support|that\s+supports)\b/gi,
   /\b(?:people|person|members?|professionals?|mentors?|organizations?|non-?profits?|businesses?|companies|opportunities?|jobs?|events?|workshops?|conferences?)\b/gi,
   /^\s*(?:لطفاً\s+|لطفا\s+)?(?:پیدا\s+کن|نشان\s+بده|جستجو\s+کن|جست‌وجو\s+کن)\s*/i,
   /\s+(?:را\s+)?(?:پیدا\s+کن|نشان\s+بده|جستجو\s+کن|جست‌وجو\s+کن)\s*$/i,
-  /(?<![\p{L}\p{N}_])(?:افراد|اشخاص|اعضا|عضو|متخصصان|متخصص|سازمان‌ها|سازمان|نهادها|نهاد|کسب‌وکارها|کسب‌وکار|شرکت‌ها|شرکت|فرصت‌ها|فرصت|رویدادها|رویداد|برنامه‌ها|برنامه)(?![\p{L}\p{N}_])/giu,
+  /(?<![\p{L}\p{N}_])(?:افراد|اشخاص|اعضا|عضو|متخصصان|متخصص|سازمان(?:\u200c?های|\u200c?ها)?|نهاد(?:\u200c?های|\u200c?ها)?|کسب‌وکار(?:\u200c?های|\u200c?ها)?|شرکت(?:\u200c?های|\u200c?ها)?|فرصت(?:\u200c?های|\u200c?ها)?|رویداد(?:\u200c?های|\u200c?ها)?|برنامه(?:\u200c?های|\u200c?ها)?)(?![\p{L}\p{N}_\u200c])/giu,
   /(?<![\p{L}\p{N}_])(?:مرتبط\s+با|مشابه\s+با|در\s+زمینه|حوزه)(?![\p{L}\p{N}_])/giu,
   /^\s*(?:مهرباني\s+وکړه\s+)?(?:پیدا\s+کړه|را\s+وښیه|وښیه)\s*/i,
   /\s+(?:پیدا\s+کړه|را\s+وښیه|وښیه)\s*$/i,
@@ -34,14 +34,23 @@ const phrasePatterns = [
   /(?<![\p{L}\p{N}_])(?:اړوند|ورته)(?![\p{L}\p{N}_])/giu,
 ];
 
+const connectivePatterns = [
+  /(?<![\p{L}\p{N}_])(?:in|at|for|to|of|the|a|an)(?![\p{L}\p{N}_])/giu,
+  /(?<![\p{L}\p{N}_])(?:در|به|از)(?![\p{L}\p{N}_])/giu,
+  /(?<![\p{L}\p{N}_])(?:د|په|کې)(?![\p{L}\p{N}_])/giu,
+];
+
 function extract(query) {
   const original = cleanWhitespace(query).slice(0, 120);
   let candidate = original;
+
   for (const pattern of phrasePatterns) candidate = candidate.replace(pattern, " ");
+  for (const pattern of connectivePatterns) candidate = candidate.replace(pattern, " ");
+
   candidate = cleanWhitespace(removeOrphanPersianPluralSuffix(candidate))
-    .replace(/^(?:in|at|for|to|of|the|a|an)\s+/i, "")
     .trim()
     .slice(0, 120);
+
   return candidate.length >= 2 ? candidate : original;
 }
 
@@ -49,14 +58,21 @@ test("English natural-language framing reduces to useful retrieval terms", () =>
   assert.equal(extract("Find professionals working in technology"), "technology");
   assert.equal(extract("Find organizations that support employment"), "employment");
   assert.equal(extract("Find opportunities similar to Software Developer"), "Software Developer");
-  assert.equal(extract("Show events related to film in Vancouver"), "film in Vancouver");
+  assert.equal(extract("Show events related to film in Vancouver"), "film Vancouver");
+  assert.equal(extract("Show me upcoming community events"), "upcoming community");
+  assert.equal(extract("volunteer opportunities in Vancouver"), "volunteer Vancouver");
 });
 
-test("Dari and Pashto framing preserves the useful topic", () => {
+test("Dari and Pashto framing preserves useful topic and location terms", () => {
   assert.equal(extract("متخصصان حوزه تکنولوژی را پیدا کن"), "تکنولوژی");
   assert.equal(extract("سازمان‌های مرتبط با کاریابی را پیدا کن"), "کاریابی");
   assert.equal(extract("فرصت‌های کاریابی را پیدا کن"), "کاریابی");
+  assert.equal(extract("فرصت‌های داوطلبی در ونکوور را پیدا کن"), "داوطلبی ونکوور");
   assert.match(extract("د ټکنالوژۍ مسلکي کسان پیدا کړه"), /ټکنالوژۍ/);
+  assert.equal(
+    extract("په ونکوور کې د رضاکارۍ فرصتونه پیدا کړه"),
+    "ونکوور رضاکارۍ",
+  );
 });
 
 test("cleanup never turns a valid short request into an empty search", () => {
