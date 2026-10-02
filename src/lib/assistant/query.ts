@@ -2,7 +2,8 @@ const phrasePatterns = [
   // English intent framing.
   /^\s*(?:please\s+)?(?:find|show(?:\s+me)?|search(?:\s+for)?|look\s+for)\s+/i,
   /\b(?:similar\s+to|related\s+to)\b/gi,
-  /\b(?:working\s+in|that\s+support|that\s+supports)\b/gi,\n  /\b(?:upcoming|future)\b/gi,
+  /\b(?:working\s+in|that\s+support|that\s+supports)\b/gi,
+  /\b(?:upcoming|future)\b/gi,
   /\b(?:people|person|members?|professionals?|mentors?|organizations?|non-?profits?|businesses?|companies|opportunities?|jobs?|events?|workshops?|conferences?)\b/gi,
 
   // Dari/Persian intent framing. Longer plural forms must precede stems.
