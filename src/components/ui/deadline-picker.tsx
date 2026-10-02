@@ -1,6 +1,8 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
+import { CalendarDays } from "lucide-react";
+import styles from "./calendar-field.module.css";
 import { format, parseISO } from "date-fns";
 import { DayPicker } from "@daypicker/react";
 import "@daypicker/react/style.css";
@@ -21,22 +23,34 @@ export function DeadlinePicker({
   );
   const [isOpen, setIsOpen] = useState(false);
   const panelId = useId();
+  const trigger = useRef<HTMLButtonElement>(null);
+  const closePanel = () => {
+    setIsOpen(false);
+    trigger.current?.focus();
+  };
 
   const hiddenValue = selectedDate
     ? format(selectedDate, "yyyy-MM-dd")
     : "";
 
   return (
-    <div className="relative">
+    <div className={styles.root} onKeyDown={(event) => {
+      if (isOpen && event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        closePanel();
+      }
+    }}>
       <input type="hidden" name="deadline" value={hiddenValue} />
 
       <button
+        ref={trigger}
         type="button"
         onClick={() => setIsOpen((current) => !current)}
         aria-expanded={isOpen}
         aria-controls={panelId}
         aria-haspopup="dialog"
-        className="flex w-full items-center justify-between rounded-xl border border-input bg-background px-4 py-3 text-left outline-none transition hover:border-primary/35 focus:border-primary focus:ring-2 focus:ring-ring/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+        className={`${styles.trigger} flex w-full items-center justify-between rounded-[var(--radius)] border border-input bg-background px-4 py-3 text-left outline-none transition hover:border-primary/35 focus:border-primary focus:ring-2 focus:ring-ring/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
       >
         <span className={selectedDate ? "text-foreground" : "text-muted-foreground"}>
           {selectedDate
@@ -44,21 +58,20 @@ export function DeadlinePicker({
             : "Select a deadline"}
         </span>
 
-        <span aria-hidden="true" className="text-lg text-muted-foreground">
-          📅
-        </span>
+        <CalendarDays aria-hidden="true" className="size-5 shrink-0 text-primary" />
       </button>
 
       {isOpen ? (
-        <div id={panelId} role="dialog" aria-label="Choose deadline" className="absolute left-0 z-50 mt-2 w-[min(22rem,calc(100vw-2rem))] rounded-2xl border border-border bg-popover p-4 text-popover-foreground shadow-xl">
+        <div id={panelId} role="dialog" aria-label="Choose deadline" className={styles.panel}>
           <DayPicker
+            autoFocus
             mode="single"
             selected={selectedDate}
             onSelect={(date) => {
               setSelectedDate(date);
 
               if (date) {
-                setIsOpen(false);
+                closePanel();
               }
             }}
             disabled={{ before: new Date() }}
@@ -69,17 +82,17 @@ export function DeadlinePicker({
               type="button"
               onClick={() => {
                 setSelectedDate(undefined);
-                setIsOpen(false);
+                closePanel();
               }}
-              className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className={`${styles.control} rounded-[var(--radius)] px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
             >
               Clear
             </button>
 
             <button
               type="button"
-              onClick={() => setIsOpen(false)}
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              onClick={closePanel}
+              className={`${styles.control} rounded-[var(--radius)] bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition  hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
             >
               Done
             </button>
