@@ -20,12 +20,21 @@ const { phaseOneSearchIntents, getPhaseOneSearchIntent } = await import(moduleUr
 test("phase-one intent vocabulary exposes only structured supported intents", () => {
   assert.deepEqual(
     phaseOneSearchIntents.map((option) => option.value),
-    ["find_work", "hire_talent", "volunteer", "find_services", "join_community"],
+    [
+      "find_work",
+      "hire_talent",
+      "find_mentor",
+      "offer_mentorship",
+      "volunteer",
+      "find_services",
+      "join_community",
+    ],
   );
 });
 
-test("unsupported future intents stay hidden in phase one", () => {
-  assert.equal(getPhaseOneSearchIntent("find_mentor"), null);
+test("only intents backed by explicit structured signals are exposed", () => {
+  assert.equal(getPhaseOneSearchIntent("find_mentor"), "find_mentor");
+  assert.equal(getPhaseOneSearchIntent("offer_mentorship"), "offer_mentorship");
   assert.equal(getPhaseOneSearchIntent("find_funding"), null);
   assert.equal(getPhaseOneSearchIntent("collaborate"), null);
   assert.equal(getPhaseOneSearchIntent("find_work"), "find_work");
