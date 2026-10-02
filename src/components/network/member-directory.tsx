@@ -28,6 +28,9 @@ export type Member = {
   country: string | null;
   avatar_url: string | null;
   skills: string[];
+  open_to_mentoring: boolean;
+  looking_for_mentor: boolean;
+  mentorship_topics: string[];
 };
 
 type MemberDirectoryProps = {
@@ -51,16 +54,37 @@ function getInitials(name: string) {
     .join("");
 }
 
+type MentorshipFilter = "all" | "mentors" | "mentees";
+
 export function MemberDirectory({ members }: MemberDirectoryProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [mentorshipFilter, setMentorshipFilter] =
+    useState<MentorshipFilter>("all");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const normalizedQuery = searchQuery.trim().toLowerCase();
   const hasSearchQuery = normalizedQuery.length > 0;
+  const hasMentorshipFilter = mentorshipFilter !== "all";
 
   const filteredMembers = useMemo(() => {
-    if (!normalizedQuery) return members;
-
     return members.filter((member) => {
+      if (
+        mentorshipFilter === "mentors" &&
+        !member.open_to_mentoring
+      ) {
+        return false;
+      }
+
+      if (
+        mentorshipFilter === "mentees" &&
+        !member.looking_for_mentor
+      ) {
+        return false;
+      }
+
+      if (!normalizedQuery) {
+        return true;
+      }
+
       const searchableContent = [
         getMemberName(member),
         member.headline,
@@ -70,6 +94,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
         member.province_state,
         member.country,
         ...member.skills,
+        ...member.mentorship_topics,
       ]
         .filter(Boolean)
         .join(" ")
@@ -77,10 +102,11 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
 
       return searchableContent.includes(normalizedQuery);
     });
-  }, [members, normalizedQuery]);
+  }, [members, mentorshipFilter, normalizedQuery]);
 
-  function clearSearch() {
+  function clearFilters() {
     setSearchQuery("");
+    setMentorshipFilter("all");
     window.requestAnimationFrame(() => searchInputRef.current?.focus());
   }
 
@@ -106,7 +132,39 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
         </div>
       </div>
 
-      <div className="mt-5 flex items-center justify-between">
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div
+          className="flex flex-wrap gap-2"
+          role="group"
+          aria-label="Mentorship availability"
+        >
+          {[
+            { value: "all", label: "All members" },
+            { value: "mentors", label: "Open to mentoring" },
+            { value: "mentees", label: "Looking for a mentor" },
+          ].map((option) => {
+            const selected = mentorshipFilter === option.value;
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                aria-pressed={selected}
+                onClick={() =>
+                  setMentorshipFilter(option.value as MentorshipFilter)
+                }
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+                  selected
+                    ? "border-primary/25 bg-primary/10 text-primary"
+                    : "border-border bg-card text-muted-foreground hover:border-primary/25 hover:text-foreground"
+                }`}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+
         <p className="text-sm text-muted-foreground" aria-live="polite">
           {filteredMembers.length} {filteredMembers.length === 1 ? "member" : "members"} found
         </p>
@@ -167,6 +225,21 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                     ) : null}
                   </div>
 
+                  {member.open_to_mentoring || member.looking_for_mentor ? (
+                    <div className="relative mt-5 flex flex-wrap gap-2 border-t border-border/70 pt-4">
+                      {member.open_to_mentoring ? (
+                        <span className="rounded-full border border-primary/15 bg-primary/[0.07] px-3 py-1 text-xs font-semibold text-primary">
+                          Open to mentoring
+                        </span>
+                      ) : null}
+                      {member.looking_for_mentor ? (
+                        <span className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-foreground">
+                          Looking for a mentor
+                        </span>
+                      ) : null}
+                    </div>
+                  ) : null}
+
                   {member.skills.length > 0 ? (
                     <div className="relative mt-5 flex flex-wrap gap-2 border-t border-border/70 pt-4">
                       {member.skills.slice(0, 4).map((skill) => (
@@ -187,20 +260,22 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
             <UserRound aria-hidden="true" className="size-7" />
           </span>
           <h2 className="relative mt-4 text-lg font-bold text-foreground">
-            {hasSearchQuery ? "No matching members" : "No public members yet"}
+            {hasSearchQuery || hasMentorshipFilter
+              ? "No matching members"
+              : "No public members yet"}
           </h2>
           <p className="relative mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-            {hasSearchQuery
-              ? "Try another name, location, profession, company, or skill."
+            {hasSearchQuery || hasMentorshipFilter
+              ? "Try another search or mentorship filter."
               : "Public member profiles will appear here as the community grows."}
           </p>
-          {hasSearchQuery ? (
+          {hasSearchQuery || hasMentorshipFilter ? (
             <button
               type="button"
-              onClick={clearSearch}
+              onClick={clearFilters}
               className={`relative mt-5 inline-flex items-center justify-center border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted ${styles.control}`}
             >
-              Clear search
+              Clear filters
             </button>
           ) : null}
         </div>
