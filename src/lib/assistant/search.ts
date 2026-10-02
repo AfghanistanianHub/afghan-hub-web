@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { Database } from "@/types/database";
+import { extractAssistantSearchTerms } from "@/lib/assistant/query";
 
 export type AssistantEntityType =
   | "profile"
@@ -70,7 +71,7 @@ export async function searchAssistantCatalog(
     entityType?: AssistantEntityType;
   } = {},
 ): Promise<AssistantSearchResult[]> {
-  const normalizedQuery = query.trim().slice(0, 120);
+  const normalizedQuery = extractAssistantSearchTerms(query);
 
   if (normalizedQuery.length < 2) {
     return [];
