@@ -1,4 +1,6 @@
 import Link from "next/link";
+import styles from "@/components/network/network-surfaces.module.css";
+import { CommunitySignature } from "@/components/public/community-signature";
 import { redirect } from "next/navigation";
 import {
   ArrowLeft,
@@ -37,29 +39,30 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
     .maybeSingle();
 
   const fieldClassName =
-    "mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10";
-  const displayName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || "Your profile";
-  const location = [profile?.city, profile?.province_state, profile?.country].filter(Boolean).join(", ");
+    `${styles.search} mt-2 w-full rounded-[var(--radius)] border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10`;
+  const displayName = [profile?.first_name, profile?.last_name].filter(Boolean).join("") ||"Your profile";
+  const location = [profile?.city, profile?.province_state, profile?.country].filter(Boolean).join(",");
   const hasProfessionalDetails = Boolean(profile?.headline || profile?.profession || profile?.company);
   const hasDiscoveryDetails = Boolean(profile?.skills?.length || profile?.languages?.length || location);
 
   return (
     <main className="min-h-screen bg-background px-4 py-8 text-foreground md:px-8 md:py-10">
       <div className="mx-auto w-full max-w-6xl">
-        <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+        <Link href="/dashboard" className={`${styles.control} inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}>
           <ArrowLeft aria-hidden="true" className="size-4" />
           Back to dashboard
         </Link>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[330px_minmax(0,1fr)] lg:items-start">
-          <aside className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card p-6 text-foreground shadow-[0_18px_55px_rgb(15_23_42/0.055)] lg:sticky lg:top-6 md:p-7">
-            <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_18%_10%,color-mix(in_oklab,var(--primary)_12%,transparent),transparent_30%),radial-gradient(circle_at_88%_88%,color-mix(in_oklab,var(--accent)_48%,transparent),transparent_28%)]" />
-            <div aria-hidden="true" className="absolute -right-14 top-10 size-44 rounded-full border border-primary/10" />
-            <div aria-hidden="true" className="absolute right-8 top-24 size-20 rounded-full border border-dashed border-primary/10" />
+          <aside className={`${styles.surface} relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card p-6 text-foreground  lg:sticky lg:top-6 md:p-7`}>
+            
+            
+            
 
+            <CommunitySignature className={styles.signature} />
             <div className="relative">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Your community identity</p>
-              <h1 className="mt-3 break-words text-3xl font-bold tracking-[-0.035em]">{displayName}</h1>
+              <h1 className="mt-3 break-words text-3xl font-medium tracking-[-0.035em]">{displayName}</h1>
               {profile?.headline ? <p className="mt-3 text-sm leading-6 text-muted-foreground">{profile.headline}</p> : <p className="mt-3 text-sm leading-6 text-muted-foreground">Add a headline so people can understand what you do at a glance.</p>}
 
               <div className="mt-7">
@@ -67,13 +70,13 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
               </div>
 
               <div className="mt-6 space-y-3 text-sm">
-                <div className="flex items-center gap-3 rounded-2xl border border-border/80 bg-background/72 p-3.5">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary"><BriefcaseBusiness aria-hidden="true" className="size-4" /></span>
-                  <div className="min-w-0"><p className="text-xs text-muted-foreground">Professional story</p><p className="mt-0.5 break-words font-semibold">{hasProfessionalDetails ? "Started" : "Add your work"}</p></div>
+                <div className="flex items-center gap-3 rounded-[var(--radius)] border border-border/80 bg-background/72 p-3.5">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><BriefcaseBusiness aria-hidden="true" className="size-4" /></span>
+                  <div className="min-w-0"><p className="text-xs text-muted-foreground">Professional story</p><p className="mt-0.5 break-words font-semibold">{hasProfessionalDetails ?"Started" :"Add your work"}</p></div>
                 </div>
-                <div className="flex items-center gap-3 rounded-2xl border border-border/80 bg-background/72 p-3.5">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary"><Sparkles aria-hidden="true" className="size-4" /></span>
-                  <div className="min-w-0"><p className="text-xs text-muted-foreground">Discovery details</p><p className="mt-0.5 break-words font-semibold">{hasDiscoveryDetails ? "People can find more about you" : "Add skills, language, location"}</p></div>
+                <div className="flex items-center gap-3 rounded-[var(--radius)] border border-border/80 bg-background/72 p-3.5">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><Sparkles aria-hidden="true" className="size-4" /></span>
+                  <div className="min-w-0"><p className="text-xs text-muted-foreground">Discovery details</p><p className="mt-0.5 break-words font-semibold">{hasDiscoveryDetails ?"People can find more about you" :"Add skills, language, location"}</p></div>
                 </div>
                 {location ? <div className="flex items-start gap-2 px-1 text-xs leading-5 text-muted-foreground"><MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" /><span className="min-w-0 break-words">{location}</span></div> : null}
               </div>
@@ -83,53 +86,53 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
           <div className="space-y-6">
             <ProfileStrength profile={profile} showAction={false} />
 
-            <section className="rounded-[2rem] border border-border/80 bg-card p-6 shadow-[0_12px_38px_rgb(15_23_42/0.045)] md:p-8">
+            <section className={`${styles.surface} rounded-[var(--radius)] border border-border/80 bg-card p-6  md:p-8`}>
               <div className="max-w-2xl">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Profile builder</p>
-                <h2 className="mt-2 text-3xl font-bold tracking-[-0.03em]">Tell the community who you are</h2>
+                <h2 className="mt-2 text-2xl font-medium tracking-[-0.03em] md:text-3xl">Tell the community who you are</h2>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">Use the sections below to shape how other members discover and understand your work, experience, and interests.</p>
               </div>
 
               {error ? (
-                <div role="alert" aria-live="assertive" className="mt-6 rounded-xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">{error}</div>
+                <div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">{error}</div>
               ) : null}
 
               <form action={saveProfile} className="mt-8 space-y-9">
                 <fieldset className="space-y-6">
-                  <legend className="flex items-center gap-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"><UserRound aria-hidden="true" className="size-4" /></span>Identity</legend>
+                  <legend className="flex items-center gap-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><UserRound aria-hidden="true" className="size-4" /></span>Identity</legend>
                   <div className="grid gap-6 sm:grid-cols-2">
-                    <label className="block"><span className="text-sm font-medium">First name</span><input name="first_name" defaultValue={profile?.first_name ?? ""} required className={fieldClassName} /></label>
-                    <label className="block"><span className="text-sm font-medium">Last name</span><input name="last_name" defaultValue={profile?.last_name ?? ""} required className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">First name</span><input name="first_name" defaultValue={profile?.first_name ??""} required className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Last name</span><input name="last_name" defaultValue={profile?.last_name ??""} required className={fieldClassName} /></label>
                   </div>
-                  <label className="block"><span className="text-sm font-medium">Headline</span><input name="headline" defaultValue={profile?.headline ?? ""} placeholder="Computer Technician | Founder of BC Computers" className={fieldClassName} /></label>
-                  <label className="block"><span className="text-sm font-medium">About you</span><textarea name="bio" defaultValue={profile?.bio ?? ""} rows={5} placeholder="Tell the community a little about yourself..." className={`${fieldClassName} resize-none`} /></label>
+                  <label className="block"><span className="text-sm font-medium">Headline</span><input name="headline" defaultValue={profile?.headline ??""} placeholder="Computer Technician | Founder of BC Computers" className={fieldClassName} /></label>
+                  <label className="block"><span className="text-sm font-medium">About you</span><textarea name="bio" defaultValue={profile?.bio ??""} rows={5} placeholder="Tell the community a little about yourself..." className={`${fieldClassName} resize-none`} /></label>
                 </fieldset>
 
                 <fieldset className="space-y-6 border-t border-border/70 pt-8">
-                  <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"><BriefcaseBusiness aria-hidden="true" className="size-4" /></span>Work and skills</legend>
+                  <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><BriefcaseBusiness aria-hidden="true" className="size-4" /></span>Work and skills</legend>
                   <div className="grid gap-6 sm:grid-cols-2">
-                    <label className="block"><span className="text-sm font-medium">Profession</span><input name="profession" defaultValue={profile?.profession ?? ""} placeholder="Computer technician" className={fieldClassName} /></label>
-                    <label className="block"><span className="text-sm font-medium">Company</span><input name="company" defaultValue={profile?.company ?? ""} placeholder="BC Computers" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Profession</span><input name="profession" defaultValue={profile?.profession ??""} placeholder="Computer technician" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Company</span><input name="company" defaultValue={profile?.company ??""} placeholder="BC Computers" className={fieldClassName} /></label>
                   </div>
-                  <label className="block"><span className="text-sm font-medium">Skills</span><input name="skills" defaultValue={profile?.skills?.join(", ") ?? ""} placeholder="Computer repair, Filmmaking, Community organizing" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each skill with a comma.</span></label>
-                  <label className="block"><span className="text-sm font-medium">Languages</span><input name="languages" defaultValue={profile?.languages?.join(", ") ?? ""} placeholder="Dari, English, Persian" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each language with a comma.</span></label>
+                  <label className="block"><span className="text-sm font-medium">Skills</span><input name="skills" defaultValue={profile?.skills?.join(",") ??""} placeholder="Computer repair, Filmmaking, Community organizing" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each skill with a comma.</span></label>
+                  <label className="block"><span className="text-sm font-medium">Languages</span><input name="languages" defaultValue={profile?.languages?.join(",") ??""} placeholder="Dari, English, Persian" className={fieldClassName} /><span className="mt-2 block text-xs text-muted-foreground">Separate each language with a comma.</span></label>
                 </fieldset>
 
                 <fieldset className="space-y-6 border-t border-border/70 pt-8">
-                  <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"><Globe2 aria-hidden="true" className="size-4" /></span>Location and links</legend>
+                  <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><Globe2 aria-hidden="true" className="size-4" /></span>Location and links</legend>
                   <div className="grid gap-6 sm:grid-cols-3">
-                    <label className="block"><span className="text-sm font-medium">City</span><input name="city" defaultValue={profile?.city ?? ""} placeholder="Vancouver" className={fieldClassName} /></label>
-                    <label className="block"><span className="text-sm font-medium">Province/State</span><input name="province_state" defaultValue={profile?.province_state ?? ""} placeholder="British Columbia" className={fieldClassName} /></label>
-                    <label className="block"><span className="text-sm font-medium">Country</span><input name="country" defaultValue={profile?.country ?? ""} placeholder="Canada" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">City</span><input name="city" defaultValue={profile?.city ??""} placeholder="Vancouver" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Province/State</span><input name="province_state" defaultValue={profile?.province_state ??""} placeholder="British Columbia" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Country</span><input name="country" defaultValue={profile?.country ??""} placeholder="Canada" className={fieldClassName} /></label>
                   </div>
                   <div className="grid gap-6 sm:grid-cols-2">
-                    <label className="block"><span className="text-sm font-medium">LinkedIn</span><input name="linkedin_url" type="url" defaultValue={profile?.linkedin_url ?? ""} placeholder="https://www.linkedin.com/in/yourname" className={fieldClassName} /></label>
-                    <label className="block"><span className="text-sm font-medium">Website</span><input name="website_url" type="url" defaultValue={profile?.website_url ?? ""} placeholder="https://yourwebsite.com" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">LinkedIn</span><input name="linkedin_url" type="url" defaultValue={profile?.linkedin_url ??""} placeholder="https://www.linkedin.com/in/yourname" className={fieldClassName} /></label>
+                    <label className="block"><span className="text-sm font-medium">Website</span><input name="website_url" type="url" defaultValue={profile?.website_url ??""} placeholder="https://yourwebsite.com" className={fieldClassName} /></label>
                   </div>
                 </fieldset>
 
-                <div className="sticky bottom-3 z-10 rounded-2xl border border-border/80 bg-card/92 p-3 shadow-lg backdrop-blur sm:bottom-4">
-                  <PendingSubmitButton pendingLabel="Saving profile…" className="w-full rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Save profile</PendingSubmitButton>
+                <div className={`${styles.surface} sticky bottom-3 z-10 rounded-[var(--radius)] border border-border/80 bg-card p-3   sm:bottom-4`}>
+                  <PendingSubmitButton pendingLabel="Saving profile…" className={`${styles.control} w-full rounded-[var(--radius)] bg-primary px-5 py-3 font-semibold text-primary-foreground transition  hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}>Save profile</PendingSubmitButton>
                 </div>
               </form>
             </section>

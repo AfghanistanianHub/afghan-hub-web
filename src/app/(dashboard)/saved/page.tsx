@@ -1,4 +1,6 @@
 import Link from "next/link";
+import styles from "@/components/network/network-surfaces.module.css";
+import { CommunitySignature } from "@/components/public/community-signature";
 import { redirect } from "next/navigation";
 import { ArrowUpRight, Bookmark, MapPin, Sparkles } from "lucide-react";
 
@@ -76,22 +78,23 @@ export default async function SavedOpportunitiesPage() {
         opportunity,
       ): opportunity is NonNullable<ReturnType<typeof getOpportunity>> =>
         opportunity !== null &&
-        opportunity.status === "published" &&
+        opportunity.status ==="published" &&
         !hasOpportunityDeadlinePassed(opportunity.deadline, today),
     );
 
   return (
     <main className="px-4 py-8 md:px-8">
       <div className="mx-auto max-w-5xl">
-        <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
-          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
+        <section className={`${styles.surface} relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8  md:px-8 md:py-10`}>
+          
+          
+          <CommunitySignature className={styles.signature} />
           <div className="relative max-w-2xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
               <Sparkles aria-hidden="true" className="size-3.5" />
               Your collection
             </div>
-            <h1 className="mt-5 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">
+            <h1 className="mt-5 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">
               Saved opportunities
             </h1>
             <p className="mt-3 leading-7 text-muted-foreground">
@@ -102,25 +105,25 @@ export default async function SavedOpportunitiesPage() {
         </section>
 
         {error ? (
-          <div role="alert" aria-live="assertive" className="relative mt-8 overflow-hidden rounded-2xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive"><div aria-hidden="true" className="pointer-events-none absolute -right-8 -top-8 size-24 rounded-full bg-destructive/[0.06] blur-2xl"/><span className="relative">
+          <div role="alert" aria-live="assertive" className="relative mt-8 overflow-hidden rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive"><span className="relative">
             We could not load your saved opportunities. Please try again.</span>
           </div>
         ) : null}
 
-        {!error && opportunities.length > 0 ? (
+        {!error && opportunities.length> 0 ? (
           <div className="mt-8 grid gap-5 md:grid-cols-2">
             {opportunities.map((opportunity) => {
               const location = [opportunity.city, opportunity.country]
                 .filter(Boolean)
-                .join(", ");
+                .join(",");
 
               return (
                 <Link
                   key={opportunity.id}
                   href={`/opportunities/${opportunity.slug}`}
-                  className="group relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)] transition hover:-translate-y-1 hover:border-primary/35 hover:shadow-[0_18px_42px_rgb(15_23_42/0.07)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-                >
-                  <div aria-hidden="true" className="absolute -right-10 -top-10 size-28 rounded-full border border-primary/10" />
+                  className={`${styles.surface} ${styles.profile} group relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card p-6  transition  hover:border-primary/35  focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
+>
+                  
                   <span className="relative rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold capitalize text-primary">
                     {opportunity.type}
                   </span>
@@ -128,7 +131,7 @@ export default async function SavedOpportunitiesPage() {
                     <h2 className="break-words text-xl font-bold text-card-foreground transition group-hover:text-primary">
                       {opportunity.title}
                     </h2>
-                    <ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                    <ArrowUpRight data-profile-arrow aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground" />
                   </div>
                   {opportunity.summary ? (
                     <p className="relative mt-3 line-clamp-3 break-words text-sm leading-6 text-muted-foreground">
@@ -148,8 +151,8 @@ export default async function SavedOpportunitiesPage() {
         ) : null}
 
         {!error && opportunities.length === 0 ? (
-          <div className="relative mt-8 flex min-h-72 flex-col items-center justify-center overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-card/70 px-6 text-center shadow-[0_14px_42px_rgb(15_23_42/0.035)]"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-primary/[0.06] blur-3xl"/>
-            <div className="relative flex size-14 items-center justify-center rounded-2xl bg-secondary text-primary">
+          <div className={`${styles.surface} relative mt-8 flex min-h-72 flex-col items-center justify-center overflow-hidden rounded-[var(--radius)] border border-dashed border-border/80 bg-card/70 px-6 text-center`}>
+            <div className="relative flex size-14 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary">
               <Bookmark aria-hidden="true" className="size-7" />
             </div>
             <h2 className="relative mt-4 text-lg font-bold text-foreground">
@@ -160,8 +163,8 @@ export default async function SavedOpportunitiesPage() {
             </p>
             <Link
               href="/opportunities"
-              className="relative mt-6 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-            >
+              className={`${styles.control} inline-flex items-center relative mt-6 rounded-[var(--radius)] bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition  hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
+>
               Browse opportunities
             </Link>
           </div>

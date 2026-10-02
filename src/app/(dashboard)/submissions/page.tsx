@@ -1,4 +1,6 @@
 import Link from "next/link";
+import styles from "@/components/network/network-surfaces.module.css";
+import { CommunitySignature } from "@/components/public/community-signature";
 import { redirect } from "next/navigation";
 import {
   BriefcaseBusiness,
@@ -19,38 +21,38 @@ import { createClient } from "@/lib/supabase/server";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-CA", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
+    year:"numeric",
+    month:"short",
+    day:"numeric",
   }).format(new Date(value));
 }
 
 function getStatusPresentation(status: string) {
-  if (status === "published") {
+  if (status ==="published") {
     return {
-      label: "Published",
-      className: "bg-primary/[0.08] text-primary",
+      label:"Published",
+      className:"bg-primary/[0.08] text-primary",
       icon: CircleCheck,
     };
   }
 
-  if (status === "draft") {
+  if (status ==="draft") {
     return {
-      label: "Pending review",
-      className: "bg-accent/60 text-accent-foreground",
+      label:"Pending review",
+      className:"bg-accent/60 text-accent-foreground",
       icon: Clock3,
     };
   }
 
   return {
-    label: status === "expired" ? "Expired" : "Not approved",
-    className: "bg-destructive/[0.08] text-destructive",
+    label: status ==="expired" ?"Expired" :"Not approved",
+    className:"bg-destructive/[0.08] text-destructive",
     icon: XCircle,
   };
 }
 
 const focusClass =
-  "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary";
+"focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary";
 
 export default async function SubmissionsPage() {
   const supabase = await createClient();
@@ -102,25 +104,26 @@ export default async function SubmissionsPage() {
     (opportunities?.length ?? 0) +
       (events?.length ?? 0) +
       (businesses?.length ?? 0) +
-      (organizations?.length ?? 0) >
+      (organizations?.length ?? 0)>
     0;
 
-  const sectionHeadingClass = "flex items-center gap-3";
+  const sectionHeadingClass ="flex items-center gap-3";
   const countClass =
-    "rounded-full border border-border bg-muted px-2.5 py-1 text-xs text-muted-foreground";
+"rounded-full border border-border bg-muted px-2.5 py-1 text-xs text-muted-foreground";
 
   return (
     <main className="px-4 py-8 md:px-8">
       <div className="mx-auto max-w-6xl">
-        <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card p-6 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:p-8">
-          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-20 left-1/3 size-56 rounded-full bg-accent/45 blur-3xl" />
+        <section className={`${styles.surface} relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card p-6  md:p-8`}>
+          
+          
+          <CommunitySignature className={styles.signature} />
           <div className="relative flex flex-wrap items-end justify-between gap-5">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
                 Your content
               </p>
-              <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">
+              <h1 className="mt-3 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">
                 My submissions
               </h1>
               <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">
@@ -132,14 +135,14 @@ export default async function SubmissionsPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/opportunities/new"
-                className={`rounded-2xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-[0_10px_28px_color-mix(in_oklab,var(--primary)_16%,transparent)] transition hover:-translate-y-0.5 hover:bg-primary/90 ${focusClass}`}
-              >
+                className={`${styles.control} inline-flex items-center rounded-[var(--radius)] bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground  transition  hover:bg-primary/90 ${focusClass}`}
+>
                 New opportunity
               </Link>
               <Link
                 href="/events/new"
-                className={`rounded-2xl border border-border/80 bg-background/80 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted ${focusClass}`}
-              >
+                className={`${styles.control} inline-flex items-center rounded-[var(--radius)] border border-border/80 bg-background/80 px-4 py-2.5 text-sm font-semibold text-foreground transition  hover:bg-muted ${focusClass}`}
+>
                 New event
               </Link>
             </div>
@@ -150,12 +153,9 @@ export default async function SubmissionsPage() {
           <div
             role="alert"
             aria-live="assertive"
-            className="relative mt-8 overflow-hidden rounded-[1.5rem] border border-destructive/25 bg-destructive/[0.06] p-5 text-sm text-destructive"
-          >
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-destructive/[0.06] blur-3xl"
-            />
+            className="relative mt-8 overflow-hidden rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-5 text-sm text-destructive"
+>
+            
             <span className="relative">
               We could not load all of your submissions. Please try again.
             </span>
@@ -177,9 +177,9 @@ export default async function SubmissionsPage() {
                   title={opportunity.title}
                   summary={opportunity.summary}
                   status={
-                    opportunity.status === "published" &&
+                    opportunity.status ==="published" &&
                     hasOpportunityDeadlinePassed(opportunity.deadline, today)
-                      ? "expired"
+                      ?"expired"
                       : opportunity.status
                   }
                   moderationNote={opportunity.moderation_note}
@@ -247,7 +247,7 @@ export default async function SubmissionsPage() {
                   moderationNote={organization.moderation_note}
                   detailHref={`/organizations/${organization.slug}`}
                   editHref={`/organizations/${organization.slug}/edit`}
-                  meta={`${organization.organization_type ?? "Organization"} · Updated ${formatDate(organization.updated_at)}`}
+                  meta={`${organization.organization_type ??"Organization"} · Updated ${formatDate(organization.updated_at)}`}
                 />
               ))}
             </div>
@@ -320,32 +320,32 @@ function SubmissionCard({
   const StatusIcon = presentation.icon;
 
   return (
-    <article className="surface-panel relative overflow-hidden rounded-[1.75rem] p-6 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.06)] focus-within:shadow-md">
+    <article className={`${styles.surface} border border-border bg-card relative overflow-hidden rounded-[var(--radius)] p-6 transition  hover:border-primary/30`}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <span
           className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${presentation.className}`}
-        >
+>
           <StatusIcon aria-hidden="true" className="size-3.5" />
           {presentation.label}
         </span>
-        <span className="text-xs capitalize text-muted-foreground">{meta}</span>
+        <span className="min-w-0 break-words text-xs capitalize text-muted-foreground">{meta}</span>
       </div>
 
       <Link
         href={detailHref}
-        className={`mt-4 block break-words text-xl font-bold text-foreground transition hover:text-primary ${focusClass}`}
-      >
+        className={`${styles.control} mt-4 flex items-center break-words text-xl font-bold text-foreground transition hover:text-primary ${focusClass}`}
+>
         {title}
       </Link>
       {summary ? (
-        <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">
+        <p className="mt-3 line-clamp-3 break-words text-sm leading-6 text-muted-foreground">
           {summary}
         </p>
       ) : null}
 
-      {presentation.label === "Not approved" && moderationNote ? (
-        <div className="mt-4 rounded-xl border border-destructive/20 bg-destructive/[0.05] p-3 text-sm leading-6 text-destructive">
-          <span className="font-semibold">Moderator note:</span>{" "}
+      {presentation.label ==="Not approved" && moderationNote ? (
+        <div className="mt-4 rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.05] p-3 text-sm leading-6 text-destructive">
+          <span className="font-semibold">Moderator note:</span>{""}
           {moderationNote}
         </div>
       ) : null}
@@ -353,14 +353,14 @@ function SubmissionCard({
       <div className="mt-6 flex gap-3">
         <Link
           href={detailHref}
-          className={`rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted ${focusClass}`}
-        >
+          className={`${styles.control} inline-flex items-center rounded-[var(--radius)] border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition  hover:bg-muted ${focusClass}`}
+>
           View
         </Link>
         <Link
           href={editHref}
-          className={`inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted ${focusClass}`}
-        >
+          className={`${styles.control} inline-flex items-center gap-2 rounded-[var(--radius)] border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground transition  hover:bg-muted ${focusClass}`}
+>
           <Pencil aria-hidden="true" className="size-3.5" /> Edit
         </Link>
       </div>
@@ -378,16 +378,13 @@ function EmptyState({
   text: string;
 }) {
   return (
-    <div className="relative mt-5 overflow-hidden rounded-[1.5rem] border border-dashed border-border/80 bg-muted/20 p-8 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"
-      />
+    <div className="relative mt-5 overflow-hidden rounded-[var(--radius)] border border-dashed border-border/80 bg-muted/20 p-8 text-center">
+      
       <p className="relative text-sm leading-6 text-muted-foreground">{text}</p>
       <Link
         href={href}
-        className={`relative mt-5 inline-flex rounded-xl border border-primary/15 bg-primary/[0.06] px-4 py-2.5 text-sm font-semibold text-primary transition hover:-translate-y-0.5 hover:bg-primary/10 ${focusClass}`}
-      >
+        className={`${styles.control} relative mt-5 inline-flex items-center rounded-[var(--radius)] border border-primary/15 bg-primary/[0.06] px-4 py-2.5 text-sm font-semibold text-primary transition  hover:bg-primary/10 ${focusClass}`}
+>
         {label}
       </Link>
     </div>
