@@ -733,9 +733,6 @@ export type Database = {
           open_to_mentoring?: boolean
           looking_for_mentor?: boolean
           mentorship_topics?: string[]
-          open_to_mentoring?: boolean
-          looking_for_mentor?: boolean
-          mentorship_topics?: string[]
           opportunity_status?: Database["public"]["Enums"]["profile_status"]
           profession?: string | null
           province_state?: string | null
@@ -763,6 +760,9 @@ export type Database = {
           last_name?: string | null
           linkedin_url?: string | null
           onboarding_completed?: boolean
+          open_to_mentoring?: boolean
+          looking_for_mentor?: boolean
+          mentorship_topics?: string[]
           opportunity_status?: Database["public"]["Enums"]["profile_status"]
           profession?: string | null
           province_state?: string | null
