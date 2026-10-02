@@ -137,6 +137,7 @@ export function CommunityNavigator() {
   const [failed, setFailed] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const languageRef = useRef<Language>("en");
 
   const strings = copy[language];
   const rtl = language === "fa" || language === "ps";
@@ -159,8 +160,15 @@ export function CommunityNavigator() {
   }, []);
 
   useEffect(() => {
+    languageRef.current = language;
+  }, [language]);
+
+  useEffect(() => {
     if (open) {
-      trackAssistantEvent({ event: "assistant_open", language });
+      trackAssistantEvent({
+        event: "assistant_open",
+        language: languageRef.current,
+      });
       window.requestAnimationFrame(() => inputRef.current?.focus());
     }
   }, [open]);
