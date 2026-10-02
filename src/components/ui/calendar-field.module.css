@@ -9,3 +9,5 @@
 .panel select { min-width:0; min-height:44px; border-radius:var(--radius); }
 .control { min-height:44px; border-radius:var(--radius); transition:background var(--motion-fast),box-shadow var(--motion-fast); }
 @media(prefers-reduced-motion:reduce) { .trigger,.control,.panel select { transition:none; } }
+
+@container(max-width:300px) { .panel :global(.rdp-month_caption) { padding-top:44px; height:auto; min-height:80px; } }
