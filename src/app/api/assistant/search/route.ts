@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { inferAssistantIntent } from "@/lib/assistant/intents";
 import { searchAssistantCatalog } from "@/lib/assistant/search";
 import { createClient } from "@/lib/supabase/server";
 
@@ -40,13 +41,17 @@ export async function POST(request: Request) {
   }
 
   try {
+    const inferred = inferAssistantIntent(parsed.data.query);
+    const entityType = parsed.data.entityType ?? inferred.entityType;
     const results = await searchAssistantCatalog(supabase, parsed.data.query, {
-      entityType: parsed.data.entityType,
+      entityType,
       limit: parsed.data.limit,
     });
 
     return NextResponse.json({
       query: parsed.data.query,
+      intent: inferred.intent,
+      entityType: entityType ?? null,
       results,
       mode: "read-only",
     });
