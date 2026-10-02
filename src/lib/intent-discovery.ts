@@ -12,6 +12,8 @@ export type DiscoveryIntent =
 export const phaseOneSearchIntents = [
   { value: "find_work", label: "Find work" },
   { value: "hire_talent", label: "Find talent" },
+  { value: "find_mentor", label: "Find a mentor" },
+  { value: "offer_mentorship", label: "Offer mentorship" },
   { value: "volunteer", label: "Volunteer" },
   { value: "find_services", label: "Find services" },
   { value: "join_community", label: "Join community activity" },
@@ -157,6 +159,8 @@ function getBrowseSourceTypes(
     case "join_community":
       return ["organization", "event"];
     case "hire_talent":
+    case "find_mentor":
+    case "offer_mentorship":
     case "find_services":
       return null;
   }
