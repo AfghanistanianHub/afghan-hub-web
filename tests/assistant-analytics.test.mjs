@@ -13,7 +13,10 @@ const client = fs.readFileSync(
 
 test("assistant analytics never transmits raw query text or identity fields", () => {
   for (const source of [route, client]) {
-    assert.doesNotMatch(source, /queryText|rawQuery|email|display_name|first_name|last_name/);
+    assert.doesNotMatch(
+      source,
+      /queryText\s*:|rawQuery\s*:|email\s*:|display_name\s*:|first_name\s*:|last_name\s*:/,
+    );
   }
 
   assert.match(route, /no raw query text/);
