@@ -153,3 +153,8 @@ test("skill framing has an explicit boundary and preserves compound terminology"
  const generic=Array.from({length:12},(_,i)=>profile(`g${i}`,{headline:"مرتبط با زمینه"}));
  for(const query of ["منتور مرتبط با تکنولوژی","منتور در زمینه تکنولوژی"]){assert.equal((await searchAssistantCatalog(client([...generic,profile("tech",{skills:["تکنولوژی"]})]),query,options))[0].entityId,"tech");}
 });
+
+test("exact names outrank incidental multi-field substrings", async () => {
+ const fillers=Array.from({length:12},(_,i)=>profile(`f${i}`,{display_name:`Aaron ${i}`,headline:"annual planning",profession:"annual planner",skills:["annual planning"]}));
+ assert.equal((await searchAssistantCatalog(client([...fillers,profile("ann",{display_name:"Ann"})]),"mentor Ann",options))[0].entityId,"ann");
+});

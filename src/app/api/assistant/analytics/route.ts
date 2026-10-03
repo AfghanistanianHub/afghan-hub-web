@@ -13,37 +13,42 @@ const entityTypeSchema = z.enum([
 ]);
 
 const eventSchema = z.discriminatedUnion("event", [
-  z.object({
-    event: z.literal("assistant_open"),
-    language: languageSchema,
-    sessionId: z.string().uuid().nullable(),
-  }),
-  z.object({
-    event: z.literal("assistant_language_change"),
-    language: languageSchema,
-    sessionId: z.string().uuid().nullable(),
-  }),
-  z.object({
-    event: z.literal("assistant_search"),
-    language: languageSchema,
-    intent: z.string().trim().min(1).max(40),
-    entityType: entityTypeSchema.nullable(),
-    resultCount: z.number().int().min(0).max(12),
-    hadResults: z.boolean(),
-    sessionId: z.string().uuid().nullable(),
-  }),
-  z.object({
-    event: z.literal("assistant_result_click"),
-    language: languageSchema,
-    entityType: entityTypeSchema,
-    sessionId: z.string().uuid().nullable(),
-  }),
-  z.object({
-    event: z.literal("assistant_recovery_click"),
-    language: languageSchema,
-    destination: z.enum(["network", "organizations", "opportunities", "events"]),
-    sessionId: z.string().uuid().nullable(),
-  }),
+  z
+    .object({
+      event: z.literal("assistant_open"),
+      language: languageSchema,
+    })
+    .strict(),
+  z
+    .object({
+      event: z.literal("assistant_language_change"),
+      language: languageSchema,
+    })
+    .strict(),
+  z
+    .object({
+      event: z.literal("assistant_search"),
+      language: languageSchema,
+      intent: z.string().trim().min(1).max(40),
+      entityType: entityTypeSchema.nullable(),
+      resultCount: z.number().int().min(0).max(12),
+      hadResults: z.boolean(),
+    })
+    .strict(),
+  z
+    .object({
+      event: z.literal("assistant_result_click"),
+      language: languageSchema,
+      entityType: entityTypeSchema,
+    })
+    .strict(),
+  z
+    .object({
+      event: z.literal("assistant_recovery_click"),
+      language: languageSchema,
+      destination: z.enum(["network", "organizations", "opportunities", "events"]),
+    })
+    .strict(),
 ]);
 
 export async function POST(request: Request) {
@@ -74,7 +79,7 @@ export async function POST(request: Request) {
   // - no raw query text
   // - no profile fields
   // - no email
-  // - no user ID in the emitted event
+  // - no user ID or per-session identifier in the emitted event
   console.info(
     "afghan_hub_assistant_event",
     JSON.stringify({
