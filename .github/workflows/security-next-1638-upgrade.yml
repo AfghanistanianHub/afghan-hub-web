@@ -26,6 +26,17 @@ jobs:
         run: npm install next@16.3.8 eslint-config-next@16.3.8 --save-exact --package-lock-only
       - name: Validate lockfile
         run: npm ci
+      - name: Verify audit severity after patch
+        shell: bash
+        run: |
+          npm audit --json > npm-audit-after.json || true
+          node <<'NODE'
+          const fs = require("fs");
+          const report = JSON.parse(fs.readFileSync("npm-audit-after.json", "utf8"));
+          console.log("AUDIT_AFTER_PATCH", JSON.stringify(report.metadata?.vulnerabilities || {}, null, 2));
+          const next = report.vulnerabilities?.next;
+          console.log("NEXT_AUDIT_ENTRY", JSON.stringify(next || null, null, 2));
+          NODE
       - name: Commit generated package files
         shell: bash
         run: |
