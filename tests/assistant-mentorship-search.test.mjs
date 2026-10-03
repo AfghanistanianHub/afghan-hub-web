@@ -144,3 +144,12 @@ test("mixed name and skill qualifiers retain their field scopes", async () => {
  assert.equal((await searchAssistantCatalog(client([profile("r",{skills:["R/Python"]})]),"mentor skilled in R",options))[0].entityId,"r");
  for(const query of ["منتور را جستجو کن","مربی را جست‌وجو کن"]){assert.equal((await searchAssistantCatalog(client([profile("1")]),query,options)).length,1,query);}
 });
+
+test("skill framing has an explicit boundary and preserves compound terminology", async () => {
+ const fillers=Array.from({length:12},(_,i)=>profile(`f${i}`,{display_name:`Aaron ${i}`,skills:["C"]}));
+ const target=profile("target",{display_name:"John",skills:["C"]});
+ assert.equal((await searchAssistantCatalog(client([...fillers,target]),"mentor skilled in C for J",options))[0].entityId,"target");
+ assert.deepEqual((await searchAssistantCatalog(client([profile("rd",{skills:["R&D"]}),profile("r",{skills:["R"]})]),"mentor skilled in R",options)).map(r=>r.entityId),["r"]);
+ const generic=Array.from({length:12},(_,i)=>profile(`g${i}`,{headline:"مرتبط با زمینه"}));
+ for(const query of ["منتور مرتبط با تکنولوژی","منتور در زمینه تکنولوژی"]){assert.equal((await searchAssistantCatalog(client([...generic,profile("tech",{skills:["تکنولوژی"]})]),query,options))[0].entityId,"tech");}
+});

@@ -4,6 +4,10 @@ import { cache } from "react";
 import type { Database } from "@/types/database";
 import type { PublicKind } from "@/lib/public-catalog";
 import { getUtcDateKey } from "@/lib/opportunities";
+import {
+  currentEventFilter,
+  currentOpportunityFilter,
+} from "@/lib/public-listing-eligibility";
 
 export type PublicListing = {
   slug: string;
@@ -55,7 +59,7 @@ export async function getPublicListings(kind: PublicKind, options: Options = {})
         .select("slug,title,summary,description,type,city,country,is_remote,deadline")
         .eq("status", "published");
       if (options.slug) query = query.eq("slug", options.slug);
-      else query = query.or(`deadline.is.null,deadline.gte.${getUtcDateKey()}`).ilike("title", pattern);
+      else query = query.or(currentOpportunityFilter(getUtcDateKey())).ilike("title", pattern);
       const { data, error } = await query.order("created_at", { ascending: false }).order("slug").range(start, end).abortSignal(signal);
       const items = (data ?? []).flatMap(row => {
         const title = cleanPublicText(row.title);
@@ -68,7 +72,7 @@ export async function getPublicListings(kind: PublicKind, options: Options = {})
         .select("slug,title,summary,description,city,country,is_online,starts_at,ends_at")
         .eq("status", "published");
       if (options.slug) query = query.eq("slug", options.slug);
-      else query = query.gte("starts_at", new Date().toISOString()).ilike("title", pattern);
+      else query = query.or(currentEventFilter(new Date().toISOString())).ilike("title", pattern);
       const { data, error } = await query.order("starts_at").order("slug").range(start, end).abortSignal(signal);
       const items = (data ?? []).flatMap(row => {
         const title = cleanPublicText(row.title);

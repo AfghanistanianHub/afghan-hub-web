@@ -290,6 +290,7 @@ export default async function ModerationPage({
           </Link>
           <Link
             href="/moderation?view=history"
+            aria-current={activeView === "history" ? "page" : undefined}
             className={`min-w-0 rounded-xl px-3 py-2 text-center text-sm font-semibold transition sm:px-4 ${
               activeView === "history"
                 ? "bg-background text-foreground shadow-sm"
@@ -496,27 +497,25 @@ function ModerationButtons({
   entityType: ModerationEntityType;
 }) {
   return (
-    <div className="mt-6 space-y-3">
-      <form action={moderateContent}>
-        <input type="hidden" name="entity_id" value={entityId} />
-        <input type="hidden" name="entity_type" value={entityType} />
-        <input type="hidden" name="decision" value="approve" />
-        <PendingSubmitButton
-          pendingLabel="Approving…"
-          className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-        >
-          <Check aria-hidden="true" className="size-4" /> Approve
-        </PendingSubmitButton>
-      </form>
+    <form action={moderateContent} className="mt-6 space-y-3">
+      <input type="hidden" name="entity_id" value={entityId} />
+      <input type="hidden" name="entity_type" value={entityType} />
+
+      <PendingSubmitButton
+        name="decision"
+        value="approve"
+        formNoValidate
+        pendingLabel="Approving…"
+        className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+      >
+        <Check aria-hidden="true" className="size-4" /> Approve
+      </PendingSubmitButton>
 
       <details className="rounded-xl border border-destructive/20 bg-destructive/5 p-3">
         <summary className="cursor-pointer rounded-lg px-1 py-1 text-sm font-semibold text-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destructive">
           Reject with a reason
         </summary>
-        <form action={moderateContent} className="mt-3 space-y-3">
-          <input type="hidden" name="entity_id" value={entityId} />
-          <input type="hidden" name="entity_type" value={entityType} />
-          <input type="hidden" name="decision" value="reject" />
+        <div className="mt-3 space-y-3">
           <label className="block text-xs font-medium text-foreground">
             Explain what should be corrected
             <textarea
@@ -529,13 +528,15 @@ function ModerationButtons({
             />
           </label>
           <PendingSubmitButton
+            name="decision"
+            value="reject"
             pendingLabel="Rejecting…"
             className="inline-flex items-center gap-2 rounded-xl border border-destructive/30 px-4 py-2 text-sm font-semibold text-destructive transition hover:bg-destructive/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-destructive"
           >
             <X aria-hidden="true" className="size-4" /> Reject submission
           </PendingSubmitButton>
-        </form>
+        </div>
       </details>
-    </div>
+    </form>
   );
 }
