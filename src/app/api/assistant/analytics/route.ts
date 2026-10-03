@@ -16,12 +16,10 @@ const eventSchema = z.discriminatedUnion("event", [
   z.object({
     event: z.literal("assistant_open"),
     language: languageSchema,
-    sessionId: z.string().uuid().nullable(),
   }),
   z.object({
     event: z.literal("assistant_language_change"),
     language: languageSchema,
-    sessionId: z.string().uuid().nullable(),
   }),
   z.object({
     event: z.literal("assistant_search"),
@@ -30,19 +28,16 @@ const eventSchema = z.discriminatedUnion("event", [
     entityType: entityTypeSchema.nullable(),
     resultCount: z.number().int().min(0).max(12),
     hadResults: z.boolean(),
-    sessionId: z.string().uuid().nullable(),
   }),
   z.object({
     event: z.literal("assistant_result_click"),
     language: languageSchema,
     entityType: entityTypeSchema,
-    sessionId: z.string().uuid().nullable(),
   }),
   z.object({
     event: z.literal("assistant_recovery_click"),
     language: languageSchema,
     destination: z.enum(["network", "organizations", "opportunities", "events"]),
-    sessionId: z.string().uuid().nullable(),
   }),
 ]);
 
@@ -74,7 +69,7 @@ export async function POST(request: Request) {
   // - no raw query text
   // - no profile fields
   // - no email
-  // - no user ID in the emitted event
+  // - no user ID or per-session identifier in the emitted event
   console.info(
     "afghan_hub_assistant_event",
     JSON.stringify({
