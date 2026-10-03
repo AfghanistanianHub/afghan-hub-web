@@ -76,6 +76,12 @@ Run the same checks before merging meaningful application changes.
 
 For anonymous production-compatible smoke testing, see `scripts/smoke-public.mjs` and `RELEASE_VERIFICATION.md`.
 
+## Source of truth
+
+For the authoritative locations of the Afghan Hub codebase, Vercel deployment, Supabase production project, secondary/rehearsal environment, and legacy repository, see:
+
+- `docs/operations/project-source-of-truth.md`
+
 ## Repository structure
 
 ```text
