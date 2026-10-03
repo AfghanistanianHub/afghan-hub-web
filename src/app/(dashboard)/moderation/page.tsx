@@ -290,6 +290,7 @@ export default async function ModerationPage({
           </Link>
           <Link
             href="/moderation?view=history"
+            aria-current={activeView === "history" ? "page" : undefined}
             className={`min-w-0 rounded-xl px-3 py-2 text-center text-sm font-semibold transition sm:px-4 ${
               activeView === "history"
                 ? "bg-background text-foreground shadow-sm"
