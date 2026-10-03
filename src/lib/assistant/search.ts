@@ -68,15 +68,19 @@ function memberTitle(profile: {
 }
 
 function mentorshipQualifier(query: string) {
-  return extractAssistantSearchTerms(query
+  return query
     .toLocaleLowerCase()
+    .replace(/^\s*(?:please\s+)?(?:find|show(?:\s+me)?|search(?:\s+for)?|look\s+for)(?:\s+|$)/u, " ")
     .replace(/\b(?:mentor|mentors|mentee|mentees)\b/gu, " ")
     .replace(
       /(?<![\p{L}\p{N}_])(?:منتور|منتورها|مربی|مربیان|لارښود|لارښودان)(?![\p{L}\p{N}_])/gu,
       " ",
     )
     .replace(/\s+/g, " ")
-    .trim(), { allowEmpty: true });
+    .replace(/(?<![\p{L}\p{N}_])(?:in|at|for|to|of|the|a|an|me|who|coaches|در|به|از|برای|د|په|کې|لپاره)(?![\p{L}\p{N}_])/gu, " ")
+    .replace(/(?:پیدا\s+کن|نشان\s+بده|پیدا\s+کړه|را\s+وښیه|وښیه)/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function mentorshipRelevance(
@@ -169,36 +173,33 @@ export async function searchAssistantCatalog(
         ? profileQuery.eq("open_to_mentoring", true)
         : profileQuery.eq("looking_for_mentor", true);
 
-    // Page eligible profiles before ranking so the Data API row cap cannot
-    // silently discard a relevant mentor. A unique tie-breaker stabilizes pages.
-    const pageSize = 500;
-    const profiles = [];
-    for (let offset = 0; ; offset += pageSize) {
+    const qualifier = mentorshipQualifier(query);
+    // Generic browse needs one page. Qualified queries scan at most 10,000
+    // eligible rows and retain only the best twelve, never partial results.
+    const pageSize = qualifier ? 500 : limit;
+    const maxPages = qualifier ? 20 : 1;
+    let best: { profile: NonNullable<Awaited<ReturnType<typeof profileQuery.range>>["data"]>[number]; index: number; relevance: number }[] = [];
+    for (let pageIndex = 0; pageIndex < maxPages; pageIndex++) {
+      const offset = pageIndex * pageSize;
       const { data: page, error: profileError } = await profileQuery
         .order("display_name")
         .order("id")
         .range(offset, offset + pageSize - 1);
-
       if (profileError) throw profileError;
-      profiles.push(...(page ?? []));
-      if (!page || page.length < pageSize) break;
+      best = best.concat((page ?? []).map((profile, index) => ({
+        profile, index: offset + index,
+        relevance: mentorshipRelevance(profile, qualifier),
+      })))
+        .filter(item => !qualifier || item.relevance > 0)
+        .sort((a, b) => b.relevance - a.relevance || a.index - b.index)
+        .slice(0, limit);
+      if (!qualifier || !page || page.length < pageSize) break;
+      if (pageIndex === maxPages - 1) {
+        throw new Error("Mentorship search is too broad; narrow your topic or location.");
+      }
     }
 
-    const qualifier = mentorshipQualifier(query);
-
-    return (profiles ?? [])
-      .map((profile, index) => ({
-        profile,
-        index,
-        relevance: mentorshipRelevance(profile, qualifier),
-      }))
-      .filter((item) => !qualifier || item.relevance > 0)
-      .sort(
-        (a, b) =>
-          b.relevance - a.relevance ||
-          a.index - b.index,
-      )
-      .slice(0, limit)
+    return best
       .map(({ profile, relevance }) => ({
         entityType: "profile" as const,
         entityId: profile.id,
