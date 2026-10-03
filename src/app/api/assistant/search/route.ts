@@ -45,6 +45,7 @@ export async function POST(request: Request) {
     const entityType = parsed.data.entityType ?? inferred.entityType;
     const results = await searchAssistantCatalog(supabase, parsed.data.query, {
       entityType,
+      memberSignal: inferred.memberSignal,
       limit: parsed.data.limit,
     });
 
@@ -52,6 +53,7 @@ export async function POST(request: Request) {
       query: parsed.data.query,
       intent: inferred.intent,
       entityType: entityType ?? null,
+      memberSignal: inferred.memberSignal ?? null,
       results,
       mode: "read-only",
     });
