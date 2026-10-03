@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
+import * as ts from "typescript";
 
 const source = fs.readFileSync(
   new URL("../src/lib/assistant/intents.ts", import.meta.url),
@@ -33,4 +34,31 @@ test("assistant mentorship routing stays read-only and signal-based", () => {
   assert.match(source, /entityType: "profile"/);
   assert.match(source, /mentorPatterns/);
   assert.match(source, /menteePatterns/);
+});
+
+
+test("explicit non-person entity intent wins over mentor audience wording", async () => {
+  const compiled = ts.transpileModule(source, {
+    compilerOptions: {
+      module: ts.ModuleKind.ESNext,
+      target: ts.ScriptTarget.ES2022,
+    },
+  }).outputText;
+  const moduleUrl =
+    `data:text/javascript;base64,${Buffer.from(compiled).toString("base64")}`;
+  const { inferAssistantIntent } = await import(moduleUrl);
+
+  assert.deepEqual(inferAssistantIntent("Find a mentor"), {
+    intent: "find_people",
+    entityType: "profile",
+    memberSignal: "open_to_mentoring",
+  });
+  assert.deepEqual(inferAssistantIntent("Find events for mentors"), {
+    intent: "find_events",
+    entityType: "event",
+  });
+  assert.deepEqual(inferAssistantIntent("Find organizations for mentors"), {
+    intent: "find_organizations",
+    entityType: "organization",
+  });
 });
