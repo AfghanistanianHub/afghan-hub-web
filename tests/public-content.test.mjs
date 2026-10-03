@@ -20,6 +20,10 @@ function loadContent({ data = [], error = null, configured = true } = {}) {
       if (name === "server-only") return {};
       if (name === "react") return { cache: fn => fn };
       if (name === "@/lib/opportunities") return { getUtcDateKey: () => "2026-09-10" };
+      if (name === "@/lib/public-listing-eligibility") return {
+        currentOpportunityFilter: dateKey => `deadline.is.null,deadline.gte.${dateKey}`,
+        currentEventFilter: nowIso => `ends_at.gte.${nowIso},and(ends_at.is.null,starts_at.gte.${nowIso})`,
+      };
       if (name === "@supabase/supabase-js") return { createClient: (url, key, options) => { config = { url, key, options }; return { from: table => { calls.push(["from", table]); return query; } }; } };
       throw new Error(`Unexpected dependency (public reads must not import a session client): ${name}`);
     },
@@ -64,12 +68,14 @@ test("public listings with placeholder titles or names are omitted entirely", as
   }
 });
 
-test("discovery excludes expired opportunities and past event starts", async () => {
+test("discovery excludes expired opportunities and keeps only upcoming or ongoing events", async () => {
   const app = loadContent();
   await app.load("opportunities");
   assert.ok(app.calls.some(call => call[0] === "or" && call[1] === "deadline.is.null,deadline.gte.2026-09-10"));
   await app.load("events");
-  assert.ok(app.calls.some(call => call[0] === "gte" && call[1] === "starts_at"));
+  const eventFilter = app.calls.find(call => call[0] === "or" && typeof call[1] === "string" && call[1].includes("ends_at.gte."));
+  assert.ok(eventFilter);
+  assert.match(eventFilter[1], /and\(ends_at\.is\.null,starts_at\.gte\./);
 });
 
 test("detail lookup still filters publication without hiding historical public listings", async () => {

@@ -46,6 +46,16 @@ test("sitemap source excludes published records with placeholder titles or names
     process: { env: { NEXT_PUBLIC_SUPABASE_URL: "https://public.example", NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "publishable-test-key" } },
     require(name) {
       if (name === "server-only") return {};
+      if (name === "@/lib/opportunities") return { getUtcDateKey: () => "2026-10-03" };
+      if (name === "@/lib/public-listing-eligibility") return {
+        currentOpportunityFilter: dateKey => `deadline.is.null,deadline.gte.${dateKey}`,
+        currentEventFilter: nowIso => `ends_at.gte.${nowIso},and(ends_at.is.null,starts_at.gte.${nowIso})`,
+        hasPublicListingTitle: value => {
+          if (!value) return false;
+          const normalized = value.trim().toLowerCase().replace(/\s+/g, " ");
+          return Boolean(normalized) && !new Set(["n/a", "na", "test", "testing"]).has(normalized);
+        },
+      };
       if (name === "@supabase/supabase-js") return {
         createClient: () => ({
           from(table) {
