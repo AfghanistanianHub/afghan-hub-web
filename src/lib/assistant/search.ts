@@ -137,9 +137,9 @@ function mentorshipRelevance(
       const skillScore = skillTokens.includes(term) ? 2 : 0;
       return score + (skillTerms.has(term) ? skillScore : nameScore || skillScore);
     }
-    return score + fields.reduce(
-      (fieldScore, field) => fieldScore + (field.includes(term) ? 1 : 0), 0,
-    );
+    const nameScore = nameTokens.includes(term) ? 8 : nameTokens.some(token => token.startsWith(term)) ? 5 : 0;
+    const fieldScore = Math.min(2, fields.filter(field => field.includes(term)).length);
+    return score + nameScore + fieldScore;
   }, 0);
 }
 
