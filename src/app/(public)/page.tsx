@@ -77,7 +77,7 @@ export default async function PublicHome() {
             <Link href="/explore" data-landing-cta="explore" className={styles.primary}>Explore the community<ArrowRight size={17} aria-hidden="true" /></Link>
             <Link href="/login?mode=join" data-landing-cta="join" className={styles.join}>Join Afghan Hub<ArrowRight size={17} aria-hidden="true" /></Link>
           </div>
-          <p className={styles.note}>No account needed to explore.</p>
+          <p className={styles.note}>Explore listings without an account. Sign in to discover members.</p>
         </div>
         <CommunityHeroMotion className={styles.heroArt} depth={8} scrollDepth><CommunityNetwork /></CommunityHeroMotion>
       </section>

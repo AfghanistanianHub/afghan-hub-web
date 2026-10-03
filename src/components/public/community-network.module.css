@@ -3,6 +3,7 @@
 .node { position:absolute; display:flex; align-items:center; gap:7px; min-height:44px; padding:9px 12px; border:1px solid var(--border); border-radius:4px; background:var(--background); color:var(--foreground); font-size:.75rem; font-weight:600; white-space:nowrap; transition:border-color 180ms, background 180ms; }
 .node:is(:hover,:focus-visible) { border-color:var(--primary); background:var(--secondary); color:var(--primary); z-index:2; }
 .node:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
+.mobileDetail { display:none; }
 .dot { width:6px; height:6px; border-radius:50%; background:var(--primary); }
 .node[data-community-node=people] { left:5%; top:76%; }
 .node[data-community-node=opportunities] { right:2%; top:2%; }
@@ -22,9 +23,12 @@
 .network:has([data-community-node=events]:is(:hover,:focus-visible)) [data-hero-layer=gathering],
 .network:has([data-community-node=organizations]:is(:hover,:focus-visible),[data-community-node=businesses]:is(:hover,:focus-visible)) [data-hero-layer=architecture] { filter:drop-shadow(0 0 3px #62429135); }
 @media(max-width:550px) {
- .network { padding-top:76px; }
- .nodes { inset:0; display:flex; align-content:flex-start; justify-content:center; flex-wrap:wrap; gap:6px; pointer-events:none; }
- .node { position:relative; inset:auto !important; min-height:44px; padding:8px; font-size:.6875rem; pointer-events:auto; }
- .caption { margin-top:0; }
+ .network { padding:0; }
+ .network > svg { max-height:210px; }
+ .nodes { position:static; display:grid; gap:0; margin-top:12px; }
+ .node { position:static; min-height:44px; padding:10px 2px; font-size:.75rem; border:0; border-top:1px solid var(--border); white-space:normal; }
+ .nodeText { flex:1; }
+ .mobileDetail { display:block; margin-top:2px; font-size:.6875rem; font-weight:400; line-height:1.5; color:var(--muted-foreground); }
+ .caption { margin-top:12px; }
 }
 @media(prefers-reduced-motion:reduce) { .node,.preview { transition:none; } }

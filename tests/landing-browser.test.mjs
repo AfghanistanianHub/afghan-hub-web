@@ -304,11 +304,12 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   await delay(300);
   await page.evaluate("document.activeElement?.blur(); scrollTo(0,0)");
   const focused=[];
-  for(let i=0;i<18;i++) {
+  for(let i=0;i<24;i++) {
     for(const type of ["keyDown","keyUp"]) await page.send("Input.dispatchKeyEvent",{type,key:"Tab",code:"Tab",windowsVirtualKeyCode:9});
-    focused.push(await page.evaluate("({href:document.activeElement.getAttribute('href'),outline:getComputedStyle(document.activeElement).outlineStyle,key:document.activeElement.dataset.discoveryLink})"));
+    focused.push(await page.evaluate("({href:document.activeElement.getAttribute('href'),outline:getComputedStyle(document.activeElement).outlineStyle,key:document.activeElement.dataset.discoveryLink,node:document.activeElement.dataset.communityNode,descriptionVisible:document.activeElement.dataset.communityNode ? getComputedStyle(document.getElementById(document.activeElement.getAttribute('aria-describedby'))).display!=='none' : false})"));
   }
   assert.equal(focused[0].href,"#main-content","Skip link must be first");
+  for(const key of ["people","opportunities","organizations","events","businesses"]) assert.ok(focused.some(item=>item.node===key&&item.outline!=="none"&&item.descriptionVisible),`Hero node reachable by Tab: ${key}`);
   for(const key of ["people","organizations","events","opportunities"]) assert.ok(focused.some(item=>item.key===key && item.outline!=="none"),`Visible keyboard focus: ${key}`);
   await page.evaluate("document.activeElement.blur();document.querySelector('[data-discovery-panel=people]').scrollIntoView({block:'center'})");
   const geometry=await page.evaluate("[...document.querySelectorAll('[data-discovery-panel]')].map(el=>{const r=el.getBoundingClientRect();return [r.x,r.y,r.width,r.height]})");
