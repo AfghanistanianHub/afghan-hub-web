@@ -188,6 +188,19 @@ export function inferAssistantIntent(query: string): {
   memberSignal?: AssistantMemberSignal;
 } {
   const normalized = normalize(query);
+  const explicitNonPersonRule = rules
+    .filter((rule) => rule.entityType !== "profile")
+    .find((rule) =>
+      rule.keywords.some((keyword) => containsKeyword(normalized, keyword)),
+    );
+
+  if (explicitNonPersonRule) {
+    return {
+      intent: explicitNonPersonRule.intent,
+      entityType: explicitNonPersonRule.entityType,
+    };
+  }
+
   const memberSignal = inferMentorshipSignal(normalized);
 
   if (memberSignal) {
