@@ -6,6 +6,10 @@ export type AssistantIntent =
   | "find_events"
   | "general";
 
+export type AssistantMemberSignal =
+  | "open_to_mentoring"
+  | "looking_for_mentor";
+
 type IntentRule = {
   intent: Exclude<AssistantIntent, "general">;
   entityType: "profile" | "organization" | "business" | "opportunity" | "event";
@@ -153,11 +157,46 @@ function containsKeyword(value: string, keyword: string) {
   ).test(value);
 }
 
+function inferMentorshipSignal(value: string): AssistantMemberSignal | undefined {
+  const menteePatterns = [
+    /\b(?:people|members?|professionals?)\s+(?:who\s+are\s+)?looking\s+for\s+(?:a\s+)?mentor\b/u,
+    /\b(?:people|members?|professionals?)\s+seeking\s+(?:a\s+)?mentor\b/u,
+    /\b(?:mentees?|people\s+to\s+mentor)\b/u,
+    /(?<![\p{L}\p{N}_])(?:افرادی|اعضایی|کسانی)\s+(?:که\s+)?(?:دنبال|به\s+دنبال)\s+(?:منتور|مربی)(?![\p{L}\p{N}_])/u,
+    /(?<![\p{L}\p{N}_])(?:هغه\s+خلک|غړي)\s+(?:چې\s+)?(?:لارښود|mentor)\s+غواړي(?![\p{L}\p{N}_])/iu,
+  ];
+
+  if (menteePatterns.some((pattern) => pattern.test(value))) {
+    return "looking_for_mentor";
+  }
+
+  const mentorPatterns = [
+    /\b(?:mentor|mentors)\b/u,
+    /\b(?:find|need|looking\s+for|seeking)\s+(?:a\s+)?mentor\b/u,
+    /(?<![\p{L}\p{N}_])(?:منتور|منتورها|مربی|مربیان)(?![\p{L}\p{N}_])/u,
+    /(?<![\p{L}\p{N}_])(?:لارښود|لارښودان)(?![\p{L}\p{N}_])/u,
+  ];
+
+  return mentorPatterns.some((pattern) => pattern.test(value))
+    ? "open_to_mentoring"
+    : undefined;
+}
+
 export function inferAssistantIntent(query: string): {
   intent: AssistantIntent;
   entityType?: IntentRule["entityType"];
+  memberSignal?: AssistantMemberSignal;
 } {
   const normalized = normalize(query);
+  const memberSignal = inferMentorshipSignal(normalized);
+
+  if (memberSignal) {
+    return {
+      intent: "find_people",
+      entityType: "profile",
+      memberSignal,
+    };
+  }
 
   for (const rule of rules) {
     if (rule.keywords.some((keyword) => containsKeyword(normalized, keyword))) {
