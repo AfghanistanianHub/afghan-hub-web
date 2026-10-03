@@ -46,6 +46,16 @@ Do not treat Vercel preview deployments as separate copies of the project. They 
 
 This project owns the live PostgreSQL database, Supabase Auth, Storage, and Realtime state.
 
+### Production Storage buckets
+
+Current production Storage is also centralized in this same Supabase project:
+
+- `avatars` — public bucket for member avatar assets;
+- `business-media` — private bucket for business media;
+- `organization-media` — private bucket for organization media.
+
+Object counts are intentionally not treated as documentation state because they change as users upload or remove files. Bucket names and visibility are the durable storage map.
+
 The database is not a copy of the Git repository. The repository contains application code and migration artifacts; Supabase contains live data and live database state.
 
 ### Secondary Supabase project
