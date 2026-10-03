@@ -29,6 +29,8 @@ type SearchRpcRow =
 
 const ASSISTANT_RESULT_LIMIT = 12;
 
+export class MentorshipSearchScopeError extends Error {}
+
 function resultHref(row: SearchRpcRow) {
   switch (row.entity_type) {
     case "profile":
@@ -116,7 +118,7 @@ function mentorshipRelevance(
     .filter(Boolean)
     .map((value) => String(value).toLocaleLowerCase());
 
-  const terms = qualifier.split(/\s+/u).filter((term) => term.length >= 2);
+  const terms = qualifier.split(/\s+/u).filter((term) => term.length >= 1);
   if (terms.length === 0) return 1;
 
   return terms.reduce(
@@ -196,7 +198,13 @@ export async function searchAssistantCatalog(
         .slice(0, limit);
       if (!qualifier || !page || page.length < pageSize) break;
       if (pageIndex === maxPages - 1) {
-        throw new Error("Mentorship search is too broad; narrow your topic or location.");
+        const { data: overflow, error: overflowError } = await profileQuery
+          .order("display_name").order("id")
+          .range(offset + pageSize, offset + pageSize);
+        if (overflowError) throw overflowError;
+        if (overflow?.length) {
+          throw new MentorshipSearchScopeError("The mentor catalogue is too large for this search. Browse people in Network.");
+        }
       }
     }
 
