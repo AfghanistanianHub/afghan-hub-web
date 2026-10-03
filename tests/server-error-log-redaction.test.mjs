@@ -11,12 +11,44 @@ const member = fs.readFileSync(
   "utf8",
 );
 
+function consoleErrorCalls(source) {
+  const calls = [];
+  const marker = "console.error(";
+  let offset = 0;
+
+  while (true) {
+    const start = source.indexOf(marker, offset);
+    if (start < 0) break;
+
+    let depth = 1;
+    let index = start + marker.length;
+    for (; index < source.length && depth > 0; index++) {
+      if (source[index] === "(") depth++;
+      if (source[index] === ")") depth--;
+    }
+
+    calls.push(source.slice(start, index));
+    offset = index;
+  }
+
+  return calls;
+}
+
 test("production server logs keep route context without raw provider payloads", () => {
   assert.match(attendees, /provider details withheld/);
   assert.match(member, /provider details withheld/);
 
-  assert.doesNotMatch(attendees, /console\.error\([\s\S]*?eventError[\s\S]*?\)/);
-  assert.doesNotMatch(attendees, /console\.error\([\s\S]*?registrationError[\s\S]*?\)/);
-  assert.doesNotMatch(attendees, /console\.error\([\s\S]*?profileError[\s\S]*?\)/);
-  assert.doesNotMatch(member, /console\.error\([\s\S]*?,\s*error[\s\S]*?\)/);
+  const attendeeCalls = consoleErrorCalls(attendees);
+  const memberCalls = consoleErrorCalls(member);
+
+  assert.ok(attendeeCalls.length >= 3);
+  assert.ok(memberCalls.length >= 1);
+
+  for (const call of attendeeCalls) {
+    assert.doesNotMatch(call, /\beventError\b|\bregistrationError\b|\bprofileError\b/);
+  }
+
+  for (const call of memberCalls) {
+    assert.doesNotMatch(call, /,\s*error\b/);
+  }
 });
