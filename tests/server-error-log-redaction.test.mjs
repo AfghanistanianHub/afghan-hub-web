@@ -12,7 +12,7 @@ const member = fs.readFileSync(
   "utf8",
 );
 
-function consoleErrorArgumentIdentifiers(source, fileName) {
+function consoleErrorCalls(source, fileName) {
   const file = ts.createSourceFile(
     fileName,
     source,
@@ -30,17 +30,7 @@ function consoleErrorArgumentIdentifiers(source, fileName) {
       node.expression.expression.text === "console" &&
       node.expression.name.text === "error"
     ) {
-      const identifiers = new Set();
-
-      for (const argument of node.arguments) {
-        function collect(child) {
-          if (ts.isIdentifier(child)) identifiers.add(child.text);
-          ts.forEachChild(child, collect);
-        }
-        collect(argument);
-      }
-
-      calls.push([...identifiers]);
+      calls.push(node);
     }
 
     ts.forEachChild(node, visit);
@@ -50,36 +40,34 @@ function consoleErrorArgumentIdentifiers(source, fileName) {
   return calls;
 }
 
-test("production server logs keep route context without raw provider payloads", () => {
-  assert.match(attendees, /provider details withheld/);
-  assert.match(member, /provider details withheld/);
+function assertStaticSingleArgumentErrors(source, fileName, minimumCount) {
+  const calls = consoleErrorCalls(source, fileName);
+  assert.ok(calls.length >= minimumCount);
 
-  const attendeeCalls = consoleErrorArgumentIdentifiers(
+  for (const call of calls) {
+    assert.equal(
+      call.arguments.length,
+      1,
+      `${fileName}: console.error must not include provider payload arguments`,
+    );
+    assert.equal(
+      ts.isStringLiteralLike(call.arguments[0]),
+      true,
+      `${fileName}: console.error must use a static redacted message`,
+    );
+    assert.match(call.arguments[0].text, /provider details withheld/i);
+  }
+}
+
+test("production server logs keep route context without raw provider payloads", () => {
+  assertStaticSingleArgumentErrors(
     attendees,
     "event-attendees-page.tsx",
+    3,
   );
-  const memberCalls = consoleErrorArgumentIdentifiers(
+  assertStaticSingleArgumentErrors(
     member,
     "member-profile-page.tsx",
+    1,
   );
-
-  assert.ok(attendeeCalls.length >= 3);
-  assert.ok(memberCalls.length >= 1);
-
-  const forbiddenAttendeePayloads = new Set([
-    "eventError",
-    "registrationError",
-    "profileError",
-  ]);
-
-  for (const identifiers of attendeeCalls) {
-    assert.equal(
-      identifiers.some((identifier) => forbiddenAttendeePayloads.has(identifier)),
-      false,
-    );
-  }
-
-  for (const identifiers of memberCalls) {
-    assert.equal(identifiers.includes("error"), false);
-  }
 });
