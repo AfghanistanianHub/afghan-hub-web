@@ -129,3 +129,8 @@ test("assistant analytics emits only event-scoped aggregate fields", () => {
     assert.deepEqual(payload, input);
   }
 });
+
+
+test("assistant analytics rejects extra telemetry fields server-side", () => {
+  assert.equal((route.match(/\.strict\(\)/g) ?? []).length, 5);
+});
