@@ -11,14 +11,12 @@ Measures Assistant discovery entry.
 
 Fields:
 - language
-- anonymous per-tab/session UUID
 
 ### assistant_language_change
 Measures English/Dari/Pashto interface usage.
 
 Fields:
 - language
-- anonymous per-tab/session UUID
 
 ### assistant_search
 Measures successful/unsuccessful discovery.
@@ -29,7 +27,6 @@ Fields:
 - inferred entity type
 - result count
 - whether at least one result was returned
-- anonymous per-tab/session UUID
 
 **Not stored:** raw query text.
 
@@ -39,7 +36,6 @@ Measures whether a user reaches an Afghan Hub destination.
 Fields:
 - language
 - result entity type
-- anonymous per-tab/session UUID
 
 ### assistant_recovery_click
 Measures which browse destination a user chooses after a zero-result search.
@@ -47,7 +43,6 @@ Measures which browse destination a user chooses after a zero-result search.
 Fields:
 - language
 - broad destination category only
-- anonymous per-tab/session UUID
 
 Raw search text and destination record IDs are not included.
 
@@ -68,9 +63,9 @@ Hosting infrastructure may still have its own ordinary request logs; this docume
 
 ## Current storage model
 
-V1 emits structured events to application logs only. It does not add a Supabase analytics table or new production database privileges.
+V1 emits aggregate-friendly structured events to application logs only. It does not add a Supabase analytics table, user identifier, per-session identifier, or new production database privileges.
 
-This is intentional while privacy/retention policy remains under review.
+This is intentional while privacy/retention policy remains under review. Session-level telemetry is deferred until a retention period and deletion policy are explicitly approved.
 
 ## KPI mapping
 
@@ -84,7 +79,6 @@ From these events we can compute or estimate:
 - recovery click-through after zero results;
 - destination mix by entity type;
 - language mix;
-- session-level repeat use.
 
 ## Next durability decision
 
