@@ -59,19 +59,67 @@ function memberTitle(profile: {
   first_name: string | null;
   last_name: string | null;
 }) {
-  return (
+  const title =
     profile.display_name?.trim() ||
     [profile.first_name, profile.last_name].filter(Boolean).join(" ") ||
-    "Afghan Hub member"
-  );
+    "Afghan Hub member";
+
+  return /\S+@\S+\.\S+/.test(title) ? "Afghan Hub member" : title;
 }
 
-function isGenericMentorshipQuery(query: string) {
-  const normalized = query.toLocaleLowerCase();
-  return /\bmentors?\b/u.test(normalized) ||
-    /(?<![\p{L}\p{N}_])(?:منتور|منتورها|مربی|مربیان|لارښود|لارښودان)(?![\p{L}\p{N}_])/u.test(
-      normalized,
-    );
+function mentorshipQualifier(query: string) {
+  return query
+    .toLocaleLowerCase()
+    .replace(/\b(?:mentor|mentors|mentee|mentees)\b/gu, " ")
+    .replace(
+      /(?<![\p{L}\p{N}_])(?:منتور|منتورها|مربی|مربیان|لارښود|لارښودان)(?![\p{L}\p{N}_])/gu,
+      " ",
+    )
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function mentorshipRelevance(
+  profile: {
+    display_name: string | null;
+    first_name: string | null;
+    last_name: string | null;
+    headline: string | null;
+    profession: string | null;
+    company: string | null;
+    city: string | null;
+    country: string | null;
+    skills: string[] | null;
+    mentorship_topics: string[] | null;
+  },
+  qualifier: string,
+) {
+  if (!qualifier) return 1;
+
+  const fields = [
+    profile.headline,
+    profile.profession,
+    profile.company,
+    profile.city,
+    profile.country,
+    ...(profile.skills ?? []),
+    ...(profile.mentorship_topics ?? []),
+  ]
+    .filter(Boolean)
+    .map((value) => String(value).toLocaleLowerCase());
+
+  const terms = qualifier.split(/\s+/u).filter((term) => term.length >= 2);
+  if (terms.length === 0) return 1;
+
+  return terms.reduce(
+    (score, term) =>
+      score +
+      fields.reduce(
+        (fieldScore, field) => fieldScore + (field.includes(term) ? 1 : 0),
+        0,
+      ),
+    0,
+  );
 }
 
 function isAssistantEntityType(value: string): value is AssistantEntityType {
@@ -104,11 +152,11 @@ export async function searchAssistantCatalog(
     ASSISTANT_RESULT_LIMIT,
   );
 
-  if (options.memberSignal && isGenericMentorshipQuery(normalizedQuery)) {
+  if (options.memberSignal) {
     let profileQuery = supabase
       .from("profiles")
       .select(
-        "id,display_name,first_name,last_name,headline,profession,city,country",
+        "id,display_name,first_name,last_name,headline,profession,company,city,country,skills,mentorship_topics",
       )
       .eq("is_public", true)
       .eq("onboarding_completed", true);
@@ -118,24 +166,42 @@ export async function searchAssistantCatalog(
         ? profileQuery.eq("open_to_mentoring", true)
         : profileQuery.eq("looking_for_mentor", true);
 
-    const { data: profiles, error: profileError } = await profileQuery
-      .order("display_name")
-      .limit(limit);
+    const { data: profiles, error: profileError } = await profileQuery.order(
+      "display_name",
+    );
 
     if (profileError) {
       throw profileError;
     }
 
-    return (profiles ?? []).map((profile) => ({
-      entityType: "profile" as const,
-      entityId: profile.id,
-      title: memberTitle(profile),
-      subtitle: profile.headline ?? profile.profession,
-      city: profile.city,
-      country: profile.country,
-      href: `/members/${profile.id}`,
-      rank: 0,
-    }));
+    const qualifier = mentorshipQualifier(normalizedQuery);
+
+    return (profiles ?? [])
+      .map((profile, index) => ({
+        profile,
+        index,
+        relevance: mentorshipRelevance(profile, qualifier),
+      }))
+      .filter((item) => !qualifier || item.relevance > 0)
+      .sort(
+        (a, b) =>
+          b.relevance - a.relevance ||
+          a.index - b.index,
+      )
+      .slice(0, limit)
+      .map(({ profile, relevance }) => ({
+        entityType: "profile" as const,
+        entityId: profile.id,
+        title: memberTitle(profile),
+        subtitle:
+          profile.mentorship_topics?.[0] ??
+          profile.headline ??
+          profile.profession,
+        city: profile.city,
+        country: profile.country,
+        href: `/members/${profile.id}`,
+        rank: relevance,
+      }));
   }
 
   const { data, error } = await supabase.rpc("search_afghan_hub", {
@@ -150,44 +216,6 @@ export async function searchAssistantCatalog(
   let rows = (data ?? [])
     .filter((row) => isAssistantEntityType(row.entity_type))
     .filter((row) => !options.entityType || row.entity_type === options.entityType);
-
-  if (options.memberSignal) {
-    const profileIds = rows
-      .filter((row) => row.entity_type === "profile")
-      .map((row) => row.entity_id);
-
-    if (profileIds.length === 0) {
-      return [];
-    }
-
-    let profileQuery = supabase
-      .from("profiles")
-      .select("id")
-      .in("id", profileIds)
-      .eq("is_public", true)
-      .eq("onboarding_completed", true);
-
-    profileQuery =
-      options.memberSignal === "open_to_mentoring"
-        ? profileQuery.eq("open_to_mentoring", true)
-        : profileQuery.eq("looking_for_mentor", true);
-
-    const { data: eligibleProfiles, error: profileError } = await profileQuery;
-
-    if (profileError) {
-      throw profileError;
-    }
-
-    const eligibleProfileIds = new Set(
-      (eligibleProfiles ?? []).map((profile) => profile.id),
-    );
-
-    rows = rows.filter(
-      (row) =>
-        row.entity_type === "profile" &&
-        eligibleProfileIds.has(row.entity_id),
-    );
-  }
 
   return rows
     .map<AssistantSearchResult | null>((row) => {
