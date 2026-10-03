@@ -104,6 +104,18 @@ export default async function ModerationTeamPage({
           >
             We could not load members. Please try again.
           </div>
+        ) : (members ?? []).length === 0 ? (
+          <section className="mt-8 rounded-[1.5rem] border border-dashed border-border/80 bg-muted/25 p-8 text-center sm:p-10">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+              <ShieldCheck aria-hidden="true" className="size-5" />
+            </div>
+            <h2 className="mt-4 text-lg font-semibold text-foreground">
+              No member accounts to manage
+            </h2>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+              Member accounts will appear here once they are available to the admin directory.
+            </p>
+          </section>
         ) : (
           <div className="mt-8 space-y-4">
             {(members ?? []).map((member) => {
