@@ -43,5 +43,9 @@ test("mentor discovery uses explicit public profile opt-ins", () => {
   assert.match(search, /\.eq\("onboarding_completed", true\)/);
   assert.match(search, /\.eq\("open_to_mentoring", true\)/);
   assert.match(search, /\.eq\("looking_for_mentor", true\)/);
-  assert.match(search, /isGenericMentorshipQuery/);
+  assert.match(search, /mentorshipQualifier/);
+  assert.match(search, /mentorshipRelevance/);
+  assert.match(search, /mentorship_topics/);
+  assert.match(search, /\/\\S\+@\\S\+\\\.\\S\+\//);
+  assert.match(search, /\.slice\(0, limit\)/);
 });
