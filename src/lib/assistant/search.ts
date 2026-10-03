@@ -68,7 +68,7 @@ function memberTitle(profile: {
 }
 
 function mentorshipQualifier(query: string) {
-  return query
+  return extractAssistantSearchTerms(query
     .toLocaleLowerCase()
     .replace(/\b(?:mentor|mentors|mentee|mentees)\b/gu, " ")
     .replace(
@@ -76,7 +76,7 @@ function mentorshipQualifier(query: string) {
       " ",
     )
     .replace(/\s+/g, " ")
-    .trim();
+    .trim(), { allowEmpty: true });
 }
 
 function mentorshipRelevance(
@@ -97,6 +97,9 @@ function mentorshipRelevance(
   if (!qualifier) return 1;
 
   const fields = [
+    profile.display_name,
+    profile.first_name,
+    profile.last_name,
     profile.headline,
     profile.profession,
     profile.company,
@@ -166,15 +169,22 @@ export async function searchAssistantCatalog(
         ? profileQuery.eq("open_to_mentoring", true)
         : profileQuery.eq("looking_for_mentor", true);
 
-    const { data: profiles, error: profileError } = await profileQuery.order(
-      "display_name",
-    );
+    // Page eligible profiles before ranking so the Data API row cap cannot
+    // silently discard a relevant mentor. A unique tie-breaker stabilizes pages.
+    const pageSize = 500;
+    const profiles = [];
+    for (let offset = 0; ; offset += pageSize) {
+      const { data: page, error: profileError } = await profileQuery
+        .order("display_name")
+        .order("id")
+        .range(offset, offset + pageSize - 1);
 
-    if (profileError) {
-      throw profileError;
+      if (profileError) throw profileError;
+      profiles.push(...(page ?? []));
+      if (!page || page.length < pageSize) break;
     }
 
-    const qualifier = mentorshipQualifier(normalizedQuery);
+    const qualifier = mentorshipQualifier(query);
 
     return (profiles ?? [])
       .map((profile, index) => ({
@@ -213,7 +223,7 @@ export async function searchAssistantCatalog(
     throw error;
   }
 
-  let rows = (data ?? [])
+  const rows = (data ?? [])
     .filter((row) => isAssistantEntityType(row.entity_type))
     .filter((row) => !options.entityType || row.entity_type === options.entityType);
 

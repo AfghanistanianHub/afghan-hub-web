@@ -37,7 +37,7 @@ function removeOrphanPersianPluralSuffix(value: string) {
   return value.replace(/(?:^|\s)\u200c?(?:ها|های|هایی)(?=\s|$)/gu, " ");
 }
 
-export function extractAssistantSearchTerms(query: string) {
+export function extractAssistantSearchTerms(query: string, options: { allowEmpty?: boolean } = {}) {
   const original = cleanWhitespace(query).slice(0, 120);
   let candidate = original;
 
@@ -53,5 +53,5 @@ export function extractAssistantSearchTerms(query: string) {
     .trim()
     .slice(0, 120);
 
-  return candidate.length >= 2 ? candidate : original;
+  return candidate.length >= 2 || options.allowEmpty ? candidate : original;
 }
