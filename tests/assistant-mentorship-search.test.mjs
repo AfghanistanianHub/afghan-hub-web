@@ -36,7 +36,7 @@ function client(profiles, failPage = false) {
 }
 const options = { memberSignal: "open_to_mentoring" };
 test("framing-only mentor requests browse eligible opt-ins", async () => {
-  for (const query of ["Find a mentor", "Show me mentors", "Find mentors", "Find a mentor for me", "mentor", "منتور پیدا کن", "لارښود پیدا کړه"]) {
+  for (const query of ["Find a mentor", "Show me mentors", "Find mentors", "Find mentors.", "Find a mentor for me", "mentor", "منتور پیدا کن", "لارښود پیدا کړه"]) {
     const results = await searchAssistantCatalog(client([profile("1")]), query, options);
     assert.equal(results.length, 1, query);
   }
@@ -73,4 +73,11 @@ test("generic browse stays bounded and meaningful audience qualifications surviv
   assert.deepEqual(db.ranges, [[0, 11]]);
   const result = await searchAssistantCatalog(client([profile("1", { skills: ["professionals"] })]), "mentor who coaches professionals", options);
   assert.equal(result[0].entityId, "1");
+});
+
+test("mentor names and topics ignore ordinary punctuation", async () => {
+  const data = [profile("1", { display_name: "Jane", mentorship_topics: ["Film"] })];
+  for (const query of ["mentor Jane?", "Find a mentor for Film!", "منتور Film؟"]) {
+    assert.equal((await searchAssistantCatalog(client(data), query, options))[0].entityId, "1", query);
+  }
 });

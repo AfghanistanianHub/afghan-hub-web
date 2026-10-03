@@ -69,6 +69,7 @@ function memberTitle(profile: {
 
 function mentorshipQualifier(query: string) {
   return query
+    .replace(/[“”"'«»؟?،,!.:;؛()[\]{}]/g, " ")
     .toLocaleLowerCase()
     .replace(/^\s*(?:please\s+)?(?:find|show(?:\s+me)?|search(?:\s+for)?|look\s+for)(?:\s+|$)/u, " ")
     .replace(/\b(?:mentor|mentors|mentee|mentees)\b/gu, " ")
