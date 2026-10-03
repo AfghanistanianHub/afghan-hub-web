@@ -498,7 +498,10 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:touch});
     await page.send('Emulation.setTouchEmulationEnabled',{enabled:touch});
     for (const kind of ['opportunities','events','businesses','organizations']) {
-      await page.evaluate("window.scrollTo(0,0)");
+      await page.evaluate(`new Promise(resolve => {
+        document.querySelector('nav[aria-label="Listing categories"] a[href="/explore?type=${kind}#results-heading"]').scrollIntoView({block:'center',behavior:'instant'});
+        requestAnimationFrame(()=>requestAnimationFrame(resolve));
+      })`);
       const point=await page.evaluate(`(()=>{const a=document.querySelector('nav[aria-label="Listing categories"] a[href="/explore?type=${kind}#results-heading"]');const r=a.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);
       if(touch) {
         await page.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[point]});

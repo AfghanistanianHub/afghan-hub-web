@@ -81,3 +81,14 @@ test("mentor names and topics ignore ordinary punctuation", async () => {
     assert.equal((await searchAssistantCatalog(client(data), query, options))[0].entityId, "1", query);
   }
 });
+
+test("exact scan boundary completes while overflow fails explicitly", async () => {
+  const data = Array.from({ length: 10000 }, (_, i) => profile(String(i)));
+  data[9999].display_name = "Zoe Jane";
+  assert.equal((await searchAssistantCatalog(client(data), "mentor Jane", options))[0].entityId, "9999");
+  await assert.rejects(searchAssistantCatalog(client([...data, profile("overflow")]), "mentor Jane", options), /too large/);
+});
+test("single-letter name qualifiers still rank matching profiles", async () => {
+  const result = await searchAssistantCatalog(client([profile("1", { display_name: "Zoe" }), profile("2", { display_name: "C." })]), "mentor C.", options);
+  assert.deepEqual(result.map(r=>r.entityId), ["2"]);
+});
