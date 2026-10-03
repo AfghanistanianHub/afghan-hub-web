@@ -26,3 +26,9 @@ test("approve and reject actions prevent repeat submissions while pending", () =
   assert.doesNotMatch(source, /<button\s+[\s\S]*?>\s*<Check[^>]*\/> Approve\s*<\/button>/);
   assert.doesNotMatch(source, /<button\s+[\s\S]*?>\s*<X[^>]*\/> Reject submission\s*<\/button>/);
 });
+
+
+test("both moderation views expose the active tab to assistive technology", () => {
+  assert.match(source, /aria-current=\{activeView === "pending" \? "page" : undefined\}/);
+  assert.match(source, /aria-current=\{activeView === "history" \? "page" : undefined\}/);
+});
