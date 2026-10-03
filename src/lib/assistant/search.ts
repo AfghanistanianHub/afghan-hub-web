@@ -74,6 +74,7 @@ function mentorshipQualifier(query: string) {
     .replace(/[“”"'«»؟?،,!.:;؛()[\]{}]/g, " ")
     .toLocaleLowerCase()
     .replace(/^\s*(?:please\s+)?(?:find|show(?:\s+me)?|search(?:\s+for)?|look\s+for)(?:\s+|$)/u, " ")
+    .replace(/\b(?:working\s+in|that\s+supports?|similar\s+to|related\s+to|who\s+coaches)\b/gu, " ")
     .replace(/\b(?:mentor|mentors|mentee|mentees)\b/gu, " ")
     .replace(
       /(?<![\p{L}\p{N}_])(?:منتور|منتورها|مربی|مربیان|لارښود|لارښودان)(?![\p{L}\p{N}_])/gu,
@@ -121,15 +122,15 @@ function mentorshipRelevance(
   const terms = qualifier.split(/\s+/u).filter((term) => term.length >= 1);
   if (terms.length === 0) return 1;
 
-  return terms.reduce(
-    (score, term) =>
-      score +
-      fields.reduce(
-        (fieldScore, field) => fieldScore + (field.includes(term) ? 1 : 0),
-        0,
-      ),
-    0,
-  );
+  const nameTokens = [profile.display_name, profile.first_name, profile.last_name]
+    .filter(Boolean)
+    .flatMap(value => String(value).toLocaleLowerCase().split(/[^\p{L}\p{N}]+/u));
+  return terms.reduce((score, term) => {
+    if (term.length === 1) return score + (nameTokens.includes(term) ? 1 : 0);
+    return score + fields.reduce(
+      (fieldScore, field) => fieldScore + (field.includes(term) ? 1 : 0), 0,
+    );
+  }, 0);
 }
 
 function isAssistantEntityType(value: string): value is AssistantEntityType {

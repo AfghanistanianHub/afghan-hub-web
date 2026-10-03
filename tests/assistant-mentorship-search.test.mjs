@@ -92,3 +92,14 @@ test("single-letter name qualifiers still rank matching profiles", async () => {
   const result = await searchAssistantCatalog(client([profile("1", { display_name: "Zoe" }), profile("2", { display_name: "C." })]), "mentor C.", options);
   assert.deepEqual(result.map(r=>r.entityId), ["2"]);
 });
+
+test("framing words cannot displace qualified mentors", async () => {
+  const distractors = Array.from({ length: 12 }, (_, i) => profile(String(i), { headline: "Working together" }));
+  const target = profile("target", { display_name: "Zoe", skills: ["technology"] });
+  assert.equal((await searchAssistantCatalog(client([...distractors, target]), "Find mentors working in technology", options))[0].entityId, "target");
+});
+test("single initials do not score company, location or incidental letters", async () => {
+  const distractors = Array.from({ length: 12 }, (_, i) => profile(String(i), { company: "Connect", city: "Vancouver", skills: ["coaching", "technology"] }));
+  const target = profile("target", { display_name: "Zoe C." });
+  assert.deepEqual((await searchAssistantCatalog(client([...distractors, target]), "mentor C.", options)).map(r=>r.entityId), ["target"]);
+});
