@@ -104,6 +104,7 @@ function mentorshipRelevance(
     mentorship_topics: string[] | null;
   },
   qualifier: string,
+  skillOnly = false,
 ) {
   if (!qualifier) return 1;
 
@@ -127,10 +128,13 @@ function mentorshipRelevance(
 
   const nameTokens = [profile.display_name, profile.first_name, profile.last_name]
     .filter(Boolean).flatMap(value => String(value).toLocaleLowerCase().split(/[^\p{L}\p{N}]+/u));
-  const exactTokens = fields.flatMap(value => value.split(/[^\p{L}\p{N}]+/u));
+  const skillTokens = [...(profile.skills ?? []), ...(profile.mentorship_topics ?? [])]
+    .flatMap(value => value.toLocaleLowerCase().split(/\s+/u).map(token => token.replace(/[,.!?]+$/u, "")));
   return terms.reduce((score, term) => {
     if (term.length === 1) {
-      return score + (exactTokens.includes(term) ? 2 : nameTokens.some(token => token.startsWith(term)) ? 1 : 0);
+      const nameScore = nameTokens.includes(term) ? 4 : nameTokens.some(token => token.startsWith(term)) ? 3 : 0;
+      const skillScore = skillTokens.includes(term) ? 2 : 0;
+      return score + (skillOnly ? skillScore : nameScore || skillScore);
     }
     return score + fields.reduce(
       (fieldScore, field) => fieldScore + (field.includes(term) ? 1 : 0), 0,
@@ -197,7 +201,7 @@ export async function searchAssistantCatalog(
       if (profileError) throw profileError;
       best = best.concat((page ?? []).map((profile, index) => ({
         profile, index: offset + index,
-        relevance: mentorshipRelevance(profile, qualifier),
+        relevance: mentorshipRelevance(profile, qualifier, /\b(?:skilled|skills?|topics?)\b/iu.test(query)),
       })))
         .filter(item => !qualifier || item.relevance > 0)
         .sort((a, b) => b.relevance - a.relevance || a.index - b.index)

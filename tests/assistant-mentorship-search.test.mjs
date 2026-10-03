@@ -125,3 +125,14 @@ test("generic professional framing cannot displace the topic match", async () =>
 test("first initials match names without searching incidental letters", async () => {
   assert.deepEqual((await searchAssistantCatalog(client([profile("1",{display_name:"John Smith"}),profile("2",{display_name:"Zoe",company:"Junior"})]),"mentor J",options)).map(r=>r.entityId),["1"]);
 });
+
+test("single-letter skill searches distinguish C from C++ and C#", async () => {
+  const fillers=Array.from({length:12},(_,i)=>profile(String(i),{skills:[i%2?"C++":"C#"]}));
+  const target=profile("target",{skills:["C"]});
+  assert.deepEqual((await searchAssistantCatalog(client([...fillers,target]),"mentor skilled in C",options)).map(r=>r.entityId),["target"]);
+});
+test("name initials outrank incidental non-name tokens and skill wording disambiguates", async () => {
+  const fillers=Array.from({length:12},(_,i)=>profile(String(i),{company:"J & J"}));
+  assert.deepEqual((await searchAssistantCatalog(client([...fillers,profile("target",{display_name:"John Smith"})]),"mentor J",options)).map(r=>r.entityId),["target"]);
+  assert.deepEqual((await searchAssistantCatalog(client([profile("1",{display_name:"Robert"}),profile("2",{skills:["R"]})]),"mentor skilled in R",options)).map(r=>r.entityId),["2"]);
+});
