@@ -369,7 +369,10 @@ export function CommunityNavigator() {
                     </div>
                   ) : failed ? (
                     <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
-                      {strings.error}
+                      <p>{strings.error}</p>
+                      <Link href="/network" onClick={() => setOpen(false)} className="mt-3 inline-flex min-h-11 items-center rounded-sm font-semibold underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+                        {strings.browsePeople}
+                      </Link>
                     </div>
                   ) : results.length ? (
                     results.map((result) => {

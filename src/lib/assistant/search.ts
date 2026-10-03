@@ -74,8 +74,10 @@ function mentorshipQualifier(query: string) {
     .replace(/[“”"'«»؟?،,!.:;؛()[\]{}]/g, " ")
     .toLocaleLowerCase()
     .replace(/^\s*(?:please\s+)?(?:find|show(?:\s+me)?|search(?:\s+for)?|look\s+for)(?:\s+|$)/u, " ")
-    .replace(/^\s*(?:a|an|the)\s+(?=mentors?\b)/u, " ")
+    .replace(/^\s*(?:a|an|the)\s+(?=(?:(?:professional|professionals|people|members?)\s+)?mentors?\b)/u, " ")
     .replace(/\b(?:working\s+in|skilled\s+in|that\s+supports?|similar\s+to|related\s+to|who\s+coaches)\b/gu, " ")
+    .replace(/\b(?:professional|professionals|people|members?)\s+(?=mentors?\b)/gu, " ")
+    .replace(/\bi\s+(?:met|know)\b/gu, " ")
     .replace(/\b(?:mentor|mentors|mentee|mentees)\b/gu, " ")
     .replace(/(?<![\p{L}\p{N}_])(?:منتور|منتورها|مربی|مربیان|لارښود|لارښودان)(?![\p{L}\p{N}_])/gu, " ")
     .replace(/(?:را\s+)?(?:پیدا\s+کن|نشان\s+بده|پیدا\s+کړه|را\s+وښیه|وښیه)/gu, " ")
@@ -123,9 +125,13 @@ function mentorshipRelevance(
   const terms = qualifier.split(/\s+/u).filter((term) => term.length >= 1);
   if (terms.length === 0) return 1;
 
+  const nameTokens = [profile.display_name, profile.first_name, profile.last_name]
+    .filter(Boolean).flatMap(value => String(value).toLocaleLowerCase().split(/[^\p{L}\p{N}]+/u));
   const exactTokens = fields.flatMap(value => value.split(/[^\p{L}\p{N}]+/u));
   return terms.reduce((score, term) => {
-    if (term.length === 1) return score + (exactTokens.includes(term) ? 1 : 0);
+    if (term.length === 1) {
+      return score + (exactTokens.includes(term) ? 2 : nameTokens.some(token => token.startsWith(term)) ? 1 : 0);
+    }
     return score + fields.reduce(
       (fieldScore, field) => fieldScore + (field.includes(term) ? 1 : 0), 0,
     );
