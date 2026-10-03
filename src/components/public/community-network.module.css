@@ -1,0 +1,30 @@
+.network { position:relative; padding-block:24px; }
+.nodes { position:absolute; inset:0 0 46px; }
+.node { position:absolute; display:flex; align-items:center; gap:7px; min-height:44px; padding:9px 12px; border:1px solid var(--border); border-radius:4px; background:var(--background); color:var(--foreground); font-size:.75rem; font-weight:600; white-space:nowrap; transition:border-color 180ms, background 180ms; }
+.node:is(:hover,:focus-visible) { border-color:var(--primary); background:var(--secondary); color:var(--primary); z-index:2; }
+.node:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
+.dot { width:6px; height:6px; border-radius:50%; background:var(--primary); }
+.node[data-community-node=people] { left:5%; top:76%; }
+.node[data-community-node=opportunities] { right:2%; top:2%; }
+.node[data-community-node=organizations] { left:6%; top:21%; }
+.node[data-community-node=events] { right:1%; top:67%; }
+.node[data-community-node=businesses] { left:0; top:48%; }
+.caption { margin:10px 0 0; min-height:38px; text-align:center; font-size:.75rem; line-height:1.6; color:var(--muted-foreground); }
+.preview { display:none; }
+.network:has(.node:is(:hover,:focus-visible)) .defaultCaption { display:none; }
+.network:has([data-community-node=people]:is(:hover,:focus-visible)) [data-community-description=people],
+.network:has([data-community-node=opportunities]:is(:hover,:focus-visible)) [data-community-description=opportunities],
+.network:has([data-community-node=organizations]:is(:hover,:focus-visible)) [data-community-description=organizations],
+.network:has([data-community-node=events]:is(:hover,:focus-visible)) [data-community-description=events],
+.network:has([data-community-node=businesses]:is(:hover,:focus-visible)) [data-community-description=businesses] { display:block; }
+.network:has([data-community-node=people]:is(:hover,:focus-visible)) [data-hero-layer=network],
+.network:has([data-community-node=opportunities]:is(:hover,:focus-visible)) [data-hero-layer=openings],
+.network:has([data-community-node=events]:is(:hover,:focus-visible)) [data-hero-layer=gathering],
+.network:has([data-community-node=organizations]:is(:hover,:focus-visible),[data-community-node=businesses]:is(:hover,:focus-visible)) [data-hero-layer=architecture] { filter:drop-shadow(0 0 3px #62429135); }
+@media(max-width:550px) {
+ .network { padding-top:76px; }
+ .nodes { inset:0; display:flex; align-content:flex-start; justify-content:center; flex-wrap:wrap; gap:6px; pointer-events:none; }
+ .node { position:relative; inset:auto !important; min-height:44px; padding:8px; font-size:.6875rem; pointer-events:auto; }
+ .caption { margin-top:0; }
+}
+@media(prefers-reduced-motion:reduce) { .node,.preview { transition:none; } }

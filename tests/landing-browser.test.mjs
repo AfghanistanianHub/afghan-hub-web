@@ -261,6 +261,19 @@ test("geometric landing responsive layout, discovery links and accessibility in 
       const layout = await page.evaluate(layoutExpression);
       assert.ok(layout.scrollWidth <= width + 1, `Horizontal overflow at ${width}: ${JSON.stringify(layout)}`);
       assert.equal(layout.targets.length, 4);
+      const networkTargets = await page.evaluate(`(() => [...document.querySelectorAll('[data-community-node]')].map(a => {
+        a.scrollIntoView({block:'center'}); const r=a.getBoundingClientRect();
+        const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
+        a.focus({preventScroll:true});
+        const description=document.getElementById(a.getAttribute('aria-describedby'));
+        return {key:a.dataset.communityNode, href:a.getAttribute('href'), width:r.width, height:r.height,
+          clickable:!!hit&&(hit===a||a.contains(hit)), outline:getComputedStyle(a).outlineStyle,
+          reasonVisible:getComputedStyle(description).display!=='none'};
+      }))()`);
+      assert.equal(networkTargets.length, 5);
+      assert.ok(networkTargets.every(a=>a.clickable&&a.width>=44&&a.height>=44&&a.outline!=='none'&&a.reasonVisible), `Network pointer/focus targets at ${width}: ${JSON.stringify(networkTargets)}`);
+      assert.deepEqual(networkTargets.map(a=>a.href), ['/network','/explore?type=opportunities','/explore?type=organizations','/explore?type=events','/explore?type=businesses']);
+      await page.evaluate("document.activeElement.blur()");
       assert.ok(layout.targets.every(target => target.clickable && target.height >= 44 && target.width >= 44), `Blocked/small discovery targets at ${width}`);
       assert.equal(layout.people, 9, "People illustration must retain all nine connected person glyphs");
       assert.ok(layout.covers >= 16, "Four discovery panels and twelve populated listing covers must render");

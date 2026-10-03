@@ -50,3 +50,9 @@
 @keyframes title-entrance { from { color:var(--muted-foreground); } to { color:var(--foreground); } }
 @media(max-width:550px) { .signatureBridge { flex-direction:column; align-items:flex-start; gap:4px; margin-bottom:20px; } .signatureBridge svg { width:148px; height:35px; } }
 @media(prefers-reduced-motion:reduce) { .heroCopy > :is(.eyebrow,h1,.intro,.actions) { animation:none !important; } .actions svg,.pathway,.pathwaySignature { transition:none; } .actions a:is(:hover,:focus-visible,:active) svg { transform:none; } }
+
+.audience { max-width:1280px; margin:auto; padding:20px 32px 64px; display:grid; grid-template-columns:1fr 1fr; column-gap:64px; row-gap:16px; }
+.audience .eyebrow { grid-column:1 / -1; }
+.audience h2 { margin:0; font-size:clamp(1.5rem,2vw,2rem); line-height:1.4; letter-spacing:-.025em; font-weight:500; }
+.audience > p:last-child { margin:0; font-size:.9375rem; line-height:1.8; color:var(--muted-foreground); }
+@media(max-width:700px) { .audience { grid-template-columns:1fr; padding:12px 24px 48px; gap:16px; } }
