@@ -23,3 +23,14 @@ test("assistant intent layer only maps to read-only discovery entity types", () 
 
   assert.doesNotMatch(source, /send_message|connection_request|rsvp|save_opportunity/);
 });
+
+
+test("assistant mentorship routing stays read-only and signal-based", () => {
+  assert.match(source, /AssistantMemberSignal/);
+  assert.match(source, /"open_to_mentoring"/);
+  assert.match(source, /"looking_for_mentor"/);
+  assert.match(source, /intent: "find_people"/);
+  assert.match(source, /entityType: "profile"/);
+  assert.match(source, /mentorPatterns/);
+  assert.match(source, /menteePatterns/);
+});
