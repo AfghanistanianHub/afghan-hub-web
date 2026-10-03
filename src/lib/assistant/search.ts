@@ -54,6 +54,26 @@ function safeTitle(row: SearchRpcRow) {
   return row.title || "Afghan Hub result";
 }
 
+function memberTitle(profile: {
+  display_name: string | null;
+  first_name: string | null;
+  last_name: string | null;
+}) {
+  return (
+    profile.display_name?.trim() ||
+    [profile.first_name, profile.last_name].filter(Boolean).join(" ") ||
+    "Afghan Hub member"
+  );
+}
+
+function isGenericMentorshipQuery(query: string) {
+  const normalized = query.toLocaleLowerCase();
+  return /\bmentors?\b/u.test(normalized) ||
+    /(?<![\p{L}\p{N}_])(?:منتور|منتورها|مربی|مربیان|لارښود|لارښودان)(?![\p{L}\p{N}_])/u.test(
+      normalized,
+    );
+}
+
 function isAssistantEntityType(value: string): value is AssistantEntityType {
   return (
     value === "profile" ||
@@ -83,6 +103,40 @@ export async function searchAssistantCatalog(
     Math.max(options.limit ?? ASSISTANT_RESULT_LIMIT, 1),
     ASSISTANT_RESULT_LIMIT,
   );
+
+  if (options.memberSignal && isGenericMentorshipQuery(normalizedQuery)) {
+    let profileQuery = supabase
+      .from("profiles")
+      .select(
+        "id,display_name,first_name,last_name,headline,profession,city,country",
+      )
+      .eq("is_public", true)
+      .eq("onboarding_completed", true);
+
+    profileQuery =
+      options.memberSignal === "open_to_mentoring"
+        ? profileQuery.eq("open_to_mentoring", true)
+        : profileQuery.eq("looking_for_mentor", true);
+
+    const { data: profiles, error: profileError } = await profileQuery
+      .order("display_name")
+      .limit(limit);
+
+    if (profileError) {
+      throw profileError;
+    }
+
+    return (profiles ?? []).map((profile) => ({
+      entityType: "profile" as const,
+      entityId: profile.id,
+      title: memberTitle(profile),
+      subtitle: profile.headline ?? profile.profession,
+      city: profile.city,
+      country: profile.country,
+      href: `/members/${profile.id}`,
+      rank: 0,
+    }));
+  }
 
   const { data, error } = await supabase.rpc("search_afghan_hub", {
     search_query: normalizedQuery,
