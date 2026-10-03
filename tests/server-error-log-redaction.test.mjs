@@ -15,8 +15,8 @@ test("production server logs keep route context without raw provider payloads", 
   assert.match(attendees, /provider details withheld/);
   assert.match(member, /provider details withheld/);
 
-  assert.doesNotMatch(attendees, /console\.error\([^\n]*eventError/);
-  assert.doesNotMatch(attendees, /console\.error\([^\n]*registrationError/);
-  assert.doesNotMatch(attendees, /console\.error\([^\n]*profileError/);
-  assert.doesNotMatch(member, /console\.error\([^\n]*,\s*error\)/);
+  assert.doesNotMatch(attendees, /console\.error\([\s\S]*?eventError[\s\S]*?\)/);
+  assert.doesNotMatch(attendees, /console\.error\([\s\S]*?registrationError[\s\S]*?\)/);
+  assert.doesNotMatch(attendees, /console\.error\([\s\S]*?profileError[\s\S]*?\)/);
+  assert.doesNotMatch(member, /console\.error\([\s\S]*?,\s*error[\s\S]*?\)/);
 });
