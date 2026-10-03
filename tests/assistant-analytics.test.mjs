@@ -11,16 +11,17 @@ const client = fs.readFileSync(
   "utf8",
 );
 
-test("assistant analytics never transmits raw query text or identity fields", () => {
+test("assistant analytics never transmits raw query text or identity/session fields", () => {
   for (const source of [route, client]) {
     assert.doesNotMatch(
       source,
-      /queryText\s*:|rawQuery\s*:|email\s*:|display_name\s*:|first_name\s*:|last_name\s*:/,
+      /queryText\s*:|rawQuery\s*:|email\s*:|display_name\s*:|first_name\s*:|last_name\s*:|sessionId\s*:/,
     );
   }
 
+  assert.doesNotMatch(client, /sessionStorage|randomUUID|afghan-hub-assistant-session/);
   assert.match(route, /no raw query text/);
-  assert.match(route, /no user ID/);
+  assert.match(route, /no user ID or per-session identifier/);
 });
 
 test("assistant analytics is authenticated and schema bounded", () => {
