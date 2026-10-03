@@ -136,3 +136,11 @@ test("name initials outrank incidental non-name tokens and skill wording disambi
   assert.deepEqual((await searchAssistantCatalog(client([...fillers,profile("target",{display_name:"John Smith"})]),"mentor J",options)).map(r=>r.entityId),["target"]);
   assert.deepEqual((await searchAssistantCatalog(client([profile("1",{display_name:"Robert"}),profile("2",{skills:["R"]})]),"mentor skilled in R",options)).map(r=>r.entityId),["2"]);
 });
+
+test("mixed name and skill qualifiers retain their field scopes", async () => {
+ const fillers=Array.from({length:12},(_,i)=>profile(`f${i}`,{display_name:`Aaron ${i}`,skills:["C"]}));
+ const target=profile("target",{display_name:"John",skills:["C"]});
+ assert.equal((await searchAssistantCatalog(client([...fillers,target]),"mentor J skilled in C",options))[0].entityId,"target");
+ assert.equal((await searchAssistantCatalog(client([profile("r",{skills:["R/Python"]})]),"mentor skilled in R",options))[0].entityId,"r");
+ for(const query of ["منتور را جستجو کن","مربی را جست‌وجو کن"]){assert.equal((await searchAssistantCatalog(client([profile("1")]),query,options)).length,1,query);}
+});
