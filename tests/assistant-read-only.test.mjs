@@ -35,3 +35,13 @@ test("assistant search has bounded query and result limits", () => {
   assert.match(route, /max\(12\)/);
   assert.match(search, /ASSISTANT_RESULT_LIMIT = 12/);
 });
+
+
+test("mentor discovery uses explicit public profile opt-ins", () => {
+  assert.match(search, /memberSignal\?: AssistantMemberSignal/);
+  assert.match(search, /\.eq\("is_public", true\)/);
+  assert.match(search, /\.eq\("onboarding_completed", true\)/);
+  assert.match(search, /\.eq\("open_to_mentoring", true\)/);
+  assert.match(search, /\.eq\("looking_for_mentor", true\)/);
+  assert.match(search, /isGenericMentorshipQuery/);
+});
