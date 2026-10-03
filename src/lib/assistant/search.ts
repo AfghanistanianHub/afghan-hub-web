@@ -213,7 +213,7 @@ export async function searchAssistantCatalog(
     throw error;
   }
 
-  let rows = (data ?? [])
+  const rows = (data ?? [])
     .filter((row) => isAssistantEntityType(row.entity_type))
     .filter((row) => !options.entityType || row.entity_type === options.entityType);
 
