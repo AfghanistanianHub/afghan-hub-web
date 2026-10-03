@@ -31,10 +31,10 @@ export function Sidebar({
     : dashboardNavigation;
 
   return (
-    <aside className="relative hidden min-h-screen w-64 shrink-0 overflow-hidden border-r border-sidebar-border/80 bg-sidebar lg:flex lg:flex-col">
-      <div className="relative flex h-20 items-center border-b border-sidebar-border/80 px-5">
-        <Link href="/dashboard" className="group inline-flex items-center gap-3 rounded-xl px-1 py-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
-          <span className="flex size-9 items-center justify-center rounded-2xl border border-primary-foreground/10 bg-primary text-sm font-medium text-primary-foreground transition-colors group-hover:bg-primary/90">
+    <aside className="sticky top-0 hidden h-dvh min-h-0 w-64 shrink-0 overflow-hidden border-r border-border bg-background lg:flex lg:flex-col">
+      <div className="relative flex h-20 shrink-0 items-center border-b border-border px-5">
+        <Link href="/dashboard" className="group inline-flex items-center gap-3 rounded-[var(--radius)] px-1 py-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+          <span className="flex size-9 items-center justify-center rounded-[var(--radius)] border border-primary-foreground/10 bg-primary text-sm font-medium text-primary-foreground transition-colors motion-reduce:transition-none group-hover:bg-primary/90">
             AH
           </span>
           <span>
@@ -48,13 +48,13 @@ export function Sidebar({
         </Link>
       </div>
 
-      <div className="relative px-5 pt-5">
+      <div className="relative shrink-0 px-5 pt-5">
         <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           Workspace
         </p>
       </div>
 
-      <nav className="relative flex-1 space-y-1 overflow-y-auto px-3 py-3">
+      <nav aria-label="Main navigation" className="relative min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-3">
         {navigation.map((item) => {
           const Icon = item.icon;
           const active = isActivePath(pathname, item.href);
@@ -64,9 +64,9 @@ export function Sidebar({
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`group relative flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+              className={`group relative flex min-h-11 items-center gap-3 rounded-[var(--radius)] px-3.5 py-3 text-sm font-medium transition-colors motion-reduce:transition-none active:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                 active
-                  ? "bg-primary/[0.09] text-foreground shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--primary)_12%,transparent)]"
+                  ? "bg-secondary text-foreground"
                   : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               }`}
             >
@@ -77,20 +77,20 @@ export function Sidebar({
                 />
               ) : null}
               <span
-                className={`flex size-8 shrink-0 items-center justify-center rounded-xl transition ${
+                className={`flex size-8 shrink-0 items-center justify-center rounded-[var(--radius)] transition-colors motion-reduce:transition-none ${
                   active
-                    ? "bg-primary text-primary-foreground shadow-sm"
+                    ? "bg-primary/10 text-primary"
                     : "bg-transparent text-current group-hover:bg-background/70"
                 }`}
               >
                 <Icon aria-hidden="true" className="size-4.5" />
               </span>
-              <span className="truncate">{item.label}</span>
+              <span className="min-w-0 flex-1 break-words">{item.label}</span>
 
               {item.href === "/messages" && unreadMessageCount > 0 ? (
                 <span
                   aria-label={`${unreadMessageCount} unread messages`}
-                  className="ml-auto flex min-w-6 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-foreground"
+                  className="ml-auto flex min-w-6 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-foreground"
                 >
                   {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
                 </span>
@@ -99,7 +99,7 @@ export function Sidebar({
               {item.href === "/moderation" && pendingModerationCount > 0 ? (
                 <span
                   aria-label={`${pendingModerationCount} submissions pending moderation`}
-                  className="ml-auto flex min-w-6 items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-xs font-bold text-accent-foreground"
+                  className="ml-auto flex min-w-6 shrink-0 items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-xs font-bold text-accent-foreground"
                 >
                   {pendingModerationCount > 99 ? "99+" : pendingModerationCount}
                 </span>
@@ -109,7 +109,7 @@ export function Sidebar({
         })}
       </nav>
 
-      <div className="relative border-t border-sidebar-border/80 p-3">
+      <div className="relative shrink-0 border-t border-border p-3">
         <p className="px-3 pb-2 pt-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           Account
         </p>
@@ -117,9 +117,9 @@ export function Sidebar({
           <Link
             href="/profile"
             aria-current={isActivePath(pathname, "/profile") ? "page" : undefined}
-            className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+            className={`flex min-h-11 items-center gap-3 rounded-[var(--radius)] px-3.5 py-3 text-sm font-medium transition-colors motion-reduce:transition-none active:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
               isActivePath(pathname, "/profile")
-                ? "bg-primary/[0.09] text-foreground"
+                ? "bg-secondary text-foreground"
                 : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             }`}
           >
@@ -130,9 +130,9 @@ export function Sidebar({
           <Link
             href="/settings"
             aria-current={isActivePath(pathname, "/settings") ? "page" : undefined}
-            className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+            className={`flex min-h-11 items-center gap-3 rounded-[var(--radius)] px-3.5 py-3 text-sm font-medium transition-colors motion-reduce:transition-none active:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
               isActivePath(pathname, "/settings")
-                ? "bg-primary/[0.09] text-foreground"
+                ? "bg-secondary text-foreground"
                 : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             }`}
           >
