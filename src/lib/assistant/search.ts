@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { Database } from "@/types/database";
+import type { AssistantMemberSignal } from "@/lib/assistant/intents";
 import { extractAssistantSearchTerms } from "@/lib/assistant/query";
 
 export type AssistantEntityType =
@@ -69,6 +70,7 @@ export async function searchAssistantCatalog(
   options: {
     limit?: number;
     entityType?: AssistantEntityType;
+    memberSignal?: AssistantMemberSignal;
   } = {},
 ): Promise<AssistantSearchResult[]> {
   const normalizedQuery = extractAssistantSearchTerms(query);
@@ -91,9 +93,49 @@ export async function searchAssistantCatalog(
     throw error;
   }
 
-  return (data ?? [])
+  let rows = (data ?? [])
     .filter((row) => isAssistantEntityType(row.entity_type))
-    .filter((row) => !options.entityType || row.entity_type === options.entityType)
+    .filter((row) => !options.entityType || row.entity_type === options.entityType);
+
+  if (options.memberSignal) {
+    const profileIds = rows
+      .filter((row) => row.entity_type === "profile")
+      .map((row) => row.entity_id);
+
+    if (profileIds.length === 0) {
+      return [];
+    }
+
+    let profileQuery = supabase
+      .from("profiles")
+      .select("id")
+      .in("id", profileIds)
+      .eq("is_public", true)
+      .eq("onboarding_completed", true);
+
+    profileQuery =
+      options.memberSignal === "open_to_mentoring"
+        ? profileQuery.eq("open_to_mentoring", true)
+        : profileQuery.eq("looking_for_mentor", true);
+
+    const { data: eligibleProfiles, error: profileError } = await profileQuery;
+
+    if (profileError) {
+      throw profileError;
+    }
+
+    const eligibleProfileIds = new Set(
+      (eligibleProfiles ?? []).map((profile) => profile.id),
+    );
+
+    rows = rows.filter(
+      (row) =>
+        row.entity_type === "profile" &&
+        eligibleProfileIds.has(row.entity_id),
+    );
+  }
+
+  return rows
     .map<AssistantSearchResult | null>((row) => {
       const href = resultHref(row);
 
