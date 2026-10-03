@@ -103,3 +103,25 @@ test("single initials do not score company, location or incidental letters", asy
   const target = profile("target", { display_name: "Zoe C." });
   assert.deepEqual((await searchAssistantCatalog(client([...distractors, target]), "mentor C.", options)).map(r=>r.entityId), ["target"]);
 });
+
+test("Persian object markers in browse commands do not qualify mentors", async () => {
+  assert.equal((await searchAssistantCatalog(client([profile("1")]), "منتور را نشان بده", options)).length, 1);
+});
+test("standalone names that resemble framing and exact single-letter skills survive", async () => {
+  const fillers = Array.from({length:12},(_,i)=>profile(String(i)));
+  for (const name of ["A.", "An", "Me"]) {
+    const result = await searchAssistantCatalog(client([...fillers, profile("target", {display_name:name})]), `mentor ${name}`, options);
+    assert.deepEqual(result.map(r=>r.entityId),["target"], name);
+  }
+  const result = await searchAssistantCatalog(client([profile("1",{skills:["R"]}), profile("2",{skills:["Research"]})]), "mentor skilled in R", options);
+  assert.deepEqual(result.map(r=>r.entityId),["1"]);
+});
+
+test("generic professional framing cannot displace the topic match", async () => {
+  const fillers=Array.from({length:12},(_,i)=>profile(String(i),{headline:"Professional member"}));
+  assert.equal((await searchAssistantCatalog(client([...fillers,profile("target",{skills:["technology"]})]),"Find professional mentors in technology",options))[0].entityId,"target");
+  assert.equal((await searchAssistantCatalog(client([profile("1")]),"Find a professional mentor",options)).length,1);
+});
+test("first initials match names without searching incidental letters", async () => {
+  assert.deepEqual((await searchAssistantCatalog(client([profile("1",{display_name:"John Smith"}),profile("2",{display_name:"Zoe",company:"Junior"})]),"mentor J",options)).map(r=>r.entityId),["1"]);
+});

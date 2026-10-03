@@ -266,12 +266,12 @@ test("geometric landing responsive layout, discovery links and accessibility in 
         const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
         a.focus({preventScroll:true});
         const description=document.getElementById(a.getAttribute('aria-describedby'));
-        return {key:a.dataset.communityNode, href:a.getAttribute('href'), width:r.width, height:r.height,
+        return {key:a.dataset.communityNode, href:a.getAttribute('href'), width:r.width, height:r.height, iconWidth:a.querySelector("svg").getBoundingClientRect().width, iconHeight:a.querySelector("svg").getBoundingClientRect().height,
           clickable:!!hit&&(hit===a||a.contains(hit)), outline:getComputedStyle(a).outlineStyle,
           reasonVisible:getComputedStyle(description).display!=='none'};
       }))()`);
       assert.equal(networkTargets.length, 5);
-      assert.ok(networkTargets.every(a=>a.clickable&&a.width>=44&&a.height>=44&&a.outline!=='none'&&a.reasonVisible), `Network pointer/focus targets at ${width}: ${JSON.stringify(networkTargets)}`);
+      assert.ok(networkTargets.every(a=>a.clickable&&a.width>=44&&a.height>=44&&a.iconWidth<=14&&a.iconHeight<=14&&a.outline!=='none'&&a.reasonVisible), `Network pointer/focus targets at ${width}: ${JSON.stringify(networkTargets)}`);
       assert.deepEqual(networkTargets.map(a=>a.href), ['/network','/explore?type=opportunities','/explore?type=organizations','/explore?type=events','/explore?type=businesses']);
       await page.evaluate("document.activeElement.blur()");
       assert.ok(layout.targets.every(target => target.clickable && target.height >= 44 && target.width >= 44), `Blocked/small discovery targets at ${width}`);

@@ -70,21 +70,24 @@ function memberTitle(profile: {
 }
 
 function mentorshipQualifier(query: string) {
-  return query
+  let qualifier = query
     .replace(/[“”"'«»؟?،,!.:;؛()[\]{}]/g, " ")
     .toLocaleLowerCase()
     .replace(/^\s*(?:please\s+)?(?:find|show(?:\s+me)?|search(?:\s+for)?|look\s+for)(?:\s+|$)/u, " ")
-    .replace(/\b(?:working\s+in|that\s+supports?|similar\s+to|related\s+to|who\s+coaches)\b/gu, " ")
+    .replace(/^\s*(?:a|an|the)\s+(?=(?:(?:professional|professionals|people|members?)\s+)?mentors?\b)/u, " ")
+    .replace(/\b(?:working\s+in|skilled\s+in|that\s+supports?|similar\s+to|related\s+to|who\s+coaches)\b/gu, " ")
+    .replace(/\b(?:professional|professionals|people|members?)\s+(?=mentors?\b)/gu, " ")
+    .replace(/\bi\s+(?:met|know)\b/gu, " ")
     .replace(/\b(?:mentor|mentors|mentee|mentees)\b/gu, " ")
-    .replace(
-      /(?<![\p{L}\p{N}_])(?:منتور|منتورها|مربی|مربیان|لارښود|لارښودان)(?![\p{L}\p{N}_])/gu,
-      " ",
-    )
-    .replace(/\s+/g, " ")
-    .replace(/(?<![\p{L}\p{N}_])(?:in|at|for|to|of|the|a|an|me|who|coaches|در|به|از|برای|د|په|کې|لپاره)(?![\p{L}\p{N}_])/gu, " ")
-    .replace(/(?:پیدا\s+کن|نشان\s+بده|پیدا\s+کړه|را\s+وښیه|وښیه)/gu, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+    .replace(/(?<![\p{L}\p{N}_])(?:منتور|منتورها|مربی|مربیان|لارښود|لارښودان)(?![\p{L}\p{N}_])/gu, " ")
+    .replace(/(?:را\s+)?(?:پیدا\s+کن|نشان\s+بده|پیدا\s+کړه|را\s+وښیه|وښیه)/gu, " ")
+    .replace(/\s+/g, " ").trim();
+  if (/^for me$/u.test(qualifier)) return "";
+  // Preserve a standalone name/initial, even when it resembles an article.
+  if (qualifier.split(/\s+/u).length > 1) {
+    qualifier = qualifier.replace(/(?<![\p{L}\p{N}_])(?:in|at|for|to|of|the|a|an|me|در|به|از|برای|د|په|کې|لپاره)(?![\p{L}\p{N}_])/gu, " ");
+  }
+  return qualifier.replace(/\s+/g, " ").trim();
 }
 
 function mentorshipRelevance(
@@ -123,10 +126,12 @@ function mentorshipRelevance(
   if (terms.length === 0) return 1;
 
   const nameTokens = [profile.display_name, profile.first_name, profile.last_name]
-    .filter(Boolean)
-    .flatMap(value => String(value).toLocaleLowerCase().split(/[^\p{L}\p{N}]+/u));
+    .filter(Boolean).flatMap(value => String(value).toLocaleLowerCase().split(/[^\p{L}\p{N}]+/u));
+  const exactTokens = fields.flatMap(value => value.split(/[^\p{L}\p{N}]+/u));
   return terms.reduce((score, term) => {
-    if (term.length === 1) return score + (nameTokens.includes(term) ? 1 : 0);
+    if (term.length === 1) {
+      return score + (exactTokens.includes(term) ? 2 : nameTokens.some(token => token.startsWith(term)) ? 1 : 0);
+    }
     return score + fields.reduce(
       (fieldScore, field) => fieldScore + (field.includes(term) ? 1 : 0), 0,
     );

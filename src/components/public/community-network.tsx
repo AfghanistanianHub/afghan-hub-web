@@ -19,7 +19,7 @@ export function CommunityNetwork() {
         {nodes.map(node => (
           <Link key={node.key} href={node.href} prefetch={false} className={styles.node}
             data-community-node={node.key} aria-describedby={`network-${node.key}`}>
-            <span aria-hidden="true" className={styles.dot} /><span className={styles.nodeText}>{node.title}<span className={styles.mobileDetail}>{node.detail}</span></span>
+            <span aria-hidden="true" className={styles.dot} /><span className={styles.nodeText}>{node.title}<span aria-hidden="true" className={styles.mobileDetail}>{node.detail}</span></span>
             <ArrowUpRight size={13} aria-hidden="true" />
           </Link>
         ))}

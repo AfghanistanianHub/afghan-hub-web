@@ -4,7 +4,8 @@
 .node:is(:hover,:focus-visible) { border-color:var(--primary); background:var(--secondary); color:var(--primary); z-index:2; }
 .node:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
 .mobileDetail { display:none; }
-.dot { width:6px; height:6px; border-radius:50%; background:var(--primary); }
+.network .node svg { width:13px; height:13px; flex-shrink:0; }
+.dot { flex-shrink:0; width:6px; height:6px; border-radius:50%; background:var(--primary); }
 .node[data-community-node=people] { left:5%; top:76%; }
 .node[data-community-node=opportunities] { right:2%; top:2%; }
 .node[data-community-node=organizations] { left:6%; top:21%; }
