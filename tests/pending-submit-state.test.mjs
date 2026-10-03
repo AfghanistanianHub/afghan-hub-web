@@ -20,6 +20,7 @@ test('pending button preserves unavailable and toggle states before, during and 
   assert.equal(waiting.props.children.props.children, 'Removing…');
   pending = false;
   assert.equal(button(props).props.children.props.children, 'Saved');
+  assert.equal(button({ ...props, formNoValidate: true }).props.formNoValidate, true);
   const full = button({ disabled: true, children: 'Event full', pendingLabel: 'Registering…' });
   assert.equal(full.props.disabled, true);
   assert.equal(full.props['aria-disabled'], true);

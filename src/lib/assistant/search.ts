@@ -77,6 +77,7 @@ function mentorshipQualifier(query: string) {
     .replace(/^\s*(?:a|an|the)\s+(?=(?:(?:professional|professionals|people|members?)\s+)?mentors?\b)/u, " ")
     .replace(/\b(?:working\s+in|skilled\s+in|that\s+supports?|similar\s+to|related\s+to|who\s+coaches)\b/gu, " ")
     .replace(/\b(?:professional|professionals|people|members?)\s+(?=mentors?\b)/gu, " ")
+    .replace(/(?<![\p{L}\p{N}_])(?:مرتبط\s+با|مشابه\s+با|در\s+زمینه|حوزه|اړوند|ورته)(?![\p{L}\p{N}_])/gu, " ")
     .replace(/\bi\s+(?:met|know)\b/gu, " ")
     .replace(/\b(?:mentor|mentors|mentee|mentees)\b/gu, " ")
     .replace(/(?<![\p{L}\p{N}_])(?:منتور|منتورها|مربی|مربیان|لارښود|لارښودان)(?![\p{L}\p{N}_])/gu, " ")
@@ -129,7 +130,7 @@ function mentorshipRelevance(
   const nameTokens = [profile.display_name, profile.first_name, profile.last_name]
     .filter(Boolean).flatMap(value => String(value).toLocaleLowerCase().split(/[^\p{L}\p{N}]+/u));
   const skillTokens = [...(profile.skills ?? []), ...(profile.mentorship_topics ?? [])]
-    .flatMap(value => value.toLocaleLowerCase().split(/[^\p{L}\p{N}+#]+/u));
+    .flatMap(value => value.toLocaleLowerCase().split(/[\s/,;؛،]+/u).map(token => token.replace(/[.!?]+$/u, "")));
   return terms.reduce((score, term) => {
     if (term.length === 1) {
       const nameScore = nameTokens.includes(term) ? 4 : nameTokens.some(token => token.startsWith(term)) ? 3 : 0;
@@ -201,7 +202,7 @@ export async function searchAssistantCatalog(
       if (profileError) throw profileError;
       best = best.concat((page ?? []).map((profile, index) => ({
         profile, index: offset + index,
-        relevance: mentorshipRelevance(profile, qualifier, new Set(mentorshipQualifier(query.match(/\b(?:skilled\s+in|skills?(?:\s+in)?|topics?(?:\s+in)?)\s+(.+)$/iu)?.[1] ?? "").split(/\s+/u))),
+        relevance: mentorshipRelevance(profile, qualifier, new Set(mentorshipQualifier(query.match(/\b(?:skilled\s+in|skills?(?:\s+in)?|topics?(?:\s+in)?)\s+(.+?)(?=\s+(?:for|with|named|called)\s+|$)/iu)?.[1] ?? "").split(/\s+/u))),
       })))
         .filter(item => !qualifier || item.relevance > 0)
         .sort((a, b) => b.relevance - a.relevance || a.index - b.index)

@@ -19,3 +19,9 @@ test("role updates prevent repeat submission while pending", () => {
   assert.match(source, /pendingLabel="Saving role…"/);
   assert.doesNotMatch(source, />\s*Save role\s*<\/button>/);
 });
+
+
+test("moderation team renders a clear empty state when no accounts are available", () => {
+  assert.match(source, /No member accounts to manage/);
+  assert.match(source, /Member accounts will appear here once they are available to the admin directory/);
+});
