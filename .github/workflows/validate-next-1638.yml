@@ -1,0 +1,31 @@
+name: Validate Next 16.3.8 security patch
+
+on:
+  push:
+    branches:
+      - security/next-16-3-8
+    paths:
+      - ".github/workflows/validate-next-1638.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        node-version: [22.x, 24.x]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: node --test tests/*.test.mjs
+      - run: npm run security:migration-grants
+      - run: node --check agents/orchestrator.mjs
+      - run: npm run build
