@@ -36,31 +36,11 @@ export type AssistantAnalyticsEvent =
       destination: "network" | "organizations" | "opportunities" | "events";
     };
 
-const SESSION_KEY = "afghan-hub-assistant-session";
-
-function getSessionId() {
-  try {
-    const current = window.sessionStorage.getItem(SESSION_KEY);
-    if (current) return current;
-
-    const created = crypto.randomUUID();
-    window.sessionStorage.setItem(SESSION_KEY, created);
-    return created;
-  } catch {
-    return null;
-  }
-}
-
 export function trackAssistantEvent(event: AssistantAnalyticsEvent) {
-  const payload = {
-    ...event,
-    sessionId: getSessionId(),
-  };
-
   void fetch("/api/assistant/analytics", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(event),
     keepalive: true,
   }).catch(() => {
     // Analytics must never block or break the product experience.
