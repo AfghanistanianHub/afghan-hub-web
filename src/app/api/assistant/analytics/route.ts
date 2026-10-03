@@ -13,32 +13,42 @@ const entityTypeSchema = z.enum([
 ]);
 
 const eventSchema = z.discriminatedUnion("event", [
-  z.object({
-    event: z.literal("assistant_open"),
-    language: languageSchema,
-  }),
-  z.object({
-    event: z.literal("assistant_language_change"),
-    language: languageSchema,
-  }),
-  z.object({
-    event: z.literal("assistant_search"),
-    language: languageSchema,
-    intent: z.string().trim().min(1).max(40),
-    entityType: entityTypeSchema.nullable(),
-    resultCount: z.number().int().min(0).max(12),
-    hadResults: z.boolean(),
-  }),
-  z.object({
-    event: z.literal("assistant_result_click"),
-    language: languageSchema,
-    entityType: entityTypeSchema,
-  }),
-  z.object({
-    event: z.literal("assistant_recovery_click"),
-    language: languageSchema,
-    destination: z.enum(["network", "organizations", "opportunities", "events"]),
-  }),
+  z
+    .object({
+      event: z.literal("assistant_open"),
+      language: languageSchema,
+    })
+    .strict(),
+  z
+    .object({
+      event: z.literal("assistant_language_change"),
+      language: languageSchema,
+    })
+    .strict(),
+  z
+    .object({
+      event: z.literal("assistant_search"),
+      language: languageSchema,
+      intent: z.string().trim().min(1).max(40),
+      entityType: entityTypeSchema.nullable(),
+      resultCount: z.number().int().min(0).max(12),
+      hadResults: z.boolean(),
+    })
+    .strict(),
+  z
+    .object({
+      event: z.literal("assistant_result_click"),
+      language: languageSchema,
+      entityType: entityTypeSchema,
+    })
+    .strict(),
+  z
+    .object({
+      event: z.literal("assistant_recovery_click"),
+      language: languageSchema,
+      destination: z.enum(["network", "organizations", "opportunities", "events"]),
+    })
+    .strict(),
 ]);
 
 export async function POST(request: Request) {
