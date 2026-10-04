@@ -1,3 +1,4 @@
+import { CommunityNavigator } from "@/components/assistant/community-navigator";
 import { SignOutSubmit } from "@/components/dashboard/action-submit";
 import styles from "@/components/network/network-surfaces.module.css";
 import Link from "next/link";
@@ -33,8 +34,8 @@ export function Header({
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
-    <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-border/70 bg-background px-4 md:px-8">
-      <div className="flex items-center gap-2 sm:gap-3">
+    <header className="sticky top-0 z-20 flex h-20 items-center justify-between gap-2 border-b border-border/70 bg-background px-4 md:px-8">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3 md:flex-1">
         <MobileNavigation
           canModerate={canModerate}
           pendingModerationCount={pendingModerationCount}
@@ -52,7 +53,7 @@ export function Header({
         <form
           action="/search"
           role="search"
-          className="relative hidden md:block md:w-48 lg:w-[22rem]"
+          className="relative hidden min-w-0 max-w-[22rem] flex-1 md:block"
         >
           <Search aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
 
@@ -66,14 +67,15 @@ export function Header({
         </form>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <CommunityNavigator />
         <NotificationBell
           currentUserId={currentUserId}
           notifications={notifications}
           unreadCount={unreadNotificationCount}
         />
 
-        <div className="hidden text-right sm:block">
+        <div className="hidden text-right xl:block">
           <p className="max-w-28 truncate text-sm font-semibold text-foreground lg:max-w-48">{displayName}</p>
           <p className="max-w-28 truncate text-xs text-muted-foreground">{email}</p>
         </div>
