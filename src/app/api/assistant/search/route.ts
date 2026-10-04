@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { inferAssistantIntent } from "@/lib/assistant/intents";
 import { MentorshipSearchScopeError, searchAssistantCatalog } from "@/lib/assistant/search";
+import { isSameOriginRequest } from "@/lib/http/request-origin";
 import { createClient } from "@/lib/supabase/server";
 
 const requestSchema = z.object({
@@ -14,6 +15,10 @@ const requestSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  if (!isSameOriginRequest(request)) {
+    return NextResponse.json({ error: "Request origin is not allowed." }, { status: 403 });
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
