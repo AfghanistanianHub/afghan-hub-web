@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { type FormEvent, useEffect, useRef, useState } from "react";
+import { type FormEvent, type KeyboardEvent as ReactKeyboardEvent, useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Compass, X } from "lucide-react";
 import { trackAssistantEvent } from "@/lib/assistant/analytics";
 import { ASSISTANT_OPEN_EVENT } from "@/components/assistant/contextual-assistant-prompt";
@@ -203,11 +204,37 @@ export function CommunityNavigator() {
 
   function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); void runSearch(query); }
 
+  function containDialogFocus(event: ReactKeyboardEvent<HTMLDialogElement>) {
+    if (event.key !== "Tab") return;
+    const dialog = event.currentTarget;
+    const focusable = [...dialog.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), a[href], input:not([disabled]), summary, [tabindex]:not([tabindex="-1"])',
+    )].filter(element => element.getClientRects().length > 0 && element.getAttribute("aria-hidden") !== "true");
+
+    if (!focusable.length) {
+      event.preventDefault();
+      dialog.focus();
+      return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+    if (event.shiftKey && (active === first || !dialog.contains(active))) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && (active === last || !dialog.contains(active))) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
   return <>
     <button type="button" className={styles.launcher} aria-label={strings.ask} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(true)}>
       <Compass size={17} aria-hidden="true" /><span className={styles.launcherLabel}>{strings.ask}</span><kbd className="hidden text-[10px] text-muted-foreground lg:inline">⌘K</kbd>
     </button>
     {open ? <dialog ref={panelRef} aria-modal="true" aria-labelledby="community-navigator-title" className={styles.drawer} dir={language === "en" ? "ltr" : "rtl"} lang={language === "fa" ? "fa" : language} onCancel={() => setOpen(false)}
+    {open ? <dialog ref={panelRef} aria-modal="true" aria-labelledby="community-navigator-title" className={styles.drawer} dir={language === "en" ? "ltr" : "rtl"} lang={language === "fa" ? "fa" : language} onCancel={() => setOpen(false)} onKeyDown={containDialogFocus}
       onMouseDown={event => { if (event.target === event.currentTarget) {const r=event.currentTarget.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)setOpen(false);} }}>
       <header className={styles.header}>
         <div className={styles.brand}><span className={styles.identity}><Compass size={18} aria-hidden="true" />Afghan Hub</span><button type="button" className={styles.close} aria-label={language === "en" ? "Close Community Navigator" : language === "fa" ? "بستن راهنما" : "لارښود بند کړئ"} onClick={() => setOpen(false)}><X size={19} aria-hidden="true" /></button></div>

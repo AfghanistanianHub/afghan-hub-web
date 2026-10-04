@@ -30,6 +30,14 @@ test("assistant supports keyboard open and escape close", () => {
   assert.match(component, /event\.key === "Escape"/);
 });
 
+test("assistant explicitly contains Tab focus inside the modal drawer", () => {
+  assert.match(component, /containDialogFocus/);
+  assert.match(component, /event\.key !== "Tab"/);
+  assert.match(component, /onKeyDown=\{containDialogFocus\}/);
+  assert.match(component, /last\.focus\(\)/);
+  assert.match(component, /first\.focus\(\)/);
+});
+
 test("assistant interface exposes English, Dari and Pashto", () => {
   assert.match(component, /English/);
   assert.match(component, /دری/);
