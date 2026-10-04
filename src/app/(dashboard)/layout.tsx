@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { CommunityNavigator } from "@/components/assistant/community-navigator";
 import { Header } from "@/components/dashboard/header";
 import type { NotificationSummary } from "@/components/dashboard/notification-bell";
 import { Sidebar } from "@/components/dashboard/sidebar";
@@ -145,7 +144,6 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
         className="pointer-events-none fixed inset-0 -z-10 opacity-[0.018] [background-image:linear-gradient(to_right,var(--foreground)_1px,transparent_1px),linear-gradient(to_bottom,var(--foreground)_1px,transparent_1px)] [background-size:48px_48px]"
       />
       <RealtimeMessageRefresh currentUserId={user.id} />
-      <CommunityNavigator />
       <div className="flex min-h-screen">
         <Sidebar
           canModerate={canModerate}
