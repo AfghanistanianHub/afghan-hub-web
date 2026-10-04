@@ -2,32 +2,30 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
-  ArrowUpRight,
   BriefcaseBusiness,
   Building2,
   CalendarDays,
-  MapPin,
   UsersRound,
 } from "lucide-react";
 import { CommunitySignature } from "@/components/public/community-signature";
 import { CommunityStoryMotion } from "@/components/public/community-story-motion";
 import { CommunityHeroMotion } from "@/components/public/community-hero-motion";
-import { CommunityIllustration } from "@/components/public/community-illustrations";
+import { CommunityNetwork } from "@/components/public/community-network";
 import { DiscoveryPanels } from "@/components/public/discovery-panels";
 import styles from "./landing.module.css";
 import { ListingCard } from "@/components/public/listing-card";
-import { publicCategories, publicKinds, publicHref, type PublicKind } from "@/lib/public-catalog";
+import { publicCategories, publicKinds, type PublicKind } from "@/lib/public-catalog";
 import { getPublicListings } from "@/lib/public-content";
 
 const description =
-  "Find opportunities, events, Afghan businesses, and community organizations. Explore Afghan Hub and connect with your community.";
+  "A global community for Afghans to find people, opportunities, organizations, businesses and events — and build meaningful connections.";
 
 export const metadata: Metadata = {
-  title: "A community to belong to. A place to grow.",
+  title: "Your Afghan community, connected.",
   description,
   alternates: { canonical: "https://app.apnbc.ca/" },
   openGraph: {
-    title: "Afghan Hub — People, possibilities, belonging",
+    title: "Afghan Hub — Your Afghan community, connected",
     description,
     url: "https://app.apnbc.ca/",
     type: "website",
@@ -42,7 +40,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Afghan Hub — People, possibilities, belonging",
+    title: "Afghan Hub — Your Afghan community, connected",
     description,
     images: ["/opengraph-image"],
   },
@@ -67,164 +65,25 @@ export default async function PublicHome() {
     publicKinds.map(kind => getPublicListings(kind, { limit: 3 })),
   );
 
-  const pulseItems = publicKinds.flatMap((kind, index) =>
-    feeds[index].items.slice(0, 1).map(item => ({ kind, item })),
-  );
-
   return (
     <main id="main-content" data-community-story>
       <CommunityStoryMotion />
       <section className={styles.hero} data-hero-region aria-labelledby="landing-title">
         <div className={styles.heroCopy}>
-          <p className={styles.eyebrow}>Afghan roots. Global connections.</p>
-          <h1 id="landing-title">Rooted in community.<span>Growing together.</span></h1>
-          <p className={styles.intro}>Connect with people, Afghan-led organizations, events, and opportunities. Bring your roots. Find your next possibility.</p>
+          <p className={styles.eyebrow}>For Afghans, wherever life takes you.</p>
+          <h1 id="landing-title">Your Afghan community,<span>connected.</span></h1>
+          <p className={styles.intro}>Find people, opportunities, organizations, businesses and events. Build connections that move you forward.</p>
           <div className={styles.actions}>
             <Link href="/explore" data-landing-cta="explore" className={styles.primary}>Explore the community<ArrowRight size={17} aria-hidden="true" /></Link>
             <Link href="/login?mode=join" data-landing-cta="join" className={styles.join}>Join Afghan Hub<ArrowRight size={17} aria-hidden="true" /></Link>
           </div>
-          <p className={styles.note}>No account needed to explore.</p>
+          <p className={styles.note}>Explore listings without an account. Sign in to discover members.</p>
         </div>
-        <CommunityHeroMotion className={styles.heroArt} depth={8} scrollDepth><CommunityIllustration /></CommunityHeroMotion>
+        <CommunityHeroMotion className={styles.heroArt} depth={8} scrollDepth><CommunityNetwork /></CommunityHeroMotion>
       </section>
 
       <div className={styles.signatureBridge}><CommunitySignature /><span>Rooted in British Columbia. Open to the world.</span></div>
       <DiscoveryPanels />
-
-      <section className="border-b border-border/70 bg-background" aria-labelledby="community-pathways-heading">
-        <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-16">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">One hub, many paths</p>
-              <h2 id="community-pathways-heading" className="mt-2 max-w-2xl text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">
-                Built for every part of the community.
-              </h2>
-            </div>
-            <p className="max-w-xl text-sm leading-6 text-muted-foreground sm:text-right">
-              Find your next opportunity, grow a business, represent an organization, or simply stay connected to what is happening around you.
-            </p>
-          </div>
-
-          <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              {
-                kicker: "People",
-                title: "Professionals & members",
-                copy: "Discover opportunities, people, and ways to grow your network.",
-                href: "/explore?type=opportunities",
-                icon: BriefcaseBusiness,
-              },
-              {
-                kicker: "Business",
-                title: "Entrepreneurs & businesses",
-                copy: "Be discovered, find local businesses, and take part in the wider ecosystem.",
-                href: "/explore?type=businesses",
-                icon: Building2,
-              },
-              {
-                kicker: "Organizations",
-                title: "Groups & community leaders",
-                copy: "Showcase your work, programs, events, and ways people can participate.",
-                href: "/explore?type=organizations",
-                icon: UsersRound,
-              },
-              {
-                kicker: "Community",
-                title: "Everyone who wants to connect",
-                copy: "See gatherings, community activity, and what is happening around you.",
-                href: "/explore?type=events",
-                icon: CalendarDays,
-              },
-            ].map((pathway, index) => {
-              const Icon = pathway.icon;
-              return (
-                <Link
-                  key={pathway.title}
-                  href={pathway.href}
-                  className={`group relative min-h-56 overflow-hidden border border-border bg-card p-5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${styles.pathway}`}
-                >
-                  <CommunitySignature className={styles.pathwaySignature} />
-                  <div className="relative flex h-full flex-col justify-between gap-8">
-                    <div className="flex items-start justify-between gap-4">
-                      <span className="flex size-11 items-center justify-center rounded-sm bg-secondary text-primary">
-                        <Icon aria-hidden="true" className="size-5" />
-                      </span>
-                      <span aria-hidden="true" className="text-3xl font-black tracking-[-0.06em] text-foreground/[0.07]">
-                        0{index + 1}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-primary">{pathway.kicker}</p>
-                      <div className="mt-1.5 flex items-end justify-between gap-4">
-                        <div>
-                          <h3 className="text-lg font-semibold tracking-tight text-foreground">{pathway.title}</h3>
-                          <p className="mt-2 text-sm leading-6 text-muted-foreground">{pathway.copy}</p>
-                        </div>
-                        <ArrowUpRight aria-hidden="true" className="mb-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {pulseItems.length > 1 ? (
-        <section className="overflow-hidden border-b border-border/70 bg-muted/35">
-          <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-16">
-            <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Community pulse</p>
-                <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">What is moving right now</h2>
-              </div>
-              <Link href="/explore" className="inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
-                See everything <ArrowRight aria-hidden="true" className="size-4" />
-              </Link>
-            </div>
-
-            <div className="grid auto-rows-[150px] gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {pulseItems.map(({ kind, item }, index) => {
-                const Icon = icons[kind];
-                const featured = index === 0;
-                return (
-                  <Link
-                    key={`${kind}-${item.slug}`}
-                    href={publicHref(kind, item.slug)}
-                    className={`group relative overflow-hidden rounded-3xl border border-border/80 p-5 transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${featured ? "bg-primary text-primary-foreground sm:row-span-2 lg:col-span-2" : "bg-card"}`}
-                  >
-                    <div aria-hidden="true" className={`absolute -right-10 -top-10 size-32 rounded-full border ${featured ? "border-primary-foreground/15" : "border-primary/10"}`} />
-                    <div aria-hidden="true" className={`absolute -right-2 top-6 size-16 rounded-full border ${featured ? "border-primary-foreground/10" : "border-primary/8"}`} />
-                    <div className="relative flex h-full flex-col justify-between">
-                      <div className="flex items-start justify-between gap-4">
-                        <span className={`flex size-9 items-center justify-center rounded-xl ${featured ? "bg-primary-foreground/12" : "bg-secondary text-primary"}`}>
-                          <Icon aria-hidden="true" className="size-4.5" />
-                        </span>
-                        <ArrowUpRight aria-hidden="true" className={`size-4 ${featured ? "opacity-70" : "text-muted-foreground group-hover:text-primary"}`} />
-                      </div>
-                      <div>
-                        <p className={`text-[0.64rem] font-semibold uppercase tracking-[0.18em] ${featured ? "opacity-70" : "text-primary"}`}>
-                          {publicCategories[kind].label}
-                        </p>
-                        <h3 className={`${featured ? "mt-2 max-w-md text-2xl sm:text-3xl" : "mt-1 line-clamp-2 text-base"} font-semibold leading-tight tracking-tight`}>
-                          {item.title}
-                        </h3>
-                        {featured ? (
-                          <p className="mt-3 flex items-start gap-1.5 text-xs leading-5 opacity-75">
-                            <MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
-                            <span className="min-w-0 break-words">{item.location}</span>
-                          </p>
-                        ) : null}
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      ) : null}
 
       <div className="mx-auto max-w-7xl space-y-12 px-5 py-16 sm:space-y-14 sm:px-8 sm:py-20">
         {publicKinds.map((kind, index) => (
@@ -302,6 +161,12 @@ export default async function PublicHome() {
           </section>
         ))}
       </div>
+
+      <section className={styles.audience} aria-labelledby="community-audience">
+        <p className={styles.eyebrow}>A place for your next chapter</p>
+        <h2 id="community-audience">New to a city. Building a career. Growing a business. Bringing people together.</h2>
+        <p>Afghan Hub brings professionals, entrepreneurs, organizations and community members into one shared space — rooted in British Columbia and open to Afghans around the world.</p>
+      </section>
 
       <section className="relative overflow-hidden border-t border-primary/10 bg-primary text-primary-foreground">
         <div aria-hidden="true" className="absolute -right-20 -top-32 size-80 rounded-full border border-primary-foreground/10" />

@@ -49,12 +49,12 @@ test("search empty state offers visual goal navigation instead of a dead end", (
 
 
 test("public landing positions Afghan Hub for the whole community", () => {
-  assert.match(publicHome, /Built for every part of the community\./);
+  assert.match(publicHome, /Afghan Hub brings professionals, entrepreneurs, organizations and community members/);
   for (const audience of [
-    "Professionals & members",
-    "Entrepreneurs & businesses",
-    "Groups & community leaders",
-    "Everyone who wants to connect",
+    "professionals",
+    "entrepreneurs",
+    "organizations",
+    "community members",
   ]) {
     assert.ok(publicHome.includes(audience), `Missing audience path: ${audience}`);
   }
