@@ -29,15 +29,17 @@ const deploymentRetryAttempts = Math.min(
 );
 const deploymentRetryDelayMs = 10_000;
 
-async function fetchCheck(path, method) {
-  const options = {
+async function fetchOnce(path, method) {
+  return fetch(new URL(path, base), {
     method,
     headers: method === "POST" ? { Origin: base.origin } : undefined,
     redirect: "manual",
     signal: AbortSignal.timeout(15000),
-  };
+  });
+}
 
-  let response = await fetch(new URL(path, base), options);
+async function fetchCheck(path, method) {
+  let response = await fetchOnce(path, method);
 
   if (path === "/" && expectNoPoweredBy) {
     for (
@@ -47,7 +49,7 @@ async function fetchCheck(path, method) {
       attempt++
     ) {
       await new Promise((resolve) => setTimeout(resolve, deploymentRetryDelayMs));
-      response = await fetch(new URL(path, base), options);
+      response = await fetchOnce(path, method);
     }
   }
 
