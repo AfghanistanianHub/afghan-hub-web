@@ -55,6 +55,7 @@ const copy = {
     browseEvents: "Browse events",
     browseBusinesses: "Browse businesses",
     error: "Search is temporarily unavailable. Please try again.",
+    scopeError: "This mentor catalogue exceeds the search limit. Browse people in Network.",
     readOnly: "Discovery only · no actions will be taken",
   },
   fa: {
@@ -73,6 +74,7 @@ const copy = {
     browseEvents: "مرور رویدادها",
     browseBusinesses: "مرور کسب‌وکارها",
     error: "جست‌وجو فعلاً در دسترس نیست. دوباره تلاش کنید.",
+    scopeError: "تعداد اعضای این جست‌وجو از محدودیت بیشتر است. افراد را در بخش شبکه مرور کنید.",
     readOnly: "فقط برای پیدا کردن اطلاعات · هیچ اقدامی انجام نمی‌شود",
   },
   ps: {
@@ -91,6 +93,7 @@ const copy = {
     browseEvents: "غونډې وګورئ",
     browseBusinesses: "کاروبارونه وګورئ",
     error: "لټون اوس مهال شتون نه لري. بیا هڅه وکړئ.",
+    scopeError: "د دې لټون د غړو شمېر له حد څخه زیات دی. خلک په شبکه کې وګورئ.",
     readOnly: "یوازې موندنه · هېڅ اقدام نه ترسره کېږي",
   },
 } as const;
@@ -154,6 +157,7 @@ export function CommunityNavigator() {
   const [submitted, setSubmitted] = useState(false);
   const [pending, setPending] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [scopeLimited, setScopeLimited] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const languageRef = useRef<Language>("en");
@@ -170,7 +174,7 @@ export function CommunityNavigator() {
         setQuery(nextQuery);
         setSubmitted(false);
         setResults([]);
-        setFailed(false);
+        setFailed(false); setScopeLimited(false);
       }
 
       setOpen(true);
@@ -222,7 +226,7 @@ export function CommunityNavigator() {
     if (normalized.length < 2 || pending) return;
 
     setPending(true);
-    setFailed(false);
+    setFailed(false); setScopeLimited(false);
     setSubmitted(true);
 
     try {
@@ -235,6 +239,7 @@ export function CommunityNavigator() {
       const data = (await response.json()) as AssistantResponse;
 
       if (!response.ok) {
+        setScopeLimited(response.status === 422);
         throw new Error(data.error ?? "Assistant search failed");
       }
 
@@ -372,7 +377,7 @@ export function CommunityNavigator() {
                     </div>
                   ) : failed ? (
                     <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
-                      <p>{strings.error}</p>
+                      <p>{scopeLimited ? strings.scopeError : strings.error}</p>
                       <div className="mt-3 flex flex-wrap gap-3">{[
                         {href:"/network",label:strings.browsePeople},
                         {href:"/organizations",label:strings.browseOrganizations},

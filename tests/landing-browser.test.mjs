@@ -209,6 +209,8 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   const ambientTimes="[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===Infinity).map(a=>a.currentTime)";
   await page.evaluate("scrollTo(0,document.documentElement.scrollHeight)");
   await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='false'"),"offscreen pause");
+  await waitFor(()=>page.evaluate("[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===Infinity).every(a=>a.playState==='paused')"),"offscreen renderer timelines paused");
+  await page.evaluate("new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))");
   const paused=await page.evaluate(ambientTimes);await delay(350);assert.deepEqual(await page.evaluate(ambientTimes),paused,"Offscreen ambient timeline must stop");
   await page.evaluate("scrollTo(0,0)");await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='true'"),"on-screen resume");
   await delay(150);assert.notDeepEqual(await page.evaluate(ambientTimes),paused,"Visible ambient timeline must resume");

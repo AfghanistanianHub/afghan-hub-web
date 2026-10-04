@@ -158,3 +158,96 @@ test("exact names outrank incidental multi-field substrings", async () => {
  const fillers=Array.from({length:12},(_,i)=>profile(`f${i}`,{display_name:`Aaron ${i}`,headline:"annual planning",profession:"annual planner",skills:["annual planning"]}));
  assert.equal((await searchAssistantCatalog(client([...fillers,profile("ann",{display_name:"Ann"})]),"mentor Ann",options))[0].entityId,"ann");
 });
+
+test("explicit multi-letter skill scope excludes unrelated names", async () => {
+ for(const skill of ["Ruby","Python","Java"]){
+  const fillers=Array.from({length:12},(_,i)=>profile(`f${i}`,{display_name:skill}));
+  const target=profile("skill",{display_name:"Zoe",skills:[skill]});
+  assert.deepEqual((await searchAssistantCatalog(client([...fillers,target]),`mentor skilled in ${skill}`,options)).map(r=>r.entityId),["skill"]);
+ }
+});
+
+test("explicit skill scope stops before a location qualifier", async () => {
+ const other=profile("other",{display_name:"Aaron",skills:["Vancouver"]});
+ const target=profile("target",{display_name:"Zoe",skills:["Ruby"],city:"Vancouver"});
+ assert.equal((await searchAssistantCatalog(client([other,target]),"mentor skilled in Ruby in Vancouver",options))[0].entityId,"target");
+});
+
+test("explicit skills cannot be displaced by location or compound-topic names", async () => {
+ const names=Array.from({length:12},(_,i)=>profile(`n${i}`,{display_name:"Vancouver"}));
+ const ruby=profile("ruby",{display_name:"Zoe",skills:["Ruby"],city:"Vancouver"});
+ for(const query of ["mentor skilled in Ruby in Vancouver","mentor skilled in Ruby (in Vancouver)"]){assert.deepEqual((await searchAssistantCatalog(client([...names,ruby]),query,options)).map(r=>r.entityId),["ruby"]);}
+ const other=Array.from({length:12},(_,i)=>profile(`h${i}`,{display_name:"Healthcare"}));
+ assert.deepEqual((await searchAssistantCatalog(client([...other,profile("ai",{skills:["AI in healthcare"]})]),"mentor skilled in AI in healthcare",options)).map(r=>r.entityId),["ai"]);
+});
+
+test("explicit expertise also matches public headline and profession", async () => {
+ const profiles=[profile("headline",{headline:"Ruby developer"}),profile("profession",{profession:"Ruby developer"}),profile("name",{display_name:"Ruby"}),profile("company",{company:"Ruby"})];
+ assert.deepEqual((await searchAssistantCatalog(client(profiles),"mentor skilled in Ruby",options)).map(r=>r.entityId).sort(),["headline","profession"]);
+ assert.deepEqual((await searchAssistantCatalog(client([profile("rd",{profession:"R&D specialist"}),profile("r",{headline:"R developer"})]),"mentor skilled in R",options)).map(r=>r.entityId),["r"]);
+});
+
+
+test("explicit skill alternatives, boundaries and relative clauses stay structured", async () => {
+  const alternatives = [
+    profile("java", { skills: ["Java"] }),
+    profile("python", { skills: ["Python"] }),
+    profile("javascript", { skills: ["JavaScript"] }),
+  ];
+  assert.deepEqual(
+    (await searchAssistantCatalog(client(alternatives), "mentor skilled in Java or Python", options))
+      .map(r => r.entityId)
+      .sort(),
+    ["java", "python"],
+  );
+
+  assert.deepEqual(
+    (await searchAssistantCatalog(
+      client([profile("go", { skills: ["Go"] }), profile("django", { skills: ["Django"] })]),
+      "mentor skilled in Go",
+      options,
+    )).map(r => r.entityId),
+    ["go"],
+  );
+
+  assert.deepEqual(
+    (await searchAssistantCatalog(
+      client([profile("ai", { headline: "AI researcher" }), profile("painting", { skills: ["painting"] })]),
+      "mentor skilled in AI",
+      options,
+    )).map(r => r.entityId),
+    ["ai"],
+  );
+
+  assert.deepEqual(
+    (await searchAssistantCatalog(
+      client([profile("python", { skills: ["Python"], company: "Google" })]),
+      "mentor skilled in Python who works at Google",
+      options,
+    )).map(r => r.entityId),
+    ["python"],
+  );
+});
+
+test("compound expertise survives while explicit location remains geography", async () => {
+  assert.deepEqual(
+    (await searchAssistantCatalog(
+      client([profile("health", { skills: ["AI in healthcare"] }), profile("ai", { skills: ["AI"] })]),
+      "mentor skilled in AI in healthcare",
+      options,
+    )).map(r => r.entityId),
+    ["health"],
+  );
+
+  assert.deepEqual(
+    (await searchAssistantCatalog(
+      client([
+        profile("local", { skills: ["Ruby"], city: "Vancouver" }),
+        profile("remote", { skills: ["Ruby"], city: "Toronto" }),
+      ]),
+      "mentor skilled in Ruby in Vancouver",
+      options,
+    )).map(r => r.entityId),
+    ["local"],
+  );
+});
