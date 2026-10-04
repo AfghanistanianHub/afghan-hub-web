@@ -40,6 +40,7 @@
 .heroArt { position: relative; isolation: isolate; }
 .heroArt::before { content:""; position:absolute; inset:8% 0 2%; z-index:-1; border-radius:46% 54% 57% 43%; background:radial-gradient(ellipse at 60% 50%, #e8dfcf80, transparent 68%); animation:hero-atmosphere 8s ease-in-out infinite alternate; will-change:transform,opacity; }
 .heroArt::after { content:""; position:absolute; inset:24% 13% 18% 22%; z-index:-1; border-radius:50%; background:radial-gradient(circle, #62429112 0 18%, transparent 62%); filter:blur(18px); animation:hero-orbit-glow 10s ease-in-out infinite alternate; pointer-events:none; }
+.heroArt[data-running="false"]::before, .heroArt[data-running="false"]::after { animation-play-state: paused; }
 @keyframes hero-atmosphere { from { transform:translate3d(-1.5%,1%,0) scale(.98); opacity:.62; } to { transform:translate3d(2%,-1.5%,0) scale(1.045); opacity:1; } }
 @keyframes hero-orbit-glow { from { transform:translate3d(-4%,3%,0) scale(.94); opacity:.35; } to { transform:translate3d(5%,-2%,0) scale(1.06); opacity:.78; } }
 .signatureBridge { max-width:1232px; margin:0 auto 24px; display:flex; align-items:center; justify-content:space-between; gap:24px; padding-inline:24px; color:var(--muted-foreground); font-size:.75rem; }
