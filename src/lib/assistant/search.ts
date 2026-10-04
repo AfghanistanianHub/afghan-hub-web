@@ -129,16 +129,17 @@ function mentorshipRelevance(
 
   const nameTokens = [profile.display_name, profile.first_name, profile.last_name]
     .filter(Boolean).flatMap(value => String(value).toLocaleLowerCase().split(/[^\p{L}\p{N}]+/u));
-  const skillTokens = [...(profile.skills ?? []), ...(profile.mentorship_topics ?? [])]
+  const expertiseFields = [...(profile.skills ?? []), ...(profile.mentorship_topics ?? []), profile.headline ?? "", profile.profession ?? ""];
+  const skillTokens = expertiseFields
     .flatMap(value => value.toLocaleLowerCase().split(/[\s/,;؛،]+/u).map(token => token.replace(/[.!?]+$/u, "")));
   // An explicit skill is a requirement, not a name-ranking hint. Other
   // fields cannot admit a profile that lacks the requested skills/topics.
   const requiredSkills = [...skillTerms].filter(term => term && !["and", "or"].includes(term));
-  if (requiredSkills.some(term => !(term.length === 1 ? skillTokens.includes(term) : [...(profile.skills ?? []), ...(profile.mentorship_topics ?? [])].some(value => value.toLocaleLowerCase().includes(term))))) return 0;
+  if (requiredSkills.some(term => !(term.length === 1 ? skillTokens.includes(term) : expertiseFields.some(value => value.toLocaleLowerCase().includes(term))))) return 0;
   return terms.reduce((score, term) => {
     if (skillTerms.has(term)) {
       const exact = skillTokens.includes(term);
-      const related = term.length > 1 && [...(profile.skills ?? []), ...(profile.mentorship_topics ?? [])].some(value => value.toLocaleLowerCase().includes(term));
+      const related = term.length > 1 && expertiseFields.some(value => value.toLocaleLowerCase().includes(term));
       return score + (exact ? 4 : related ? 2 : 0);
     }
     if (term.length === 1) {
