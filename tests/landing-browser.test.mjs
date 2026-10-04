@@ -43,6 +43,9 @@ class DevTools {
     this.exceptions = [];
     this.socket.addEventListener("message", event => {
       const message = JSON.parse(event.data);
+      if (message.method === "Fetch.requestPaused" && this.interceptRequest) {
+        void this.interceptRequest(message.params).catch(error => this.exceptions.push(error.message));
+      }
       if (message.method === "Runtime.exceptionThrown") this.exceptions.push(message.params.exceptionDetails.text);
       const pending = this.pending.get(message.id);
       if (pending) {
@@ -94,6 +97,13 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   timeout: 420000,
 }, async t => {
   assert.ok(chromePath, "Linux CI must provide Chrome for browser verification");
+  // This temporary local QA route is removed before the final release build.
+  // It mounts the real drawer without impersonating a production login.
+  const qaDirectory = path.join(root, "src/app/navigator-qa");
+  assert.ok(!existsSync(qaDirectory), "QA route must never overwrite application code");
+  await fs.mkdir(qaDirectory);
+  await fs.writeFile(path.join(qaDirectory, "page.tsx"), 'import { Header } from "@/components/dashboard/header"; export default function Page(){return <div className="flex"><aside aria-hidden="true" className="hidden w-64 shrink-0 lg:block" /><div className="min-w-0 flex-1"><Header canModerate={false} currentUserId="00000000-0000-4000-8000-000000000001" displayName="A deliberately long QA member display name" email="qa@example.invalid" notifications={[]} pendingModerationCount={0} unreadNotificationCount={0} unreadMessageCount={0} /><main><h1>Navigator browser QA fixture</h1></main></div></div>;}');
+  t.after(() => fs.rm(qaDirectory, {recursive:true,force:true}));
   const nextCli = path.join(root, "node_modules/next/dist/bin/next");
   const future = new Date(Date.now() + 30 * 86400000).toISOString();
   const rows = Object.fromEntries(["opportunities", "events", "businesses", "organizations"].map(kind => [kind, Array.from({ length: 3 }, (_, i) => ({
@@ -554,6 +564,88 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   await waitFor(()=>page.evaluate("location.pathname.includes('layout-sample-organizations-0')&&document.body.textContent.includes('Local browser QA fixture')"),"keyboard detail navigation");
   assert.equal(await page.evaluate("[...document.querySelectorAll('a')].find(a=>a.textContent.trim()==='Open member view').getAttribute('href')"),'/organizations/layout-sample-organizations-0');
   console.log("AFGHAN_HUB_CONSISTENCY_INTERACTION category routes/search/empty state/clear/keyboard detail/member destination passed; auth submissions and authenticated flows not exercised.");
+  const navigatorRequests = [];
+  let failNextNavigatorRequest = false;
+  page.interceptRequest = async event => {
+    const body = JSON.parse(event.request.postData);
+    navigatorRequests.push(body);
+    console.log("AFGHAN_HUB_NAVIGATOR_REQUEST", JSON.stringify(body));
+    if (failNextNavigatorRequest) {
+      failNextNavigatorRequest = false;
+      await page.send('Fetch.fulfillRequest',{requestId:event.requestId,responseCode:503,responseHeaders:[{name:'content-type',value:'application/json'}],body:Buffer.from('{}').toString('base64')});
+      return;
+    }
+    const prior = body.context;
+    const eventSearch = /events|رویداد|غونډې/.test(body.query);
+    const context = body.query.startsWith('Only ') ? {...prior,city:body.query.slice(5)} : eventSearch ? {...prior,entityType:'event',memberSignal:undefined} : {topic:'film',entityType:'profile',memberSignal:'open_to_mentoring'};
+    const fixtureResult = {entityType:eventSearch?'event':'profile',entityId:'qa-fixture',title:eventSearch?'QA fixture film event':'QA fixture film mentor',subtitle:'Browser verification fixture',city:'Vancouver',country:'Canada',href:eventSearch?'/events/qa-fixture':'/members/qa-fixture',rank:1,matchedTopics:eventSearch?[]:['Film']};
+    const groups=[{memberSignal:context.memberSignal??null,results:[fixtureResult]}];
+    await page.send('Fetch.fulfillRequest',{requestId:event.requestId,responseCode:200,responseHeaders:[{name:'content-type',value:'application/json'}],body:Buffer.from(JSON.stringify({context,groups,results:[fixtureResult],intent:'find_people',entityType:context.entityType,mode:'read-only'})).toString('base64')});
+  };
+  await page.send('Fetch.enable',{patterns:[{urlPattern:'*/api/assistant/search',requestStage:'Request'}]});
+  for(const width of [320,390,768,1024,1440]) {
+    await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    await page.send('Page.navigate',{url:appUrl+'/navigator-qa'});
+    await waitFor(()=>page.evaluate("document.readyState==='complete'&&!!document.querySelector('header button[aria-label=\"Community Navigator\"]')"),'member-header fixture');
+    assert.ok(await page.evaluate("document.documentElement.scrollWidth<=innerWidth+1"),`Integrated member header fits ${width}`);
+    const rects=await page.evaluate("[...document.querySelectorAll('header button,header input,header a')].filter(e=>e.getClientRects().length).map(e=>{const r=e.getBoundingClientRect();return{label:e.getAttribute('aria-label')||e.textContent,width:r.width,left:r.left,right:r.right};})");
+    assert.ok(rects.every(r=>r.left>=-1&&r.right<=width+1),`Header controls remain inside ${width}: ${JSON.stringify(rects)}`);
+  }
+  for (const width of [1440,390]) {
+    await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    await page.send('Page.navigate',{url:appUrl+'/navigator-qa'});
+    await waitFor(()=>page.evaluate("document.readyState==='complete'&&!![...document.querySelectorAll('button')].find(b=>b.textContent.includes('Community Navigator'))"),'navigator fixture hydration');
+    await delay(300);
+    const openerPoint=await page.evaluate("(()=>{const r=[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Community Navigator')).getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2};})()");
+    for(const type of ['mouseMoved','mousePressed','mouseReleased'])await page.send('Input.dispatchMouseEvent',{type,...openerPoint,button:type==='mouseMoved'?'none':'left',clickCount:type==='mouseMoved'?0:1});
+    await waitFor(()=>page.evaluate("document.querySelector('dialog')?.open&&document.activeElement.tagName==='INPUT'"),'native drawer initial focus');
+    await page.send('Input.insertText',{text:'mentor film'});
+    await waitFor(()=>page.evaluate("document.querySelector('dialog form button[type=submit]')?.disabled===false"),'navigator composer state');
+    for(const type of ['keyDown','keyUp'])await page.send('Input.dispatchKeyEvent',{type,key:'Enter',code:'Enter',windowsVirtualKeyCode:13});
+    await waitFor(()=>navigatorRequests.length>0,"navigator request emitted");
+    await waitFor(()=>page.evaluate("document.querySelector('dialog').textContent.includes('QA fixture film mentor')"),'grounded result inside conversation');
+    assert.ok(await page.evaluate("document.querySelector('dialog').textContent.includes('Members open to mentoring')"),'Explicit opt-in group label');
+    assert.ok(await page.evaluate("document.querySelector('dialog').textContent.includes('not an endorsement')"),'Mentorship preference boundary');
+    assert.ok(await page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'Drawer fits viewport');
+    const shot=await page.send('Page.captureScreenshot',{format:'jpeg',quality:80});screenshots.push({name:`navigator_${width}.jpg`,data:shot.data});
+    await page.evaluate("document.querySelector('dialog input').focus()");
+    await page.send('Input.insertText',{text:'Only Vancouver'});
+    for(const type of ['keyDown','keyUp'])await page.send('Input.dispatchKeyEvent',{type,key:'Enter',code:'Enter',windowsVirtualKeyCode:13});
+    await waitFor(()=>page.evaluate("document.querySelectorAll('dialog article').length===2&&document.querySelectorAll('dialog article strong').length===2"),'location follow-up');
+    assert.equal(navigatorRequests.at(-1).context.topic,'film','Follow-up sends prior topic');
+    await page.evaluate("[...document.querySelectorAll('dialog button')].find(b=>b.textContent==='Show me events too').click()");
+    await waitFor(()=>page.evaluate("document.querySelector('dialog').textContent.includes('QA fixture film event')"),'category follow-up');
+    assert.equal(navigatorRequests.at(-1).context.city,'Vancouver','Category switch preserves city');
+    assert.equal(navigatorRequests.at(-1).context.memberSignal,'open_to_mentoring','Server receives explicit preceding search context');
+    for(let i=0;i<30;i++) {
+      for(const type of ['keyDown','keyUp'])await page.send('Input.dispatchKeyEvent',{type,key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+      assert.ok(await page.evaluate("document.querySelector('dialog').contains(document.activeElement)"),'Native dialog contains keyboard focus');
+    }
+    for(const option of ['دری','پښتو']) {
+      await page.evaluate(`[...document.querySelectorAll('dialog button')].find(b=>b.textContent===${JSON.stringify(option)}).click()`);
+      assert.equal(await page.evaluate("document.querySelector('dialog').dir"),'rtl');
+      assert.ok(await page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'RTL drawer fits');
+    }
+    await page.evaluate("[...document.querySelectorAll('dialog button')].find(b=>b.textContent==='English').click()");
+    failNextNavigatorRequest = true;
+    await page.evaluate("document.querySelector('dialog input').focus()");
+    await page.send('Input.insertText',{text:'mentor film'});
+    await waitFor(()=>page.evaluate("document.querySelector('dialog form button[type=submit]')?.disabled===false"),'retry composer state');
+    for(const type of ['keyDown','keyUp'])await page.send('Input.dispatchKeyEvent',{type,key:'Enter',code:'Enter',windowsVirtualKeyCode:13});
+    await waitFor(()=>page.evaluate("document.querySelector('dialog').textContent.includes('Search is temporarily unavailable')"),'recoverable search failure');
+    const failedQuery = navigatorRequests.at(-1).query;
+    await page.evaluate("[...document.querySelectorAll('dialog button')].find(b=>b.textContent==='Try again').click()");
+    await waitFor(()=>page.evaluate("document.querySelectorAll('dialog article').length===5&&document.querySelectorAll('dialog article strong').length===4"),'retry renders grounded result');
+    assert.equal(navigatorRequests.at(-1).query,failedQuery,'Retry resubmits the failed query');
+    await page.evaluate(axeSource);
+    assert.deepEqual(await page.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>r.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})))"),[],`Navigator accessibility ${width}`);
+    for(const type of ['keyDown','keyUp'])await page.send('Input.dispatchKeyEvent',{type,key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+    await waitFor(()=>page.evaluate("!document.querySelector('dialog')"),'Escape closes drawer');
+    assert.ok(await page.evaluate("document.activeElement.textContent.includes('Community Navigator')"),'Closing restores launcher focus');
+    console.log(`AFGHAN_HUB_NAVIGATOR_RESULT ${width}: real drawer with mocked read-only API, initial focus, conversation, contextual location/category follow-ups, focus containment, RTL, Escape restoration and axe passed; authenticated production retrieval not exercised.`);
+  }
+  await page.send('Fetch.disable');
+  page.interceptRequest = null;
   assert.deepEqual(page.exceptions,[],"No uncaught browser exceptions");
   console.log("AFGHAN_HUB_BROWSER_INTERACTION keyboard/skip/focus, stable hover, reduced motion, text resizing/reflow all four single-tap routes, CTA mouse/keyboard activation, whole-panel artwork click and press feedback passed.");
   if(process.versions.node.startsWith("24.")) for(const screenshot of screenshots) emitScreenshot(screenshot.name,screenshot.data);
