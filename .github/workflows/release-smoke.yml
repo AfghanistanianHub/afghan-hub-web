@@ -26,4 +26,5 @@ jobs:
       - name: Run read-only public smoke against production
         env:
           SMOKE_BASE_URL: https://app.apnbc.ca
+          EXPECT_NO_POWERED_BY: "1"
         run: npm run smoke:public
