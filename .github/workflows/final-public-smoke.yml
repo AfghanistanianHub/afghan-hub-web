@@ -24,4 +24,6 @@ jobs:
       - name: Anonymous production release checks
         env:
           SMOKE_BASE_URL: https://app.apnbc.ca
+          EXPECT_NO_POWERED_BY: ${{ github.event_name == 'push' && '1' || '0' }}
+          DEPLOYMENT_HEADER_RETRY_ATTEMPTS: ${{ github.event_name == 'push' && '12' || '1' }}
         run: node scripts/smoke-public.mjs
