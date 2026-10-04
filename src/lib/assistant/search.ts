@@ -132,6 +132,11 @@ function mentorshipRelevance(
   const skillTokens = [...(profile.skills ?? []), ...(profile.mentorship_topics ?? [])]
     .flatMap(value => value.toLocaleLowerCase().split(/[\s/,;؛،]+/u).map(token => token.replace(/[.!?]+$/u, "")));
   return terms.reduce((score, term) => {
+    if (skillTerms.has(term)) {
+      const exact = skillTokens.includes(term);
+      const related = term.length > 1 && [...(profile.skills ?? []), ...(profile.mentorship_topics ?? [])].some(value => value.toLocaleLowerCase().includes(term));
+      return score + (exact ? 4 : related ? 2 : 0);
+    }
     if (term.length === 1) {
       const nameScore = nameTokens.includes(term) ? 4 : nameTokens.some(token => token.startsWith(term)) ? 3 : 0;
       const skillScore = skillTokens.includes(term) ? 2 : 0;

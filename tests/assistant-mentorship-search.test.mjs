@@ -158,3 +158,11 @@ test("exact names outrank incidental multi-field substrings", async () => {
  const fillers=Array.from({length:12},(_,i)=>profile(`f${i}`,{display_name:`Aaron ${i}`,headline:"annual planning",profession:"annual planner",skills:["annual planning"]}));
  assert.equal((await searchAssistantCatalog(client([...fillers,profile("ann",{display_name:"Ann"})]),"mentor Ann",options))[0].entityId,"ann");
 });
+
+test("explicit multi-letter skill scope excludes unrelated names", async () => {
+ for(const skill of ["Ruby","Python","Java"]){
+  const fillers=Array.from({length:12},(_,i)=>profile(`f${i}`,{display_name:skill}));
+  const target=profile("skill",{display_name:"Zoe",skills:[skill]});
+  assert.deepEqual((await searchAssistantCatalog(client([...fillers,target]),`mentor skilled in ${skill}`,options)).map(r=>r.entityId),["skill"]);
+ }
+});
