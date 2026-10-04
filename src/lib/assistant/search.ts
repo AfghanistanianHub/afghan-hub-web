@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { Database } from "@/types/database";
 import type { AssistantMemberSignal } from "@/lib/assistant/intents";
-import { extractAssistantSearchTerms, mentorshipQualifier } from "@/lib/assistant/query";
+import { extractAssistantSearchTerms } from "@/lib/assistant/query";
 
 export type AssistantEntityType =
   | "profile"
@@ -71,6 +71,78 @@ function memberTitle(profile: {
 }
 
 
+function normalizeExpertise(value: string) {
+  return value
+    .toLocaleLowerCase()
+    .replace(/[^\p{L}\p{N}+#]+/gu, " ")
+    .replace(/\s+/gu, " ")
+    .trim();
+}
+
+function explicitSkillClauses(query: string) {
+  const cleaned = query
+    .replace(/[“”"«»؟?،,!.:;؛()[\]{}]/g, " ")
+    .replace(/\s+/gu, " ")
+    .trim();
+  const phrase = cleaned.match(
+    /\b(?:skilled\s+in|skills?(?:\s+in)?|topics?(?:\s+in)?)\s+(.+?)(?=\s+(?:for|with|named|called|at|near|from|who\s+works|who\s+is|located\s+in)\b|$)/iu,
+  )?.[1]?.trim() ?? "";
+  if (!phrase) return [];
+  return phrase
+    .split(/\s+or\s+/iu)
+    .map(normalizeExpertise)
+    .filter(Boolean);
+}
+
+function expertiseMatchesClause(
+  profile: { city: string | null; country: string | null },
+  expertiseFields: string[],
+  clause: string,
+) {
+  const normalizedFields = expertiseFields.map(normalizeExpertise);
+  const exactPhrase = normalizedFields.some(
+    value => (" " + value + " ").includes(" " + clause + " "),
+  );
+  if (exactPhrase) return true;
+
+  const marker = clause.lastIndexOf(" in ");
+  if (marker > 0) {
+    const skill = clause.slice(0, marker).trim();
+    const place = clause.slice(marker + 4).trim();
+    const profilePlaces = [profile.city, profile.country]
+      .filter(Boolean)
+      .map(value => normalizeExpertise(String(value)));
+    if (profilePlaces.includes(place)) {
+      return normalizedFields.some(
+        value => (" " + value + " ").includes(" " + skill + " "),
+      );
+    }
+  }
+  return false;
+}
+
+function mentorshipQualifier(query: string) {
+  let qualifier = query
+    .replace(/[“”"'«»؟?،,!.:;؛()[\]{}]/g, " ")
+    .toLocaleLowerCase()
+    .replace(/^\s*(?:please\s+)?(?:find|show(?:\s+me)?|search(?:\s+for)?|look\s+for)(?:\s+|$)/u, " ")
+    .replace(/^\s*(?:a|an|the)\s+(?=(?:(?:professional|professionals|people|members?)\s+)?mentors?\b)/u, " ")
+    .replace(/\b(?:working\s+in|skilled\s+in|that\s+supports?|similar\s+to|related\s+to|who\s+coaches)\b/gu, " ")
+    .replace(/\b(?:professional|professionals|people|members?)\s+(?=mentors?\b)/gu, " ")
+    .replace(/(?<![\p{L}\p{N}_])(?:مرتبط\s+با|مشابه\s+با|در\s+زمینه|حوزه|اړوند|ورته)(?![\p{L}\p{N}_])/gu, " ")
+    .replace(/\bi\s+(?:met|know)\b/gu, " ")
+    .replace(/\b(?:mentor|mentors|mentee|mentees)\b/gu, " ")
+    .replace(/(?<![\p{L}\p{N}_])(?:منتور|منتورها|مربی|مربیان|لارښود|لارښودان)(?![\p{L}\p{N}_])/gu, " ")
+    .replace(/(?:را\s+)?(?:پیدا\s+کن|نشان\s+بده|جستجو\s+کن|جست‌وجو\s+کن|پیدا\s+کړه|را\s+وښیه|وښیه)/gu, " ")
+    .replace(/\s+/g, " ").trim();
+  if (/^for me$/u.test(qualifier)) return "";
+  // Preserve a standalone name/initial, even when it resembles an article.
+  if (qualifier.split(/\s+/u).length > 1) {
+    qualifier = qualifier.replace(/(?<![\p{L}\p{N}_])(?:in|at|for|to|of|the|a|an|me|در|به|از|برای|د|په|کې|لپاره)(?![\p{L}\p{N}_])/gu, " ");
+  }
+  return qualifier.replace(/\s+/g, " ").trim();
+}
+
 function mentorshipRelevance(
   profile: {
     display_name: string | null;
@@ -86,6 +158,7 @@ function mentorshipRelevance(
   },
   qualifier: string,
   skillTerms: ReadonlySet<string> = new Set(),
+  skillClauses: readonly string[] = [],
 ) {
   if (!qualifier) return 1;
 
@@ -112,10 +185,12 @@ function mentorshipRelevance(
   const expertiseFields = [...(profile.skills ?? []), ...(profile.mentorship_topics ?? []), profile.headline ?? "", profile.profession ?? ""];
   const skillTokens = expertiseFields
     .flatMap(value => value.toLocaleLowerCase().split(/[\s/,;؛،]+/u).map(token => token.replace(/[.!?]+$/u, "")));
-  // An explicit skill is a requirement, not a name-ranking hint. Other
-  // fields cannot admit a profile that lacks the requested skills/topics.
-  const requiredSkills = [...skillTerms].filter(term => term && !["and", "or"].includes(term));
-  if (requiredSkills.some(term => !(term.length === 1 ? skillTokens.includes(term) : expertiseFields.some(value => value.toLocaleLowerCase().includes(term))))) return 0;
+  // Explicit expertise is a hard scope. Alternatives are disjunctive and
+  // token/phrase boundaries prevent substring collisions such as Go/Django.
+  if (
+    skillClauses.length > 0 &&
+    !skillClauses.some(clause => expertiseMatchesClause(profile, expertiseFields, clause))
+  ) return 0;
   return terms.reduce((score, term) => {
     if (skillTerms.has(term)) {
       const exact = skillTokens.includes(term);
@@ -174,7 +249,10 @@ export async function searchAssistantCatalog(
       .eq("onboarding_completed", true);
 
     if (options.city) {
-      profileQuery = profileQuery.ilike("city", options.city.replace(/[\\%_]/g, "\\$&"));
+      profileQuery = profileQuery.ilike("city", options.city.replace(/[\\%_]/g, "\\      .eq("is_public", true)
+      .eq("onboarding_completed", true);
+
+    profileQuery ="));
     }
 
     profileQuery =
@@ -183,10 +261,12 @@ export async function searchAssistantCatalog(
         : profileQuery.eq("looking_for_mentor", true);
 
     const qualifier = mentorshipQualifier(query);
-    // End the explicit skill scope before trailing audience/name wording.
-    // “skilled in C for J” must still rank J as a name initial, not a skill.
-    const skillPhrase = query.replace(/[“”"'«»؟?،,!.:;؛()[\]{}]/g, " ").match(/\b(?:skilled\s+in|skills?(?:\s+in)?|topics?(?:\s+in)?)\s+(.+?)(?=\s+(?:for|with|named|called|in|at|near|from)\s+|$)/iu)?.[1] ?? "";
-    const skillTerms = new Set(mentorshipQualifier(skillPhrase).split(/\s+/u));
+    const skillClauses = explicitSkillClauses(query);
+    const skillTerms = new Set(
+      skillClauses.flatMap(clause =>
+        clause.split(/\s+/u).filter(term => term && !["and", "or", "in"].includes(term)),
+      ),
+    );
     // Generic browse needs one page. Qualified queries scan at most 10,000
     // eligible rows and retain only the best twelve, never partial results.
     const pageSize = qualifier ? 500 : limit;
@@ -201,7 +281,7 @@ export async function searchAssistantCatalog(
       if (profileError) throw profileError;
       best = best.concat((page ?? []).map((profile, index) => ({
         profile, index: offset + index,
-        relevance: mentorshipRelevance(profile, qualifier, skillTerms),
+        relevance: mentorshipRelevance(profile, qualifier, skillTerms, skillClauses),
       })))
         .filter(item => !qualifier || item.relevance > 0)
         .sort((a, b) => b.relevance - a.relevance || a.index - b.index)
@@ -232,7 +312,16 @@ export async function searchAssistantCatalog(
         href: `/members/${profile.id}`,
         rank: relevance,
         matchedTopics: [...(profile.mentorship_topics ?? []), ...(profile.skills ?? [])]
-          .filter(topic => qualifier.split(/\s+/u).some(term => term.length > 0 && topic.toLocaleLowerCase().split(/\s+/u).some(token => term.length === 1 ? token.replace(/[,.!?]+$/u, "") === term : token.includes(term))))
+          .filter(topic =>
+            qualifier.split(/\s+/u).some(term =>
+              term.length > 0 &&
+              topic.toLocaleLowerCase().split(/\s+/u).some(token =>
+                term.length === 1
+                  ? token.replace(/[,.!?]+$/u, "") === term
+                  : token.includes(term),
+              ),
+            ),
+          )
           .slice(0, 3),
       }));
   }
