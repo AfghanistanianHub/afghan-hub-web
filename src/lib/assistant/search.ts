@@ -207,7 +207,7 @@ export async function searchAssistantCatalog(
       if (profileError) throw profileError;
       best = best.concat((page ?? []).map((profile, index) => ({
         profile, index: offset + index,
-        relevance: mentorshipRelevance(profile, qualifier, new Set(mentorshipQualifier(query.match(/\b(?:skilled\s+in|skills?(?:\s+in)?|topics?(?:\s+in)?)\s+(.+?)(?=\s+(?:for|with|named|called)\s+|$)/iu)?.[1] ?? "").split(/\s+/u))),
+        relevance: mentorshipRelevance(profile, qualifier, new Set(mentorshipQualifier(query.match(/\b(?:skilled\s+in|skills?(?:\s+in)?|topics?(?:\s+in)?)\s+(.+?)(?=\s+(?:for|with|named|called|in|at|near|from)\s+|$)/iu)?.[1] ?? "").split(/\s+/u))),
       })))
         .filter(item => !qualifier || item.relevance > 0)
         .sort((a, b) => b.relevance - a.relevance || a.index - b.index)

@@ -166,3 +166,9 @@ test("explicit multi-letter skill scope excludes unrelated names", async () => {
   assert.deepEqual((await searchAssistantCatalog(client([...fillers,target]),`mentor skilled in ${skill}`,options)).map(r=>r.entityId),["skill"]);
  }
 });
+
+test("explicit skill scope stops before a location qualifier", async () => {
+ const other=profile("other",{display_name:"Aaron",skills:["Vancouver"]});
+ const target=profile("target",{display_name:"Zoe",skills:["Ruby"],city:"Vancouver"});
+ assert.equal((await searchAssistantCatalog(client([other,target]),"mentor skilled in Ruby in Vancouver",options))[0].entityId,"target");
+});
