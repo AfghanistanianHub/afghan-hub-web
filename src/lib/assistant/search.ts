@@ -272,7 +272,7 @@ export async function searchAssistantCatalog(
       if (profileError) throw profileError;
       best = best.concat((page ?? []).map((profile, index) => ({
         profile, index: offset + index,
-        relevance: mentorshipRelevance(profile, qualifier, skillTerms, skillClauses,
+        relevance: mentorshipRelevance(profile, qualifier, skillTerms, skillClauses),
       })))
         .filter(item => !qualifier || item.relevance > 0)
         .sort((a, b) => b.relevance - a.relevance || a.index - b.index)
