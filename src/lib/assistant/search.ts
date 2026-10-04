@@ -249,10 +249,10 @@ export async function searchAssistantCatalog(
       .eq("onboarding_completed", true);
 
     if (options.city) {
-      profileQuery = profileQuery.ilike("city", options.city.replace(/[\\%_]/g, "\\      .eq("is_public", true)
-      .eq("onboarding_completed", true);
-
-    profileQuery ="));
+      profileQuery = profileQuery.ilike(
+        "city",
+        options.city.replace(/[\\%_]/g, (match) => `\\${match}`),
+      );
     }
 
     profileQuery =
