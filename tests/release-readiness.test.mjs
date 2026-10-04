@@ -13,6 +13,7 @@ test("release smoke is manual, read-only, secret-free and pinned to production",
   assert.match(workflow, /permissions:\s*\n\s*contents:\s*read/);
   assert.equal(/secrets\./i.test(workflow), false, "public smoke must not require repository secrets");
   assert.match(workflow, /SMOKE_BASE_URL:\s*https:\/\/app\.apnbc\.ca/);
+  assert.match(workflow, /EXPECT_NO_POWERED_BY:\s*["']?1["']?/);
   assert.match(workflow, /npm run smoke:public/);
 });
 
