@@ -59,6 +59,11 @@ for (const [path, expectedStatus, pattern, method = "GET"] of checks) {
       }
 
       if (path === "/") {
+        assert.equal(response.headers.get("x-powered-by"), null, "Framework powered-by header must stay disabled");
+        assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+        assert.equal(response.headers.get("referrer-policy"), "strict-origin-when-cross-origin");
+        assert.equal(response.headers.get("x-frame-options"), "DENY");
+
         const metaTags = body.match(/<meta\b[^>]*>/gi) ?? [];
         const ogImageTag = metaTags.find((tag) => /property=["']og:image["']/i.test(tag));
         const twitterImageTag = metaTags.find((tag) => /name=["']twitter:image["']/i.test(tag));
