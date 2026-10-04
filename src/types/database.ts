@@ -919,6 +919,25 @@ export type Database = {
           title: string
         }[]
       }
+      search_afghan_hub_scoped: {
+        Args: {
+          city_filter?: string
+          entity_filter?: string
+          result_limit?: number
+          search_query: string
+        }
+        Returns: {
+          city: string
+          country: string
+          entity_id: string
+          entity_slug: string
+          entity_type: string
+          image_url: string
+          rank: number
+          subtitle: string
+          title: string
+        }[]
+      }
       start_direct_conversation: {
         Args: { target_member_id: string }
         Returns: string

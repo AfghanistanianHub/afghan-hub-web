@@ -22,6 +22,7 @@ export type AssistantSearchResult = {
   country: string | null;
   href: string;
   rank: number;
+  matchedTopics?: string[];
 };
 
 type SearchRpcRow =
@@ -224,6 +225,7 @@ export async function searchAssistantCatalog(
     limit?: number;
     entityType?: AssistantEntityType;
     memberSignal?: AssistantMemberSignal;
+    city?: string;
   } = {},
 ): Promise<AssistantSearchResult[]> {
   const normalizedQuery = extractAssistantSearchTerms(query);
@@ -245,6 +247,13 @@ export async function searchAssistantCatalog(
       )
       .eq("is_public", true)
       .eq("onboarding_completed", true);
+
+    if (options.city) {
+      profileQuery = profileQuery.ilike(
+        "city",
+        options.city.replace(/[\\%_]/g, (match) => `\\${match}`),
+      );
+    }
 
     profileQuery =
       options.memberSignal === "open_to_mentoring"
@@ -302,21 +311,33 @@ export async function searchAssistantCatalog(
         country: profile.country,
         href: `/members/${profile.id}`,
         rank: relevance,
+        matchedTopics: [...(profile.mentorship_topics ?? []), ...(profile.skills ?? [])]
+          .filter(topic =>
+            qualifier.split(/\s+/u).some(term =>
+              term.length > 0 &&
+              topic.toLocaleLowerCase().split(/\s+/u).some(token =>
+                term.length === 1
+                  ? token.replace(/[,.!?]+$/u, "") === term
+                  : token.includes(term),
+              ),
+            ),
+          )
+          .slice(0, 3),
       }));
   }
 
-  const { data, error } = await supabase.rpc("search_afghan_hub", {
+  const { data, error } = await supabase.rpc("search_afghan_hub_scoped", {
     search_query: normalizedQuery,
-    result_limit: limit * 3,
+    result_limit: limit,
+    entity_filter: options.entityType,
+    city_filter: options.city,
   });
 
   if (error) {
     throw error;
   }
 
-  const rows = (data ?? [])
-    .filter((row) => isAssistantEntityType(row.entity_type))
-    .filter((row) => !options.entityType || row.entity_type === options.entityType);
+  const rows = (data ?? []).filter((row) => isAssistantEntityType(row.entity_type));
 
   return rows
     .map<AssistantSearchResult | null>((row) => {

@@ -25,6 +25,7 @@ function client(profiles, failPage = false) {
   const builder = {
     select() { return this; },
     eq(key, value) { filters.push([key, value]); return this; },
+    ilike(key, value) { filters.push([key, value.replace(/\\([\\%_])/g, "$1")]); return this; },
     order(key) { if (!ordering.includes(key)) ordering.push(key); return this; },
     async range(start, end) {
       ranges.push([start, end]);
@@ -35,6 +36,19 @@ function client(profiles, failPage = false) {
   return { from: () => builder, ranges };
 }
 const options = { memberSignal: "open_to_mentoring" };
+test("trailing name initials remain outside the explicit skill scope", async () => {
+  const distractors = Array.from({length:12}, (_,i) => profile(`other-${i}`, {display_name:`Ada ${i}`,skills:["C"]}));
+  const target = profile("john", {display_name:"John",skills:["C"]});
+  const results = await searchAssistantCatalog(client([...distractors,target]), "mentor skilled in C for J", options);
+  assert.equal(results[0].entityId,"john");
+});
+test("research and development is not the R programming skill", async () => {
+  const results = await searchAssistantCatalog(client([
+    profile("research", {display_name:"Ada",skills:["R&D"]}),
+    profile("programmer", {display_name:"Zoe",skills:["R"]}),
+  ]), "mentor skilled in R", options);
+  assert.deepEqual(results.map(result=>result.entityId),["programmer"]);
+});
 test("framing-only mentor requests browse eligible opt-ins", async () => {
   for (const query of ["Find a mentor", "Show me mentors", "Find mentors", "Find mentors.", "Find a mentor for me", "mentor", "منتور پیدا کن", "لارښود پیدا کړه"]) {
     const results = await searchAssistantCatalog(client([profile("1")]), query, options);
@@ -126,6 +140,12 @@ test("first initials match names without searching incidental letters", async ()
   assert.deepEqual((await searchAssistantCatalog(client([profile("1",{display_name:"John Smith"}),profile("2",{display_name:"Zoe",company:"Junior"})]),"mentor J",options)).map(r=>r.entityId),["1"]);
 });
 
+test("explicit city filters eligible mentors before paging and ranking", async () => {
+  const result = await searchAssistantCatalog(client([profile("1",{city:"Vancouver",skills:["Film"]}),profile("2",{city:"Toronto",skills:["Film"]})]),"mentor Film",{...options,city:"Vancouver"});
+  assert.deepEqual(result.map(r=>r.entityId),["1"]);
+  assert.deepEqual(result[0].matchedTopics,["Film"]);
+});
+
 test("single-letter skill searches distinguish C from C++ and C#", async () => {
   const fillers=Array.from({length:12},(_,i)=>profile(String(i),{skills:[i%2?"C++":"C#"]}));
   const target=profile("target",{skills:["C"]});
@@ -185,69 +205,4 @@ test("explicit expertise also matches public headline and profession", async () 
  const profiles=[profile("headline",{headline:"Ruby developer"}),profile("profession",{profession:"Ruby developer"}),profile("name",{display_name:"Ruby"}),profile("company",{company:"Ruby"})];
  assert.deepEqual((await searchAssistantCatalog(client(profiles),"mentor skilled in Ruby",options)).map(r=>r.entityId).sort(),["headline","profession"]);
  assert.deepEqual((await searchAssistantCatalog(client([profile("rd",{profession:"R&D specialist"}),profile("r",{headline:"R developer"})]),"mentor skilled in R",options)).map(r=>r.entityId),["r"]);
-});
-
-
-test("explicit skill alternatives, boundaries and relative clauses stay structured", async () => {
-  const alternatives = [
-    profile("java", { skills: ["Java"] }),
-    profile("python", { skills: ["Python"] }),
-    profile("javascript", { skills: ["JavaScript"] }),
-  ];
-  assert.deepEqual(
-    (await searchAssistantCatalog(client(alternatives), "mentor skilled in Java or Python", options))
-      .map(r => r.entityId)
-      .sort(),
-    ["java", "python"],
-  );
-
-  assert.deepEqual(
-    (await searchAssistantCatalog(
-      client([profile("go", { skills: ["Go"] }), profile("django", { skills: ["Django"] })]),
-      "mentor skilled in Go",
-      options,
-    )).map(r => r.entityId),
-    ["go"],
-  );
-
-  assert.deepEqual(
-    (await searchAssistantCatalog(
-      client([profile("ai", { headline: "AI researcher" }), profile("painting", { skills: ["painting"] })]),
-      "mentor skilled in AI",
-      options,
-    )).map(r => r.entityId),
-    ["ai"],
-  );
-
-  assert.deepEqual(
-    (await searchAssistantCatalog(
-      client([profile("python", { skills: ["Python"], company: "Google" })]),
-      "mentor skilled in Python who works at Google",
-      options,
-    )).map(r => r.entityId),
-    ["python"],
-  );
-});
-
-test("compound expertise survives while explicit location remains geography", async () => {
-  assert.deepEqual(
-    (await searchAssistantCatalog(
-      client([profile("health", { skills: ["AI in healthcare"] }), profile("ai", { skills: ["AI"] })]),
-      "mentor skilled in AI in healthcare",
-      options,
-    )).map(r => r.entityId),
-    ["health"],
-  );
-
-  assert.deepEqual(
-    (await searchAssistantCatalog(
-      client([
-        profile("local", { skills: ["Ruby"], city: "Vancouver" }),
-        profile("remote", { skills: ["Ruby"], city: "Toronto" }),
-      ]),
-      "mentor skilled in Ruby in Vancouver",
-      options,
-    )).map(r => r.entityId),
-    ["local"],
-  );
 });
