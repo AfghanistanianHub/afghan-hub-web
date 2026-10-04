@@ -22,10 +22,44 @@ const checks = [
   ["/update-password", 307],
   ["/api/account/export", 401, /Sign in again to download your data/, "POST"],
 ];
+const expectNoPoweredBy = process.env.EXPECT_NO_POWERED_BY === "1";
+const deploymentRetryAttempts = Math.min(
+  Math.max(Number.parseInt(process.env.DEPLOYMENT_HEADER_RETRY_ATTEMPTS || "1", 10) || 1, 1),
+  18,
+);
+const deploymentRetryDelayMs = 10_000;
+
+async function fetchOnce(path, method) {
+  return fetch(new URL(path, base), {
+    method,
+    headers: method === "POST" ? { Origin: base.origin } : undefined,
+    redirect: "manual",
+    signal: AbortSignal.timeout(15000),
+  });
+}
+
+async function fetchCheck(path, method) {
+  let response = await fetchOnce(path, method);
+
+  if (path === "/" && expectNoPoweredBy) {
+    for (
+      let attempt = 1;
+      attempt < deploymentRetryAttempts &&
+      response.headers.get("x-powered-by") !== null;
+      attempt++
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, deploymentRetryDelayMs));
+      response = await fetchOnce(path, method);
+    }
+  }
+
+  return response;
+}
+
 let failed = 0;
 for (const [path, expectedStatus, pattern, method = "GET"] of checks) {
   try {
-    const response = await fetch(new URL(path, base), { method, headers: method === "POST" ? { Origin: base.origin } : undefined, redirect: "manual", signal: AbortSignal.timeout(15000) });
+    const response = await fetchCheck(path, method);
     const allowedStatuses = Array.isArray(expectedStatus) ? expectedStatus : [expectedStatus];
     assert.ok(
       allowedStatuses.includes(response.status),
@@ -59,6 +93,13 @@ for (const [path, expectedStatus, pattern, method = "GET"] of checks) {
       }
 
       if (path === "/") {
+        if (expectNoPoweredBy) {
+          assert.equal(response.headers.get("x-powered-by"), null, "Framework powered-by header must stay disabled");
+        }
+        assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+        assert.equal(response.headers.get("referrer-policy"), "strict-origin-when-cross-origin");
+        assert.equal(response.headers.get("x-frame-options"), "DENY");
+
         const metaTags = body.match(/<meta\b[^>]*>/gi) ?? [];
         const ogImageTag = metaTags.find((tag) => /property=["']og:image["']/i.test(tag));
         const twitterImageTag = metaTags.find((tag) => /name=["']twitter:image["']/i.test(tag));

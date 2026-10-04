@@ -58,3 +58,9 @@ test("security hardening does not add a CSP without a nonce strategy", async () 
     false,
   );
 });
+
+
+test("framework fingerprint header is disabled", () => {
+  const config = loadNextConfig();
+  assert.equal(config.poweredByHeader, false);
+});
