@@ -37,7 +37,7 @@ function removeOrphanPersianPluralSuffix(value: string) {
   return value.replace(/(?:^|\s)\u200c?(?:ها|های|هایی)(?=\s|$)/gu, " ");
 }
 
-export function extractAssistantSearchTerms(query: string) {
+export function extractAssistantSearchTerms(query: string, options: { allowEmpty?: boolean } = {}) {
   const original = cleanWhitespace(query).slice(0, 120);
   let candidate = original;
 
@@ -53,5 +53,28 @@ export function extractAssistantSearchTerms(query: string) {
     .trim()
     .slice(0, 120);
 
-  return candidate.length >= 2 ? candidate : original;
+  return candidate.length >= 2 || options.allowEmpty ? candidate : original;
 }
+
+export function mentorshipQualifier(query: string) {
+  let qualifier = query
+    .replace(/[“”"'«»؟?،,!.:;؛()[\]{}]/g, " ")
+    .toLocaleLowerCase()
+    .replace(/^\s*(?:please\s+)?(?:find|show(?:\s+me)?|search(?:\s+for)?|look\s+for)(?:\s+|$)/u, " ")
+    .replace(/^\s*(?:a|an|the)\s+(?=(?:(?:professional|professionals|people|members?)\s+)?mentors?\b)/u, " ")
+    .replace(/\b(?:working\s+in|skilled\s+in|that\s+supports?|similar\s+to|related\s+to|who\s+coaches)\b/gu, " ")
+    .replace(/\b(?:professional|professionals|people|members?)\s+(?=mentors?\b)/gu, " ")
+    .replace(/(?<![\p{L}\p{N}_])(?:مرتبط\s+با|مشابه\s+با|در\s+زمینه|حوزه|اړوند|ورته)(?![\p{L}\p{N}_])/gu, " ")
+    .replace(/\bi\s+(?:met|know)\b/gu, " ")
+    .replace(/\b(?:mentor|mentors|mentee|mentees)\b/gu, " ")
+    .replace(/(?<![\p{L}\p{N}_])(?:منتور|منتورها|مربی|مربیان|لارښود|لارښودان)(?![\p{L}\p{N}_])/gu, " ")
+    .replace(/(?:را\s+)?(?:پیدا\s+کن|نشان\s+بده|جستجو\s+کن|جست‌وجو\s+کن|پیدا\s+کړه|را\s+وښیه|وښیه)/gu, " ")
+    .replace(/\s+/g, " ").trim();
+  if (/^for me$/u.test(qualifier)) return "";
+  // Preserve a standalone name/initial, even when it resembles an article.
+  if (qualifier.split(/\s+/u).length > 1) {
+    qualifier = qualifier.replace(/(?<![\p{L}\p{N}_])(?:in|at|for|to|of|the|a|an|me|در|به|از|برای|د|په|کې|لپاره)(?![\p{L}\p{N}_])/gu, " ");
+  }
+  return qualifier.replace(/\s+/g, " ").trim();
+}
+
