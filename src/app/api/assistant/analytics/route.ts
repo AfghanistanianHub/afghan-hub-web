@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { isSameOriginRequest } from "@/lib/http/request-origin";
 import { createClient } from "@/lib/supabase/server";
 
 const languageSchema = z.enum(["en", "fa", "ps"]);
@@ -52,6 +53,10 @@ const eventSchema = z.discriminatedUnion("event", [
 ]);
 
 export async function POST(request: Request) {
+  if (!isSameOriginRequest(request)) {
+    return NextResponse.json({ error: "Request origin is not allowed." }, { status: 403 });
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
