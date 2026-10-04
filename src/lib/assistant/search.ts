@@ -131,6 +131,10 @@ function mentorshipRelevance(
     .filter(Boolean).flatMap(value => String(value).toLocaleLowerCase().split(/[^\p{L}\p{N}]+/u));
   const skillTokens = [...(profile.skills ?? []), ...(profile.mentorship_topics ?? [])]
     .flatMap(value => value.toLocaleLowerCase().split(/[\s/,;؛،]+/u).map(token => token.replace(/[.!?]+$/u, "")));
+  // An explicit skill is a requirement, not a name-ranking hint. Other
+  // fields cannot admit a profile that lacks the requested skills/topics.
+  const requiredSkills = [...skillTerms].filter(term => term && !["and", "or"].includes(term));
+  if (requiredSkills.some(term => !(term.length === 1 ? skillTokens.includes(term) : [...(profile.skills ?? []), ...(profile.mentorship_topics ?? [])].some(value => value.toLocaleLowerCase().includes(term))))) return 0;
   return terms.reduce((score, term) => {
     if (skillTerms.has(term)) {
       const exact = skillTokens.includes(term);
@@ -207,7 +211,7 @@ export async function searchAssistantCatalog(
       if (profileError) throw profileError;
       best = best.concat((page ?? []).map((profile, index) => ({
         profile, index: offset + index,
-        relevance: mentorshipRelevance(profile, qualifier, new Set(mentorshipQualifier(query.match(/\b(?:skilled\s+in|skills?(?:\s+in)?|topics?(?:\s+in)?)\s+(.+?)(?=\s+(?:for|with|named|called|in|at|near|from)\s+|$)/iu)?.[1] ?? "").split(/\s+/u))),
+        relevance: mentorshipRelevance(profile, qualifier, new Set(mentorshipQualifier(query.replace(/[“”"'«»؟?،,!.:;؛()[\]{}]/g, " ").match(/\b(?:skilled\s+in|skills?(?:\s+in)?|topics?(?:\s+in)?)\s+(.+?)(?=\s+(?:for|with|named|called|in|at|near|from)\s+|$)/iu)?.[1] ?? "").split(/\s+/u))),
       })))
         .filter(item => !qualifier || item.relevance > 0)
         .sort((a, b) => b.relevance - a.relevance || a.index - b.index)

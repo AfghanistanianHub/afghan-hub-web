@@ -70,7 +70,7 @@ export default async function EventAttendeesPage({ params }: Props) {
     .maybeSingle();
 
   if (eventError) {
-    console.error("Could not load event for attendee management:", eventError);
+    console.error("Could not load event for attendee management; provider details withheld.");
   }
 
   if (!event) notFound();
@@ -82,7 +82,7 @@ export default async function EventAttendeesPage({ params }: Props) {
     .order("created_at", { ascending: true });
 
   if (registrationError) {
-    console.error("Could not load event registrations:", registrationError);
+    console.error("Could not load event registrations; provider details withheld.");
   }
 
   const profileIds =
@@ -100,7 +100,7 @@ export default async function EventAttendeesPage({ params }: Props) {
     : { data: [], error: null };
 
   if (profileError) {
-    console.error("Could not load attendee profiles:", profileError);
+    console.error("Could not load attendee profiles; provider details withheld.");
   }
 
   const profileById = new Map(

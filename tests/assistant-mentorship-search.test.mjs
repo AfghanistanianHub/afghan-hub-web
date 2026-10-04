@@ -172,3 +172,11 @@ test("explicit skill scope stops before a location qualifier", async () => {
  const target=profile("target",{display_name:"Zoe",skills:["Ruby"],city:"Vancouver"});
  assert.equal((await searchAssistantCatalog(client([other,target]),"mentor skilled in Ruby in Vancouver",options))[0].entityId,"target");
 });
+
+test("explicit skills cannot be displaced by location or compound-topic names", async () => {
+ const names=Array.from({length:12},(_,i)=>profile(`n${i}`,{display_name:"Vancouver"}));
+ const ruby=profile("ruby",{display_name:"Zoe",skills:["Ruby"],city:"Vancouver"});
+ for(const query of ["mentor skilled in Ruby in Vancouver","mentor skilled in Ruby (in Vancouver)"]){assert.deepEqual((await searchAssistantCatalog(client([...names,ruby]),query,options)).map(r=>r.entityId),["ruby"]);}
+ const other=Array.from({length:12},(_,i)=>profile(`h${i}`,{display_name:"Healthcare"}));
+ assert.deepEqual((await searchAssistantCatalog(client([...other,profile("ai",{skills:["AI in healthcare"]})]),"mentor skilled in AI in healthcare",options)).map(r=>r.entityId),["ai"]);
+});
