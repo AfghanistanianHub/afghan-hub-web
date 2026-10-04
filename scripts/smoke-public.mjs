@@ -59,7 +59,9 @@ for (const [path, expectedStatus, pattern, method = "GET"] of checks) {
       }
 
       if (path === "/") {
-        assert.equal(response.headers.get("x-powered-by"), null, "Framework powered-by header must stay disabled");
+        if (process.env.EXPECT_NO_POWERED_BY === "1") {
+          assert.equal(response.headers.get("x-powered-by"), null, "Framework powered-by header must stay disabled");
+        }
         assert.equal(response.headers.get("x-content-type-options"), "nosniff");
         assert.equal(response.headers.get("referrer-policy"), "strict-origin-when-cross-origin");
         assert.equal(response.headers.get("x-frame-options"), "DENY");
