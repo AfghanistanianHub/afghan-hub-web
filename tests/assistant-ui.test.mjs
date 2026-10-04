@@ -7,14 +7,21 @@ const component = fs.readFileSync(
   "utf8",
 );
 const layout = fs.readFileSync(
-  new URL("../src/app/(dashboard)/layout.tsx", import.meta.url),
+  new URL("../src/components/dashboard/header.tsx", import.meta.url),
   "utf8",
 );
 
-test("dashboard mounts the Afghan Hub assistant", () => {
+test("member header mounts the Afghan Hub assistant", () => {
   assert.match(layout, /CommunityNavigator/);
-  assert.match(component, /Ask Afghan Hub/);
+  assert.match(component, /Community Navigator/);
   assert.match(component, /aria-modal="true"/);
+});
+
+test("assistant requests have bounded loading and explicit retry", () => {
+  assert.match(component, /setTimeout\(\(\) => controller\.abort\("timeout"\), 20000\)/);
+  assert.match(component, /clearTimeout\(timeout\)/);
+  assert.match(component, /runSearch\(turn\.query, turn\.context\)/);
+  assert.match(component, /labels\.privacy/);
 });
 
 test("assistant supports keyboard open and escape close", () => {

@@ -66,6 +66,9 @@ function loadRoute(path) {
           },
         };
       }
+      if (name === "@/lib/assistant/conversation") {
+        return { resolveNavigatorContext() { throw new Error("Context resolution must not run before authentication"); }, navigatorSearchQuery() { throw new Error("Query resolution must not run before authentication"); } };
+      }
       if (name === "@/lib/assistant/intents") {
         return {
           inferAssistantIntent() {

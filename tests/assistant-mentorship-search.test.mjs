@@ -25,6 +25,7 @@ function client(profiles, failPage = false) {
   const builder = {
     select() { return this; },
     eq(key, value) { filters.push([key, value]); return this; },
+    ilike(key, value) { filters.push([key, value.replace(/\\([\\%_])/g, "$1")]); return this; },
     order(key) { if (!ordering.includes(key)) ordering.push(key); return this; },
     async range(start, end) {
       ranges.push([start, end]);
@@ -35,6 +36,19 @@ function client(profiles, failPage = false) {
   return { from: () => builder, ranges };
 }
 const options = { memberSignal: "open_to_mentoring" };
+test("trailing name initials remain outside the explicit skill scope", async () => {
+  const distractors = Array.from({length:12}, (_,i) => profile(`other-${i}`, {display_name:`Ada ${i}`,skills:["C"]}));
+  const target = profile("john", {display_name:"John",skills:["C"]});
+  const results = await searchAssistantCatalog(client([...distractors,target]), "mentor skilled in C for J", options);
+  assert.equal(results[0].entityId,"john");
+});
+test("research and development is not the R programming skill", async () => {
+  const results = await searchAssistantCatalog(client([
+    profile("research", {display_name:"Ada",skills:["R&D"]}),
+    profile("programmer", {display_name:"Zoe",skills:["R"]}),
+  ]), "mentor skilled in R", options);
+  assert.deepEqual(results.map(result=>result.entityId),["programmer"]);
+});
 test("framing-only mentor requests browse eligible opt-ins", async () => {
   for (const query of ["Find a mentor", "Show me mentors", "Find mentors", "Find mentors.", "Find a mentor for me", "mentor", "منتور پیدا کن", "لارښود پیدا کړه"]) {
     const results = await searchAssistantCatalog(client([profile("1")]), query, options);
@@ -124,6 +138,12 @@ test("generic professional framing cannot displace the topic match", async () =>
 });
 test("first initials match names without searching incidental letters", async () => {
   assert.deepEqual((await searchAssistantCatalog(client([profile("1",{display_name:"John Smith"}),profile("2",{display_name:"Zoe",company:"Junior"})]),"mentor J",options)).map(r=>r.entityId),["1"]);
+});
+
+test("explicit city filters eligible mentors before paging and ranking", async () => {
+  const result = await searchAssistantCatalog(client([profile("1",{city:"Vancouver",skills:["Film"]}),profile("2",{city:"Toronto",skills:["Film"]})]),"mentor Film",{...options,city:"Vancouver"});
+  assert.deepEqual(result.map(r=>r.entityId),["1"]);
+  assert.deepEqual(result[0].matchedTopics,["Film"]);
 });
 
 test("single-letter skill searches distinguish C from C++ and C#", async () => {
