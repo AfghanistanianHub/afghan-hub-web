@@ -53,6 +53,7 @@ const copy = {
     browseOrganizations: "Browse organizations",
     browseOpportunities: "Browse opportunities",
     browseEvents: "Browse events",
+    browseBusinesses: "Browse businesses",
     error: "Search is temporarily unavailable. Please try again.",
     readOnly: "Discovery only · no actions will be taken",
   },
@@ -70,6 +71,7 @@ const copy = {
     browseOrganizations: "مرور سازمان‌ها",
     browseOpportunities: "مرور فرصت‌ها",
     browseEvents: "مرور رویدادها",
+    browseBusinesses: "مرور کسب‌وکارها",
     error: "جست‌وجو فعلاً در دسترس نیست. دوباره تلاش کنید.",
     readOnly: "فقط برای پیدا کردن اطلاعات · هیچ اقدامی انجام نمی‌شود",
   },
@@ -87,6 +89,7 @@ const copy = {
     browseOrganizations: "سازمانونه وګورئ",
     browseOpportunities: "فرصتونه وګورئ",
     browseEvents: "غونډې وګورئ",
+    browseBusinesses: "کاروبارونه وګورئ",
     error: "لټون اوس مهال شتون نه لري. بیا هڅه وکړئ.",
     readOnly: "یوازې موندنه · هېڅ اقدام نه ترسره کېږي",
   },
@@ -369,7 +372,14 @@ export function CommunityNavigator() {
                     </div>
                   ) : failed ? (
                     <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
-                      {strings.error}
+                      <p>{strings.error}</p>
+                      <div className="mt-3 flex flex-wrap gap-3">{[
+                        {href:"/network",label:strings.browsePeople},
+                        {href:"/organizations",label:strings.browseOrganizations},
+                        {href:"/opportunities",label:strings.browseOpportunities},
+                        {href:"/events",label:strings.browseEvents},
+                        {href:"/businesses",label:strings.browseBusinesses},
+                      ].map(item => <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className="inline-flex min-h-11 items-center rounded-sm font-semibold underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">{item.label}</Link>)}</div>
                     </div>
                   ) : results.length ? (
                     results.map((result) => {

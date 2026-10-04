@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { inferAssistantIntent } from "@/lib/assistant/intents";
-import { searchAssistantCatalog } from "@/lib/assistant/search";
+import { MentorshipSearchScopeError, searchAssistantCatalog } from "@/lib/assistant/search";
 import { createClient } from "@/lib/supabase/server";
 
 const requestSchema = z.object({
@@ -57,7 +57,10 @@ export async function POST(request: Request) {
       results,
       mode: "read-only",
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof MentorshipSearchScopeError) {
+      return NextResponse.json({ error: error.message }, { status: 422 });
+    }
     return NextResponse.json(
       { error: "Assistant search is temporarily unavailable." },
       { status: 503 },
