@@ -233,7 +233,6 @@ export function CommunityNavigator() {
     <button type="button" className={styles.launcher} aria-label={strings.ask} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(true)}>
       <Compass size={17} aria-hidden="true" /><span className={styles.launcherLabel}>{strings.ask}</span><kbd className="hidden text-[10px] text-muted-foreground lg:inline">⌘K</kbd>
     </button>
-    {open ? <dialog ref={panelRef} aria-modal="true" aria-labelledby="community-navigator-title" className={styles.drawer} dir={language === "en" ? "ltr" : "rtl"} lang={language === "fa" ? "fa" : language} onCancel={() => setOpen(false)}
     {open ? <dialog ref={panelRef} aria-modal="true" aria-labelledby="community-navigator-title" className={styles.drawer} dir={language === "en" ? "ltr" : "rtl"} lang={language === "fa" ? "fa" : language} onCancel={() => setOpen(false)} onKeyDown={containDialogFocus}
       onMouseDown={event => { if (event.target === event.currentTarget) {const r=event.currentTarget.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)setOpen(false);} }}>
       <header className={styles.header}>
