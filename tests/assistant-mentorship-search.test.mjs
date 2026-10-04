@@ -180,3 +180,9 @@ test("explicit skills cannot be displaced by location or compound-topic names", 
  const other=Array.from({length:12},(_,i)=>profile(`h${i}`,{display_name:"Healthcare"}));
  assert.deepEqual((await searchAssistantCatalog(client([...other,profile("ai",{skills:["AI in healthcare"]})]),"mentor skilled in AI in healthcare",options)).map(r=>r.entityId),["ai"]);
 });
+
+test("explicit expertise also matches public headline and profession", async () => {
+ const profiles=[profile("headline",{headline:"Ruby developer"}),profile("profession",{profession:"Ruby developer"}),profile("name",{display_name:"Ruby"}),profile("company",{company:"Ruby"})];
+ assert.deepEqual((await searchAssistantCatalog(client(profiles),"mentor skilled in Ruby",options)).map(r=>r.entityId).sort(),["headline","profession"]);
+ assert.deepEqual((await searchAssistantCatalog(client([profile("rd",{profession:"R&D specialist"}),profile("r",{headline:"R developer"})]),"mentor skilled in R",options)).map(r=>r.entityId),["r"]);
+});
