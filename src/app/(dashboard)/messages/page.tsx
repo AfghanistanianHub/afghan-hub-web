@@ -84,7 +84,7 @@ export default async function MessagesPage() {
           <div
             role="alert"
             aria-live="assertive"
-            className="mt-8 rounded-2xl border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive"
+            className="mt-8 rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive"
           >
             We could not load your conversations. Please try again.
           </div>
