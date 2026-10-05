@@ -32,7 +32,7 @@ export default async function UpdatePasswordPage({
   }
 
   const fieldClassName =
-    "w-full rounded-xl border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10";
+    "w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10";
 
   return (
     <main className="min-h-screen bg-background text-foreground lg:grid lg:grid-cols-[0.95fr_1.05fr]">
@@ -65,7 +65,7 @@ export default async function UpdatePasswordPage({
           <p className="mt-3 text-sm leading-6 text-muted-foreground">{PASSWORD_POLICY_HINT} Enter the same password twice.</p>
 
           {error ? (
-            <div role="alert" aria-live="assertive" className="mt-6 rounded-xl border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">{error}</div>
+            <div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">{error}</div>
           ) : null}
 
           <form action={updatePassword} className="mt-7 space-y-5">
