@@ -1,9 +1,6 @@
 "use client";
+
 import Link from "next/link";
-import { CommunitySignature } from "@/components/public/community-signature";
-import styles from "./network-surfaces.module.css";
-
-
 import { useMemo, useRef, useState } from "react";
 import {
   ArrowUpRight,
@@ -13,7 +10,9 @@ import {
   UserRound,
 } from "lucide-react";
 
+import { CommunitySignature } from "@/components/public/community-signature";
 import { ExternalImage } from "@/components/ui/external-image";
+import styles from "./network-surfaces.module.css";
 
 export type Member = {
   id: string;
@@ -67,17 +66,11 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
 
   const filteredMembers = useMemo(() => {
     return members.filter((member) => {
-      if (
-        mentorshipFilter === "mentors" &&
-        !member.open_to_mentoring
-      ) {
+      if (mentorshipFilter === "mentors" && !member.open_to_mentoring) {
         return false;
       }
 
-      if (
-        mentorshipFilter === "mentees" &&
-        !member.looking_for_mentor
-      ) {
+      if (mentorshipFilter === "mentees" && !member.looking_for_mentor) {
         return false;
       }
 
@@ -111,15 +104,27 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
   }
 
   return (
-    <>
-      <div className="mt-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <section className="border-t border-border/70 pt-7">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(320px,460px)] lg:items-end">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Member directory</p>
-          <h2 className="mt-2 text-2xl font-bold tracking-tight text-foreground">Explore the community</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+            Member directory
+          </p>
+          <div className="mt-1.5 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              Explore the community
+            </h2>
+            <p className="text-sm text-muted-foreground" aria-live="polite">
+              {filteredMembers.length} {filteredMembers.length === 1 ? "member" : "members"}
+            </p>
+          </div>
         </div>
 
-        <div className="relative w-full lg:max-w-md">
-          <Search aria-hidden="true" className="absolute left-4 top-1/2 size-4.5 -translate-y-1/2 text-muted-foreground" />
+        <div className="relative w-full">
+          <Search
+            aria-hidden="true"
+            className="absolute left-4 top-1/2 size-4.5 -translate-y-1/2 text-muted-foreground"
+          />
           <input
             ref={searchInputRef}
             type="search"
@@ -127,51 +132,41 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
             onChange={(event) => setSearchQuery(event.target.value)}
             aria-label="Search members"
             placeholder="Search people, skills, companies..."
-            className={`${styles.search} w-full border border-border bg-card py-3.5 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground hover:border-primary/40`}
+            className={`${styles.search} w-full border border-border bg-card py-3 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground hover:border-primary/40`}
           />
         </div>
       </div>
 
-      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div
-          className="flex flex-wrap gap-2"
-          role="group"
-          aria-label="Mentorship availability"
-        >
-          {[
-            { value: "all", label: "All members" },
-            { value: "mentors", label: "Open to mentoring" },
-            { value: "mentees", label: "Looking for a mentor" },
-          ].map((option) => {
-            const selected = mentorshipFilter === option.value;
+      <div className="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="Mentorship availability">
+        {[
+          { value: "all", label: "All members" },
+          { value: "mentors", label: "Open to mentoring" },
+          { value: "mentees", label: "Looking for a mentor" },
+        ].map((option) => {
+          const selected = mentorshipFilter === option.value;
 
-            return (
-              <button
-                key={option.value}
-                type="button"
-                aria-pressed={selected}
-                onClick={() =>
-                  setMentorshipFilter(option.value as MentorshipFilter)
-                }
-                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-                  selected
-                    ? "border-primary/25 bg-primary/10 text-primary"
-                    : "border-border bg-card text-muted-foreground hover:border-primary/25 hover:text-foreground"
-                }`}
-              >
-                {option.label}
-              </button>
-            );
-          })}
-        </div>
-
-        <p className="text-sm text-muted-foreground" aria-live="polite">
-          {filteredMembers.length} {filteredMembers.length === 1 ? "member" : "members"} found
-        </p>
+          return (
+            <button
+              key={option.value}
+              type="button"
+              aria-pressed={selected}
+              onClick={() =>
+                setMentorshipFilter(option.value as MentorshipFilter)
+              }
+              className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+                selected
+                  ? "border-primary/30 bg-primary/10 text-primary"
+                  : "border-border bg-card text-muted-foreground hover:border-primary/30 hover:text-foreground"
+              }`}
+            >
+              {option.label}
+            </button>
+          );
+        })}
       </div>
 
       {filteredMembers.length > 0 ? (
-        <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-4 grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filteredMembers.map((member) => {
             const memberName = getMemberName(member);
             const location = [member.city, member.province_state, member.country]
@@ -182,68 +177,96 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
               .join(" at ");
 
             return (
-              <Link key={member.id} href={`/members/${member.id}`} className={`group block ${styles.profile}`}>
-                <article className={`relative h-full overflow-hidden border p-6 ${styles.surface}`}>
+              <Link
+                key={member.id}
+                href={`/members/${member.id}`}
+                className={`group block self-start ${styles.profile}`}
+              >
+                <article className={`relative overflow-hidden border px-5 py-4 ${styles.surface}`}>
                   <CommunitySignature className={styles.signature} />
-                  <div className="relative flex items-start gap-4">
+
+                  <div className="relative flex items-start gap-3.5">
                     {member.avatar_url ? (
                       <ExternalImage
                         src={member.avatar_url}
                         alt={memberName}
-                        width={56}
-                        height={56}
-                        className="size-14 rounded-sm object-cover"
+                        width={48}
+                        height={48}
+                        className="size-12 shrink-0 rounded-[var(--radius)] border border-border object-cover"
                       />
                     ) : (
-                      <div className="flex size-14 shrink-0 items-center justify-center rounded-sm bg-secondary font-bold text-primary">
-                        {getInitials(memberName) || <UserRound aria-hidden="true" className="size-6" />}
+                      <div className="flex size-12 shrink-0 items-center justify-center rounded-[var(--radius)] bg-secondary font-bold text-primary">
+                        {getInitials(memberName) || (
+                          <UserRound aria-hidden="true" className="size-5" />
+                        )}
                       </div>
                     )}
 
                     <div className="min-w-0 flex-1">
-                      <h3 className="line-clamp-2 break-words text-lg font-bold leading-6 text-foreground transition group-hover:text-primary">{memberName}</h3>
+                      <h3 className="line-clamp-1 break-words text-base font-bold leading-6 text-foreground transition group-hover:text-primary">
+                        {memberName}
+                      </h3>
                       {member.headline ? (
-                        <p className="mt-1 line-clamp-2 break-words text-sm leading-5 text-muted-foreground">{member.headline}</p>
-                      ) : null}
+                        <p className="mt-0.5 line-clamp-1 break-words text-sm leading-5 text-muted-foreground">
+                          {member.headline}
+                        </p>
+                      ) : (
+                        <p className="mt-0.5 text-sm leading-5 text-muted-foreground">
+                          Community member
+                        </p>
+                      )}
                     </div>
-                    <ArrowUpRight aria-hidden="true" data-profile-arrow className="mt-1 size-4 shrink-0 text-muted-foreground" />
+
+                    <ArrowUpRight
+                      aria-hidden="true"
+                      data-profile-arrow
+                      className="mt-1 size-4 shrink-0 text-muted-foreground"
+                    />
                   </div>
 
-                  <div className="relative mt-5 space-y-3 text-sm text-muted-foreground">
-                    {professionalDetails ? (
-                      <div className="flex items-start gap-3">
-                        <BriefcaseBusiness aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
-                        <span className="min-w-0 break-words">{professionalDetails}</span>
-                      </div>
-                    ) : null}
-
-                    {location ? (
-                      <div className="flex items-start gap-3">
-                        <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
-                        <span className="min-w-0 break-words">{location}</span>
-                      </div>
-                    ) : null}
-                  </div>
-
-                  {member.open_to_mentoring || member.looking_for_mentor ? (
-                    <div className="relative mt-5 flex flex-wrap gap-2 border-t border-border/70 pt-4">
-                      {member.open_to_mentoring ? (
-                        <span className="rounded-full border border-primary/15 bg-primary/[0.07] px-3 py-1 text-xs font-semibold text-primary">
-                          Open to mentoring
-                        </span>
+                  {(professionalDetails || location) ? (
+                    <div className="relative mt-4 grid gap-2 border-t border-border/70 pt-3 text-sm text-muted-foreground">
+                      {professionalDetails ? (
+                        <div className="flex min-w-0 items-start gap-2.5">
+                          <BriefcaseBusiness
+                            aria-hidden="true"
+                            className="mt-0.5 size-3.5 shrink-0 text-primary"
+                          />
+                          <span className="min-w-0 truncate">{professionalDetails}</span>
+                        </div>
                       ) : null}
-                      {member.looking_for_mentor ? (
-                        <span className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-foreground">
-                          Looking for a mentor
-                        </span>
+
+                      {location ? (
+                        <div className="flex min-w-0 items-start gap-2.5">
+                          <MapPin
+                            aria-hidden="true"
+                            className="mt-0.5 size-3.5 shrink-0 text-primary"
+                          />
+                          <span className="min-w-0 truncate">{location}</span>
+                        </div>
                       ) : null}
                     </div>
                   ) : null}
 
-                  {member.skills.length > 0 ? (
-                    <div className="relative mt-5 flex flex-wrap gap-2 border-t border-border/70 pt-4">
-                      {member.skills.slice(0, 4).map((skill) => (
-                        <span key={skill} className="max-w-full break-words rounded-full border border-border bg-muted/60 px-3 py-1 text-xs text-muted-foreground">
+                  {member.open_to_mentoring ||
+                  member.looking_for_mentor ||
+                  member.skills.length > 0 ? (
+                    <div className="relative mt-3 flex flex-wrap gap-1.5 border-t border-border/70 pt-3">
+                      {member.open_to_mentoring ? (
+                        <span className="rounded-full border border-primary/15 bg-primary/[0.07] px-2.5 py-1 text-[0.7rem] font-semibold text-primary">
+                          Open to mentoring
+                        </span>
+                      ) : null}
+                      {member.looking_for_mentor ? (
+                        <span className="rounded-full border border-border bg-background px-2.5 py-1 text-[0.7rem] font-semibold text-foreground">
+                          Looking for a mentor
+                        </span>
+                      ) : null}
+                      {member.skills.slice(0, 2).map((skill) => (
+                        <span
+                          key={skill}
+                          className="max-w-full truncate rounded-full border border-border bg-muted/60 px-2.5 py-1 text-[0.7rem] text-muted-foreground"
+                        >
                           {skill}
                         </span>
                       ))}
@@ -255,9 +278,12 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
           })}
         </div>
       ) : (
-        <div className={`relative mt-6 flex min-h-72 flex-col items-center justify-center overflow-hidden border px-6 text-center ${styles.surface}`}><CommunitySignature className={styles.signature} />
-          <span className="relative flex size-14 items-center justify-center rounded-sm bg-secondary text-primary">
-            <UserRound aria-hidden="true" className="size-7" />
+        <div
+          className={`relative mt-5 flex min-h-64 flex-col items-center justify-center overflow-hidden border px-6 text-center ${styles.surface}`}
+        >
+          <CommunitySignature className={styles.signature} />
+          <span className="relative flex size-12 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary">
+            <UserRound aria-hidden="true" className="size-6" />
           </span>
           <h2 className="relative mt-4 text-lg font-bold text-foreground">
             {hasSearchQuery || hasMentorshipFilter
@@ -280,6 +306,6 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
           ) : null}
         </div>
       )}
-    </>
+    </section>
   );
 }

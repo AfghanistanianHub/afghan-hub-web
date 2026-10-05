@@ -66,20 +66,20 @@ export function Sidebar({
               aria-current={active ? "page" : undefined}
               className={`group relative flex min-h-11 items-center gap-3 rounded-[var(--radius)] px-3.5 py-3 text-sm font-medium transition-colors motion-reduce:transition-none active:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                 active
-                  ? "bg-secondary text-foreground"
+                  ? "bg-primary/[0.09] font-semibold text-foreground shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--primary)_10%,transparent)]"
                   : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               }`}
             >
               {active ? (
                 <span
                   aria-hidden="true"
-                  className="absolute left-1 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-primary"
+                  className="absolute left-0.5 top-1/2 h-7 w-1.5 -translate-y-1/2 rounded-full bg-primary"
                 />
               ) : null}
               <span
                 className={`flex size-8 shrink-0 items-center justify-center rounded-[var(--radius)] transition-colors motion-reduce:transition-none ${
                   active
-                    ? "bg-primary/10 text-primary"
+                    ? "bg-primary/14 text-primary ring-1 ring-primary/10"
                     : "bg-transparent text-current group-hover:bg-background/70"
                 }`}
               >

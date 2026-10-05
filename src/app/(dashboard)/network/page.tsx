@@ -97,22 +97,51 @@ export default async function NetworkPage() {
   const connectionCount = acceptedConnections?.length ?? 0;
   const requestCount = incomingRequests?.length ?? 0;
 
-  return (
-    <main data-illustration-focus-scope className="px-4 py-8 md:px-8 lg:px-10">
-      <div className="mx-auto max-w-7xl">
-        <section data-illustration-trigger className="relative overflow-hidden rounded-sm border border-border/80 bg-card px-6 py-8 md:px-8 md:py-10 lg:grid lg:grid-cols-[minmax(0,1fr)_390px] lg:items-end lg:gap-10">
+  const stats = [
+    {
+      label: "Members",
+      value: memberCount,
+      helper: "visible",
+      icon: UsersRound,
+    },
+    {
+      label: "Connections",
+      value: connectionCount,
+      helper: "connected",
+      icon: ArrowRight,
+    },
+    {
+      label: "Requests",
+      value: requestCount,
+      helper: "new",
+      icon: UserPlus,
+    },
+  ];
 
-          <div className="relative max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary">
+  return (
+    <main
+      data-illustration-focus-scope
+      className="px-4 py-7 sm:px-6 md:px-8 lg:px-10 xl:px-12"
+    >
+      <div className="mx-auto w-full max-w-[1500px]">
+        <section
+          data-illustration-trigger
+          className="relative overflow-hidden rounded-[var(--radius)] border border-border bg-card px-5 py-6 sm:px-7 sm:py-7 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.75fr)] lg:items-center lg:gap-10 lg:px-9 lg:py-8 xl:gap-14"
+        >
+          <div className="relative min-w-0">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.07] px-3 py-1.5 text-xs font-semibold text-primary">
               <Sparkles aria-hidden="true" className="size-3.5" />
               Community network
             </div>
-            <h1 className="mt-5 max-w-3xl text-3xl font-medium leading-[1.08] tracking-[-0.035em] text-foreground md:text-4xl">
+
+            <h1 className="mt-4 max-w-3xl text-3xl font-medium leading-[1.06] tracking-[-0.04em] text-foreground md:text-4xl xl:text-[2.7rem]">
               Discover the people behind the community.
             </h1>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
+
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base md:leading-7">
               Find professionals, entrepreneurs, artists, students, and community leaders — then turn discovery into a real connection.
             </p>
+
             <div className="mt-5 flex flex-wrap gap-2">
               <ContextualAssistantPrompt
                 label="Find tech professionals"
@@ -127,29 +156,37 @@ export default async function NetworkPage() {
                 query="Find mentors in the community"
               />
             </div>
-            <div className="mt-5 w-48 max-w-full" aria-hidden="true"><CatalogIllustration interactive kind="people" /></div>
+
+            <div className="mt-6 grid max-w-2xl grid-cols-1 gap-2.5 sm:grid-cols-3">
+              {stats.map(({ label, value, helper, icon: Icon }) => (
+                <div
+                  key={label}
+                  className="flex min-w-0 items-center gap-3 rounded-[var(--radius)] border border-border/80 bg-background/80 px-3.5 py-3"
+                >
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary">
+                    <Icon aria-hidden="true" className="size-4" />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="flex items-baseline gap-1.5">
+                      <p className="text-lg font-bold tracking-tight text-foreground">{value}</p>
+                      <p className="truncate text-xs font-medium text-muted-foreground">{helper}</p>
+                    </div>
+                    <p className="truncate text-xs text-muted-foreground">{label}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="relative mt-7 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:mt-0">
-            <div className="rounded-sm border border-border bg-background p-4">
-              <span className="flex size-9 items-center justify-center rounded-sm bg-secondary text-primary"><UsersRound aria-hidden="true" className="size-4" /></span>
-              <p className="mt-4 text-2xl font-bold tracking-tight">{memberCount}</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">members visible</p>
-            </div>
-            <div className="rounded-sm border border-border bg-background p-4">
-              <span className="flex size-9 items-center justify-center rounded-sm bg-secondary text-primary"><ArrowRight aria-hidden="true" className="size-4" /></span>
-              <p className="mt-4 text-2xl font-bold tracking-tight">{connectionCount}</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">connections</p>
-            </div>
-            <div className="rounded-sm border border-border bg-background p-4">
-              <span className="flex size-9 items-center justify-center rounded-sm bg-secondary text-primary"><UserPlus aria-hidden="true" className="size-4" /></span>
-              <p className="mt-4 text-2xl font-bold tracking-tight">{requestCount}</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">new requests</p>
+          <div className="relative mt-7 flex min-h-52 items-center justify-center lg:mt-0 lg:min-h-0 lg:justify-end">
+            <div className="pointer-events-none absolute inset-x-8 top-1/2 h-36 -translate-y-1/2 rounded-full bg-primary/[0.035] blur-3xl" />
+            <div className="relative w-full max-w-[360px] lg:max-w-[390px] xl:max-w-[420px]" aria-hidden="true">
+              <CatalogIllustration interactive kind="people" />
             </div>
           </div>
         </section>
 
-        <div className="mt-8 space-y-8">
+        <div className="mt-7 space-y-7 lg:mt-8 lg:space-y-8">
           <ConnectionRequests requests={incomingRequests ?? []} />
 
           {user ? (
@@ -157,8 +194,14 @@ export default async function NetworkPage() {
           ) : null}
 
           {error ? (
-            <div role="alert" aria-live="assertive" className="relative overflow-hidden rounded-sm border border-destructive/20 bg-destructive/[0.05] p-4 text-sm text-destructive"><span className="relative">
-              We could not load the member directory right now. Please try again shortly.</span>
+            <div
+              role="alert"
+              aria-live="assertive"
+              className="relative overflow-hidden rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.05] p-4 text-sm text-destructive"
+            >
+              <span className="relative">
+                We could not load the member directory right now. Please try again shortly.
+              </span>
             </div>
           ) : (
             <MemberDirectory members={members ?? []} />
