@@ -206,3 +206,21 @@ test("explicit expertise also matches public headline and profession", async () 
  assert.deepEqual((await searchAssistantCatalog(client(profiles),"mentor skilled in Ruby",options)).map(r=>r.entityId).sort(),["headline","profession"]);
  assert.deepEqual((await searchAssistantCatalog(client([profile("rd",{profession:"R&D specialist"}),profile("r",{headline:"R developer"})]),"mentor skilled in R",options)).map(r=>r.entityId),["r"]);
 });
+
+test("mentor result subtitle prioritizes the expertise that matched the query", async () => {
+ const profiles = [
+  profile("headline", { mentorship_topics: ["Leadership"], headline: "Ruby developer" }),
+  profile("profession", { mentorship_topics: ["Leadership"], profession: "Ruby specialist" }),
+ ];
+ const results = await searchAssistantCatalog(client(profiles), "mentor skilled in Ruby", options);
+ assert.deepEqual(results.map(result => result.subtitle), ["Ruby developer", "Ruby specialist"]);
+});
+
+test("mixed name and skill queries explain the explicit expertise match", async () => {
+ const result = await searchAssistantCatalog(
+  client([profile("1", { display_name: "Ruby", mentorship_topics: ["Leadership"], skills: ["Ruby"] })]),
+  "mentor Ruby skilled in Ruby",
+  options,
+ );
+ assert.equal(result[0].subtitle, "Ruby");
+});
