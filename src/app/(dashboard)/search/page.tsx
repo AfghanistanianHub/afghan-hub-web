@@ -392,7 +392,7 @@ export default async function SearchPage({
   return (
     <main className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <div className="mx-auto max-w-5xl">
-        <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
+        <section className="relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
           <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
           <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
           <div className="relative">
@@ -409,13 +409,13 @@ export default async function SearchPage({
           </div>
         </section>
 
-        <form action="/search" role="search" className="relative mt-8 grid gap-3 rounded-[1.75rem] border border-border/80 bg-card/88 p-4 shadow-[0_12px_38px_rgb(15_23_42/0.035)] backdrop-blur md:grid-cols-[14rem_minmax(0,1fr)_auto] md:items-end">
+        <form action="/search" role="search" className="relative mt-8 grid gap-3 rounded-[var(--radius)] border border-border/80 bg-card/88 p-4 shadow-[0_1px_0_rgb(48_43_53/0.025)] backdrop-blur md:grid-cols-[14rem_minmax(0,1fr)_auto] md:items-end">
           <label className="grid gap-2 text-sm font-medium text-foreground">
             What are you looking for?
             <select
               name="intent"
               defaultValue={intent ?? ""}
-              className="rounded-2xl border border-border/80 bg-background/70 px-4 py-4 text-sm text-foreground outline-none transition hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
+              className="rounded-[var(--radius)] border border-border/80 bg-background/70 px-4 py-4 text-sm text-foreground outline-none transition hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
             >
               <option value="">Anything in the community</option>
               {phaseOneSearchIntents.map((option) => (
@@ -434,25 +434,25 @@ export default async function SearchPage({
               defaultValue={query}
               placeholder={intent ? "Optional keyword…" : "Name, skill, organization, service, opportunity…"}
               aria-label="Search Afghan Hub"
-              className="w-full rounded-2xl border border-border/80 bg-background/70 py-4 pl-12 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
+              className="w-full rounded-[var(--radius)] border border-border/80 bg-background/70 py-4 pl-12 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
             />
           </label>
           <button
             type="submit"
-            className="rounded-2xl bg-primary px-5 py-4 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+            className="rounded-[var(--radius)] bg-primary px-5 py-4 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
             {intent && !query ? "Browse" : "Search"}
           </button>
         </form>
 
         {query && query.length < 2 ? (
-          <div className="mt-8 rounded-xl border border-amber-500/25 bg-amber-500/10 p-4 text-sm text-amber-700">
+          <div className="mt-8 rounded-[var(--radius)] border border-amber-500/25 bg-amber-500/10 p-4 text-sm text-amber-700">
             Enter at least two characters to search.
           </div>
         ) : null}
 
         {error ? (
-          <div className="mt-8 rounded-xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
+          <div className="mt-8 rounded-[var(--radius)] border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
             We could not complete your search. Please try again.
           </div>
         ) : null}
@@ -480,7 +480,7 @@ export default async function SearchPage({
                     <Link
                       key={`${result.entity_type}-${result.entity_id}`}
                       href={href}
-                      className="surface-panel group relative flex items-start gap-4 overflow-hidden rounded-[1.5rem] p-5 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_16px_36px_rgb(15_23_42/0.06)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                      className="surface-panel group relative flex items-start gap-4 overflow-hidden rounded-[var(--radius)] p-5 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_16px_36px_rgb(15_23_42/0.06)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                     >
                       <div aria-hidden="true" className="absolute -right-8 -top-8 size-24 rounded-full border border-primary/10" />
                       {result.image_url ? (
@@ -489,10 +489,10 @@ export default async function SearchPage({
                           alt=""
                           width={48}
                           height={48}
-                          className="size-12 shrink-0 rounded-xl object-cover"
+                          className="size-12 shrink-0 rounded-[var(--radius)] object-cover"
                         />
                       ) : (
-                        <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <div className="flex size-12 shrink-0 items-center justify-center rounded-[var(--radius)] bg-primary/10 text-primary">
                           <Icon className="size-5" />
                         </div>
                       )}
@@ -529,7 +529,7 @@ export default async function SearchPage({
                 })}
               </div>
             ) : (
-              <div className="relative mt-5 flex min-h-64 flex-col items-center justify-center overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-card/70 px-6 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]">
+              <div className="relative mt-5 flex min-h-64 flex-col items-center justify-center overflow-hidden rounded-[var(--radius)] border border-dashed border-border/80 bg-card/70 px-6 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]">
                 <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl" />
                 <Search className="size-10 text-muted-foreground/60" />
                 <h2 className="mt-4 text-lg font-bold text-foreground">
@@ -576,14 +576,14 @@ export default async function SearchPage({
                   <Link
                     key={goal.href}
                     href={goal.href}
-                    className="group relative overflow-hidden rounded-[1.5rem] border border-border/80 bg-card p-5 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_14px_34px_rgb(15_23_42/0.05)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                    className="group relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card p-5 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_14px_34px_rgb(15_23_42/0.05)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                   >
                     <div
                       aria-hidden="true"
                       className="absolute -right-8 -top-8 size-24 rounded-full border border-primary/10"
                     />
                     <div className="relative flex items-start justify-between gap-4">
-                      <span className="flex size-11 items-center justify-center rounded-2xl bg-primary/[0.07] text-primary">
+                      <span className="flex size-11 items-center justify-center rounded-[var(--radius)] bg-primary/[0.07] text-primary">
                         <Icon aria-hidden="true" className="size-5" />
                       </span>
                       <ArrowUpRight
@@ -606,12 +606,12 @@ export default async function SearchPage({
                 );
               })}
 
-              <div className="relative overflow-hidden rounded-[1.5rem] border border-dashed border-border bg-muted/30 p-5">
+              <div className="relative overflow-hidden rounded-[var(--radius)] border border-dashed border-border bg-muted/30 p-5">
                 <div
                   aria-hidden="true"
                   className="absolute -bottom-10 -right-10 size-28 rounded-full bg-primary/[0.05] blur-2xl"
                 />
-                <span className="relative flex size-11 items-center justify-center rounded-2xl border border-border bg-background text-muted-foreground">
+                <span className="relative flex size-11 items-center justify-center rounded-[var(--radius)] border border-border bg-background text-muted-foreground">
                   <Search aria-hidden="true" className="size-5" />
                 </span>
                 <div className="relative mt-6">
