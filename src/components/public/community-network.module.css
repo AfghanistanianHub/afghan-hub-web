@@ -1,12 +1,12 @@
 .network { position:relative; padding-block:18px 20px; }
 .nodes { position:absolute; inset:0 0 46px; }
 .node { position:absolute; display:flex; align-items:center; gap:7px; min-height:44px; padding:9px 12px; border:1px solid color-mix(in srgb,var(--border) 88%,var(--foreground)); border-radius:5px; background:color-mix(in srgb,var(--background) 96%,white); color:var(--foreground); font-size:.75rem; font-weight:650; white-space:nowrap; box-shadow:0 3px 12px rgb(47 42 52 / .035); transition:border-color 180ms, background 180ms, color 180ms, box-shadow 180ms; }
-.node:is(:hover,:focus-visible) { border-color:var(--primary); background:var(--secondary); color:var(--primary); box-shadow:0 4px 14px #62429120; z-index:2; }
+.node:is(:hover,:focus-visible) { border-color:var(--primary); background:var(--secondary); color:var(--primary); box-shadow:0 7px 22px #6242912b; z-index:2; }
 .node:active { background:var(--secondary); box-shadow:inset 0 2px 4px #302b3525; }
 .node > svg { transition:transform 180ms; }
 .node:is(:hover,:focus-visible) > svg { transform:translate(2px,-2px); }
 .network [data-hero-layer] { transition:opacity 180ms, filter 180ms, transform var(--motion-step,420ms) var(--motion-ease,ease-out); }
-.network:has(.node:is(:hover,:focus-visible)) [data-hero-layer] { opacity:.28; }
+.network:has(.node:is(:hover,:focus-visible)) [data-hero-layer] { opacity:.18; }
 .node:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
 .mobileDetail { display:none; }
 .network .node svg { width:13px; height:13px; flex-shrink:0; }
@@ -27,7 +27,7 @@
 .network:has([data-community-node=people]:is(:hover,:focus-visible)) [data-hero-layer=network],
 .network:has([data-community-node=opportunities]:is(:hover,:focus-visible)) [data-hero-layer=openings],
 .network:has([data-community-node=events]:is(:hover,:focus-visible)) [data-hero-layer=gathering],
-.network:has([data-community-node=organizations]:is(:hover,:focus-visible),[data-community-node=businesses]:is(:hover,:focus-visible)) [data-hero-layer=architecture] { opacity:1 !important; filter:drop-shadow(0 3px 5px #62429135); }
+.network:has([data-community-node=organizations]:is(:hover,:focus-visible),[data-community-node=businesses]:is(:hover,:focus-visible)) [data-hero-layer=architecture] { opacity:1 !important; filter:drop-shadow(0 4px 7px #62429145); }
 @media(max-width:550px) {
  .network { padding:0; }
  .network > svg { max-height:210px; }
