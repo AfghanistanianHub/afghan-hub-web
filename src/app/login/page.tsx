@@ -37,7 +37,7 @@ export default async function LoginPage({
   const joining = mode === "join";
 
   const fieldClassName =
-    "w-full rounded-xl border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10";
+    "w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10";
 
   return (
     <main className="min-h-screen bg-background text-foreground lg:grid lg:grid-cols-[1.08fr_0.92fr]">
@@ -45,7 +45,7 @@ export default async function LoginPage({
 
         <div className="relative z-10">
           <Link href="/" className="inline-flex items-center gap-2 rounded-sm text-sm font-semibold uppercase tracking-[0.22em] text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
-            <span className="flex size-8 items-center justify-center rounded-xl bg-secondary text-primary">A</span>
+            <span className="flex size-8 items-center justify-center rounded-[var(--radius-control)] bg-secondary text-primary">A</span>
             Afghan Hub
           </Link>
 
@@ -68,7 +68,7 @@ export default async function LoginPage({
           {communityPaths.map(path => {
             const Icon = path.icon;
             return (
-              <div key={path.label} className="rounded-2xl border border-primary/10 bg-background/72 p-4">
+              <div key={path.label} className="rounded-[var(--radius)] border border-primary/10 bg-background/72 p-4">
                 <div className="flex items-center gap-3">
                   <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
                     <Icon aria-hidden="true" className="size-4.5" />
@@ -108,13 +108,13 @@ export default async function LoginPage({
           </p>
 
           {error ? (
-            <div role="alert" aria-live="assertive" className="mt-6 rounded-xl border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">
+            <div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">
               {error}
             </div>
           ) : null}
 
           {message ? (
-            <div role="status" aria-live="polite" className="mt-6 rounded-xl border border-primary/15 bg-primary/[0.06] p-3 text-sm text-primary">
+            <div role="status" aria-live="polite" className="mt-6 rounded-[var(--radius)] border border-primary/15 bg-primary/[0.06] p-3 text-sm text-primary">
               {message}
             </div>
           ) : null}
