@@ -112,27 +112,27 @@ export default async function EditBusinessPage({
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               <label className="md:col-span-2">
                 <span className="text-sm font-medium">Business name *</span>
-                <input required name="name" type="text" minLength={2} maxLength={120} defaultValue={business.name} className="mt-2 w-full rounded-[var(--radius)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
+                <input required name="name" type="text" minLength={2} maxLength={120} defaultValue={business.name} className="mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
               </label>
               <label>
                 <span className="text-sm font-medium">Category *</span>
-                <input required name="category" type="text" maxLength={120} defaultValue={business.category} className="mt-2 w-full rounded-[var(--radius)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
+                <input required name="category" type="text" maxLength={120} defaultValue={business.category} className="mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
               </label>
               <label>
                 <span className="text-sm font-medium">Website</span>
-                <input name="website_url" type="url" defaultValue={business.website_url ?? ""} className="mt-2 w-full rounded-[var(--radius)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
+                <input name="website_url" type="url" defaultValue={business.website_url ?? ""} className="mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
               </label>
               <label className="md:col-span-2">
                 <span className="text-sm font-medium">Short description</span>
-                <input name="short_description" type="text" maxLength={200} defaultValue={business.short_description ?? ""} className="mt-2 w-full rounded-[var(--radius)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
+                <input name="short_description" type="text" maxLength={200} defaultValue={business.short_description ?? ""} className="mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
               </label>
               <label className="md:col-span-2">
                 <span className="text-sm font-medium">Full description</span>
-                <textarea name="description" rows={6} defaultValue={business.description ?? ""} className="mt-2 w-full rounded-[var(--radius)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
+                <textarea name="description" rows={6} defaultValue={business.description ?? ""} className="mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
               </label>
               <label className="md:col-span-2">
                 <span className="text-sm font-medium">Services</span>
-                <input name="services" type="text" defaultValue={business.services.join(", ")} className="mt-2 w-full rounded-[var(--radius)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
+                <input name="services" type="text" defaultValue={business.services.join(", ")} className="mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
                 <span className="mt-2 block text-xs text-muted-foreground">Separate each service with a comma.</span>
               </label>
               <label className="flex cursor-pointer items-center gap-3 rounded-[var(--radius)] border border-border/80 bg-secondary/40 px-4 py-3 transition hover:border-primary/25 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15 md:col-span-2">
@@ -147,11 +147,11 @@ export default async function EditBusinessPage({
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               <label>
                 <span className="text-sm font-medium">Email</span>
-                <input name="email" type="email" defaultValue={business.email ?? ""} className="mt-2 w-full rounded-[var(--radius)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
+                <input name="email" type="email" defaultValue={business.email ?? ""} className="mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
               </label>
               <label>
                 <span className="text-sm font-medium">Phone</span>
-                <input name="phone" type="tel" defaultValue={business.phone ?? ""} className="mt-2 w-full rounded-[var(--radius)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
+                <input name="phone" type="tel" defaultValue={business.phone ?? ""} className="mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
               </label>
             </div>
           </section>
@@ -161,19 +161,19 @@ export default async function EditBusinessPage({
             <div className="mt-5 grid gap-5 md:grid-cols-3">
               <label className="md:col-span-3">
                 <span className="text-sm font-medium">Address</span>
-                <input name="address_line" type="text" defaultValue={business.address_line ?? ""} className="mt-2 w-full rounded-[var(--radius)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
+                <input name="address_line" type="text" defaultValue={business.address_line ?? ""} className="mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
               </label>
               <label>
                 <span className="text-sm font-medium">City</span>
-                <input name="city" type="text" defaultValue={business.city ?? ""} className="mt-2 w-full rounded-[var(--radius)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
+                <input name="city" type="text" defaultValue={business.city ?? ""} className="mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
               </label>
               <label>
                 <span className="text-sm font-medium">Province / State</span>
-                <input name="province_state" type="text" defaultValue={business.province_state ?? ""} className="mt-2 w-full rounded-[var(--radius)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
+                <input name="province_state" type="text" defaultValue={business.province_state ?? ""} className="mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
               </label>
               <label>
                 <span className="text-sm font-medium">Country</span>
-                <input name="country" type="text" defaultValue={business.country ?? ""} className="mt-2 w-full rounded-[var(--radius)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
+                <input name="country" type="text" defaultValue={business.country ?? ""} className="mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15" />
               </label>
             </div>
           </section>
