@@ -160,7 +160,7 @@ export default async function DashboardPage() {
 
   return (
     <main className="px-4 py-7 sm:px-6 md:px-8 md:py-10 lg:px-10 xl:px-12">
-      <div className="mx-auto w-full max-w-[1500px] space-y-9">
+      <div className="mx-auto w-full max-w-[1500px] space-y-8">
         <section className="border-l-2 border-primary/30 py-2 pl-5 md:pl-8">
           <div className="grid gap-8 xl:grid-cols-[1fr_390px] xl:items-end">
             <div className="max-w-3xl">
@@ -222,7 +222,7 @@ export default async function DashboardPage() {
 
               <Link
                 href={nextStep.href}
-                className="group col-span-2 flex items-center justify-between gap-4 rounded-2xl bg-primary px-5 py-4 text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:col-span-1 xl:col-span-2"
+                className="group col-span-2 flex items-center justify-between gap-4 rounded-[var(--radius)] bg-primary px-5 py-4 text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:col-span-1 xl:col-span-2"
               >
                 <div>
                   <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] opacity-70">{nextStep.kicker}</p>
@@ -238,8 +238,8 @@ export default async function DashboardPage() {
 
         <RecommendedMembers members={recommendedMembers} />
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-          <section className="rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_12px_38px_rgb(15_23_42/0.04)] md:p-7">
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_350px]">
+          <section className="rounded-[var(--radius)] border border-border/80 bg-card p-5 shadow-[0_1px_0_rgb(48_43_53/0.025)] md:p-6">
             <div className="flex items-end justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Recommended for you</p>
@@ -271,7 +271,7 @@ export default async function DashboardPage() {
                     <Link
                       key={opportunity.id}
                       href={`/opportunities/${opportunity.slug}`}
-                      className={`group relative overflow-hidden rounded-2xl border border-border bg-background p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${index === 0 ? "md:col-span-2 2xl:col-span-1" : ""}`}
+                      className={`group relative overflow-hidden rounded-[var(--radius)] border border-border bg-background p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_8px_22px_rgb(48_43_53/0.05)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${index === 0 ? "md:col-span-2 2xl:col-span-1" : ""}`}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <span className="rounded-full bg-primary/[0.08] px-2.5 py-1 text-[0.68rem] font-semibold capitalize text-primary">
@@ -305,7 +305,7 @@ export default async function DashboardPage() {
                 })}
               </div>
             ) : (
-              <div className="relative mt-6 overflow-hidden rounded-2xl border border-dashed border-border bg-muted/40 px-5 py-10 text-center">
+              <div className="relative mt-6 overflow-hidden rounded-[var(--radius)] border border-dashed border-border bg-muted/40 px-5 py-10 text-center">
                 <div aria-hidden="true" className="absolute -right-8 -top-8 size-28 rounded-full border border-primary/10" />
                 <BriefcaseBusiness aria-hidden="true" className="relative mx-auto size-9 text-muted-foreground" />
                 <h3 className="relative mt-3 font-semibold text-foreground">No active opportunities yet</h3>
@@ -319,13 +319,13 @@ export default async function DashboardPage() {
           <aside className="space-y-6">
             <ProfileStrength profile={profile} compact />
 
-            <section className="rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_12px_38px_rgb(15_23_42/0.04)]">
+            <section className="rounded-[var(--radius)] border border-border/80 bg-card p-5 shadow-[0_1px_0_rgb(48_43_53/0.025)]">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">For you</p>
                   <h2 className="mt-1 text-lg font-bold text-foreground">Events</h2>
                 </div>
-                <span className="flex size-10 items-center justify-center rounded-2xl bg-secondary text-primary">
+                <span className="flex size-10 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary">
                   <CalendarDays aria-hidden="true" className="size-4.5" />
                 </span>
               </div>
@@ -361,7 +361,7 @@ export default async function DashboardPage() {
                   })}
                 </div>
               ) : (
-                <div className="mt-5 rounded-2xl border border-dashed border-border bg-muted/35 px-4 py-8 text-center">
+                <div className="mt-5 rounded-[var(--radius)] border border-dashed border-border bg-muted/35 px-4 py-8 text-center">
                   <CalendarDays aria-hidden="true" className="mx-auto size-8 text-muted-foreground" />
                   <h3 className="mt-3 font-semibold text-foreground">Nothing scheduled yet</h3>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
