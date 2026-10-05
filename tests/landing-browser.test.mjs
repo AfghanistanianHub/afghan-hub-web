@@ -227,11 +227,11 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   await browser.send("Target.activateTarget",{targetId:other.targetId});
   await waitFor(()=>page.evaluate("document.hidden"),"actual background tab visibility");
   await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='false'"),"hidden-tab pause");
-  assert.ok(await page.evaluate("[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===1).every(a=>a.playState==='finished')"),"Hidden tab does not restart narrative");
   await browser.send("Target.activateTarget",{targetId:tabs.find(tab=>tab.type==='page').id});
   await browser.send("Target.closeTarget",{targetId:other.targetId});browser.close();
   await page.send("Emulation.setFocusEmulationEnabled",{enabled:true});
   await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='true'"),"visible-tab resume");
+  await waitFor(()=>page.evaluate("[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===1).every(a=>a.playState==='finished')"),"Narrative does not restart after tab return");
   for(const width of [1440,390]) {
     await page.send("Emulation.setDeviceMetricsOverride",{width,height:1000,deviceScaleFactor:1,mobile:width===390});
     await page.evaluate("document.querySelector('[data-community-motion]').scrollIntoView({block:'center'})");
