@@ -177,27 +177,18 @@ export default async function PublicHome() {
       </section>
 
       <section className={styles.audience} aria-labelledby="community-audience">
-        <p className={styles.eyebrow}>A place for your next chapter</p>
-        <h2 id="community-audience">New to a city. Building a career. Growing a business. Bringing people together.</h2>
-        <p>Afghan Hub brings professionals, entrepreneurs, organizations and community members into one shared space — rooted in British Columbia and open to Afghans around the world.</p>
-      </section>
-
-      <section className="relative overflow-hidden border-t border-primary/10 bg-primary text-primary-foreground">
-        <div aria-hidden="true" className="absolute -right-20 -top-32 size-80 rounded-full border border-primary-foreground/10" />
-        <div aria-hidden="true" className="absolute -right-4 -top-8 size-48 rounded-full border border-primary-foreground/10" />
-        <div className="relative mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 px-5 py-12 sm:px-8 md:flex-row md:items-center">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] opacity-70">Your community, your corner</p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight">You have a place here.</h2>
-            <p className="mt-3 max-w-xl leading-7 opacity-85">
-              Build your profile, connect with members, and add what is happening around you.
-            </p>
-          </div>
+        <div className={styles.audienceCopy}>
+          <p className={styles.eyebrow}>A place for your next chapter</p>
+          <h2 id="community-audience">New to a city. Building a career. Growing a business. Bringing people together.</h2>
+          <p className={styles.audienceText}>Afghan Hub brings professionals, entrepreneurs, organizations and community members into one shared space — rooted in British Columbia and open to Afghans around the world.</p>
+        </div>
+        <div className={styles.audienceAction}>
+          <p className={styles.audiencePrompt}>Build your profile, connect with members, and contribute what is happening around you.</p>
           <Link
             href="/login?mode=join"
-            className="shrink-0 rounded-md bg-background px-6 py-3.5 font-semibold text-primary transition hover:-translate-y-0.5 hover:bg-background/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+            className={styles.audienceButton}
           >
-            Join Afghan Hub
+            Join Afghan Hub <ArrowRight aria-hidden="true" className="size-4" />
           </Link>
         </div>
       </section>
