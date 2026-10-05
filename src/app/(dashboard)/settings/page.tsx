@@ -43,7 +43,7 @@ export default async function SettingsPage({
   const accountEmail = user.email || "Not available";
 
   return (
-    <main className="px-4 py-8 md:px-8 md:py-10">
+    <main className="px-4 py-8 sm:px-6 md:px-8 md:py-10 lg:px-10 xl:px-12">
       <div className="mx-auto max-w-6xl">
         <section className={`relative overflow-hidden border px-6 py-8 md:px-8 md:py-10 ${styles.surface}`}>
           <CommunitySignature className={styles.signature} />
