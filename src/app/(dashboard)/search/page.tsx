@@ -390,7 +390,7 @@ export default async function SearchPage({
     .filter((result): result is SearchResult => Boolean(result));
 
   return (
-    <main className="px-4 py-8 md:px-8">
+    <main className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <div className="mx-auto max-w-5xl">
         <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
           <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
