@@ -1,4 +1,4 @@
-.hero { position: relative; isolation: isolate; max-width: 1280px; margin-inline: auto; padding: 64px 24px; display: grid; align-items: center; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: 36px; min-height: 600px; }
+.hero { position: relative; isolation: isolate; max-width: 1280px; margin-inline: auto; padding: 52px 24px 48px; display: grid; align-items: center; grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); gap: 28px; min-height: 540px; }
 .heroCopy { min-width: 0; }
 .eyebrow { margin: 0; font-size: .6875rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--primary); }
 .hero h1 { font-size: clamp(2rem, 3.4vw, 3rem); font-weight: 500; line-height: 1.2; letter-spacing: -.035em; margin: 30px 0 26px; text-wrap: initial; }
@@ -17,7 +17,7 @@
 .join:active { color: #43236a; background: #e6dced; }
 .actions a:focus-visible { outline: 2px solid var(--primary); outline-offset: 5px; }
 .note { margin: 30px 0 0; color: var(--muted-foreground); font-size: .75rem; }
-.heroArt { min-width: 0; }
+.heroArt { min-width: 0; width: 104%; justify-self: end; }
 .heroArt svg { width: 100%; height: auto; display: block; }
 @media (max-width: 900px) {
   .hero { grid-template-columns: 1fr; padding-top: 48px; padding-bottom: 32px; gap: 32px; }
@@ -39,7 +39,7 @@
 /* Warm atmospheric depth behind the original geometry, never behind readable copy. */
 .heroArt { position: relative; isolation: isolate; }
 .heroArt::before { content:""; position:absolute; inset:12% 3% 6%; z-index:-1; border-radius:46% 54% 57% 43%; background:radial-gradient(ellipse at 60% 50%, #e8dfcf66, transparent 70%); }
-.signatureBridge { max-width:1232px; margin:0 auto 24px; display:flex; align-items:center; justify-content:space-between; gap:24px; padding-inline:24px; color:var(--muted-foreground); font-size:.75rem; }
+.signatureBridge { max-width:1232px; margin:0 auto 18px; display:flex; align-items:center; justify-content:space-between; gap:24px; padding-inline:24px; color:var(--muted-foreground); font-size:.75rem; }
 .signatureBridge svg { width:196px; height:46px; color:#aaa095; flex-shrink:0; }
 .pathway { border-radius:var(--radius); transition:border-color var(--motion-fast), background var(--motion-fast); }
 .pathway:is(:hover,:focus-visible) { border-color:#a896bc; background:#f4efe7; }
