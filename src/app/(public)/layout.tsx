@@ -72,6 +72,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
           <nav aria-label="Explore footer" className="grid content-start gap-2.5 text-sm">
             <p className="font-semibold">Explore</p>
+            <Link href="/network" className="rounded-sm text-muted-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-primary">People</Link>
             {publicKinds.map(kind => (
               <Link key={kind} href={`/explore?type=${kind}`} className="rounded-sm text-muted-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-primary">
                 {publicCategories[kind].label}
