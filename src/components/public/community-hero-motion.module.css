@@ -21,7 +21,6 @@
 .motion [data-hero-node="opening"] { animation-delay: 3450ms; }
 .motion [data-hero-focus] { opacity: 0; }
 :global([data-hero-region]:has([data-landing-cta="explore"]:focus-visible)) .motion [data-hero-focus] { animation: focus-connection 1100ms ease-out both; }
-.motion[data-running="false"] :is([data-hero-draw], [data-hero-reveal], [data-hero-accent], [data-hero-pulse], [data-hero-node], [data-hero-focus]) { animation-play-state: paused; }
 @keyframes draw-path { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes reveal-form { from { opacity: 0; } to { opacity: 1; } }
 @keyframes travel {

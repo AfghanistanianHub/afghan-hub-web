@@ -9,6 +9,7 @@ export function CommunityHeroMotion({ children, className, depth = 3, scrollDept
   const frame = useRef<number | null>(null);
   const reduced = useRef(true);
   const point = useRef({ x: 0, y: 0 });
+  const pausedNarrative = useRef<Animation[]>([]);
 
   useEffect(() => {
     const element = root.current;
@@ -27,12 +28,26 @@ export function CommunityHeroMotion({ children, className, depth = 3, scrollDept
     const update = () => {
       reduced.current = preference.matches;
       scroll();
-      element.dataset.running = String(visible && !document.hidden && !preference.matches);
-      if (document.hidden || !visible || preference.matches) {
+      const running = visible && !document.hidden && !preference.matches;
+      element.dataset.running = String(running);
+
+      if (!running) {
         if (frame.current !== null) cancelAnimationFrame(frame.current);
         frame.current = null;
         element.style.setProperty("--depth-x", "0px");
         element.style.setProperty("--depth-y", "0px");
+
+        if (!preference.matches) {
+          pausedNarrative.current = element
+            .getAnimations({ subtree: true })
+            .filter((animation) => animation.effect?.getTiming().iterations === 1 && animation.playState === "running");
+          pausedNarrative.current.forEach((animation) => animation.pause());
+        }
+      } else if (pausedNarrative.current.length > 0) {
+        pausedNarrative.current.forEach((animation) => {
+          if (animation.playState === "paused") animation.play();
+        });
+        pausedNarrative.current = [];
       }
     };
     const observer = new IntersectionObserver(([entry]) => {
@@ -51,6 +66,7 @@ export function CommunityHeroMotion({ children, className, depth = 3, scrollDept
       preference.removeEventListener("change", update);
       document.removeEventListener("visibilitychange", update);
       if (frame.current !== null) cancelAnimationFrame(frame.current);
+      pausedNarrative.current = [];
     };
   }, [scrollDepth]);
 
