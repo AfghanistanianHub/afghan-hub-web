@@ -65,7 +65,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               <span className="flex size-9 items-center justify-center rounded-md bg-primary text-[0.7rem] font-bold text-primary-foreground shadow-[0_4px_14px_rgb(98_66_145/0.14)]">AH</span>
               <span className="text-sm font-semibold tracking-[0.16em]">AFGHAN HUB</span>
             </Link>
-            <p className="mt-4 max-w-sm text-sm leading-6.5 text-muted-foreground">
+            <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">
               A place for Afghan people, ideas, and opportunities to find each other.
             </p>
           </div>
