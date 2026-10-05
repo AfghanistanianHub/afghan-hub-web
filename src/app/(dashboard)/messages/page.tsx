@@ -44,13 +44,13 @@ export default async function MessagesPage() {
         .filter((id): id is string => Boolean(id)),
     ),
   ];
-  const { data: profiles } =
+  const { data: profiles, error: profilesError } =
     otherMemberIds.length > 0
       ? await supabase
           .from("profiles")
           .select("id, display_name, first_name, last_name, headline, avatar_url")
           .in("id", otherMemberIds)
-      : { data: [] };
+      : { data: [], error: null };
   const profilesById = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
 
   return (
@@ -87,6 +87,16 @@ export default async function MessagesPage() {
             className="mt-8 rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive"
           >
             We could not load your conversations. Please try again.
+          </div>
+        ) : null}
+
+        {!error && profilesError ? (
+          <div
+            role="status"
+            aria-live="polite"
+            className="mt-8 rounded-[var(--radius)] border border-border bg-muted/30 p-4 text-sm text-muted-foreground"
+          >
+            Your conversations loaded, but some member details are temporarily unavailable.
           </div>
         ) : null}
 
