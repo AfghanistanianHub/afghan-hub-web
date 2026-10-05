@@ -85,8 +85,8 @@ export default async function PublicHome() {
       <div className={styles.signatureBridge}><CommunitySignature /><span>Rooted in British Columbia. Open to the world.</span></div>
       <DiscoveryPanels />
 
-      <section className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-16" aria-labelledby="community-now-heading">
-        <div className="mb-10 flex flex-col gap-5 border-b border-border pb-8 sm:mb-12 md:flex-row md:items-end md:justify-between">
+      <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-14" aria-labelledby="community-now-heading">
+        <div className="mb-8 flex flex-col gap-5 border-b border-border pb-6 sm:mb-10 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">From the community</p>
             <h2 id="community-now-heading" className="mt-3 text-3xl font-medium tracking-[-0.03em] sm:text-4xl">
@@ -106,18 +106,20 @@ export default async function PublicHome() {
 
         <div className="divide-y divide-border">
           {publicKinds.map((kind, index) => (
-            <section key={kind} aria-labelledby={`${kind}-heading`} className="grid gap-7 py-10 first:pt-0 last:pb-0 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[240px_minmax(0,1fr)]">
+            <section key={kind} aria-labelledby={`${kind}-heading`} className="grid gap-6 py-8 first:pt-0 last:pb-0 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[240px_minmax(0,1fr)]">
               <div>
-                <span className="flex size-11 items-center justify-center rounded-xl bg-secondary text-primary">
-                  {(() => {
-                    const Icon = icons[kind];
-                    return <Icon aria-hidden="true" className="size-5" />;
-                  })()}
-                </span>
-                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">{categoryKicker[kind]}</p>
-                <h3 id={`${kind}-heading`} className="mt-2 text-2xl font-semibold tracking-tight">
-                  {publicCategories[kind].label}
-                </h3>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{categoryKicker[kind]}</p>
+                <div className="mt-3 flex items-center gap-3">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary">
+                    {(() => {
+                      const Icon = icons[kind];
+                      return <Icon aria-hidden="true" className="size-4.5" />;
+                    })()}
+                  </span>
+                  <h3 id={`${kind}-heading`} className="text-xl font-semibold tracking-tight sm:text-2xl">
+                    {publicCategories[kind].label}
+                  </h3>
+                </div>
                 <p className="mt-3 max-w-xs text-sm leading-6 text-muted-foreground">{publicCategories[kind].description}</p>
                 <Link
                   href={`/explore?type=${kind}`}
@@ -129,7 +131,7 @@ export default async function PublicHome() {
 
               <div className="min-w-0">
                 {feeds[index].unavailable ? (
-                  <div role="status" aria-live="polite" className="relative min-h-40 overflow-hidden rounded-2xl border border-border/80 bg-card p-6 text-sm text-muted-foreground">
+                  <div role="status" aria-live="polite" className="relative min-h-32 overflow-hidden rounded-2xl border border-border/80 bg-card p-6 text-sm text-muted-foreground">
                     <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-primary/[0.05] blur-3xl" />
                     <p className="relative font-medium text-foreground">Listings are temporarily unavailable.</p>
                     <p className="relative mt-2 leading-6">Please try again shortly.</p>
@@ -151,7 +153,7 @@ export default async function PublicHome() {
                     ))}
                   </div>
                 ) : (
-                  <div className="relative flex min-h-40 items-center overflow-hidden rounded-2xl border border-dashed border-border bg-card px-6 py-7 sm:px-8">
+                  <div className="relative flex min-h-32 items-center overflow-hidden rounded-2xl border border-dashed border-border bg-card px-6 py-6 sm:px-8">
                     <div aria-hidden="true" className="absolute -right-10 -top-12 size-32 rounded-full border border-primary/10" />
                     <div aria-hidden="true" className="absolute right-8 top-8 size-12 rounded-full border border-primary/10" />
                     <div className="relative">
@@ -186,7 +188,7 @@ export default async function PublicHome() {
       <section className="relative overflow-hidden border-t border-primary/10 bg-primary text-primary-foreground">
         <div aria-hidden="true" className="absolute -right-20 -top-32 size-80 rounded-full border border-primary-foreground/10" />
         <div aria-hidden="true" className="absolute -right-4 -top-8 size-48 rounded-full border border-primary-foreground/10" />
-        <div className="relative mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 px-5 py-14 sm:px-8 md:flex-row md:items-center">
+        <div className="relative mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 px-5 py-12 sm:px-8 md:flex-row md:items-center">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] opacity-70">Your community, your corner</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight">You have a place here.</h2>
@@ -196,7 +198,7 @@ export default async function PublicHome() {
           </div>
           <Link
             href="/login?mode=join"
-            className="shrink-0 rounded-xl bg-background px-6 py-3.5 font-semibold text-primary transition hover:-translate-y-0.5 hover:bg-background/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+            className="shrink-0 rounded-md bg-background px-6 py-3.5 font-semibold text-primary transition hover:-translate-y-0.5 hover:bg-background/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
             Join Afghan Hub
           </Link>
