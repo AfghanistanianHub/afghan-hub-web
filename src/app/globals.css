@@ -199,7 +199,8 @@
   overflow: hidden;
   background:
     radial-gradient(circle at 20% 20%, color-mix(in oklab, var(--primary) 5%, transparent), transparent 34%),
-    radial-gradient(circle at 78% 72%, color-mix(in oklab, #b68c28 4%, transparent), transparent 32%);
+    radial-gradient(circle at 78% 72%, color-mix(in oklab, #b68c28 4%, transparent), transparent 32%),
+    var(--background);
 }
 
 .global-network-background svg {
@@ -215,6 +216,17 @@
   stroke: color-mix(in oklab, var(--primary) 24%, var(--border));
   stroke-width: 1.15;
   vector-effect: non-scaling-stroke;
+  animation: network-drift 18s ease-in-out infinite alternate;
+}
+
+.global-network-signal {
+  fill: none;
+  stroke: color-mix(in oklab, var(--primary) 62%, transparent);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-dasharray: 0.018 0.982;
+  vector-effect: non-scaling-stroke;
+  animation: network-signal-flow 8s linear infinite;
 }
 
 .global-network-nodes circle {
@@ -226,14 +238,6 @@
 
 .global-network-nodes circle:nth-child(3n) { animation-delay: -2.2s; }
 .global-network-nodes circle:nth-child(4n) { animation-delay: -4.4s; }
-
-.global-network-labels {
-  fill: color-mix(in oklab, var(--foreground) 28%, transparent);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  font-size: 18px;
-  font-weight: 520;
-  letter-spacing: 0.015em;
-}
 
 .app-content {
   isolation: isolate;
@@ -255,8 +259,19 @@
 }
 
 @keyframes network-node-breathe {
-  0%, 100% { opacity: 0.5; transform: scale(0.92); }
-  50% { opacity: 0.95; transform: scale(1.15); }
+  0%, 100% { opacity: 0.48; transform: scale(0.92); }
+  50% { opacity: 1; transform: scale(1.22); }
+}
+
+@keyframes network-drift {
+  from { transform: translate3d(-5px, -3px, 0); }
+  to { transform: translate3d(7px, 5px, 0); }
+}
+
+@keyframes network-signal-flow {
+  from { stroke-dashoffset: 1; opacity: 0.35; }
+  45% { opacity: 0.9; }
+  to { stroke-dashoffset: 0; opacity: 0.35; }
 }
 
 @media (max-width: 760px) {
@@ -266,14 +281,12 @@
     transform: translateX(-12%) scale(1.08);
   }
 
-  .global-network-labels {
-    font-size: 15px;
-    opacity: 0.72;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .global-network-nodes circle {
+  .global-network-nodes circle,
+  .global-network-lines,
+  .global-network-signal {
     animation: none;
   }
 }
