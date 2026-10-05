@@ -81,18 +81,17 @@ function emitScreenshot(name, data, debug = false) {
   console.log("AFGHAN_HUB_SCREENSHOT_END");
 }
 const layoutExpression = `(() => {
-  const group = document.querySelector('[aria-labelledby="community-discovery"]');
-  const links = [...group.querySelectorAll('[data-discovery-link]')];
+  const group = document.querySelector('[data-hero-region]');
+  const links = [...group.querySelectorAll('[data-community-node]')];
   const targets = links.map(link => {
     link.scrollIntoView({block:'center'});
     const r = link.getBoundingClientRect(); const hit = document.elementFromPoint((r.left+r.right)/2,(r.top+r.bottom)/2);
     return {href:link.getAttribute('href'),height:r.height,width:r.width,clickable:!!hit && (hit === link || link.contains(hit))};
   });
-  const panels=[...group.querySelectorAll('article')].map(el=>{const r=el.getBoundingClientRect();return [r.x,r.y,r.width,r.height]});
-  return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,targets,panels,covers:document.querySelectorAll('article').length,people:group.querySelectorAll('[data-person-node]').length};
+  return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,targets,covers:document.querySelectorAll('main article').length,people:group.querySelectorAll('[data-constellation-person]').length};
 })()`;
 
-test("geometric landing responsive layout, discovery links and accessibility in sandboxed Chrome", {
+test("geometric landing responsive layout, hero wayfinding and accessibility in sandboxed Chrome", {
   skip: enabled ? false : "Browser QA executes in existing Linux CI; local browser verification is not implied.",
   timeout: 420000,
 }, async t => {
@@ -259,7 +258,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   for (const width of [320, 390, 768, 1024, 1440, 1920]) {
     await page.send("Emulation.setDeviceMetricsOverride", { width, height: 1000, deviceScaleFactor: 1, mobile: false });
     await page.send("Page.navigate", { url: appUrl });
-    await waitFor(() => page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-discovery-link]')"), `landing ${width}`);
+    await waitFor(() => page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-community-node]')"), `landing ${width}`);
     await page.evaluate("document.fonts.ready.then(()=>true)");
     await delay(300);
     try {
@@ -280,17 +279,17 @@ test("geometric landing responsive layout, discovery links and accessibility in 
       assert.deepEqual(networkTargets.map(a=>a.href), ['/network','/explore?type=opportunities','/explore?type=organizations','/explore?type=events','/explore?type=businesses']);
       await page.evaluate("document.activeElement.blur()");
       assert.ok(layout.targets.every(target => target.clickable && target.height >= 44 && target.width >= 44), `Blocked/small discovery targets at ${width}`);
-      assert.equal(layout.people, 9, "People illustration must retain all nine connected person glyphs");
-      assert.ok(layout.covers >= 17, "Five discovery panels and twelve populated listing covers must render");
+      assert.equal(layout.people, 4, "Hero constellation must retain all four person glyphs");
+      assert.ok(layout.covers >= 12, "Twelve populated listing covers must render without duplicate wayfinding cards");
       await page.evaluate(axeSource);
       const audit = await page.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>r.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)})))");
       assert.deepEqual(audit, [], `Accessibility violations at ${width}: ${JSON.stringify(audit)}`);
       await page.evaluate("scrollTo(0,0)");
       await delay(2300);
-      const bottom = await page.evaluate("Math.ceil(document.querySelector('[aria-labelledby=community-discovery]').getBoundingClientRect().bottom)");
+      const bottom = await page.evaluate("Math.ceil(document.querySelector('#community-now-heading').closest('section').getBoundingClientRect().top + scrollY + 320)");
       const screenshot = await page.send("Page.captureScreenshot", { format: "jpeg", quality: 80, captureBeyondViewport: true, clip: { x: 0, y: 0, width, height: bottom, scale: 1 } });
       screenshots.push({ name: `geometric_${width}.jpg`, data: screenshot.data });
-      console.log(`AFGHAN_HUB_BROWSER_RESULT ${JSON.stringify({width,horizontalOverflow:false,discoveryTargets:5,peopleGlyphs:9,axeViolations:0,populatedCovers:true})}`);
+      console.log(`AFGHAN_HUB_BROWSER_RESULT ${JSON.stringify({width,horizontalOverflow:false,heroTargets:5,peopleGlyphs:4,axeViolations:0,populatedCovers:true})}`);
     } catch (error) {
       const screenshot = await page.send("Page.captureScreenshot", { format: "jpeg", quality: 75 });
       if (process.versions.node.startsWith("24.")) emitScreenshot(`debug_${width}.jpg`, screenshot.data, true);
@@ -305,7 +304,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   assert.ok((await page.evaluate(layoutExpression)).scrollWidth <= 721, "200% zoom reflow must fit");
   await page.send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   await page.send("Page.navigate", { url: appUrl });
-  await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-discovery-link]')"),"keyboard landing");
+  await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-community-node]')"),"keyboard landing");
   await delay(300);
   await page.evaluate("document.activeElement?.blur(); scrollTo(0,0)");
   const focused=[];
@@ -315,22 +314,8 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   }
   assert.equal(focused[0].href,"#main-content","Skip link must be first");
   for(const key of ["people","opportunities","organizations","events","businesses"]) assert.ok(focused.some(item=>item.node===key&&item.outline!=="none"&&item.descriptionVisible),`Hero node reachable by Tab: ${key}`);
-  for(const key of ["people","organizations","businesses","events","opportunities"]) assert.ok(focused.some(item=>item.key===key && item.outline!=="none"),`Visible keyboard focus: ${key}`);
-  await page.evaluate("document.activeElement.blur();document.querySelector('[data-discovery-panel=people]').scrollIntoView({block:'center'})");
-  const geometry=await page.evaluate("[...document.querySelectorAll('[data-discovery-panel]')].map(el=>{const r=el.getBoundingClientRect();return [r.x,r.y,r.width,r.height]})");
-  const point=await page.evaluate("(()=>{const r=document.querySelector('[data-discovery-link=people]').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()");
-  const before=await page.evaluate("getComputedStyle(document.querySelector('[data-discovery-panel=people]')).borderColor");
-  await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",...point});
-  await delay(250);
-  assert.notEqual(await page.evaluate("getComputedStyle(document.querySelector('[data-discovery-panel=people]')).borderColor"),before,"Subtle hover border must appear");
-  assert.deepEqual(await page.evaluate("[...document.querySelectorAll('[data-discovery-panel]')].map(el=>{const r=el.getBoundingClientRect();return [r.x,r.y,r.width,r.height]})"),geometry,"Hover must not move panels");
-  await page.evaluate("document.querySelector('[data-discovery-link=people]').focus({preventScroll:true})");
-  await delay(250);
-  screenshots.push({name:"geometric_people_focus.jpg",data:(await page.send("Page.captureScreenshot",{format:"jpeg",quality:80})).data});
-  await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
-  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-discovery-link=people] span svg')).transform"),"none","Reduced motion must suppress arrow movement");
-  assert.ok(parseFloat(await page.evaluate("getComputedStyle(document.querySelector('[data-discovery-panel=people]')).transitionDuration"))<=0.00001);
-  await page.send("Emulation.setEmulatedMedia",{features:[]});
+  // The hero itself is the single homepage wayfinding surface; avoid duplicating the same destinations below it.
+  assert.equal(await page.evaluate("document.querySelectorAll('[data-discovery-panel],[data-discovery-link]').length"),0,"Homepage must not render a second category-card navigation");
   // Physical mouse presses provide feedback and navigate without changing target bounds.
   await page.send("Page.navigate",{url:appUrl});
   await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-landing-cta]')"),"CTA landing");
@@ -350,79 +335,21 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   await page.evaluate("document.querySelector('[data-landing-cta=join]').focus()");
   for(const type of ["keyDown","keyUp"]) await page.send("Input.dispatchKeyEvent",{type,key:"Enter",code:"Enter",windowsVirtualKeyCode:13});
   await waitFor(()=>page.evaluate("location.pathname==='/login' && new URLSearchParams(location.search).get('mode')==='join'"),"Join CTA keyboard activation");
-  await page.send("Page.navigate",{url:appUrl});
-  await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-discovery-panel=events]')"),"panel keyboard landing");
-  await delay(300);
-  await page.evaluate("document.querySelector('[data-discovery-panel=events]').focus()");
-  for(const type of ["keyDown","keyUp"]) await page.send("Input.dispatchKeyEvent",{type,key:"Enter",code:"Enter",windowsVirtualKeyCode:13});
-  await waitFor(()=>page.evaluate("location.pathname==='/explore' && location.search==='?type=events'"),"panel keyboard navigation");
-  await page.send("Page.navigate",{url:appUrl});
-  await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-discovery-panel=organizations]')"),"panel press landing");
-  await delay(300);
-  await page.evaluate("document.querySelector('[data-discovery-panel=organizations]').scrollIntoView({block:'center'})");
-  const panelPoint=await page.evaluate("(()=>{const r=document.querySelector('[data-discovery-panel=organizations]').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+80}})()");
-  await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",...panelPoint});
-  await page.send("Input.dispatchMouseEvent",{type:"mousePressed",button:"left",clickCount:1,...panelPoint});
-  assert.ok(await page.evaluate("document.querySelector('[data-discovery-panel=organizations]').matches(':active')"),"Artwork area must activate the whole panel");
-  assert.notEqual(await page.evaluate("getComputedStyle(document.querySelector('[data-discovery-panel=organizations]')).outlineStyle"),"none","Panel press feedback must appear");
-  await page.send("Input.dispatchMouseEvent",{type:"mouseReleased",button:"left",clickCount:1,...panelPoint});
-  await waitFor(()=>page.evaluate("location.pathname==='/explore' && location.search==='?type=organizations'"),"panel artwork click");
-  // Single physical taps use the real existing destinations, including signed-out member routing.
+
+  // Single physical taps use the hero's real destinations, including signed-out member routing.
   await page.send("Emulation.setDeviceMetricsOverride",{width:390,height:1000,deviceScaleFactor:1,mobile:true});
   await page.send("Emulation.setTouchEmulationEnabled",{enabled:true});
   for(const key of ["people","organizations","businesses","events","opportunities"]) {
     await page.send("Page.navigate",{url:appUrl});
-    await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-discovery-link]')"),"touch landing");
+    await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-community-node]')"),"touch landing");
     await delay(300);
-    await page.evaluate(`document.querySelector('[data-discovery-link=${key}]').scrollIntoView({block:'center'})`);
-    const position=await page.evaluate(`(()=>{const r=document.querySelector('[data-discovery-link=${key}]').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);
+    await page.evaluate(`document.querySelector('[data-community-node=${key}]').scrollIntoView({block:'center'})`);
+    const position=await page.evaluate(`(()=>{const r=document.querySelector('[data-community-node=${key}]').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);
     await page.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[position]});
     await page.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
-    await waitFor(()=>page.evaluate(key==="people" ? "location.pathname==='/network'||location.pathname==='/login'" : `location.pathname==='/explore' && location.search==='?type=${key}'`),`one-tap ${key}`);
+    await waitFor(()=>page.evaluate(key==="people" ? "location.pathname==='/network'||location.pathname==='/login'" : `location.pathname==='/explore' && location.search==='?type=${key}'`),`one-tap hero ${key}`);
   }
-  // Record the actual default → hover → reset frames and validate reversible SVG transitions.
-  // Keep Chrome's capture-only scrollbar removal from changing viewport geometry.
-  await page.send("Emulation.setScrollbarsHidden",{hidden:true});
-  await page.send("Emulation.setDeviceMetricsOverride",{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   await page.send("Emulation.setTouchEmulationEnabled",{enabled:false});
-  await page.send("Emulation.setEmulatedMedia",{features:[]});
-  await page.send("Page.navigate",{url:appUrl});
-  await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-motion]')"),"illustration motion landing");
-  await delay(700);
-  const motionState=key=>`(()=>{const e=document.querySelector('[data-discovery-panel=${key}]');return [...e.querySelectorAll('[data-motion]')].map(n=>{const s=getComputedStyle(n);return [s.strokeDashoffset,s.opacity,s.transform,s.stroke,s.fill]})})()`;
-  for(const key of ["people","organizations","businesses","events","opportunities"]) {
-    await page.evaluate(`document.activeElement?.blur();document.querySelector('[data-discovery-panel=${key}]').scrollIntoView({block:'center'})`);
-    await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:10,y:20});await delay(650);
-    const geometry=await page.evaluate(`(()=>{const r=document.querySelector('[data-discovery-panel=${key}]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()`);
-    const resting=await page.evaluate(motionState(key));
-    const recording=[];
-    const documentScroll=await page.evaluate("scrollY");
-    const point={x:geometry.x+geometry.width/2,y:geometry.y+90};
-    const started=Date.now();
-    for(let frame=0;frame<48;frame++) {
-      if(frame===9) await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",...point});
-      if(frame===30) await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:10,y:20});
-      const shot=await page.send("Page.captureScreenshot",{format:"jpeg",quality:80,captureBeyondViewport:true,clip:{...geometry,x:geometry.x-7,y:geometry.y+documentScroll-7,width:geometry.width+14,height:geometry.height+14,scale:1}});
-      recording.push(shot.data);
-      if(frame===18) assert.notDeepEqual(await page.evaluate(motionState(key)),resting,`Visible SVG hover activation: ${key}`);
-      await delay(Math.max(0,started+(frame+1)*1000/15-Date.now()));
-    }
-    assert.deepEqual(await page.evaluate(motionState(key)),resting,`Clean hover reset: ${key}`);
-    assert.deepEqual(await page.evaluate(`(()=>{const r=document.querySelector('[data-discovery-panel=${key}]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()`),geometry,`Stable hit area: ${key}`);
-    await page.evaluate(`document.querySelector('[data-discovery-panel=${key}]').focus({preventScroll:true})`);await delay(650);
-    assert.notDeepEqual(await page.evaluate(motionState(key)),resting,`Equivalent focus feedback: ${key}`);
-    await page.evaluate("document.activeElement.blur()");await delay(650);
-    assert.deepEqual(await page.evaluate(motionState(key)),resting,`Focus reset: ${key}`);
-    for(let i=0;i<6;i++) {await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",...point});await delay(45);await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:10,y:20});await delay(45);}
-    await delay(650);assert.deepEqual(await page.evaluate(motionState(key)),resting,`No queued motion after rapid reversals: ${key}`);
-    await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
-    await page.evaluate(`document.querySelector('[data-discovery-panel=${key}]').focus({preventScroll:true})`);
-    assert.ok(await page.evaluate(`(()=>{const e=document.querySelector('[data-discovery-panel=${key}]');return [...e.querySelectorAll('[data-motion]')].every(n=>getComputedStyle(n).transitionDuration.split(',').every(v=>parseFloat(v)===0)&&getComputedStyle(n).animationName==='none')})()`),`Static reduced motion: ${key}`);
-    await page.evaluate("document.activeElement.blur()");
-    await page.send("Emulation.setEmulatedMedia",{features:[]});
-    console.log(`AFGHAN_HUB_MOTION_RESULT ${key} hover/focus/reset/rapid reversals/reduced motion/stable bounds passed`);
-    if(process.versions.node.startsWith("24.")) for(let frame=0;frame<recording.length;frame++) emitScreenshot(`motion_${key}_${String(frame).padStart(3,'0')}.jpg`,recording[frame]);
-  }
 
   // Matching category artwork on each actual public index/detail, not a mockup route.
   const sectionMotion = kind => `(()=>{const e=document.querySelector('[data-category-illustration=${kind}]');return [...e.querySelectorAll('[data-motion]')].map(n=>{const s=getComputedStyle(n);return [s.strokeDashoffset,s.opacity,s.transform,s.stroke,s.fill]})})()`;
