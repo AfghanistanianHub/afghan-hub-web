@@ -415,7 +415,7 @@ export default async function SearchPage({
             <select
               name="intent"
               defaultValue={intent ?? ""}
-              className="rounded-[var(--radius)] border border-border/80 bg-background/70 px-4 py-4 text-sm text-foreground outline-none transition hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
+              className="rounded-[var(--radius-control)] border border-border/80 bg-background/70 px-4 py-4 text-sm text-foreground outline-none transition hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
             >
               <option value="">Anything in the community</option>
               {phaseOneSearchIntents.map((option) => (
@@ -434,12 +434,12 @@ export default async function SearchPage({
               defaultValue={query}
               placeholder={intent ? "Optional keyword…" : "Name, skill, organization, service, opportunity…"}
               aria-label="Search Afghan Hub"
-              className="w-full rounded-[var(--radius)] border border-border/80 bg-background/70 py-4 pl-12 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
+              className="w-full rounded-[var(--radius-control)] border border-border/80 bg-background/70 py-4 pl-12 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
             />
           </label>
           <button
             type="submit"
-            className="rounded-[var(--radius)] bg-primary px-5 py-4 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+            className="rounded-[var(--radius-control)] bg-primary px-5 py-4 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
             {intent && !query ? "Browse" : "Search"}
           </button>
