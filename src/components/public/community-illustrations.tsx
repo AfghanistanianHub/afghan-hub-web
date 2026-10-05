@@ -59,19 +59,6 @@ export function OpportunitiesIllustration() { return (
 <rect x="69" y="16" width="30" height="28" rx="0" fill="#f8f5ee" stroke="#d9d2c6"/><rect x="135" y="20" width="30" height="28" rx="0" fill="#ede5f4" stroke="#624291"/><rect data-motion="opening" x="220" y="11" width="28" height="28" rx="0" fill="#f8f5ee" stroke="#d9d2c6"/><path data-motion="doorway" d="M227 33V18h14v15" stroke="#624291" strokeWidth="1.8" /><rect x="196" y="45" width="30" height="29" rx="0" fill="#f8f5ee" stroke="#d9d2c6"/><path d="M140 35h20m-5-5 5 5-5 5" stroke="#624291" strokeWidth="1.52" fill="none" strokeLinecap="round" strokeLinejoin="round" /><circle cx="54" cy="194" r="4" fill="#dc754e" stroke="#dc754e"/><rect x="78" y="27" width="12" height="7" rx="0" fill="#d8ac40" stroke="#d8ac40"/></svg>
 ); }
 
-export function BusinessesIllustration() { return (
-<svg viewBox="0 0 300 210" fill="none" aria-hidden="true">
-  <path d="M64 82h172l-12-34H76L64 82Z" stroke="#9e978e" strokeWidth="1.5" strokeLinejoin="round" />
-  <path d="M78 82v82h144V82 M96 164v-46h42v46 M156 107h45v29h-45z" stroke="#9e978e" strokeWidth="1.5" strokeLinejoin="round" />
-  <path data-motion="awning" pathLength="1" d="M67 82h166" stroke="#624291" strokeWidth="2.6" strokeLinecap="round" />
-  <path data-motion="doorway" d="M104 164v-37h26v37" stroke="#624291" strokeWidth="2.1" strokeLinejoin="round" />
-  <path d="M88 48h136" stroke="#d9d2c6" strokeWidth="1.2" />
-  <path d="M74 82c0 12 12 18 22 10 8 8 20 8 28 0 8 8 20 8 28 0 8 8 20 8 28 0 8 8 20 8 28 0 9 7 20 2 24-10" stroke="#9e978e" strokeWidth="1.5" />
-  <rect x="172" y="116" width="10" height="10" fill="#dc754e" stroke="#dc754e" />
-  <circle cx="90" cy="58" r="4" fill="#d8ac40" stroke="#d8ac40" />
-</svg>
-); }
-
 export function CommunityIllustration() { return (
 <svg viewBox="0 0 600 430" fill="none" aria-hidden="true">
  <g strokeLinecap="round" strokeLinejoin="round">
