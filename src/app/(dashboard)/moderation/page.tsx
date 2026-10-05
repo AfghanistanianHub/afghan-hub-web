@@ -229,7 +229,7 @@ export default async function ModerationPage({
   return (
     <main className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <div className="mx-auto max-w-6xl">
-        <section className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
+        <section className="relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
           <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
           <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
           <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
@@ -243,7 +243,7 @@ export default async function ModerationPage({
             {accessContext.role === "admin" ? (
               <Link
                 href="/moderation/team"
-                className="inline-flex min-h-11 w-fit items-center rounded-2xl border border-border/80 bg-background/80 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                className="inline-flex min-h-11 w-fit items-center rounded-[var(--radius-control)] border border-border/80 bg-background/80 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 Manage moderation team
               </Link>
@@ -255,7 +255,7 @@ export default async function ModerationPage({
           <div
             role="alert"
             aria-live="assertive"
-            className="mt-6 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive"
+            className="mt-6 rounded-[var(--radius-control)] border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive"
           >
             {error}
           </div>
@@ -265,17 +265,17 @@ export default async function ModerationPage({
           <div
             role="status"
             aria-live="polite"
-            className="mt-6 rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm text-primary"
+            className="mt-6 rounded-[var(--radius-control)] border border-primary/20 bg-primary/10 p-4 text-sm text-primary"
           >
             The submission was {success}.
           </div>
         ) : null}
 
-        <div className="mt-8 grid w-full grid-cols-2 rounded-2xl border border-border bg-muted/50 p-1 sm:inline-grid sm:w-auto">
+        <div className="mt-8 grid w-full grid-cols-2 rounded-[var(--radius-control)] border border-border bg-muted/50 p-1 sm:inline-grid sm:w-auto">
           <Link
             href="/moderation"
             aria-current={activeView === "pending" ? "page" : undefined}
-            className={`inline-flex min-h-11 min-w-0 items-center justify-center rounded-xl px-3 py-2 text-center text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-4 ${
+            className={`inline-flex min-h-11 min-w-0 items-center justify-center rounded-[var(--radius-control)] px-3 py-2 text-center text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-4 ${
               activeView === "pending"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -291,7 +291,7 @@ export default async function ModerationPage({
           <Link
             href="/moderation?view=history"
             aria-current={activeView === "history" ? "page" : undefined}
-            className={`inline-flex min-h-11 min-w-0 items-center justify-center rounded-xl px-3 py-2 text-center text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-4 ${
+            className={`inline-flex min-h-11 min-w-0 items-center justify-center rounded-[var(--radius-control)] px-3 py-2 text-center text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-4 ${
               activeView === "history"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -366,7 +366,7 @@ export default async function ModerationPage({
                 ))}
               </div>
             ) : (
-              <div className="relative mt-5 overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-muted/25 p-12 text-center text-muted-foreground"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-primary/[0.06] blur-3xl"/><span className="relative mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><CircleCheck aria-hidden="true" className="size-7"/></span><p className="relative mt-5 font-medium text-foreground">Nothing waiting for review</p><p className="relative mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">New submissions will appear here when they need moderator approval.</p></div>
+              <div className="relative mt-5 overflow-hidden rounded-[var(--radius)] border border-dashed border-border/80 bg-muted/25 p-12 text-center text-muted-foreground"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-primary/[0.06] blur-3xl"/><span className="relative mx-auto flex size-14 items-center justify-center rounded-[var(--radius-control)] bg-primary/10 text-primary"><CircleCheck aria-hidden="true" className="size-7"/></span><p className="relative mt-5 font-medium text-foreground">Nothing waiting for review</p><p className="relative mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">New submissions will appear here when they need moderator approval.</p></div>
             )}
           </>
         ) : (
@@ -387,7 +387,7 @@ export default async function ModerationPage({
                   return (
                     <article
                       key={`${item.entityType}-${item.id}`}
-                      className="surface-panel rounded-[1.5rem] p-5"
+                      className="surface-panel rounded-[var(--radius)] p-5"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="min-w-0">
@@ -431,7 +431,7 @@ export default async function ModerationPage({
                 })}
               </div>
             ) : (
-              <div className="relative mt-5 overflow-hidden rounded-[1.75rem] border border-dashed border-border/80 bg-muted/25 p-12 text-center text-muted-foreground"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-accent/55 blur-3xl"/><span className="relative mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Clock3 aria-hidden="true" className="size-7"/></span><p className="relative mt-5 font-medium text-foreground">No moderation history yet</p><p className="relative mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">Approved and rejected submissions will appear here after the first review decision.</p></div>
+              <div className="relative mt-5 overflow-hidden rounded-[var(--radius)] border border-dashed border-border/80 bg-muted/25 p-12 text-center text-muted-foreground"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-accent/55 blur-3xl"/><span className="relative mx-auto flex size-14 items-center justify-center rounded-[var(--radius-control)] bg-primary/10 text-primary"><Clock3 aria-hidden="true" className="size-7"/></span><p className="relative mt-5 font-medium text-foreground">No moderation history yet</p><p className="relative mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">Approved and rejected submissions will appear here after the first review decision.</p></div>
             )}
           </section>
         )}
@@ -467,7 +467,7 @@ function ModerationCard({
           : UsersRound;
 
   return (
-    <article className="surface-panel relative overflow-hidden rounded-[1.75rem] p-6 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.06)]">
+    <article className="surface-panel relative overflow-hidden rounded-[var(--radius)] p-6 transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.06)]">
       <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-primary">
         <Icon aria-hidden="true" className="size-3.5" />
         {label}
@@ -506,13 +506,13 @@ function ModerationButtons({
         value="approve"
         formNoValidate
         pendingLabel="Approving…"
-        className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+        className="inline-flex min-h-11 items-center gap-2 rounded-[var(--radius-control)] bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
         <Check aria-hidden="true" className="size-4" /> Approve
       </PendingSubmitButton>
 
-      <details className="rounded-xl border border-destructive/20 bg-destructive/5 p-3">
-        <summary className="flex min-h-11 cursor-pointer items-center rounded-lg px-2 py-2 text-sm font-semibold text-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destructive">
+      <details className="rounded-[var(--radius-control)] border border-destructive/20 bg-destructive/5 p-3">
+        <summary className="flex min-h-11 cursor-pointer items-center rounded-[var(--radius-control)] px-2 py-2 text-sm font-semibold text-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destructive">
           Reject with a reason
         </summary>
         <div className="mt-3 space-y-3">
@@ -524,14 +524,14 @@ function ModerationButtons({
               minLength={10}
               maxLength={1000}
               rows={3}
-              className="mt-2 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-destructive focus:ring-2 focus:ring-destructive/10"
+              className="mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-destructive focus:ring-2 focus:ring-destructive/10"
             />
           </label>
           <PendingSubmitButton
             name="decision"
             value="reject"
             pendingLabel="Rejecting…"
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-destructive/30 px-4 py-2 text-sm font-semibold text-destructive transition hover:bg-destructive/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-destructive"
+            className="inline-flex min-h-11 items-center gap-2 rounded-[var(--radius-control)] border border-destructive/30 px-4 py-2 text-sm font-semibold text-destructive transition hover:bg-destructive/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-destructive"
           >
             <X aria-hidden="true" className="size-4" /> Reject submission
           </PendingSubmitButton>
