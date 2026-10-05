@@ -169,7 +169,9 @@ export default async function SubmissionsPage() {
             <span className={countClass}>{opportunities?.length ?? 0}</span>
           </div>
 
-          {opportunities?.length ? (
+          {opportunitiesError ? (
+            <UnavailableState label="opportunities" />
+          ) : opportunities?.length ? (
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               {opportunities.map((opportunity) => (
                 <SubmissionCard
@@ -205,7 +207,9 @@ export default async function SubmissionsPage() {
             <span className={countClass}>{businesses?.length ?? 0}</span>
           </div>
 
-          {businesses?.length ? (
+          {businessesError ? (
+            <UnavailableState label="businesses" />
+          ) : businesses?.length ? (
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               {businesses.map((business) => (
                 <SubmissionCard
@@ -236,7 +240,9 @@ export default async function SubmissionsPage() {
             <span className={countClass}>{organizations?.length ?? 0}</span>
           </div>
 
-          {organizations?.length ? (
+          {organizationsError ? (
+            <UnavailableState label="organizations" />
+          ) : organizations?.length ? (
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               {organizations.map((organization) => (
                 <SubmissionCard
@@ -267,7 +273,9 @@ export default async function SubmissionsPage() {
             <span className={countClass}>{events?.length ?? 0}</span>
           </div>
 
-          {events?.length ? (
+          {eventsError ? (
+            <UnavailableState label="events" />
+          ) : events?.length ? (
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               {events.map((event) => (
                 <SubmissionCard
@@ -365,6 +373,23 @@ function SubmissionCard({
         </Link>
       </div>
     </article>
+  );
+}
+
+function UnavailableState({ label }: { label: string }) {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="relative mt-5 overflow-hidden rounded-[var(--radius)] border border-border/80 bg-muted/20 p-8 text-center"
+    >
+      <p className="relative font-semibold text-foreground">
+        We could not load your {label}.
+      </p>
+      <p className="relative mt-2 text-sm leading-6 text-muted-foreground">
+        Refresh the page or try again shortly.
+      </p>
+    </div>
   );
 }
 
