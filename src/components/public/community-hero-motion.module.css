@@ -2,10 +2,10 @@
 .motion svg { overflow: visible; }
 .motion [data-hero-layer] { transition: transform var(--motion-step, 420ms) var(--motion-ease, ease-out); }
 .motion [data-hero-layer="architecture"] { transform: translate(var(--depth-x), calc(var(--depth-y) + var(--scroll-depth))); }
-.motion [data-hero-layer="gathering"] { transform: translate(calc(var(--depth-x) * -.35), calc(var(--depth-y) * -.35)); }
-.motion [data-hero-layer="network"] { transform: translate(calc(var(--depth-x) * .6), calc(var(--depth-y) * .6)); }
-.motion [data-hero-layer="openings"] { transform: translate(calc(var(--depth-x) * 1.2), calc(var(--depth-y) * 1.2)); }
-.motion [data-hero-draw] { stroke-dasharray: 1; animation: draw-path 780ms var(--motion-ease) both; }
+.motion [data-hero-layer="gathering"] { transform: translate(calc(var(--depth-x) * -.45), calc(var(--depth-y) * -.45)); }
+.motion [data-hero-layer="network"] { transform: translate(calc(var(--depth-x) * .75), calc(var(--depth-y) * .75)); }
+.motion [data-hero-layer="openings"] { transform: translate(calc(var(--depth-x) * 1.35), calc(var(--depth-y) * 1.35)); }
+.motion [data-hero-draw] { stroke-dasharray: 1; animation: draw-path 900ms var(--motion-ease) both; }
 .motion [data-hero-layer="network"] [data-hero-draw] { animation-delay: 700ms; }
 .motion [data-hero-layer="gathering"] [data-hero-draw] { animation-delay: 1400ms; }
 .motion [data-hero-layer="openings"] [data-hero-draw] { animation-delay: 3000ms; }
@@ -25,10 +25,10 @@
 @keyframes reveal-form { from { opacity: 0; } to { opacity: 1; } }
 @keyframes travel {
   0% { opacity: 0; stroke-dashoffset: 1; }
-  25%, 72% { opacity: .9; }
+  25%, 72% { opacity: 1; }
   100% { opacity: 0; stroke-dashoffset: 0; }
 }
-@keyframes activate-node { from { opacity: 0; } to { opacity: .9; } }
+@keyframes activate-node { from { opacity: 0; } 65% { opacity: 1; } to { opacity: .92; } }
 @keyframes focus-connection { 0%, 100% { opacity: 0; } 18%, 65% { opacity: .85; } }
 @media (prefers-reduced-motion: reduce) {
  .motion [data-hero-layer] { transform: none; transition: none; }
