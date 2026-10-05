@@ -35,7 +35,7 @@ export function RecommendedMembers({
   if (!members.length) return null;
 
   return (
-    <section className={`border p-6 md:p-7 ${styles.surface}`}>
+    <section className="border-y border-border py-7 md:py-8">
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
@@ -54,7 +54,7 @@ export function RecommendedMembers({
         </Link>
       </div>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-3">
+      <div className="mt-6 grid border-t border-border md:grid-cols-3">
         {members.map((member) => {
           const memberName = getMemberName(member);
           const location = [member.city, member.country].filter(Boolean).join(", ");
@@ -64,7 +64,7 @@ export function RecommendedMembers({
             <Link
               key={member.id}
               href={`/members/${member.id}`}
-              className={`group border p-5 ${styles.surface} ${styles.profile}`}
+              className={`group border-b border-border p-5 md:border-b-0 md:border-r md:last:border-r-0 ${styles.profile}`}
             >
               <div className="flex items-start gap-3.5">
                 {member.avatar_url ? (
