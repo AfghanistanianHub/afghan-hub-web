@@ -153,7 +153,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
               onClick={() =>
                 setMentorshipFilter(option.value as MentorshipFilter)
               }
-              className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+              className={`inline-flex min-h-11 items-center rounded-full border px-3.5 py-2 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                 selected
                   ? "border-primary/30 bg-primary/10 text-primary"
                   : "border-border bg-card text-muted-foreground hover:border-primary/30 hover:text-foreground"
