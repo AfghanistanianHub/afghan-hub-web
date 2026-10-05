@@ -82,7 +82,7 @@ export default async function SettingsPage({
 
               <label className="mt-6 flex cursor-pointer items-start gap-4 rounded-sm border border-border bg-secondary/45 p-5 transition hover:border-primary/25 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15">
                 <input name="is_public" type="checkbox" defaultChecked={profile?.is_public ?? true} className="mt-0.5 size-5 rounded border-input bg-background text-primary focus:ring-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
-                <span className="min-w-0"><span className="block font-semibold text-foreground">Show my profile in the community</span><span className="mt-1 block text-sm leading-6 text-muted-foreground">Turn this off to hide your profile from public member listings.</span></span>
+                <span className="min-w-0"><span className="block font-semibold text-foreground">Show my profile in the community</span><span className="mt-1 block text-sm leading-6 text-muted-foreground">Turn this off to hide your profile from the member directory.</span></span>
               </label>
 
               <div className="mt-6 flex justify-end"><PendingSubmitButton pendingLabel="Saving settings…" className={`bg-primary px-5 py-3 font-semibold text-primary-foreground hover:bg-primary/90 ${styles.control}`}>Save settings</PendingSubmitButton></div>
