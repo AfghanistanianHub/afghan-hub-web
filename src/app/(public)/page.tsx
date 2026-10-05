@@ -66,7 +66,7 @@ export default async function PublicHome() {
   );
 
   return (
-    <main id="main-content" data-community-story>
+    <main id="main-content" className="!flex-none" data-community-story>
       <CommunityStoryMotion />
       <section className={styles.hero} data-hero-region aria-labelledby="landing-title">
         <div className={styles.heroCopy}>
@@ -85,35 +85,55 @@ export default async function PublicHome() {
       <div className={styles.signatureBridge}><CommunitySignature /><span>Rooted in British Columbia. Open to the world.</span></div>
       <DiscoveryPanels />
 
-      <div className="mx-auto max-w-7xl space-y-12 px-5 py-16 sm:space-y-14 sm:px-8 sm:py-20">
-        {publicKinds.map((kind, index) => (
-          <section key={kind} aria-labelledby={`${kind}-heading`} className="relative">
-            <div className={`grid gap-7 lg:items-start lg:grid-cols-[0.28fr_0.72fr] lg:gap-10 ${index % 2 ? "lg:grid-cols-[0.72fr_0.28fr]" : ""}`}>
-              <div className={index % 2 ? "lg:order-2" : ""}>
-                <div className="sticky top-24 border-l-2 border-primary/30 py-2 pl-5 pr-2 sm:pl-7">
-                  <span className="flex size-12 items-center justify-center rounded-2xl bg-secondary text-primary">
-                    {(() => {
-                      const Icon = icons[kind];
-                      return <Icon aria-hidden="true" className="size-5.5" />;
-                    })()}
-                  </span>
-                  <p className="mt-6 text-xs font-semibold uppercase tracking-[0.18em] text-primary">{categoryKicker[kind]}</p>
-                  <h2 id={`${kind}-heading`} className="mt-2 text-2xl font-semibold tracking-tight">
-                    {publicCategories[kind].label}
-                  </h2>
-                  <p className="mt-3 text-sm leading-6 text-muted-foreground">{publicCategories[kind].description}</p>
-                  <Link
-                    href={`/explore?type=${kind}`}
-                    className="mt-6 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-                  >
-                    Explore all <ArrowRight aria-hidden="true" className="size-4" />
-                  </Link>
-                </div>
+      <section className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-16" aria-labelledby="community-now-heading">
+        <div className="mb-10 flex flex-col gap-5 border-b border-border pb-8 sm:mb-12 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">From the community</p>
+            <h2 id="community-now-heading" className="mt-3 text-3xl font-medium tracking-[-0.03em] sm:text-4xl">
+              What&apos;s happening now
+            </h2>
+            <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base">
+              Current opportunities, gatherings, local businesses and organizations — without repeating the same navigation cards.
+            </p>
+          </div>
+          <Link
+            href="/explore"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 self-start rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary md:self-auto"
+          >
+            Browse everything <ArrowRight aria-hidden="true" className="size-4" />
+          </Link>
+        </div>
+
+        <div className="divide-y divide-border">
+          {publicKinds.map((kind, index) => (
+            <section key={kind} aria-labelledby={`${kind}-heading`} className="grid gap-7 py-10 first:pt-0 last:pb-0 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[240px_minmax(0,1fr)]">
+              <div>
+                <span className="flex size-11 items-center justify-center rounded-xl bg-secondary text-primary">
+                  {(() => {
+                    const Icon = icons[kind];
+                    return <Icon aria-hidden="true" className="size-5" />;
+                  })()}
+                </span>
+                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">{categoryKicker[kind]}</p>
+                <h3 id={`${kind}-heading`} className="mt-2 text-2xl font-semibold tracking-tight">
+                  {publicCategories[kind].label}
+                </h3>
+                <p className="mt-3 max-w-xs text-sm leading-6 text-muted-foreground">{publicCategories[kind].description}</p>
+                <Link
+                  href={`/explore?type=${kind}`}
+                  className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                >
+                  Explore all <ArrowRight aria-hidden="true" className="size-4" />
+                </Link>
               </div>
 
-              <div className={index % 2 ? "lg:order-1" : ""}>
+              <div className="min-w-0">
                 {feeds[index].unavailable ? (
-                  <div role="status" aria-live="polite" className="relative overflow-hidden rounded-3xl border border-border/80 bg-card p-6 text-sm text-muted-foreground shadow-[0_10px_30px_rgb(15_23_42/0.03)]"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl"/><p className="relative font-medium text-foreground">Listings are temporarily unavailable.</p><p className="relative mt-2 leading-6">Please try again shortly.</p></div>
+                  <div role="status" aria-live="polite" className="relative min-h-40 overflow-hidden rounded-2xl border border-border/80 bg-card p-6 text-sm text-muted-foreground">
+                    <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-primary/[0.05] blur-3xl" />
+                    <p className="relative font-medium text-foreground">Listings are temporarily unavailable.</p>
+                    <p className="relative mt-2 leading-6">Please try again shortly.</p>
+                  </div>
                 ) : feeds[index].items.length ? (
                   <div
                     className={`grid gap-5 ${
@@ -125,42 +145,37 @@ export default async function PublicHome() {
                     }`}
                   >
                     {feeds[index].items.map(item => (
-                      <div
-                        key={item.slug}
-                        className={
-                          feeds[index].items.length === 1
-                            ? `w-full max-w-md ${index % 2 ? "lg:ml-auto" : "lg:mr-auto"}`
-                            : ""
-                        }
-                      >
+                      <div key={item.slug} className={feeds[index].items.length === 1 ? "w-full max-w-2xl" : ""}>
                         <ListingCard item={item} kind={kind} />
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="relative overflow-hidden rounded-3xl border border-dashed border-border bg-card p-8 sm:p-10">
-                    <div aria-hidden="true" className="absolute -right-12 -top-12 size-40 rounded-full border border-primary/10" />
-                    <div aria-hidden="true" className="absolute right-8 top-8 size-16 rounded-full border border-primary/10" />
-                    <p className="relative text-lg font-semibold">
-                      {kind === "events"
-                        ? "New gatherings are on the horizon."
-                        : kind === "opportunities"
-                          ? "The next opportunity starts with someone sharing it."
-                          : "Help this part of our community grow."}
-                    </p>
-                    <p className="relative mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
-                      {kind === "events" ? "No upcoming events are listed right now." : "No current listings yet. Check back soon or join to contribute."}
-                    </p>
-                    <Link href="/login?mode=join" className="relative mt-5 inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
-                      Join and contribute <ArrowRight aria-hidden="true" className="size-4" />
-                    </Link>
+                  <div className="relative flex min-h-40 items-center overflow-hidden rounded-2xl border border-dashed border-border bg-card px-6 py-7 sm:px-8">
+                    <div aria-hidden="true" className="absolute -right-10 -top-12 size-32 rounded-full border border-primary/10" />
+                    <div aria-hidden="true" className="absolute right-8 top-8 size-12 rounded-full border border-primary/10" />
+                    <div className="relative">
+                      <p className="text-base font-semibold sm:text-lg">
+                        {kind === "events"
+                          ? "New gatherings are on the horizon."
+                          : kind === "opportunities"
+                            ? "The next opportunity starts with someone sharing it."
+                            : "Help this part of our community grow."}
+                      </p>
+                      <p className="mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
+                        {kind === "events" ? "No upcoming events are listed right now." : "No current listings yet. Check back soon or join to contribute."}
+                      </p>
+                      <Link href="/login?mode=join" className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+                        Join and contribute <ArrowRight aria-hidden="true" className="size-4" />
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>
-            </div>
-          </section>
-        ))}
-      </div>
+            </section>
+          ))}
+        </div>
+      </section>
 
       <section className={styles.audience} aria-labelledby="community-audience">
         <p className={styles.eyebrow}>A place for your next chapter</p>
