@@ -121,7 +121,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
 
   return (
     <main data-illustration-focus-scope className="mx-auto w-full max-w-[1500px] px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
-      <section data-illustration-trigger className="relative overflow-hidden rounded-sm border border-border/80 bg-card px-6 py-8 md:px-8 md:py-10">
+      <section data-illustration-trigger className="relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card px-6 py-7 shadow-[0_14px_42px_rgb(15_23_42/0.045)] md:px-8 md:py-9">
         <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
