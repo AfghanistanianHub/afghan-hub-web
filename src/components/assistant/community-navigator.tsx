@@ -179,6 +179,8 @@ export function CommunityNavigator() {
   async function runSearch(value: string, previousContext: NavigatorContext | undefined = contextRef.current) {
     const normalized = value.trim().slice(0, 120);
     if (normalized.length < 2 || pendingRef.current) return;
+    // Keep focus when a starter or follow-up button disappears during search.
+    inputRef.current?.focus();
     pendingRef.current = true; setPending(true); setQuery("");
     const id = ++sequence.current;
     const controller = new AbortController(); controllerRef.current = controller;

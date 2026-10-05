@@ -172,9 +172,8 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]')?.dataset.running==='true'"),"hero controller hydration");
   await page.evaluate(`window.__heroShifts=0;window.__heroLongTasks=[];new PerformanceObserver(l=>{for(const e of l.getEntries())if(!e.hadRecentInput)window.__heroShifts+=e.value}).observe({type:'layout-shift'});new PerformanceObserver(l=>window.__heroLongTasks.push(...l.getEntries().map(e=>e.duration))).observe({type:'longtask'})`);
   const heroGeometry=await page.evaluate("(()=>{const e=document.querySelector('[data-hero-region]');const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()");
-  const stages=await page.evaluate("(()=>{const e=document.querySelector('[data-community-motion]');return ['[data-hero-draw]','[data-hero-reveal]','[data-hero-accent]'].map(s=>e.querySelector(s).getAnimations()[0].effect.getTiming())})()");
-  assert.ok(stages[1].delay>=stages[0].duration,"Forms reveal after main path drawing");
-  assert.ok(stages[2].delay>=stages[1].delay+stages[1].duration,"Violet accents activate after architectural reveal");
+  const stages=await page.evaluate("(()=>{const e=document.querySelector('[data-community-motion]');return ['network','gathering','openings'].map(layer=>e.querySelector(`[data-hero-layer=${layer}] [data-hero-draw]`).getAnimations()[0].effect.getTiming().delay)})()");
+  assert.ok(stages[0]<stages[1]&&stages[1]<stages[2],"Connection, gathering, and opportunity reveal in narrative order");
   assert.equal(await page.evaluate("document.querySelectorAll('[data-constellation-person]').length"),4,"Hero constellation remains human-first without invented members");
   assert.ok(await page.evaluate("!!document.querySelector('[data-community-signature]') && !!document.querySelector('[data-environment-contour]')"),"Original geometric signature and environmental contour render");
   assert.equal(await page.evaluate("(()=>{const t=getComputedStyle(document.documentElement).getPropertyValue('--motion-step').trim();return parseFloat(t)*(t.endsWith('ms')?1:1000)})()"),420,"Shared motion timing is consistent");
@@ -216,14 +215,11 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   assert.equal(await page.evaluate("window.__heroShifts"),0,"No animation layout shifts");
   // Screenshot clipping can commit a final visibility/transform frame asynchronously.
   await waitFor(()=>page.evaluate("[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===1).every(a=>a.playState==='finished')"),"Intro and final pointer frame must finish",5000);
-  const ambientTimes="[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===Infinity).map(a=>a.currentTime)";
+  assert.equal(await page.evaluate("[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===Infinity).length"),0,"Hero has no perpetual ambient animation");
   await page.evaluate("scrollTo(0,document.documentElement.scrollHeight)");
   await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='false'"),"offscreen pause");
-  await waitFor(()=>page.evaluate("[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===Infinity).every(a=>a.playState==='paused')"),"offscreen renderer timelines paused");
-  await page.evaluate("new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))");
-  const paused=await page.evaluate(ambientTimes);await delay(350);assert.deepEqual(await page.evaluate(ambientTimes),paused,"Offscreen ambient timeline must stop");
-  await page.evaluate("scrollTo(0,0)");await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='true'"),"on-screen resume");
-  await delay(150);assert.notDeepEqual(await page.evaluate(ambientTimes),paused,"Visible ambient timeline must resume");
+  await page.evaluate("scrollTo(0,0)");await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='true'"),"on-screen return");
+  assert.ok(await page.evaluate("[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===1).every(a=>a.playState==='finished')"),"Narrative stays complete after returning onscreen");
   // Use actual tab visibility rather than dispatching a synthetic visibility event.
   await page.send("Emulation.setFocusEmulationEnabled",{enabled:false});
   const browser = new DevTools();await browser.connect(`ws://127.0.0.1:${debugPort}${portFile.split('\n')[1]}`);
@@ -231,10 +227,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   await browser.send("Target.activateTarget",{targetId:other.targetId});
   await waitFor(()=>page.evaluate("document.hidden"),"actual background tab visibility");
   await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='false'"),"hidden-tab pause");
-  // Let the renderer apply the paused style before sampling its committed timeline.
-  await waitFor(()=>page.evaluate("[...document.querySelectorAll('[data-hero-pulse],[data-hero-node]')].flatMap(e=>e.getAnimations()).every(a=>a.playState==='paused')"),"hidden renderer timelines paused");
-  await delay(100);
-  const hidden=await page.evaluate(ambientTimes);await delay(350);assert.deepEqual(await page.evaluate(ambientTimes),hidden,"Hidden-tab timeline must stop");
+  assert.ok(await page.evaluate("[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===1).every(a=>a.playState==='finished')"),"Hidden tab does not restart narrative");
   await browser.send("Target.activateTarget",{targetId:tabs.find(tab=>tab.type==='page').id});
   await browser.send("Target.closeTarget",{targetId:other.targetId});browser.close();
   await page.send("Emulation.setFocusEmulationEnabled",{enabled:true});
@@ -257,7 +250,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   assert.ok(await page.evaluate("[...document.querySelectorAll('[data-hero-layer]')].every(e=>getComputedStyle(e).transform==='none')"),"Reduced motion must disable pointer depth");
   assert.ok(await page.evaluate("[...document.querySelectorAll('[data-hero-draw],[data-hero-reveal],[data-hero-accent]')].every(e=>parseFloat(getComputedStyle(e).opacity)===1)"),"Intentional fully visible static artwork");
   await page.send("Emulation.setEmulatedMedia",{features:[]});
-  console.log("AFGHAN_HUB_HERO_VERIFIED staged intro, paused ambient pulses, pointer depth/reset, primary CTA keyboard highlight, actual hidden-tab/offscreen suspension, desktop/mobile pacing, zero layout shifts and static reduced motion passed.");
+  console.log("AFGHAN_HUB_HERO_VERIFIED staged one-pass intro, pointer depth/reset, primary CTA keyboard highlight, hidden-tab/offscreen stability, desktop/mobile pacing, zero layout shifts and static reduced motion passed.");
   if(process.versions.node.startsWith("24.")) {
     console.log(`AFGHAN_HUB_HERO_CAPTURE_TIMES ${JSON.stringify(captureTimes)}`);
     for(let frame=0;frame<capture.length;frame++)emitScreenshot(`hero_${String(frame).padStart(3,'0')}.jpg`,capture[frame]);
