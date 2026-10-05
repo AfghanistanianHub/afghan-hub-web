@@ -40,7 +40,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
     .maybeSingle();
 
   const fieldClassName =
-    `${styles.search} mt-2 w-full rounded-[var(--radius)] border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10`;
+    `${styles.search} mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10`;
   const displayName = [profile?.first_name, profile?.last_name].filter(Boolean).join("") ||"Your profile";
   const location = [profile?.city, profile?.province_state, profile?.country].filter(Boolean).join(",");
   const hasProfessionalDetails = Boolean(profile?.headline || profile?.profession || profile?.company);
@@ -123,11 +123,11 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                   <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><HandHeart aria-hidden="true" className="size-4" /></span>Mentorship</legend>
                   <p className="text-sm leading-6 text-muted-foreground">Mentorship preferences are optional and member-selected. They are not credentials or endorsements by Afghan Hub.</p>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <label className={`${styles.control} flex min-h-12 cursor-pointer items-start gap-3 rounded-[var(--radius)] border border-border/80 bg-background/72 p-4 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary`}>
+                    <label className={`${styles.control} flex min-h-12 cursor-pointer items-start gap-3 rounded-[var(--radius-control)] border border-border/80 bg-background/72 p-4 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary`}>
                       <input name="open_to_mentoring" type="checkbox" defaultChecked={profile?.open_to_mentoring ?? false} className="mt-1 size-4 accent-primary" />
                       <span><span className="block text-sm font-semibold">Open to mentoring</span><span className="mt-1 block text-xs leading-5 text-muted-foreground">Let members know you are open to sharing experience or guidance.</span></span>
                     </label>
-                    <label className={`${styles.control} flex min-h-12 cursor-pointer items-start gap-3 rounded-[var(--radius)] border border-border/80 bg-background/72 p-4 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary`}>
+                    <label className={`${styles.control} flex min-h-12 cursor-pointer items-start gap-3 rounded-[var(--radius-control)] border border-border/80 bg-background/72 p-4 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary`}>
                       <input name="looking_for_mentor" type="checkbox" defaultChecked={profile?.looking_for_mentor ?? false} className="mt-1 size-4 accent-primary" />
                       <span><span className="block text-sm font-semibold">Looking for a mentor</span><span className="mt-1 block text-xs leading-5 text-muted-foreground">Show that you are interested in finding guidance from another member.</span></span>
                     </label>
@@ -149,7 +149,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                 </fieldset>
 
                 <div className={`${styles.surface} sticky bottom-3 z-10 rounded-[var(--radius)] border border-border/80 bg-card p-3   sm:bottom-4`}>
-                  <PendingSubmitButton pendingLabel="Saving profile…" className={`${styles.control} w-full rounded-[var(--radius)] bg-primary px-5 py-3 font-semibold text-primary-foreground transition  hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}>Save profile</PendingSubmitButton>
+                  <PendingSubmitButton pendingLabel="Saving profile…" className={`${styles.control} w-full rounded-[var(--radius-control)] bg-primary px-5 py-3 font-semibold text-primary-foreground transition  hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}>Save profile</PendingSubmitButton>
                 </div>
               </form>
             </section>
