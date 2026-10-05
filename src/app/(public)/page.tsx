@@ -11,7 +11,6 @@ import { CommunitySignature } from "@/components/public/community-signature";
 import { CommunityStoryMotion } from "@/components/public/community-story-motion";
 import { CommunityHeroMotion } from "@/components/public/community-hero-motion";
 import { CommunityNetwork } from "@/components/public/community-network";
-import { DiscoveryPanels } from "@/components/public/discovery-panels";
 import styles from "./landing.module.css";
 import { ListingCard } from "@/components/public/listing-card";
 import { publicCategories, publicKinds, type PublicKind } from "@/lib/public-catalog";
@@ -83,8 +82,6 @@ export default async function PublicHome() {
       </section>
 
       <div className={styles.signatureBridge}><CommunitySignature /><span>Rooted in British Columbia. Open to the world.</span></div>
-      <DiscoveryPanels />
-
       <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-14" aria-labelledby="community-now-heading">
         <div className="mb-8 flex flex-col gap-5 border-b border-border pb-6 sm:mb-10 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
