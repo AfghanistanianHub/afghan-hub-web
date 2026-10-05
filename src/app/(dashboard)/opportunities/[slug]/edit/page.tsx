@@ -50,7 +50,7 @@ export default async function EditOpportunityPage({
     .order("name");
 
   const fieldClassName =
-    "mt-2 w-full rounded-xl border border-border bg-card px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10";
+    "mt-2 w-full rounded-[var(--radius-control)] border border-border bg-card px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10";
 
   return (
     <main className={`${formStyles.page} mx-auto max-w-4xl px-4 py-8 md:px-6 md:py-10`}>
