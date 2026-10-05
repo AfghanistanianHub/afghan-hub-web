@@ -64,10 +64,10 @@ export default async function ModerationTeamPage({
           ← Back to moderation
         </Link>
 
-        <section className="relative mt-6 overflow-hidden rounded-[2rem] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
+        <section className="relative mt-6 overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
           <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
           <div className="relative flex items-start gap-4">
-            <div className="rounded-2xl bg-primary/10 p-3 text-primary"><ShieldCheck aria-hidden="true" className="size-6" /></div>
+            <div className="rounded-[var(--radius-control)] bg-primary/10 p-3 text-primary"><ShieldCheck aria-hidden="true" className="size-6" /></div>
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Admin only</p>
               <h1 className="mt-2 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Moderation team</h1>
@@ -80,7 +80,7 @@ export default async function ModerationTeamPage({
           <div
             role="alert"
             aria-live="assertive"
-            className="mt-6 rounded-xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive"
+            className="mt-6 rounded-[var(--radius-control)] border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive"
           >
             {error}
           </div>
@@ -90,7 +90,7 @@ export default async function ModerationTeamPage({
           <div
             role="status"
             aria-live="polite"
-            className="mt-6 rounded-xl border border-primary/20 bg-primary/8 p-4 text-sm text-primary"
+            className="mt-6 rounded-[var(--radius-control)] border border-primary/20 bg-primary/8 p-4 text-sm text-primary"
           >
             Member role updated.
           </div>
@@ -100,13 +100,13 @@ export default async function ModerationTeamPage({
           <div
             role="alert"
             aria-live="assertive"
-            className="mt-8 rounded-xl border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive"
+            className="mt-8 rounded-[var(--radius-control)] border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive"
           >
             We could not load members. Please try again.
           </div>
         ) : (members ?? []).length === 0 ? (
-          <section className="mt-8 rounded-[1.5rem] border border-dashed border-border/80 bg-muted/25 p-8 text-center sm:p-10">
-            <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <section className="mt-8 rounded-[var(--radius)] border border-dashed border-border/80 bg-muted/25 p-8 text-center sm:p-10">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-[var(--radius-control)] bg-primary/10 text-primary">
               <ShieldCheck aria-hidden="true" className="size-5" />
             </div>
             <h2 className="mt-4 text-lg font-semibold text-foreground">
@@ -124,7 +124,7 @@ export default async function ModerationTeamPage({
               return (
                 <article
                   key={member.id}
-                  className="surface-panel rounded-[1.5rem] p-5 transition hover:border-primary/25 hover:shadow-[0_12px_30px_rgb(15_23_42/0.045)]"
+                  className="surface-panel rounded-[var(--radius)] p-5 transition hover:border-primary/25 hover:shadow-[0_12px_30px_rgb(15_23_42/0.045)]"
                 >
                   <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                     <div className="min-w-0">
@@ -169,7 +169,7 @@ export default async function ModerationTeamPage({
                           <select
                             name="role"
                             defaultValue={member.role}
-                            className="min-h-11 rounded-2xl border border-border/80 bg-card px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-primary/50 focus:ring-4 focus:ring-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                            className="min-h-11 rounded-[var(--radius-control)] border border-border/80 bg-card px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-primary/50 focus:ring-4 focus:ring-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                           >
                             <option value="member">Member</option>
                             <option value="moderator">Moderator</option>
@@ -179,7 +179,7 @@ export default async function ModerationTeamPage({
 
                         <PendingSubmitButton
                           pendingLabel="Saving role…"
-                          className="min-h-11 rounded-2xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                          className="min-h-11 rounded-[var(--radius-control)] bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                         >
                           Save role
                         </PendingSubmitButton>
