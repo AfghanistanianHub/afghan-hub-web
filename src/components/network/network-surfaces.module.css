@@ -73,7 +73,7 @@
 
 .control {
   min-height: 44px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-control);
   transition:
     background var(--motion-fast),
     border-color var(--motion-fast),
@@ -91,7 +91,7 @@
 
 .search {
   min-height: 46px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-control);
   box-shadow: 0 1px 0 rgb(48 43 53 / 0.02);
   transition:
     border-color var(--motion-fast),
