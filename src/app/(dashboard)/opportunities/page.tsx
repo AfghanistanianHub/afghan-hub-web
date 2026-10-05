@@ -127,7 +127,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
 
   return (
     <main data-illustration-focus-scope className="mx-auto w-full max-w-[1500px] px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
-      <section data-illustration-trigger className="relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card px-6 py-7 shadow-[0_14px_42px_rgb(15_23_42/0.045)] md:px-8 md:py-9">
+      <section data-illustration-trigger className="relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-7 shadow-[0_1px_0_rgb(48_43_53/0.025)] md:px-8 md:py-9">
         <div className="relative grid gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(220px,300px)] lg:items-center">
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
@@ -143,7 +143,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
         <div className="flex flex-col items-start gap-5 lg:items-end"><div className="w-full max-w-[280px]" aria-hidden="true"><CatalogIllustration interactive kind="opportunities" /></div>
         <Link
           href="/opportunities/new"
-          className="inline-flex w-fit items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          className="inline-flex w-fit items-center gap-2 rounded-[var(--radius)] bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           Post opportunity
           <ArrowUpRight aria-hidden="true" className="size-4" />
@@ -232,7 +232,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
 
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
         {error ? (
-          <div role="alert" aria-live="assertive" className="relative overflow-hidden rounded-[1.75rem] border border-destructive/25 bg-destructive/[0.05] p-8 text-center"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-destructive/[0.06] blur-3xl"/>
+          <div role="alert" aria-live="assertive" className="relative overflow-hidden rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.05] p-8 text-center"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-destructive/[0.06] blur-3xl"/>
             <h2 className="text-xl font-semibold text-destructive">We could not load opportunities</h2>
             <p className="mt-2 text-sm text-destructive/80">Please try again in a moment.</p>
           </div>
@@ -241,7 +241,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
             <Link
               key={opportunity.id}
               href={`/opportunities/${opportunity.slug}`}
-              className={`group relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-5 ${styles.surface} ${styles.profile}`}
+              className={`group relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card p-5 ${styles.surface} ${styles.profile}`}
             >
               <div aria-hidden="true" className="absolute -right-10 -top-10 size-28 rounded-full border border-primary/10" />
               <div className="relative flex flex-wrap items-center gap-2">
@@ -276,7 +276,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
             </Link>
           ))
         ) : (
-          <div className="relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-12 text-center shadow-[0_14px_42px_rgb(15_23_42/0.04)]"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-primary/[0.06] blur-3xl"/><span className="relative mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><BriefcaseBusiness aria-hidden="true" className="size-7"/></span>
+          <div className="relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card p-12 text-center shadow-[0_1px_0_rgb(48_43_53/0.025)]"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-primary/[0.06] blur-3xl"/><span className="relative mx-auto flex size-14 items-center justify-center rounded-[var(--radius)] bg-primary/10 text-primary"><BriefcaseBusiness aria-hidden="true" className="size-7"/></span>
             <h2 className="relative mt-5 text-2xl font-semibold text-foreground">
               {hasFilters ? "No opportunities match these filters" : "No opportunities yet"}
             </h2>
@@ -287,7 +287,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
             {hasFilters ? (
               <Link
                 href="/opportunities"
-                className="relative mt-5 inline-flex rounded-2xl border border-border px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                className="relative mt-5 inline-flex rounded-[var(--radius)] border border-border px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 Clear filters
               </Link>
