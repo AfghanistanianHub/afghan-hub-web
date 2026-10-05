@@ -34,7 +34,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             <Link href="/explore" className="inline-flex min-h-11 items-center justify-center rounded-md px-2 text-center transition hover:bg-secondary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-11 sm:px-3.5">
               Explore
             </Link>
-            <Link href="/about" className="inline-flex min-h-11 items-center justify-center rounded-sm px-2 text-center transition hover:bg-background hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-11 sm:px-3 sm:hover:bg-muted">
+            <Link href="/about" className="inline-flex min-h-11 items-center justify-center rounded-md px-2 text-center transition hover:bg-secondary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-11 sm:px-3.5">
               Our mission
             </Link>
             <Link href="/dashboard" className="inline-flex min-h-11 items-center justify-center rounded-sm px-2 text-center transition hover:bg-background hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-11 sm:px-3 sm:hover:bg-muted">
