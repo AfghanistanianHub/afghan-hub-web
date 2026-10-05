@@ -46,8 +46,16 @@
 @media(max-width:550px) { .signatureBridge { flex-direction:column; align-items:flex-start; gap:6px; margin-bottom:20px; padding:12px 24px; } .signatureBridge svg { width:140px; height:33px; } }
 @media(prefers-reduced-motion:reduce) { .heroCopy > :is(.eyebrow,h1,.intro,.actions), .heroArt::before, .heroArt::after { animation:none !important; } .actions svg { transition:none; } .actions a:is(:hover,:focus-visible,:active) svg { transform:none; } }
 
-.audience { max-width:1280px; margin:auto; padding:34px 32px 64px; border-top:1px solid var(--border); display:grid; grid-template-columns:1fr 1fr; column-gap:72px; row-gap:18px; }
-.audience .eyebrow { grid-column:1 / -1; }
-.audience h2 { margin:0; max-width:620px; font-size:clamp(1.6rem,2.2vw,2.2rem); line-height:1.32; letter-spacing:-.03em; font-weight:500; }
-.audience > p:last-child { margin:0; font-size:.9375rem; line-height:1.8; color:var(--muted-foreground); }
-@media(max-width:700px) { .audience { grid-template-columns:1fr; padding:30px 24px 48px; gap:16px; } }
+.audience { max-width:1280px; margin:auto; padding:44px 32px 56px; border-top:1px solid var(--border); display:grid; grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr); gap:56px; align-items:end; }
+.audienceCopy { min-width:0; }
+.audience h2 { margin:14px 0 0; max-width:720px; font-size:clamp(1.7rem,2.35vw,2.35rem); line-height:1.28; letter-spacing:-.035em; font-weight:500; }
+.audienceText { margin:18px 0 0; max-width:760px; font-size:.9375rem; line-height:1.8; color:var(--muted-foreground); }
+.audienceAction { min-width:0; border-left:1px solid var(--border); padding-left:32px; }
+.audiencePrompt { margin:0; max-width:330px; font-size:.9375rem; line-height:1.7; color:var(--muted-foreground); }
+.audienceButton { margin-top:20px; display:inline-flex; min-height:46px; align-items:center; gap:10px; border-radius:var(--radius-control); background:var(--primary); padding:12px 18px; color:var(--primary-foreground); font-size:.875rem; font-weight:600; box-shadow:0 8px 24px #62429118; transition:background var(--motion-fast),box-shadow var(--motion-fast),transform var(--motion-fast); }
+.audienceButton:hover { background:#503375; box-shadow:0 8px 22px #62429125; transform:translateY(-1px); }
+.audienceButton:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
+.audienceButton svg { transition:transform var(--motion-step) var(--motion-ease); }
+.audienceButton:is(:hover,:focus-visible) svg { transform:translateX(4px); }
+@media(max-width:800px) { .audience { grid-template-columns:1fr; padding:34px 24px 48px; gap:28px; } .audienceAction { border-left:0; border-top:1px solid var(--border); padding:24px 0 0; } .audiencePrompt { max-width:560px; } }
+@media(prefers-reduced-motion:reduce) { .audienceButton,.audienceButton svg { transition:none; } .audienceButton:is(:hover,:focus-visible) { transform:none; } .audienceButton:is(:hover,:focus-visible) svg { transform:none; } }
