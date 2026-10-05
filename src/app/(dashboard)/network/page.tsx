@@ -18,7 +18,7 @@ export default async function NetworkPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: incomingRequests } = user
+  const { data: incomingRequests, error: incomingRequestsError } = user
     ? await supabase
         .from("connections")
         .select(`
@@ -35,9 +35,9 @@ export default async function NetworkPage() {
         .eq("recipient_id", user.id)
         .eq("status", "pending")
         .order("created_at", { ascending: false })
-    : { data: [] };
+    : { data: [], error: null };
 
-  const { data: acceptedConnections } = user
+  const { data: acceptedConnections, error: acceptedConnectionsError } = user
     ? await supabase
         .from("connections")
         .select(`
@@ -68,7 +68,7 @@ export default async function NetworkPage() {
         .eq("status", "accepted")
         .or("requester_id.eq." + user.id + ",recipient_id.eq." + user.id)
         .order("updated_at", { ascending: false })
-    : { data: [] };
+    : { data: [], error: null };
 
   const { data: members, error } = await supabase
     .from("profiles")
@@ -187,10 +187,30 @@ export default async function NetworkPage() {
         </section>
 
         <div className="mt-7 space-y-7 lg:mt-8 lg:space-y-8">
-          <ConnectionRequests requests={incomingRequests ?? []} />
+          {incomingRequestsError ? (
+            <div
+              role="alert"
+              aria-live="assertive"
+              className="relative overflow-hidden rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.05] p-4 text-sm text-destructive"
+            >
+              We could not load your connection requests right now. Please try again shortly.
+            </div>
+          ) : (
+            <ConnectionRequests requests={incomingRequests ?? []} />
+          )}
 
           {user ? (
-            <MyConnections currentUserId={user.id} connections={acceptedConnections ?? []} />
+            acceptedConnectionsError ? (
+              <div
+                role="alert"
+                aria-live="assertive"
+                className="relative overflow-hidden rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.05] p-4 text-sm text-destructive"
+              >
+                We could not load your connections right now. Please try again shortly.
+              </div>
+            ) : (
+              <MyConnections currentUserId={user.id} connections={acceptedConnections ?? []} />
+            )
           ) : null}
 
           {error ? (
