@@ -6,6 +6,7 @@ import {
   getUtcDateKey,
 } from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
+import styles from "@/components/network/network-surfaces.module.css";
 import {
   catalogCheckboxInputClass,
   catalogCheckboxLabelClass,
@@ -239,7 +240,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
             <Link
               key={opportunity.id}
               href={`/opportunities/${opportunity.slug}`}
-              className="group relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-5 shadow-[0_10px_32px_rgb(15_23_42/0.035)] transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.07)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className={`group relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-5 ${styles.surface} ${styles.profile}`}
             >
               <div aria-hidden="true" className="absolute -right-10 -top-10 size-28 rounded-full border border-primary/10" />
               <div className="relative flex flex-wrap items-center gap-2">
@@ -255,7 +256,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
                 <h2 className="break-words text-xl font-semibold tracking-tight text-foreground transition group-hover:text-primary md:text-2xl">
                   {opportunity.title}
                 </h2>
-                <ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                <ArrowUpRight aria-hidden="true" data-profile-arrow className="mt-1 size-4 shrink-0 text-muted-foreground" />
               </div>
 
               {opportunity.organization ? (
