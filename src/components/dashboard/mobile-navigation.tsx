@@ -75,7 +75,7 @@ export function MobileNavigation({
                 AH
               </span>
               <span>
-                <span className="block text-sm font-extrabold tracking-[0.16em] text-foreground">AFGHAN HUB</span>
+                <span className="block text-sm font-semibold tracking-[0.16em] text-foreground">AFGHAN HUB</span>
                 <span className="mt-0.5 block text-[0.65rem] text-muted-foreground">Community workspace</span>
               </span>
             </Link>
@@ -106,14 +106,14 @@ export function MobileNavigation({
                   aria-current={active ? "page" : undefined}
                   className={`group relative flex min-h-11 items-center gap-3 rounded-[var(--radius)] px-3.5 py-3 text-sm font-medium transition-colors motion-reduce:transition-none active:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                     active
-                      ? "bg-secondary text-foreground"
+                      ? "bg-primary/[0.09] font-semibold text-foreground shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--primary)_10%,transparent)]"
                       : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   }`}
                 >
-                  {active ? <span aria-hidden="true" className="absolute left-1 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-primary" /> : null}
+                  {active ? <span aria-hidden="true" className="absolute left-0.5 top-1/2 h-7 w-1.5 -translate-y-1/2 rounded-full bg-primary" /> : null}
                   <span
                     className={`flex size-9 items-center justify-center rounded-[var(--radius)] ${
-                      active ? "bg-primary/10 text-primary" : "bg-transparent text-muted-foreground group-hover:bg-background/70"
+                      active ? "bg-primary/14 text-primary ring-1 ring-primary/10" : "bg-transparent text-muted-foreground group-hover:bg-background/70"
                     }`}
                   >
                     <Icon aria-hidden="true" className="size-4.5" />
@@ -150,7 +150,7 @@ export function MobileNavigation({
                 onClick={() => setIsOpen(false)}
                 aria-current={isActivePath(pathname, "/profile") ? "page" : undefined}
                 className={`flex min-h-11 items-center gap-3 rounded-[var(--radius)] px-3.5 py-3 text-sm font-medium transition-colors motion-reduce:transition-none active:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-                  isActivePath(pathname, "/profile") ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  isActivePath(pathname, "/profile") ? "bg-primary/[0.09] font-semibold text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
               >
                 <UserRound aria-hidden="true" className="size-5" />
@@ -162,7 +162,7 @@ export function MobileNavigation({
                 onClick={() => setIsOpen(false)}
                 aria-current={isActivePath(pathname, "/settings") ? "page" : undefined}
                 className={`flex min-h-11 items-center gap-3 rounded-[var(--radius)] px-3.5 py-3 text-sm font-medium transition-colors motion-reduce:transition-none active:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-                  isActivePath(pathname, "/settings") ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  isActivePath(pathname, "/settings") ? "bg-primary/[0.09] font-semibold text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
               >
                 <Settings aria-hidden="true" className="size-5" />
