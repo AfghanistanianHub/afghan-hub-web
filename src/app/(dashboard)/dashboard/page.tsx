@@ -197,7 +197,7 @@ export default async function DashboardPage() {
                 className="group rounded-[var(--radius-control)] px-2 py-3 transition hover:bg-secondary/60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary">
+                  <span className="flex size-9 items-center justify-center rounded-[var(--radius-control)] bg-secondary text-primary">
                     <BriefcaseBusiness aria-hidden="true" className="size-4.5" />
                   </span>
                   <ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground group-hover:text-primary" />
@@ -211,7 +211,7 @@ export default async function DashboardPage() {
                 className="group rounded-[var(--radius-control)] px-2 py-3 transition hover:bg-secondary/60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary">
+                  <span className="flex size-9 items-center justify-center rounded-[var(--radius-control)] bg-secondary text-primary">
                     <CalendarDays aria-hidden="true" className="size-4.5" />
                   </span>
                   <ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground group-hover:text-primary" />
@@ -222,7 +222,7 @@ export default async function DashboardPage() {
 
               <Link
                 href={nextStep.href}
-                className="group col-span-2 flex items-center justify-between gap-4 rounded-[var(--radius)] bg-primary px-5 py-4 text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:col-span-1 xl:col-span-2"
+                className="group col-span-2 flex items-center justify-between gap-4 rounded-[var(--radius-control)] bg-primary px-5 py-4 text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:col-span-1 xl:col-span-2"
               >
                 <div>
                   <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] opacity-70">{nextStep.kicker}</p>
@@ -343,7 +343,7 @@ export default async function DashboardPage() {
                       <Link
                         key={event.id}
                         href={`/events/${event.slug}`}
-                        className="group relative block rounded-xl py-3 pl-7 pr-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                        className="group relative block rounded-[var(--radius-control)] py-3 pl-7 pr-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                       >
                         <span aria-hidden="true" className="absolute left-0 top-[1.15rem] size-[11px] rounded-full border-2 border-card bg-primary" />
                         <p className="text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-primary">
