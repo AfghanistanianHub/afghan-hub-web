@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { type FormEvent, type KeyboardEvent as ReactKeyboardEvent, useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Compass, X } from "lucide-react";
+import { ArrowUpRight, Compass, Search, Sparkles, X } from "lucide-react";
 import { trackAssistantEvent } from "@/lib/assistant/analytics";
 import { ASSISTANT_OPEN_EVENT } from "@/components/assistant/contextual-assistant-prompt";
 import { resolveNavigatorContext, type NavigatorContext } from "@/lib/assistant/conversation";
@@ -237,13 +237,13 @@ export function CommunityNavigator() {
     {open ? <dialog ref={panelRef} aria-modal="true" aria-labelledby="community-navigator-title" className={styles.drawer} dir={language === "en" ? "ltr" : "rtl"} lang={language === "fa" ? "fa" : language} onCancel={() => setOpen(false)} onKeyDown={containDialogFocus}
       onMouseDown={event => { if (event.target === event.currentTarget) {const r=event.currentTarget.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)setOpen(false);} }}>
       <header className={styles.header}>
-        <div className={styles.brand}><span className={styles.identity}><Compass size={18} aria-hidden="true" />Afghan Hub</span><button type="button" className={styles.close} aria-label={language === "en" ? "Close Community Navigator" : language === "fa" ? "بستن راهنما" : "لارښود بند کړئ"} onClick={() => setOpen(false)}><X size={19} aria-hidden="true" /></button></div>
-        <h2 id="community-navigator-title">{labels.title}</h2><p className={styles.description}>{strings.description}</p>
+        <div className={styles.brand}><span className={styles.identity}><span className={styles.identityMark}><Compass size={17} aria-hidden="true" /></span><span><small>AFGHAN HUB</small><strong>Community Navigator</strong></span></span><button type="button" className={styles.close} aria-label={language === "en" ? "Close Community Navigator" : language === "fa" ? "بستن راهنما" : "لارښود بند کړئ"} onClick={() => setOpen(false)}><X size={19} aria-hidden="true" /></button></div>
+        <p className={styles.kicker}><Sparkles size={13} aria-hidden="true" /> Guided discovery</p><h2 id="community-navigator-title">{labels.title}</h2><p className={styles.description}>{strings.description}</p>
         <div className={styles.toolbar}>{(["en","fa","ps"] as const).map(option => <button type="button" key={option} aria-pressed={language===option} onClick={() => {setLanguage(option);trackAssistantEvent({event:"assistant_language_change",language:option});}}>{option==="en"?"English":option==="fa"?"دری":"پښتو"}</button>)}<button type="button" className={styles.reset} onClick={startOver}>{labels.start}</button></div>
       </header>
       <p role="status" aria-live="polite" className="sr-only">{pending ? strings.searching : turns.at(-1)?.status === "ready" ? `${labels.matches}: ${turns.at(-1)?.groups.reduce((count,group)=>count+group.results.length,0)}` : ""}</p>
       <div className={styles.conversation} aria-label={labels.title}>
-        {!turns.length ? <div className={styles.welcome}><h3>{strings.title}</h3><p className={styles.description}>{labels.grounded}</p><div className={styles.prompts}>{prompts[language].map(prompt => <button type="button" key={prompt} onClick={() => void runSearch(prompt)}>{prompt}</button>)}</div></div> : null}
+        {!turns.length ? <div className={styles.welcome}><div className={styles.welcomeIcon}><Search size={22} aria-hidden="true" /></div><h3>{strings.title}</h3><p className={styles.description}>{labels.grounded}</p><div className={styles.prompts}>{prompts[language].map((prompt,index) => <button type="button" key={prompt} onClick={() => void runSearch(prompt)}><span>{String(index + 1).padStart(2,"0")}</span>{prompt}<ArrowUpRight size={14} aria-hidden="true" /></button>)}</div></div> : null}
         {turns.map((turn,index) => <article key={turn.id} className={styles.turn}>
           <div className={styles.user}><p className={styles.label}>{labels.you}</p><p>{turn.query}</p></div>
           <p className={styles.label}>{labels.title}</p>
@@ -252,7 +252,7 @@ export function CommunityNavigator() {
             <div className={styles.context}>{turn.context?.topic ? <span>{turn.context.topic}</span> : null}{turn.context?.city ? <span>{turn.context.city}</span> : null}</div>
             {turn.groups.map((group,groupIndex) => <div key={groupIndex} className={styles.group}>
               {group.memberSignal ? <><h4>{group.memberSignal==="open_to_mentoring"?labels.mentors:labels.mentees}</h4><p className={styles.scope}>{labels.preference}</p>{!group.results.length ? <p className={styles.description}>{strings.empty}</p> : null}</> : null}
-              {(["profile","opportunity","event","organization","business"] as const).map(type => { const results=group.results.filter(result=>result.entityType===type);return results.length ? <div key={type}>{!group.memberSignal ? <h4>{labels.types[type]}</h4> : null}<div className={styles.results}>{results.map(result => <Link href={result.href} key={`${result.entityType}:${result.entityId}`} className={styles.result} onClick={() => {trackAssistantEvent({event:"assistant_result_click",language,entityType:result.entityType});setOpen(false);}}><span><strong>{result.title}</strong>{result.subtitle ? <small>{result.subtitle}</small> : null}{[result.city,result.country].filter(Boolean).length ? <small>{[result.city,result.country].filter(Boolean).join(", ")}</small> : null}{result.matchedTopics?.length ? <small className={styles.reason}>{result.matchedTopics.join(" · ")}</small> : null}</span><ArrowUpRight size={16} aria-hidden="true" /></Link>)}</div></div> : null;})}
+              {(["profile","opportunity","event","organization","business"] as const).map(type => { const results=group.results.filter(result=>result.entityType===type);return results.length ? <div key={type}>{!group.memberSignal ? <h4>{labels.types[type]}</h4> : null}<div className={styles.results}>{results.map(result => <Link href={result.href} key={`${result.entityType}:${result.entityId}`} className={styles.result} onClick={() => {trackAssistantEvent({event:"assistant_result_click",language,entityType:result.entityType});setOpen(false);}}><span><span className={styles.resultType}>{labels.types[result.entityType]}</span><strong>{result.title}</strong>{result.subtitle ? <small>{result.subtitle}</small> : null}{[result.city,result.country].filter(Boolean).length ? <small>{[result.city,result.country].filter(Boolean).join(", ")}</small> : null}{result.matchedTopics?.length ? <small className={styles.reason}>{result.matchedTopics.join(" · ")}</small> : null}</span><ArrowUpRight size={16} aria-hidden="true" /></Link>)}</div></div> : null;})}
             </div>)}
             {turn.relatedUnavailable ? <p className={styles.scope}>{labels.partial}</p> : null}
             {!turn.groups.some(group=>group.results.length) ? <>{!turn.browseOnly ? <p className={styles.description}>{strings.recovery}</p> : null}{recoveryLinks(turn.context)}</> : null}
@@ -261,7 +261,7 @@ export function CommunityNavigator() {
         </article>)}
         <div ref={bottomRef} />
       </div>
-      <form onSubmit={submit} className={styles.composer}><div className={styles.inputRow}><input ref={inputRef} aria-label={strings.ask} value={query} onChange={event => setQuery(event.target.value)} maxLength={120} placeholder={strings.placeholder} /><button type="submit" disabled={pending||query.trim().length<2}>{pending?strings.searching:strings.search}</button></div><p className={styles.scope}>{strings.readOnly}</p><details className={styles.privacy}><summary>{language === "en" ? "How your search works" : language === "fa" ? "جست‌وجو چگونه کار می‌کند" : "لټون څنګه کار کوي"}</summary><p>{labels.grounded} {labels.privacy}</p></details></form>
+      <form onSubmit={submit} className={styles.composer}><div className={styles.composerLabel}><span>{strings.ask}</span><span>{query.length}/120</span></div><div className={styles.inputRow}><div className={styles.inputWrap}><Search size={16} aria-hidden="true" /><input ref={inputRef} aria-label={strings.ask} value={query} onChange={event => setQuery(event.target.value)} maxLength={120} placeholder={strings.placeholder} /></div><button type="submit" disabled={pending||query.trim().length<2}>{pending?strings.searching:strings.search}</button></div><p className={styles.scope}>{strings.readOnly}</p><details className={styles.privacy}><summary>{language === "en" ? "How your search works" : language === "fa" ? "جست‌وجو چگونه کار می‌کند" : "لټون څنګه کار کوي"}</summary><p>{labels.grounded} {labels.privacy}</p></details></form>
     </dialog> : null}
   </>;
 }
