@@ -71,6 +71,8 @@ export default async function SavedOpportunitiesPage() {
     .eq("profile_id", user.id)
     .order("created_at", { ascending: false });
 
+  const savedCount = savedRows?.length ?? 0;
+
   const opportunities = (savedRows ?? [])
     .map((row) => getOpportunity(row.opportunity))
     .filter(
@@ -156,10 +158,14 @@ export default async function SavedOpportunitiesPage() {
               <Bookmark aria-hidden="true" className="size-7" />
             </div>
             <h2 className="relative mt-4 text-lg font-bold text-foreground">
-              No saved opportunities yet
+              {savedCount > 0
+                ? "No saved opportunities are currently available"
+                : "No saved opportunities yet"}
             </h2>
             <p className="relative mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-              Save opportunities you want to review or apply for later.
+              {savedCount > 0
+                ? "Some opportunities you saved may have expired or are no longer published. Browse current opportunities to find something new."
+                : "Save opportunities you want to review or apply for later."}
             </p>
             <Link
               href="/opportunities"
