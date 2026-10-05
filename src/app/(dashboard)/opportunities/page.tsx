@@ -120,7 +120,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
   const hasFilters = Boolean(search || city || type !== "all" || format !== "all");
 
   return (
-    <main data-illustration-focus-scope className="mx-auto max-w-7xl px-4 py-8 md:px-8 lg:px-10">
+    <main data-illustration-focus-scope className="mx-auto w-full max-w-[1500px] px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <section data-illustration-trigger className="relative overflow-hidden rounded-sm border border-border/80 bg-card px-6 py-8 md:px-8 md:py-10">
         <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div className="max-w-3xl">

@@ -27,7 +27,7 @@ export default async function OrganizationsPage({ searchParams }: OrganizationsP
   const hasFilters = Boolean(search || organizationType || city || volunteers || verified);
   const field = "rounded-xl border border-border bg-card px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-4 focus:ring-primary/10";
 
-  return <main data-illustration-focus-scope className="px-4 py-8 md:px-8 lg:py-10"><div className="mx-auto max-w-7xl">
+  return <main data-illustration-focus-scope className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 lg:py-10 xl:px-12"><div className="mx-auto w-full max-w-[1500px]">
     <section data-illustration-trigger className="relative overflow-hidden rounded-sm border border-border/80 bg-card px-6 py-8 md:px-8 md:py-10">
       <div className="relative flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-3xl"><div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary"><UsersRound className="size-3.5" aria-hidden="true"/>Community organizations</div><h1 className="mt-5 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">Discover organizations</h1><p className="mt-3 max-w-2xl leading-7 text-muted-foreground">Explore Afghan-led nonprofits, associations, cultural groups, community initiatives, and professional organizations.</p><div className="mt-5 w-48 max-w-full" aria-hidden="true"><CatalogIllustration interactive kind="organizations" /></div></div>
