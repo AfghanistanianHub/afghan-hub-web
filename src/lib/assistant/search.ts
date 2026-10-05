@@ -120,6 +120,64 @@ function expertiseMatchesClause(
   return false;
 }
 
+function matchesQualifier(value: string, qualifier: string) {
+  return qualifier.split(/\s+/u).some(term =>
+    term.length > 0 &&
+    value.toLocaleLowerCase().split(/\s+/u).some(token =>
+      term.length === 1
+        ? token.replace(/[,.!?]+$/u, "") === term
+        : token.includes(term),
+    ),
+  );
+}
+
+function expertiseLabelMatchesClause(
+  profile: { city: string | null; country: string | null },
+  value: string,
+  clause: string,
+) {
+  const normalizedValue = normalizeExpertise(value);
+  if ((" " + normalizedValue + " ").includes(" " + clause + " ")) return true;
+
+  const marker = clause.lastIndexOf(" in ");
+  if (marker <= 0) return false;
+  const skill = clause.slice(0, marker).trim();
+  const place = clause.slice(marker + 4).trim();
+  const profilePlaces = [profile.city, profile.country]
+    .filter(Boolean)
+    .map(value => normalizeExpertise(String(value)));
+  return profilePlaces.includes(place) && (" " + normalizedValue + " ").includes(" " + skill + " ");
+}
+
+function matchedExpertiseLabel(
+  profile: {
+    city: string | null;
+    country: string | null;
+    skills: string[] | null;
+    mentorship_topics: string[] | null;
+    headline: string | null;
+    profession: string | null;
+  },
+  qualifier: string,
+  skillClauses: readonly string[],
+) {
+  const expertise = [
+    ...(profile.mentorship_topics ?? []),
+    ...(profile.skills ?? []),
+    profile.headline,
+    profile.profession,
+  ].filter((value): value is string => Boolean(value));
+
+  if (skillClauses.length > 0) {
+    const explicitlyMatched = expertise.find(value =>
+      skillClauses.some(clause => expertiseLabelMatchesClause(profile, value, clause)),
+    );
+    if (explicitlyMatched) return explicitlyMatched;
+  }
+
+  return expertise.find(value => matchesQualifier(value, qualifier));
+}
+
 function mentorshipRelevance(
   profile: {
     display_name: string | null;
@@ -226,7 +284,6 @@ export async function searchAssistantCatalog(
       .eq("onboarding_completed", true);
 
     if (options.city) {
-      profileQuery = profileQuery.ilike("city", options.city.replace(/[\\%_]/g, "\\$&"));
       profileQuery = profileQuery.ilike(
         "city",
         options.city.replace(/[\\%_]/g, (match) => `\\${match}`),
@@ -282,6 +339,7 @@ export async function searchAssistantCatalog(
         entityId: profile.id,
         title: memberTitle(profile),
         subtitle:
+          matchedExpertiseLabel(profile, qualifier, skillClauses) ??
           profile.mentorship_topics?.[0] ??
           profile.headline ??
           profile.profession,
@@ -290,17 +348,7 @@ export async function searchAssistantCatalog(
         href: `/members/${profile.id}`,
         rank: relevance,
         matchedTopics: [...(profile.mentorship_topics ?? []), ...(profile.skills ?? [])]
-          .filter(topic => qualifier.split(/\s+/u).some(term => term.length > 0 && topic.toLocaleLowerCase().split(/\s+/u).some(token => term.length === 1 ? token.replace(/[,.!?]+$/u, "") === term : token.includes(term))))
-          .filter(topic =>
-            qualifier.split(/\s+/u).some(term =>
-              term.length > 0 &&
-              topic.toLocaleLowerCase().split(/\s+/u).some(token =>
-                term.length === 1
-                  ? token.replace(/[,.!?]+$/u, "") === term
-                  : token.includes(term),
-              ),
-            ),
-          )
+          .filter(topic => matchesQualifier(topic, qualifier))
           .slice(0, 3),
       }));
   }

@@ -1,13 +1,13 @@
 # Afghan Hub current state
 
-## Authoritative checkpoint — 2026-10-02
+## Authoritative checkpoint — 2026-10-05
 
 This is the continuation checkpoint for Afghan Hub. Always verify live `main`, open PRs, CI and Vercel before mutating anything. Hard-coded SHAs in this file are evidence snapshots only because updating this document advances `main`.
 
 ## Verified operational state
 
 - Repository: `AfghanistanianHub/afghan-hub-web`.
-- Latest verified application commit before this documentation refresh: `f77f28b42eb963df58a391cff17f29f5e411f679`.
+- Latest verified application commit at this checkpoint: `532d4c7` ("Bump brace-expansion (#403)") — the current `main` tip. The previous application commit was `14ebdbe` ("Keep one shared mentorship qualifier definition (#402)").
 - Open pull requests at this checkpoint: **none**.
 - Vercel previews/deployments are working.
 - GitHub Actions runner allocation has recovered. Issue #239 is **closed** after representative Node 22/24 execution returned to normal.
@@ -18,6 +18,16 @@ This is the continuation checkpoint for Afghan Hub. Always verify live `main`, o
 
 Recent merged work includes:
 
+- #388 redacted raw provider payloads from runtime error logs;
+- #395 hardened explicit mentor skill parsing;
+- #396 disabled the Next.js powered-by response header;
+- #397 shipped the grounded multi-turn Community Navigator;
+- #398 required same-origin Assistant API requests;
+- #401 rebased the Community Navigator onto current `main` and resolved mentor-search conflicts (`c78a944`);
+- #402 consolidated the mentorship qualifier into a single shared definition in `src/lib/assistant/query.ts`, deleting the byte-identical private copy in `src/lib/assistant/search.ts`;
+- #403 Dependabot `brace-expansion` bump;
+- the homepage community hero rebased onto current `main` (`ed89685`);
+- `SECURITY.md` added (`bb2d1d7`);
 - #251 final launch acceptance workflow/evidence;
 - #253 related opportunities/events on detail pages;
 - #356 unified listing forms, media controls, calendar/date UX and pending-submit feedback;
@@ -34,6 +44,15 @@ Assistant discovery now includes:
 - handling of Persian ZWNJ plural forms including `ها`, `های`, `هایی`;
 - zero-result recovery links and broader prompt retries;
 - privacy-minimal recovery analytics without raw query text or record IDs.
+
+## Community Navigator + homepage hero (shipped)
+
+`main` now ships two substantial user-facing surfaces that earlier checkpoints did not describe:
+
+- **Grounded multi-turn Community Navigator** — a drawer that supports follow-up turns with retained topic/location context, a 20s client-side abort timeout, retry from a failed turn, `422` scope-limited handling, RTL support and an inline privacy disclosure. It is backed by the same-origin-only Assistant API routes (#398) and the scoped `search_afghan_hub_scoped` RPC. Shipped in #397 and rebased onto current `main` in #401.
+- **Homepage community hero** — the clean interactive community hero (restrained ambient/network motion, offscreen/hidden animation suspension, reduced-motion support, responsive hit-target checks and five accessible category links) is on `main` via the `ed89685` hero rebase. PR #399 carried the same content and was **closed as superseded**: its six source files are byte-identical to `main`, and `main`'s `tests/landing-browser.test.mjs` is a stricter superset (bounded icon dimensions, 24 focus-traversal steps).
+
+The Assistant is additionally protected by a same-origin request guard and redacted provider logging on its API routes.
 
 ## Product / visual state
 
@@ -207,6 +226,16 @@ Do not invent policy values merely to close the issue.
 - #359 merged.
 - #360 merged.
 - #361 merged with successful Node CI.
+- #388 merged.
+- #395 merged.
+- #396 merged.
+- #397 merged — grounded multi-turn Community Navigator.
+- #398 merged — same-origin Assistant API guard.
+- #399 closed as superseded — hero content already on `main` via `ed89685`.
+- #401 merged — Navigator rebased onto current `main` (`c78a944`).
+- #402 merged — single shared mentorship qualifier (`14ebdbe`).
+- #403 merged — Dependabot `brace-expansion` bump (`532d4c7`).
+- `SECURITY.md` added (`bb2d1d7`).
 - #132 open.
 - #134 open.
 - #135 open.

@@ -50,6 +50,7 @@
 @keyframes title-entrance { from { color:var(--muted-foreground); } to { color:var(--foreground); } }
 @media(max-width:550px) { .signatureBridge { flex-direction:column; align-items:flex-start; gap:4px; margin-bottom:20px; } .signatureBridge svg { width:148px; height:35px; } }
 @media(prefers-reduced-motion:reduce) { .heroCopy > :is(.eyebrow,h1,.intro,.actions) { animation:none !important; } .actions svg,.pathway,.pathwaySignature { transition:none; } .actions a:is(:hover,:focus-visible,:active) svg { transform:none; } }
+@media(prefers-reduced-motion:reduce) { .heroCopy > :is(.eyebrow,h1,.intro,.actions), .heroArt::before, .heroArt::after { animation:none !important; } .actions svg,.pathway,.pathwaySignature { transition:none; } .actions a:is(:hover,:focus-visible,:active) svg { transform:none; } }
 
 .audience { max-width:1280px; margin:auto; padding:20px 32px 64px; display:grid; grid-template-columns:1fr 1fr; column-gap:64px; row-gap:16px; }
 .audience .eyebrow { grid-column:1 / -1; }
