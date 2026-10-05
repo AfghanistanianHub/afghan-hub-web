@@ -34,7 +34,7 @@ export function Header({
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
-    <header className="sticky top-0 z-20 flex h-20 items-center justify-between gap-2 border-b border-border/70 bg-background px-4 md:px-8">
+    <header className="sticky top-0 z-20 flex h-20 items-center justify-between gap-2 border-b border-border/70 bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/90 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <div className="flex min-w-0 items-center gap-2 sm:gap-3 md:flex-1">
         <MobileNavigation
           canModerate={canModerate}
@@ -53,7 +53,7 @@ export function Header({
         <form
           action="/search"
           role="search"
-          className="relative hidden min-w-0 max-w-[22rem] flex-1 md:block"
+          className="relative hidden min-w-0 max-w-[28rem] flex-1 md:block"
         >
           <Search aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
 

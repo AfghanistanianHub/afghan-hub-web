@@ -43,11 +43,11 @@ export function ConnectionRequests({
   }
 
   return (
-    <section className={`relative mt-8 overflow-hidden border p-6 ${styles.surface}`}>
+    <section className={`relative overflow-hidden border p-5 sm:p-6 ${styles.surface}`}>
       <CommunitySignature className={styles.signature} />
       <div className="relative"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">New activity</p><h2 className="mt-1 text-xl font-bold text-foreground">Connection requests</h2></div>
 
-      <div className="mt-5 space-y-4">
+      <div className="mt-4 space-y-3">
         {requests.map((request) => {
           const requester = Array.isArray(request.requester)
             ? request.requester[0]
@@ -62,7 +62,7 @@ export function ConnectionRequests({
           return (
             <div
               key={request.id}
-              className={`relative flex flex-col gap-4 border p-4 sm:flex-row sm:items-center sm:justify-between ${styles.surface}`}
+              className={`relative flex flex-col gap-4 border px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between ${styles.surface}`}
             >
               <Link
                 href={"/members/" + requester.id}
@@ -74,10 +74,10 @@ export function ConnectionRequests({
                     alt={name}
                     width={48}
                     height={48}
-                    className="size-12 shrink-0 rounded-sm border border-border object-cover"
+                    className="size-11 shrink-0 rounded-[var(--radius)] border border-border object-cover"
                   />
                 ) : (
-                  <div className="flex size-12 shrink-0 items-center justify-center rounded-sm bg-secondary font-bold text-primary">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-[var(--radius)] bg-secondary font-bold text-primary">
                     {name.charAt(0).toUpperCase() || <UserRound aria-hidden="true" className="size-5" />}
                   </div>
                 )}
@@ -104,7 +104,7 @@ export function ConnectionRequests({
                   name="decision"
                   value="accepted"
                   pendingLabel="Accepting…"
-                  className={`min-w-32 bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 ${styles.control}`}
+                  className={`min-w-28 bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 ${styles.control}`}
                 >
                   Accept
                 </PendingSubmitButton>
@@ -113,7 +113,7 @@ export function ConnectionRequests({
                   name="decision"
                   value="declined"
                   pendingLabel="Declining…"
-                  className={`min-w-32 border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted ${styles.control}`}
+                  className={`min-w-28 border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted ${styles.control}`}
                 >
                   Decline
                 </PendingSubmitButton>
