@@ -4,7 +4,7 @@ export default function DashboardLoading() {
   return (
     <main
       id="main-content"
-      className="mx-auto w-full max-w-7xl px-5 py-8 sm:px-8 sm:py-10"
+      className="mx-auto w-full max-w-[1500px] px-4 py-8 sm:px-6 sm:py-10 md:px-8 lg:px-10 xl:px-12"
       aria-busy="true"
     >
       <div role="status" aria-live="polite" className="space-y-8">
