@@ -16,7 +16,7 @@ export default async function NewBusinessPage({
 }: NewBusinessPageProps) {
   const { error } = await searchParams;
   const fieldClassName =
-    "mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10";
+    "mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10";
 
   return (
     <main className={`${formStyles.page} px-4 py-8 md:px-8`}>
