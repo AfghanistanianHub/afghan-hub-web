@@ -112,7 +112,7 @@ export default async function SubmissionsPage() {
 "rounded-full border border-border bg-muted px-2.5 py-1 text-xs text-muted-foreground";
 
   return (
-    <main className="px-4 py-8 md:px-8">
+    <main className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <div className="mx-auto max-w-6xl">
         <section className={`${styles.surface} relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card p-6  md:p-8`}>
           
