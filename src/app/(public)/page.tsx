@@ -79,7 +79,7 @@ export default async function PublicHome() {
           </div>
           <p className={styles.note}>Explore listings without an account. Sign in to discover members.</p>
         </div>
-        <CommunityHeroMotion className={styles.heroArt} depth={8} scrollDepth><CommunityNetwork /></CommunityHeroMotion>
+        <CommunityHeroMotion className={styles.heroArt} depth={10} scrollDepth><CommunityNetwork /></CommunityHeroMotion>
       </section>
 
       <div className={styles.signatureBridge}><CommunitySignature /><span>Rooted in British Columbia. Open to the world.</span></div>
