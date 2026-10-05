@@ -63,6 +63,9 @@ export default async function PublicHome() {
   const feeds = await Promise.all(
     publicKinds.map(kind => getPublicListings(kind, { limit: 3 })),
   );
+  const feedRows = publicKinds.map((kind, index) => ({ kind, feed: feeds[index] }));
+  const visibleRows = feedRows.filter(({ feed }) => feed.unavailable || feed.items.length > 0);
+  const emptyKinds = feedRows.filter(({ feed }) => !feed.unavailable && feed.items.length === 0).map(({ kind }) => kind);
 
   return (
     <main id="main-content" className="!flex-none" data-community-story>
@@ -102,7 +105,7 @@ export default async function PublicHome() {
         </div>
 
         <div className="divide-y divide-border">
-          {publicKinds.map((kind, index) => (
+          {visibleRows.map(({ kind, feed }) => (
             <section key={kind} aria-labelledby={`${kind}-heading`} className="grid gap-6 py-8 first:pt-0 last:pb-0 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[240px_minmax(0,1fr)]">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{categoryKicker[kind]}</p>
@@ -127,53 +130,50 @@ export default async function PublicHome() {
               </div>
 
               <div className="min-w-0">
-                {feeds[index].unavailable ? (
+                {feed.unavailable ? (
                   <div role="status" aria-live="polite" className="relative min-h-32 overflow-hidden rounded-2xl border border-border/80 bg-card p-6 text-sm text-muted-foreground">
                     <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-primary/[0.05] blur-3xl" />
                     <p className="relative font-medium text-foreground">Listings are temporarily unavailable.</p>
                     <p className="relative mt-2 leading-6">Please try again shortly.</p>
                   </div>
-                ) : feeds[index].items.length ? (
+                ) : feed.items.length ? (
                   <div
                     className={`grid gap-5 ${
-                      feeds[index].items.length === 1
+                      feed.items.length === 1
                         ? "grid-cols-1"
-                        : feeds[index].items.length === 2
+                        : feed.items.length === 2
                           ? "md:grid-cols-2"
                           : "md:grid-cols-2 xl:grid-cols-3"
                     }`}
                   >
-                    {feeds[index].items.map(item => (
-                      <div key={item.slug} className={feeds[index].items.length === 1 ? "w-full max-w-2xl" : ""}>
+                    {feed.items.map(item => (
+                      <div key={item.slug} className={feed.items.length === 1 ? "w-full max-w-xl" : ""}>
                         <ListingCard item={item} kind={kind} />
                       </div>
                     ))}
                   </div>
-                ) : (
-                  <div className="relative flex min-h-32 items-center overflow-hidden rounded-2xl border border-dashed border-border bg-card px-6 py-6 sm:px-8">
-                    <div aria-hidden="true" className="absolute -right-10 -top-12 size-32 rounded-full border border-primary/10" />
-                    <div aria-hidden="true" className="absolute right-8 top-8 size-12 rounded-full border border-primary/10" />
-                    <div className="relative">
-                      <p className="text-base font-semibold sm:text-lg">
-                        {kind === "events"
-                          ? "New gatherings are on the horizon."
-                          : kind === "opportunities"
-                            ? "The next opportunity starts with someone sharing it."
-                            : "Help this part of our community grow."}
-                      </p>
-                      <p className="mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
-                        {kind === "events" ? "No upcoming events are listed right now." : "No current listings yet. Check back soon or join to contribute."}
-                      </p>
-                      <Link href="/login?mode=join" className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
-                        Join and contribute <ArrowRight aria-hidden="true" className="size-4" />
-                      </Link>
-                    </div>
-                  </div>
-                )}
+                ) : null}
               </div>
             </section>
           ))}
         </div>
+
+        {emptyKinds.length > 0 ? (
+          <div className="mt-9 flex flex-col gap-5 border-t border-border pt-7 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Some community sections are still waiting for their first listing.</p>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                {emptyKinds.map(kind => publicCategories[kind].label).join(" · ")}
+              </p>
+            </div>
+            <Link
+              href="/login?mode=join"
+              className="inline-flex min-h-11 shrink-0 items-center gap-2 self-start rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:self-auto"
+            >
+              Add something <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+          </div>
+        ) : null}
       </section>
 
       <section className={styles.audience} aria-labelledby="community-audience">
