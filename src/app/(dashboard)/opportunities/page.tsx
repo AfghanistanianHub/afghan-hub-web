@@ -143,7 +143,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
         <div className="flex flex-col items-start gap-5 lg:items-end"><div className="w-full max-w-[280px]" aria-hidden="true"><CatalogIllustration interactive kind="opportunities" /></div>
         <Link
           href="/opportunities/new"
-          className="inline-flex w-fit items-center gap-2 rounded-[var(--radius)] bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-control)] bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           Post opportunity
           <ArrowUpRight aria-hidden="true" className="size-4" />
@@ -287,7 +287,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
             {hasFilters ? (
               <Link
                 href="/opportunities"
-                className="relative mt-5 inline-flex rounded-[var(--radius)] border border-border px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                className="relative mt-5 inline-flex rounded-[var(--radius-control)] border border-border px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 Clear filters
               </Link>
