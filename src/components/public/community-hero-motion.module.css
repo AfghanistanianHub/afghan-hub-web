@@ -37,3 +37,16 @@
  .motion :is([data-hero-pulse], [data-hero-node]) { opacity: 0; }
  :global([data-hero-region]:has([data-landing-cta="explore"]:focus-visible)) .motion [data-hero-focus] { opacity: .85; }
 }
+
+
+/* Mobile Safari can render normalized animated SVG dash paths as oversized arcs.
+   Disable only the travelling pulse on narrow screens and clip the illustration. */
+@media (max-width: 760px) {
+  .motion [data-hero-pulse] {
+    display: none;
+  }
+
+  .motion > svg {
+    overflow: hidden;
+  }
+}
