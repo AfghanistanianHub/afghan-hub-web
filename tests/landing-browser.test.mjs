@@ -255,7 +255,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     for(let frame=0;frame<capture.length;frame++)emitScreenshot(`hero_${String(frame).padStart(3,'0')}.jpg`,capture[frame]);
   }
 
-  for (const width of [320, 390, 768, 1024, 1440, 1920]) {
+  for (const width of [320, 390, 640, 768, 1024, 1440, 1920]) {
     await page.send("Emulation.setDeviceMetricsOverride", { width, height: 1000, deviceScaleFactor: 1, mobile: false });
     await page.send("Page.navigate", { url: appUrl });
     await waitFor(() => page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-community-node]')"), `landing ${width}`);
