@@ -6,7 +6,7 @@ import motion from "./illustration-motion.module.css";
 
 const destinations = [
   { key: "people", title: "People", description: "Find people who share your interests.", link: "Find your people", href: "/network", Illustration: PeopleIllustration },
-  { key: "organizations", title: "Organizations", description: "Discover Afghan-led organizations and businesses.", link: "Explore organizations", href: "/explore?type=organizations", Illustration: OrganizationsIllustration },
+  { key: "organizations", title: "Organizations", description: "Discover Afghan-led organizations and community groups.", link: "Explore organizations", href: "/explore?type=organizations", Illustration: OrganizationsIllustration },
   { key: "events", title: "Events", description: "Find your next gathering.", link: "Discover events", href: "/explore?type=events", Illustration: EventsIllustration },
   { key: "opportunities", title: "Opportunities", description: "Discover your next opportunity.", link: "Find opportunities", href: "/explore?type=opportunities", Illustration: OpportunitiesIllustration },
 ] as const;
@@ -14,7 +14,7 @@ const destinations = [
 export function DiscoveryPanels() {
   return (
     <section className={styles.discovery} aria-labelledby="community-discovery">
-      <div className={styles.heading}><h2 id="community-discovery">Find your place in the community</h2><p>Four ways to begin.</p></div>
+      <div className={styles.heading}><h2 id="community-discovery">Start with what you need</h2><p>Quick paths — live community updates follow below.</p></div>
       <div className={styles.panels}>
         {destinations.map(({ key, title, description, link, href, Illustration }) => (
           <article className={styles.panelWrapper} key={key}>
