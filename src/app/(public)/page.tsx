@@ -55,7 +55,7 @@ const icons = {
 const categoryKicker: Record<PublicKind, string> = {
   opportunities: "Move forward",
   events: "Come together",
-  businesses: "Shop local",
+  businesses: "Support community",
   organizations: "Find your people",
 };
 
@@ -93,7 +93,7 @@ export default async function PublicHome() {
               What&apos;s happening now
             </h2>
             <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base">
-              Browse current opportunities, gatherings, local businesses and organizations in one clear view.
+              Browse current opportunities, gatherings, community businesses and organizations in one clear view.
             </p>
           </div>
           <Link
