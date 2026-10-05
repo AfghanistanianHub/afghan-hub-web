@@ -68,10 +68,10 @@ export default async function PublicDetailPage({ params }: Props) {
   if (result.unavailable) {
     return (
       <main id="main-content" className="mx-auto max-w-3xl px-5 py-20 sm:px-8">
-        <div className="relative overflow-hidden rounded-[2rem] border border-border/80 bg-card p-8 sm:p-10"><div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-60 rounded-full bg-primary/[0.07] blur-3xl"/><div aria-hidden="true" className="pointer-events-none absolute -bottom-20 left-1/3 size-52 rounded-full bg-accent/45 blur-3xl"/><p className="relative text-xs font-semibold uppercase tracking-[0.18em] text-primary">Afghan Hub</p>
+        <div className="relative overflow-hidden rounded-md border border-border/80 bg-card p-8 sm:p-10"><div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-60 rounded-full bg-primary/[0.07] blur-3xl"/><div aria-hidden="true" className="pointer-events-none absolute -bottom-20 left-1/3 size-52 rounded-full bg-accent/45 blur-3xl"/><p className="relative text-xs font-semibold uppercase tracking-[0.18em] text-primary">Afghan Hub</p>
           <h1 className="relative mt-3 text-3xl font-semibold tracking-tight">We couldn’t load this listing.</h1>
           <p className="relative mt-4 leading-7 text-muted-foreground">Please try again shortly.</p>
-          <Link href={publicHref(kind, slug)} className="relative mt-6 inline-flex items-center gap-2 rounded-xl border border-primary/15 bg-primary/[0.06] px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+          <Link href={publicHref(kind, slug)} className="relative mt-6 inline-flex items-center gap-2 rounded-md border border-primary/15 bg-primary/[0.06] px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
             Try again <ArrowRight aria-hidden="true" className="size-4" />
           </Link>
         </div>
@@ -98,7 +98,7 @@ export default async function PublicDetailPage({ params }: Props) {
           <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-center">
             <div>
               <div className="flex flex-wrap items-center gap-3">
-                <span className="flex size-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+                <span className="flex size-11 items-center justify-center rounded-md bg-primary text-primary-foreground">
                   <Icon aria-hidden="true" className="size-5" />
                 </span>
                 <span className="rounded-full border border-border/80 bg-background/75 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
@@ -157,37 +157,37 @@ export default async function PublicDetailPage({ params }: Props) {
             About this {publicCategories[kind].singular.toLowerCase()}
           </div>
           <h2 className="mt-3 text-2xl font-semibold tracking-tight">Details</h2>
-          <div className="mt-6 rounded-3xl border border-border bg-card p-6 sm:p-8">
+          <div className="mt-6 rounded-md border border-border bg-card p-6 sm:p-8">
             <p className="whitespace-pre-wrap break-words leading-8 text-muted-foreground">
               {item.description || "More information has not been added yet."}
             </p>
           </div>
 
           {expired && (
-            <div className="mt-6 rounded-2xl border border-border bg-muted/45 p-5 text-sm font-medium text-muted-foreground">
+            <div className="mt-6 rounded-md border border-border bg-muted/45 p-5 text-sm font-medium text-muted-foreground">
               {kind === "events" ? "This event has ended." : "The application deadline has passed."}
             </div>
           )}
         </article>
 
         <aside className="space-y-4 lg:sticky lg:top-24">
-          <div className="rounded-3xl border border-border bg-card p-6">
+          <div className="rounded-md border border-border bg-card p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Continue in Afghan Hub</p>
             <h2 className="mt-3 text-xl font-semibold tracking-tight">Take the next step.</h2>
             <p className="mt-3 text-sm leading-6 text-muted-foreground">
               Join Afghan Hub to connect with members, save listings, and contribute to the community.
             </p>
             <div className="mt-5 grid gap-3">
-              <Link href="/login?mode=join" className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+              <Link href="/login?mode=join" className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
                 Join Afghan Hub <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
-              <Link href={`/${kind}/${encodeURIComponent(slug)}`} className="inline-flex items-center justify-center rounded-xl border border-border px-5 py-3 text-sm font-semibold transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+              <Link href={`/${kind}/${encodeURIComponent(slug)}`} className="inline-flex items-center justify-center rounded-md border border-border px-5 py-3 text-sm font-semibold transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
                 Open member view
               </Link>
             </div>
           </div>
 
-          <div className="rounded-3xl border border-border bg-muted/35 p-5">
+          <div className="rounded-md border border-border bg-muted/35 p-5">
             <p className="text-sm font-semibold">Keep exploring</p>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Discover more {publicCategories[kind].label.toLowerCase()} from across the community.
