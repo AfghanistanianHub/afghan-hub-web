@@ -147,7 +147,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
       <form
         action="/opportunities"
         method="get"
-        className="mt-8 grid gap-4 rounded-[1.75rem] border border-border/80 bg-card/88 p-5 shadow-[0_12px_38px_rgb(15_23_42/0.035)] backdrop-blur md:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]"
+        className="mt-6 grid gap-4 rounded-[1.75rem] border border-border/80 bg-card/88 p-5 shadow-[0_12px_38px_rgb(15_23_42/0.035)] backdrop-blur md:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]"
       >
         <label className="grid gap-2 text-sm font-medium text-foreground">
           <span className="inline-flex items-center gap-2"><Search aria-hidden="true" className="size-4 text-primary" /> Search opportunities</span>
@@ -234,7 +234,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
             <Link
               key={opportunity.id}
               href={`/opportunities/${opportunity.slug}`}
-              className="group relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-6 shadow-[0_10px_32px_rgb(15_23_42/0.035)] transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.07)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className="group relative overflow-hidden rounded-[1.75rem] border border-border/80 bg-card p-5 shadow-[0_10px_32px_rgb(15_23_42/0.035)] transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.07)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               <div aria-hidden="true" className="absolute -right-10 -top-10 size-28 rounded-full border border-primary/10" />
               <div className="relative flex flex-wrap items-center gap-2">
