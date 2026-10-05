@@ -93,7 +93,7 @@ export default async function PublicHome() {
               What&apos;s happening now
             </h2>
             <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base">
-              Current opportunities, gatherings, local businesses and organizations — without repeating the same navigation cards.
+              Browse current opportunities, gatherings, local businesses and organizations in one clear view.
             </p>
           </div>
           <Link
