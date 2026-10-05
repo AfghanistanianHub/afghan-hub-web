@@ -48,17 +48,17 @@ export default function AboutPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-20">
-        <div className="grid gap-5 lg:grid-cols-3">
+        <div className="grid border-y border-border lg:grid-cols-3">
           {pillars.map(({ icon: Icon, title, description }) => (
-            <article key={title} className="rounded-3xl border border-border bg-card p-6 sm:p-7">
-              <span className="flex size-11 items-center justify-center rounded-2xl bg-secondary text-primary"><Icon aria-hidden="true" className="size-5" /></span>
-              <h2 className="mt-6 text-2xl font-semibold tracking-tight">{title}</h2>
+            <article key={title} className="border-b border-border px-1 py-7 lg:border-b-0 lg:border-r lg:px-7 lg:last:border-r-0">
+              <span className="flex size-10 items-center justify-center rounded-lg bg-secondary text-primary"><Icon aria-hidden="true" className="size-5" /></span>
+              <h2 className="mt-5 text-xl font-semibold tracking-tight sm:text-2xl">{title}</h2>
               <p className="mt-3 leading-7 text-muted-foreground">{description}</p>
             </article>
           ))}
         </div>
 
-        <div className="mt-12 rounded-3xl border border-border bg-muted/35 p-7 sm:p-9">
+        <div className="mt-12 border-y border-border bg-muted/20 px-1 py-8 sm:px-0 sm:py-9">
           <div className="flex flex-col gap-7 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Built around participation</p>
@@ -66,8 +66,8 @@ export default function AboutPage() {
               <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">Explore first. Join when you are ready. Contribute when you have something to share.</p>
             </div>
             <div className="flex shrink-0 flex-wrap gap-3">
-              <Link href="/explore" className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Explore Afghan Hub <ArrowRight aria-hidden="true" className="size-4" /></Link>
-              <Link href="/login?mode=join" className="rounded-xl border border-border bg-background px-5 py-3 text-sm font-semibold transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Join the community</Link>
+              <Link href="/explore" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Explore Afghan Hub <ArrowRight aria-hidden="true" className="size-4" /></Link>
+              <Link href="/login?mode=join" className="rounded-md border border-border bg-background px-5 py-3 text-sm font-semibold transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Join the community</Link>
             </div>
           </div>
         </div>
