@@ -6,6 +6,14 @@ import {
   getUtcDateKey,
 } from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
+import {
+  catalogCheckboxInputClass,
+  catalogCheckboxLabelClass,
+  catalogClearClass,
+  catalogFieldClass,
+  catalogFilterPanelClass,
+  catalogSubmitClass,
+} from "@/components/catalog/catalog-filter-styles";
 
 type Props = {
   searchParams: Promise<{
@@ -46,9 +54,6 @@ function escapeLikePattern(value: string) {
 function formatType(value: string) {
   return value.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
-
-const fieldClassName =
-  "rounded-2xl border border-border bg-card px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/40 focus:ring-4 focus:ring-primary/10";
 
 export default async function OpportunitiesPage({ searchParams }: Props) {
   const params = await searchParams;
@@ -147,7 +152,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
       <form
         action="/opportunities"
         method="get"
-        className="mt-6 grid gap-4 rounded-[1.75rem] border border-border/80 bg-card/88 p-5 shadow-[0_12px_38px_rgb(15_23_42/0.035)] backdrop-blur md:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]"
+        className={`${catalogFilterPanelClass} md:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]`}
       >
         <label className="grid gap-2 text-sm font-medium text-foreground">
           <span className="inline-flex items-center gap-2"><Search aria-hidden="true" className="size-4 text-primary" /> Search opportunities</span>
@@ -156,13 +161,13 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
             name="q"
             defaultValue={search}
             placeholder="Search by title"
-            className={fieldClassName}
+            className={catalogFieldClass}
           />
         </label>
 
         <label className="grid gap-2 text-sm font-medium text-foreground">
           Type
-          <select name="type" defaultValue={type} className={fieldClassName}>
+          <select name="type" defaultValue={type} className={catalogFieldClass}>
             <option value="all">All types</option>
             {OPPORTUNITY_TYPES.map((opportunityType) => (
               <option key={opportunityType} value={opportunityType}>
@@ -174,7 +179,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
 
         <label className="grid gap-2 text-sm font-medium text-foreground">
           Format
-          <select name="format" defaultValue={format} className={fieldClassName}>
+          <select name="format" defaultValue={format} className={catalogFieldClass}>
             <option value="all">All formats</option>
             <option value="remote">Remote</option>
             <option value="in-person">In person</option>
@@ -188,14 +193,14 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
             name="city"
             defaultValue={city}
             placeholder="Any city"
-            className={fieldClassName}
+            className={catalogFieldClass}
           />
         </label>
 
         <div className="flex items-end gap-3">
           <button
             type="submit"
-            className="rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+            className={catalogSubmitClass}
           >
             Apply
           </button>
@@ -203,7 +208,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
           {hasFilters ? (
             <Link
               href="/opportunities"
-              className="rounded-2xl border border-border bg-card px-4 py-3 font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+              className={catalogClearClass}
             >
               Clear
             </Link>
