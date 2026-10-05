@@ -59,7 +59,7 @@ export default async function ModerationTeamPage({
       <div className="mx-auto max-w-5xl">
         <Link
           href="/moderation"
-          className="text-sm font-medium text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          className="inline-flex min-h-11 items-center text-sm font-medium text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           ← Back to moderation
         </Link>
@@ -169,7 +169,7 @@ export default async function ModerationTeamPage({
                           <select
                             name="role"
                             defaultValue={member.role}
-                            className="rounded-2xl border border-border/80 bg-card px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-primary/50 focus:ring-4 focus:ring-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                            className="min-h-11 rounded-2xl border border-border/80 bg-card px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-primary/50 focus:ring-4 focus:ring-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                           >
                             <option value="member">Member</option>
                             <option value="moderator">Moderator</option>
@@ -179,7 +179,7 @@ export default async function ModerationTeamPage({
 
                         <PendingSubmitButton
                           pendingLabel="Saving role…"
-                          className="rounded-2xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                          className="min-h-11 rounded-2xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                         >
                           Save role
                         </PendingSubmitButton>
