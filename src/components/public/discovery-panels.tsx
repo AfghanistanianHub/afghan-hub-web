@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { PeopleIllustration, OrganizationsIllustration, EventsIllustration, OpportunitiesIllustration } from "./community-illustrations";
+import { PeopleIllustration, OrganizationsIllustration, EventsIllustration, OpportunitiesIllustration, BusinessesIllustration } from "./community-illustrations";
 import styles from "./discovery-panels.module.css";
 import motion from "./illustration-motion.module.css";
 
 const destinations = [
   { key: "people", title: "People", description: "Find people who share your interests.", link: "Find your people", href: "/network", Illustration: PeopleIllustration },
   { key: "organizations", title: "Organizations", description: "Discover Afghan-led organizations and community groups.", link: "Explore organizations", href: "/explore?type=organizations", Illustration: OrganizationsIllustration },
+  { key: "businesses", title: "Businesses", description: "Find Afghan businesses, services and the people building them.", link: "Explore businesses", href: "/explore?type=businesses", Illustration: BusinessesIllustration },
   { key: "events", title: "Events", description: "Find your next gathering.", link: "Discover events", href: "/explore?type=events", Illustration: EventsIllustration },
   { key: "opportunities", title: "Opportunities", description: "Discover your next opportunity.", link: "Find opportunities", href: "/explore?type=opportunities", Illustration: OpportunitiesIllustration },
 ] as const;
