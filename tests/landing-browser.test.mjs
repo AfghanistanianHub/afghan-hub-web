@@ -601,6 +601,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     await waitFor(()=>page.evaluate("document.querySelector('dialog')?.open&&document.activeElement.tagName==='INPUT'"),'native drawer initial focus');
     await page.send('Input.insertText',{text:'mentor film'});
     await waitFor(()=>page.evaluate("document.querySelector('dialog form button[type=submit]')?.disabled===false"),'navigator composer state');
+    for(const type of ['keyDown','keyUp'])await page.send('Input.dispatchKeyEvent',{type,key:'Enter',code:'Enter',windowsVirtualKeyCode:13});
     await page.evaluate("document.querySelector('dialog form').requestSubmit()");
     await waitFor(()=>navigatorRequests.length>0,"navigator request emitted");
     await waitFor(()=>page.evaluate("document.querySelector('dialog').textContent.includes('QA fixture film mentor')"),'grounded result inside conversation');
@@ -610,6 +611,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     const shot=await page.send('Page.captureScreenshot',{format:'jpeg',quality:80});screenshots.push({name:`navigator_${width}.jpg`,data:shot.data});
     await page.evaluate("document.querySelector('dialog input').focus()");
     await page.send('Input.insertText',{text:'Only Vancouver'});
+    for(const type of ['keyDown','keyUp'])await page.send('Input.dispatchKeyEvent',{type,key:'Enter',code:'Enter',windowsVirtualKeyCode:13});
     await page.evaluate("document.querySelector('dialog form').requestSubmit()");
     await waitFor(()=>page.evaluate("document.querySelectorAll('dialog article').length===2&&document.querySelectorAll('dialog article strong').length===2"),'location follow-up');
     assert.equal(navigatorRequests.at(-1).context.topic,'film','Follow-up sends prior topic');
@@ -631,6 +633,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     await page.evaluate("document.querySelector('dialog input').focus()");
     await page.send('Input.insertText',{text:'mentor film'});
     await waitFor(()=>page.evaluate("document.querySelector('dialog form button[type=submit]')?.disabled===false"),'retry composer state');
+    for(const type of ['keyDown','keyUp'])await page.send('Input.dispatchKeyEvent',{type,key:'Enter',code:'Enter',windowsVirtualKeyCode:13});
     await page.evaluate("document.querySelector('dialog form').requestSubmit()");
     await waitFor(()=>page.evaluate("document.querySelector('dialog').textContent.includes('Search is temporarily unavailable')"),'recoverable search failure');
     const failedQuery = navigatorRequests.at(-1).query;
