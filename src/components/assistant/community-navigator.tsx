@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { type FormEvent, useEffect, useRef, useState } from "react";
 import { type FormEvent, type KeyboardEvent as ReactKeyboardEvent, useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Compass, X } from "lucide-react";
 import { trackAssistantEvent } from "@/lib/assistant/analytics";
