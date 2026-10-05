@@ -41,16 +41,10 @@
 .heroArt::before { content:""; position:absolute; inset:8% 0 4% 6%; z-index:-1; border-radius:46% 54% 57% 43%; background:radial-gradient(ellipse at 62% 48%, #e8dfcf7a, transparent 70%); }
 .signatureBridge { max-width:1232px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:14px 24px; border-top:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--muted-foreground); font-size:.75rem; }
 .signatureBridge svg { width:172px; height:40px; color:#aaa095; flex-shrink:0; }
-.pathway { border-radius:var(--radius); transition:border-color var(--motion-fast), background var(--motion-fast); }
-.pathway:is(:hover,:focus-visible) { border-color:#a896bc; background:#f4efe7; }
-.pathway:active { background:#eee7f3; }
-.pathwaySignature { position:absolute; width:180px; right:-22px; top:2px; color:#d9d2c6; transition:color var(--motion-step); }
-.pathway:is(:hover,:focus-visible) .pathwaySignature { color:#aa92bd; }
 .heroCopy h1 { animation:title-entrance var(--motion-reveal) var(--motion-ease) both; }
 @keyframes title-entrance { from { color:var(--muted-foreground); } to { color:var(--foreground); } }
 @media(max-width:550px) { .signatureBridge { flex-direction:column; align-items:flex-start; gap:6px; margin-bottom:20px; padding:12px 24px; } .signatureBridge svg { width:140px; height:33px; } }
-@media(prefers-reduced-motion:reduce) { .heroCopy > :is(.eyebrow,h1,.intro,.actions) { animation:none !important; } .actions svg,.pathway,.pathwaySignature { transition:none; } .actions a:is(:hover,:focus-visible,:active) svg { transform:none; } }
-@media(prefers-reduced-motion:reduce) { .heroCopy > :is(.eyebrow,h1,.intro,.actions), .heroArt::before, .heroArt::after { animation:none !important; } .actions svg,.pathway,.pathwaySignature { transition:none; } .actions a:is(:hover,:focus-visible,:active) svg { transform:none; } }
+@media(prefers-reduced-motion:reduce) { .heroCopy > :is(.eyebrow,h1,.intro,.actions), .heroArt::before, .heroArt::after { animation:none !important; } .actions svg { transition:none; } .actions a:is(:hover,:focus-visible,:active) svg { transform:none; } }
 
 .audience { max-width:1280px; margin:auto; padding:34px 32px 64px; border-top:1px solid var(--border); display:grid; grid-template-columns:1fr 1fr; column-gap:72px; row-gap:18px; }
 .audience .eyebrow { grid-column:1 / -1; }
