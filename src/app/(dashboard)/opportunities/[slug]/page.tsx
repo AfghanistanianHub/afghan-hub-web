@@ -120,13 +120,13 @@ export default async function OpportunityPage({
 
       <div className="mt-6 space-y-4">
         {actionError ? (
-          <div role="alert" aria-live="assertive" className="rounded-2xl border border-destructive/20 bg-destructive/[0.06] p-4 text-sm text-destructive">
+          <div role="alert" aria-live="assertive" className="rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.06] p-4 text-sm text-destructive">
             {actionError}
           </div>
         ) : null}
 
         {opportunity.status !== "published" ? (
-          <div role="status" aria-live="polite" className="rounded-2xl border border-accent/50 bg-accent/35 p-4 text-sm leading-6 text-accent-foreground">
+          <div role="status" aria-live="polite" className="rounded-[var(--radius)] border border-accent/50 bg-accent/35 p-4 text-sm leading-6 text-accent-foreground">
             {opportunity.status === "draft"
               ? "This opportunity is waiting for moderator approval and is not visible to the community yet."
               : `This opportunity was not approved.${
@@ -138,7 +138,7 @@ export default async function OpportunityPage({
         ) : null}
 
         {opportunity.status === "published" && isExpired ? (
-          <div role="status" aria-live="polite" className="rounded-2xl border border-border bg-muted/50 p-4 text-sm text-muted-foreground">
+          <div role="status" aria-live="polite" className="rounded-[var(--radius)] border border-border bg-muted/50 p-4 text-sm text-muted-foreground">
             This opportunity has passed its application deadline and is no longer active.
           </div>
         ) : null}
@@ -172,13 +172,13 @@ export default async function OpportunityPage({
 
               <div className="mt-7 flex flex-wrap gap-3 text-sm">
                 {location ? (
-                  <span className="inline-flex min-w-0 items-start gap-2 rounded-xl border border-border bg-background/85 px-3.5 py-2 text-muted-foreground shadow-sm">
+                  <span className="inline-flex min-w-0 items-start gap-2 rounded-[var(--radius-control)] border border-border bg-background/85 px-3.5 py-2 text-muted-foreground shadow-sm">
                     <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
                     <span className="min-w-0 break-words">{location}</span>
                   </span>
                 ) : null}
                 {opportunity.deadline ? (
-                  <span className="inline-flex items-center gap-2 rounded-xl border border-border bg-background/85 px-3.5 py-2 text-muted-foreground shadow-sm">
+                  <span className="inline-flex items-center gap-2 rounded-[var(--radius-control)] border border-border bg-background/85 px-3.5 py-2 text-muted-foreground shadow-sm">
                     <CalendarDays aria-hidden="true" className="size-4 text-primary" />
                     {isExpired ? "Closed " : "Apply by "}{formatOpportunityDeadline(opportunity.deadline)}
                   </span>
@@ -211,7 +211,7 @@ export default async function OpportunityPage({
                   <>
                     <Link
                       href={`/opportunities/${opportunity.slug}/edit`}
-                      className="rounded-xl border border-border bg-background/85 px-4 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                      className="rounded-[var(--radius-control)] border border-border bg-background/85 px-4 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                     >
                       Edit
                     </Link>
@@ -252,7 +252,7 @@ export default async function OpportunityPage({
                 href={opportunity.external_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[var(--radius-control)] bg-primary px-4 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 Apply now
                 <ExternalLink aria-hidden="true" className="size-4" />
@@ -260,7 +260,7 @@ export default async function OpportunityPage({
             ) : null}
 
             {opportunity.external_url && isExpired ? (
-              <p className="mt-4 rounded-xl bg-muted px-4 py-3 text-center text-sm font-medium text-muted-foreground">
+              <p className="mt-4 rounded-[var(--radius-control)] bg-muted px-4 py-3 text-center text-sm font-medium text-muted-foreground">
                 Applications closed
               </p>
             ) : null}
@@ -268,7 +268,7 @@ export default async function OpportunityPage({
             <div className="mt-7 space-y-5 border-t border-border/70 pt-6 text-sm">
               {location ? (
                 <div className="flex gap-3">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-secondary text-primary">
                     <MapPin aria-hidden="true" className="size-4" />
                   </span>
                   <div className="min-w-0">
@@ -280,7 +280,7 @@ export default async function OpportunityPage({
 
               {opportunity.deadline ? (
                 <div className="flex gap-3">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-secondary text-primary">
                     <CalendarDays aria-hidden="true" className="size-4" />
                   </span>
                   <div>
@@ -293,7 +293,7 @@ export default async function OpportunityPage({
               ) : null}
 
               {opportunity.contact_email ? (
-                <div className="rounded-2xl border border-border bg-background p-4">
+                <div className="rounded-[var(--radius)] border border-border bg-background p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Contact</p>
                   <a
                     href={`mailto:${opportunity.contact_email}`}
@@ -336,7 +336,7 @@ export default async function OpportunityPage({
                 <Link
                   key={related.id}
                   href={`/opportunities/${related.slug}`}
-                  className="group rounded-[1.5rem] border border-border/80 bg-card p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                  className="group rounded-[var(--radius)] border border-border/80 bg-card p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <span className="rounded-full bg-primary/[0.08] px-2.5 py-1 text-[0.68rem] font-semibold capitalize text-primary">
