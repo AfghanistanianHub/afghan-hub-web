@@ -35,7 +35,7 @@ export default async function EditEventPage({ params, searchParams }: Props) {
     .eq("owner_id", user.id)
     .order("name");
 
-  const fieldClass = "mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15";
+  const fieldClass = "mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/15";
 
   return (
     <main className={`${formStyles.page} mx-auto max-w-3xl px-6 py-10`}>
