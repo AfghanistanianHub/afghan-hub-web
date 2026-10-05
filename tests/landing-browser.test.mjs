@@ -265,7 +265,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
     try {
       const layout = await page.evaluate(layoutExpression);
       assert.ok(layout.scrollWidth <= width + 1, `Horizontal overflow at ${width}: ${JSON.stringify(layout)}`);
-      assert.equal(layout.targets.length, 4);
+      assert.equal(layout.targets.length, 5);
       const networkTargets = await page.evaluate(`(() => [...document.querySelectorAll('[data-community-node]')].map(a => {
         a.scrollIntoView({block:'center'}); const r=a.getBoundingClientRect();
         const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
@@ -281,7 +281,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
       await page.evaluate("document.activeElement.blur()");
       assert.ok(layout.targets.every(target => target.clickable && target.height >= 44 && target.width >= 44), `Blocked/small discovery targets at ${width}`);
       assert.equal(layout.people, 9, "People illustration must retain all nine connected person glyphs");
-      assert.ok(layout.covers >= 16, "Four discovery panels and twelve populated listing covers must render");
+      assert.ok(layout.covers >= 17, "Five discovery panels and twelve populated listing covers must render");
       await page.evaluate(axeSource);
       const audit = await page.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>r.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)})))");
       assert.deepEqual(audit, [], `Accessibility violations at ${width}: ${JSON.stringify(audit)}`);
@@ -290,7 +290,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
       const bottom = await page.evaluate("Math.ceil(document.querySelector('[aria-labelledby=community-discovery]').getBoundingClientRect().bottom)");
       const screenshot = await page.send("Page.captureScreenshot", { format: "jpeg", quality: 80, captureBeyondViewport: true, clip: { x: 0, y: 0, width, height: bottom, scale: 1 } });
       screenshots.push({ name: `geometric_${width}.jpg`, data: screenshot.data });
-      console.log(`AFGHAN_HUB_BROWSER_RESULT ${JSON.stringify({width,horizontalOverflow:false,discoveryTargets:4,peopleGlyphs:9,axeViolations:0,populatedCovers:true})}`);
+      console.log(`AFGHAN_HUB_BROWSER_RESULT ${JSON.stringify({width,horizontalOverflow:false,discoveryTargets:5,peopleGlyphs:9,axeViolations:0,populatedCovers:true})}`);
     } catch (error) {
       const screenshot = await page.send("Page.captureScreenshot", { format: "jpeg", quality: 75 });
       if (process.versions.node.startsWith("24.")) emitScreenshot(`debug_${width}.jpg`, screenshot.data, true);
@@ -315,7 +315,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   }
   assert.equal(focused[0].href,"#main-content","Skip link must be first");
   for(const key of ["people","opportunities","organizations","events","businesses"]) assert.ok(focused.some(item=>item.node===key&&item.outline!=="none"&&item.descriptionVisible),`Hero node reachable by Tab: ${key}`);
-  for(const key of ["people","organizations","events","opportunities"]) assert.ok(focused.some(item=>item.key===key && item.outline!=="none"),`Visible keyboard focus: ${key}`);
+  for(const key of ["people","organizations","businesses","events","opportunities"]) assert.ok(focused.some(item=>item.key===key && item.outline!=="none"),`Visible keyboard focus: ${key}`);
   await page.evaluate("document.activeElement.blur();document.querySelector('[data-discovery-panel=people]').scrollIntoView({block:'center'})");
   const geometry=await page.evaluate("[...document.querySelectorAll('[data-discovery-panel]')].map(el=>{const r=el.getBoundingClientRect();return [r.x,r.y,r.width,r.height]})");
   const point=await page.evaluate("(()=>{const r=document.querySelector('[data-discovery-link=people]').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()");
@@ -370,7 +370,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   // Single physical taps use the real existing destinations, including signed-out member routing.
   await page.send("Emulation.setDeviceMetricsOverride",{width:390,height:1000,deviceScaleFactor:1,mobile:true});
   await page.send("Emulation.setTouchEmulationEnabled",{enabled:true});
-  for(const key of ["people","organizations","events","opportunities"]) {
+  for(const key of ["people","organizations","businesses","events","opportunities"]) {
     await page.send("Page.navigate",{url:appUrl});
     await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-discovery-link]')"),"touch landing");
     await delay(300);
@@ -390,7 +390,7 @@ test("geometric landing responsive layout, discovery links and accessibility in 
   await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-motion]')"),"illustration motion landing");
   await delay(700);
   const motionState=key=>`(()=>{const e=document.querySelector('[data-discovery-panel=${key}]');return [...e.querySelectorAll('[data-motion]')].map(n=>{const s=getComputedStyle(n);return [s.strokeDashoffset,s.opacity,s.transform,s.stroke,s.fill]})})()`;
-  for(const key of ["people","organizations","events","opportunities"]) {
+  for(const key of ["people","organizations","businesses","events","opportunities"]) {
     await page.evaluate(`document.activeElement?.blur();document.querySelector('[data-discovery-panel=${key}]').scrollIntoView({block:'center'})`);
     await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:10,y:20});await delay(650);
     const geometry=await page.evaluate(`(()=>{const r=document.querySelector('[data-discovery-panel=${key}]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()`);
