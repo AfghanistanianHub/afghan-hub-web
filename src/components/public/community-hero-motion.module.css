@@ -15,7 +15,7 @@
 .motion [data-hero-layer="gathering"] [data-hero-accent] { animation-delay: 1450ms; }
 .motion [data-hero-layer="openings"] [data-hero-accent] { animation-delay: 3250ms; }
 .motion > svg > g > [data-hero-accent] { animation-delay: 4200ms; }
-.motion [data-hero-pulse] { stroke-dasharray: .09 .91; opacity: 0; animation: travel 1100ms var(--motion-ease) 3650ms both; }
+.motion [data-hero-pulse] { stroke-dasharray: .09 .91; opacity: 0; animation: travel var(--motion-narrative) var(--motion-ease) 3650ms both; }
 .motion [data-hero-pulse="opening"] { animation-delay: 4050ms; }
 .motion [data-hero-node] { opacity: 0; animation: activate-node 500ms var(--motion-ease) 1200ms both; }
 .motion [data-hero-node="opening"] { animation-delay: 3450ms; }

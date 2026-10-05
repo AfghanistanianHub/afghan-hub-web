@@ -75,9 +75,6 @@
   --radius: 0.3rem;
   --radius-control: 0.375rem;
   --radius-card: 1rem;
-  --radius-feature: 1.5rem;
-  --page-gutter-mobile: 1.5rem;
-  --page-gutter-desktop: 2rem;
   --border-subtle: color-mix(in oklab, var(--border) 68%, var(--background));
   --shadow-surface: 0 1px 2px rgb(48 43 53 / 0.035);
   --sidebar: #f4f0e8;
