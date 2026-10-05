@@ -226,7 +226,6 @@ export async function searchAssistantCatalog(
       .eq("onboarding_completed", true);
 
     if (options.city) {
-      profileQuery = profileQuery.ilike("city", options.city.replace(/[\\%_]/g, "\\$&"));
       profileQuery = profileQuery.ilike(
         "city",
         options.city.replace(/[\\%_]/g, (match) => `\\${match}`),
@@ -290,7 +289,6 @@ export async function searchAssistantCatalog(
         href: `/members/${profile.id}`,
         rank: relevance,
         matchedTopics: [...(profile.mentorship_topics ?? []), ...(profile.skills ?? [])]
-          .filter(topic => qualifier.split(/\s+/u).some(term => term.length > 0 && topic.toLocaleLowerCase().split(/\s+/u).some(token => term.length === 1 ? token.replace(/[,.!?]+$/u, "") === term : token.includes(term))))
           .filter(topic =>
             qualifier.split(/\s+/u).some(term =>
               term.length > 0 &&
