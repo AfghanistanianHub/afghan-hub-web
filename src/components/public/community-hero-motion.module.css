@@ -50,3 +50,51 @@
     overflow: hidden;
   }
 }
+
+
+/* Use a static, clipped hero illustration on narrow touch screens.
+   This avoids Safari SVG compositing artifacts while preserving the composition. */
+@media (max-width: 760px) {
+  .motion [data-hero-layer] {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .motion :is(
+    [data-hero-draw],
+    [data-hero-reveal],
+    [data-hero-accent],
+    [data-hero-pulse],
+    [data-hero-node],
+    [data-hero-focus]
+  ) {
+    animation: none !important;
+  }
+
+  .motion [data-hero-draw],
+  .motion [data-hero-reveal],
+  .motion [data-hero-accent] {
+    opacity: 1 !important;
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+
+  .motion [data-hero-pulse],
+  .motion [data-hero-focus] {
+    display: none !important;
+  }
+
+  .motion [data-hero-node] {
+    opacity: 1 !important;
+  }
+
+  .motion [data-environment-contour] {
+    display: none !important;
+  }
+
+  .motion,
+  .motion > div,
+  .motion svg {
+    overflow: hidden !important;
+  }
+}
