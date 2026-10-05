@@ -88,63 +88,41 @@ export function GoalPaths() {
         </Link>
       </div>
 
-      <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-6 grid border-y border-border md:grid-cols-2 xl:grid-cols-3">
         {goalPaths.map((goal, index) => {
           const Icon = goal.icon;
-          const featured = index === 0 || index === 1;
 
           return (
             <Link
               key={goal.href}
               href={goal.href}
-              className={`group relative min-h-48 overflow-hidden rounded-[1.75rem] border border-border/80 p-5 transition duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_18px_42px_rgb(15_23_42/0.06)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${
-                featured ? "bg-card" : "bg-card/75"
-              }`}
+              className={`group relative min-h-40 border-b border-border px-1 py-5 transition-colors hover:bg-secondary/35 focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary md:px-5 ${index % 2 === 0 ? "md:border-r" : ""} ${index < 3 ? "xl:border-b" : "xl:border-b-0"} ${index % 3 !== 2 ? "xl:border-r" : "xl:border-r-0"}`}
             >
-              <div
-                aria-hidden="true"
-                className="absolute -right-10 -top-10 size-32 rounded-full border border-primary/10 transition-transform duration-300 group-hover:scale-110"
-              />
-              <div
-                aria-hidden="true"
-                className="absolute right-8 top-8 size-16 rounded-full border border-dashed border-primary/10"
-              />
-              <div
-                aria-hidden="true"
-                className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-primary/[0.035] to-transparent"
-              />
+              <div className="flex items-start justify-between gap-4">
+                <span className="flex size-9 items-center justify-center rounded-lg bg-secondary text-primary">
+                  <Icon aria-hidden="true" className="size-4" />
+                </span>
+                <span aria-hidden="true" className="text-[0.62rem] font-semibold tracking-[0.16em] text-muted-foreground/60">
+                  {goal.number}
+                </span>
+              </div>
 
-              <div className="relative flex h-full flex-col justify-between gap-8">
-                <div className="flex items-start justify-between gap-4">
-                  <span className="flex size-12 items-center justify-center rounded-2xl border border-primary/10 bg-primary/[0.07] text-primary shadow-sm">
-                    <Icon aria-hidden="true" className="size-5" />
-                  </span>
-                  <span aria-hidden="true" className="text-3xl font-black tracking-[-0.06em] text-foreground/[0.07]">
-                    {goal.number}
-                  </span>
-                </div>
-
-                <div>
-                  <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-primary">
+              <div className="mt-5 flex items-end justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-primary">
                     {goal.label}
                   </p>
-                  <div className="mt-1.5 flex items-end justify-between gap-4">
-                    <div>
-                      <h3 className="text-xl font-bold tracking-[-0.025em] text-foreground">
-                        {goal.title}
-                      </h3>
-                      <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
-                        {goal.description}
-                      </p>
-                    </div>
-                    <span className="mb-1 flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition group-hover:border-primary/20 group-hover:text-primary">
-                      <ArrowUpRight
-                        aria-hidden="true"
-                        className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                      />
-                    </span>
-                  </div>
+                  <h3 className="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-foreground">
+                    {goal.title}
+                  </h3>
+                  <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
+                    {goal.description}
+                  </p>
                 </div>
+                <ArrowUpRight
+                  aria-hidden="true"
+                  className="mb-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
+                />
               </div>
             </Link>
           );
