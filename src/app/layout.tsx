@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
+import { GlobalNetworkBackground } from "@/components/visual/global-network-background";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -58,7 +59,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
+        <GlobalNetworkBackground />
+        <div className="app-content relative z-10 flex min-h-full flex-1 flex-col">
+          {children}
+        </div>
         <SpeedInsights />
       </body>
     </html>
