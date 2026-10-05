@@ -23,7 +23,7 @@ export default async function NewOpportunityPage() {
     .order("name");
 
   const fieldClassName =
-    "mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10";
+    "mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10";
 
   return (
     <main className={`${formStyles.page} mx-auto max-w-4xl px-4 py-8 md:px-8 md:py-10`}>

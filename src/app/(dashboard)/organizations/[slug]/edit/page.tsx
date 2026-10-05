@@ -65,7 +65,7 @@ export default async function EditOrganizationPage({
   }
 
   const fieldClassName =
-    "mt-2 w-full rounded-xl border border-border bg-card px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10";
+    "mt-2 w-full rounded-[var(--radius-control)] border border-border bg-card px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10";
 
   return (
     <main className={`${formStyles.page} px-4 py-8 md:px-8`}>

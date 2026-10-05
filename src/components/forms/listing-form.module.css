@@ -1,8 +1,8 @@
 .page { min-width:0; }
 .page section,.page form { border-radius:var(--radius); box-shadow:none; }
-.page :is(input:not([type=checkbox]):not([type=file]):not([type=hidden]),select,textarea) { min-height:48px; border-radius:var(--radius); box-shadow:none; }
+.page :is(input:not([type=checkbox]):not([type=file]):not([type=hidden]),select,textarea) { min-height:48px; border-radius:var(--radius-control); box-shadow:none; }
 .page :is(input:not([type=hidden]),select,textarea):focus-visible { outline:2px solid var(--primary); outline-offset:2px; }
-.page button[type=submit],.page a { min-height:44px; border-radius:var(--radius); transition:background var(--motion-fast),border-color var(--motion-fast),box-shadow var(--motion-fast); }
+.page button[type=submit],.page a { min-height:44px; border-radius:var(--radius-control); transition:background var(--motion-fast),border-color var(--motion-fast),box-shadow var(--motion-fast); }
 .page a { display:inline-flex; align-items:center; justify-content:center; }
 .page button[type=submit]:active,.page a:active { box-shadow:inset 0 2px 4px #302b3520; }
 .page button[type=submit]:focus-visible,.page a:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
