@@ -73,6 +73,13 @@
   --chart-4: #be6443;
   --chart-5: #625b65;
   --radius: 0.3rem;
+  --radius-control: 0.375rem;
+  --radius-card: 1rem;
+  --radius-feature: 1.5rem;
+  --page-gutter-mobile: 1.5rem;
+  --page-gutter-desktop: 2rem;
+  --border-subtle: color-mix(in oklab, var(--border) 68%, var(--background));
+  --shadow-surface: 0 1px 2px rgb(48 43 53 / 0.035);
   --sidebar: #f4f0e8;
   --sidebar-foreground: #302b35;
   --sidebar-primary: #624291;
@@ -107,7 +114,8 @@
   .surface-panel {
     background: color-mix(in oklab, var(--card) 97%, transparent);
     border: 1px solid var(--border);
-    box-shadow: 0 1px 2px rgb(48 43 53 / 0.035);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-surface);
   }
 }
 
@@ -177,7 +185,7 @@
 .public-shell { background:var(--background); color:var(--foreground); }
 
 /* Shared motion vocabulary: quick controls, deliberate illustration steps, quiet section entrances. */
-:root { --motion-fast:180ms; --motion-step:420ms; --motion-reveal:600ms; --motion-ease:cubic-bezier(.22,.68,.3,1); }
+:root { --motion-fast:180ms; --motion-step:420ms; --motion-reveal:600ms; --motion-narrative:1100ms; --motion-ease:cubic-bezier(.22,.68,.3,1); }
 [data-community-story] section svg[aria-hidden="true"] { transition:opacity var(--motion-reveal) var(--motion-ease); }
 [data-community-story] section[data-story-visible="false"] svg[aria-hidden="true"] { opacity:.25; }
 [data-community-story] section:focus-within svg[aria-hidden="true"] { opacity:1; }

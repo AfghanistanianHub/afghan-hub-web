@@ -90,7 +90,7 @@ export default async function PublicHome() {
           <section key={kind} aria-labelledby={`${kind}-heading`} className="relative">
             <div className={`grid gap-7 lg:items-start lg:grid-cols-[0.28fr_0.72fr] lg:gap-10 ${index % 2 ? "lg:grid-cols-[0.72fr_0.28fr]" : ""}`}>
               <div className={index % 2 ? "lg:order-2" : ""}>
-                <div className="sticky top-24 rounded-3xl border border-border/80 bg-muted/45 p-6 sm:p-7">
+                <div className="sticky top-24 border-l-2 border-primary/30 py-2 pl-5 pr-2 sm:pl-7">
                   <span className="flex size-12 items-center justify-center rounded-2xl bg-secondary text-primary">
                     {(() => {
                       const Icon = icons[kind];

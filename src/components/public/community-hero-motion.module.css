@@ -5,39 +5,35 @@
 .motion [data-hero-layer="gathering"] { transform: translate(calc(var(--depth-x) * -.35), calc(var(--depth-y) * -.35)); }
 .motion [data-hero-layer="network"] { transform: translate(calc(var(--depth-x) * .6), calc(var(--depth-y) * .6)); }
 .motion [data-hero-layer="openings"] { transform: translate(calc(var(--depth-x) * 1.2), calc(var(--depth-y) * 1.2)); }
-.motion [data-hero-draw] { stroke-dasharray: 1; animation: draw-path 850ms ease-out both; }
-.motion [data-hero-reveal] { animation: reveal-form 650ms ease-out 850ms both; }
-.motion [data-hero-accent] { animation: reveal-form 600ms ease-out 1500ms both; }
-.motion [data-hero-pulse] { stroke-dasharray: .12 .88; opacity: 0; filter: drop-shadow(0 0 2px rgb(98 66 145 / .24)); animation: travel 7.2s linear 1800ms infinite both; }
-.motion [data-hero-pulse="opening"] { animation-delay: 4.4s; }
-.motion [data-hero-node] { opacity: 0; transform-box: fill-box; transform-origin: center; animation: activate-node 7.2s ease-in-out 3000ms infinite both; }
-.motion [data-hero-node="opening"] { animation-delay: 5.6s; }
-.motion[data-running="true"] [data-environment-contour] { animation: ambient-contour 7s ease-in-out infinite alternate; }
-.motion[data-running="true"] [data-constellation-person] rect { transform-box: fill-box; transform-origin: center; animation: person-breathe 5.4s ease-in-out infinite; }
-.motion[data-running="true"] [data-constellation-person]:nth-of-type(2n) rect { animation-delay: -2.2s; }
+.motion [data-hero-draw] { stroke-dasharray: 1; animation: draw-path 780ms var(--motion-ease) both; }
+.motion [data-hero-layer="network"] [data-hero-draw] { animation-delay: 700ms; }
+.motion [data-hero-layer="gathering"] [data-hero-draw] { animation-delay: 1400ms; }
+.motion [data-hero-layer="openings"] [data-hero-draw] { animation-delay: 3000ms; }
+.motion [data-hero-reveal] { animation: reveal-form 700ms var(--motion-ease) 2200ms both; }
+.motion [data-hero-accent] { animation: reveal-form 550ms var(--motion-ease) both; }
+.motion [data-hero-layer="network"] [data-hero-accent] { animation-delay: 180ms; }
+.motion [data-hero-layer="gathering"] [data-hero-accent] { animation-delay: 1450ms; }
+.motion [data-hero-layer="openings"] [data-hero-accent] { animation-delay: 3250ms; }
+.motion > svg > g > [data-hero-accent] { animation-delay: 4200ms; }
+.motion [data-hero-pulse] { stroke-dasharray: .09 .91; opacity: 0; animation: travel 1100ms var(--motion-ease) 3650ms both; }
+.motion [data-hero-pulse="opening"] { animation-delay: 4050ms; }
+.motion [data-hero-node] { opacity: 0; animation: activate-node 500ms var(--motion-ease) 1200ms both; }
+.motion [data-hero-node="opening"] { animation-delay: 3450ms; }
 .motion [data-hero-focus] { opacity: 0; }
 :global([data-hero-region]:has([data-landing-cta="explore"]:focus-visible)) .motion [data-hero-focus] { animation: focus-connection 1100ms ease-out both; }
-.motion[data-running="false"] :is([data-hero-draw], [data-hero-reveal], [data-hero-accent], [data-hero-pulse], [data-hero-node], [data-hero-focus], [data-environment-contour]) { animation-play-state: paused; }
-.motion[data-running="false"] [data-constellation-person] rect { animation-play-state: paused; }
+.motion[data-running="false"] :is([data-hero-draw], [data-hero-reveal], [data-hero-accent], [data-hero-pulse], [data-hero-node], [data-hero-focus]) { animation-play-state: paused; }
 @keyframes draw-path { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes reveal-form { from { opacity: 0; } to { opacity: 1; } }
 @keyframes travel {
   0% { opacity: 0; stroke-dashoffset: 1; }
-  3% { opacity: 1; }
-  19% { opacity: 1; stroke-dashoffset: 0; }
-  23%, 100% { opacity: 0; stroke-dashoffset: 0; }
+  25%, 72% { opacity: .9; }
+  100% { opacity: 0; stroke-dashoffset: 0; }
 }
-@keyframes activate-node {
-  0%, 18%, 100% { opacity: 0; transform: scale(.96); }
-  5%, 12% { opacity: .95; transform: scale(1.045); }
-}
-@keyframes ambient-contour { from { opacity: .38; } to { opacity: .82; } }
-@keyframes person-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.035); } }
+@keyframes activate-node { from { opacity: 0; } to { opacity: .9; } }
 @keyframes focus-connection { 0%, 100% { opacity: 0; } 18%, 65% { opacity: .85; } }
 @media (prefers-reduced-motion: reduce) {
  .motion [data-hero-layer] { transform: none; transition: none; }
- .motion :is([data-hero-draw], [data-hero-reveal], [data-hero-accent], [data-hero-pulse], [data-hero-node], [data-hero-focus], [data-environment-contour]) { animation: none !important; }
- .motion [data-constellation-person] rect { animation: none !important; transform: none !important; }
+ .motion :is([data-hero-draw], [data-hero-reveal], [data-hero-accent], [data-hero-pulse], [data-hero-node], [data-hero-focus]) { animation: none !important; }
  .motion :is([data-hero-draw], [data-hero-reveal], [data-hero-accent]) { opacity: 1; stroke-dashoffset: 0; }
  .motion :is([data-hero-pulse], [data-hero-node]) { opacity: 0; }
  :global([data-hero-region]:has([data-landing-cta="explore"]:focus-visible)) .motion [data-hero-focus] { opacity: .85; }
