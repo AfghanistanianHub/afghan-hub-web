@@ -183,8 +183,6 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                 className={`group block self-start ${styles.profile}`}
               >
                 <article className={`relative overflow-hidden border px-5 py-4 ${styles.surface}`}>
-                  <CommunitySignature className={styles.signature} />
-
                   <div className="relative flex items-start gap-3.5">
                     {member.avatar_url ? (
                       <ExternalImage
@@ -192,10 +190,10 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                         alt={memberName}
                         width={48}
                         height={48}
-                        className="size-12 shrink-0 rounded-[var(--radius)] border border-border object-cover"
+                        className="size-12 shrink-0 rounded-[var(--radius-control)] border border-border object-cover"
                       />
                     ) : (
-                      <div className="flex size-12 shrink-0 items-center justify-center rounded-[var(--radius)] bg-secondary font-bold text-primary">
+                      <div className="flex size-12 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-secondary font-bold text-primary">
                         {getInitials(memberName) || (
                           <UserRound aria-hidden="true" className="size-5" />
                         )}
