@@ -60,7 +60,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <GlobalNetworkBackground />
-        <div className="app-content relative z-10 flex min-h-full flex-1 flex-col">
+        <div className="app-content flex min-h-full flex-1 flex-col">
           {children}
         </div>
         <SpeedInsights />
