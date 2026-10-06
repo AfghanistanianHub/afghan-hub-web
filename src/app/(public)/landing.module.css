@@ -39,11 +39,11 @@
 /* Warm atmospheric depth behind the original geometry, never behind readable copy. */
 .heroArt { position: relative; isolation: isolate; }
 .heroArt::before { content:""; position:absolute; inset:8% 0 4% 6%; z-index:-1; border-radius:46% 54% 57% 43%; background:radial-gradient(ellipse at 62% 48%, #e8dfcf7a, transparent 70%); }
-.signatureBridge { max-width:1232px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:14px 24px; border-top:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--muted-foreground); font-size:.75rem; }
-.signatureBridge svg { width:172px; height:40px; color:#aaa095; flex-shrink:0; }
+.signatureBridge { max-width:1232px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:11px 24px; border-top:1px solid color-mix(in srgb,var(--border) 78%,transparent); color:var(--muted-foreground); font-size:.72rem; }
+.signatureBridge svg { width:132px; height:31px; color:#aaa095; opacity:.72; flex-shrink:0; }
 .heroCopy h1 { animation:title-entrance var(--motion-reveal) var(--motion-ease) both; }
 @keyframes title-entrance { from { color:var(--muted-foreground); } to { color:var(--foreground); } }
-@media(max-width:550px) { .signatureBridge { flex-direction:column; align-items:flex-start; gap:6px; margin-bottom:20px; padding:12px 24px; } .signatureBridge svg { width:140px; height:33px; } }
+@media(max-width:550px) { .signatureBridge { flex-direction:column; align-items:flex-start; gap:5px; margin-bottom:14px; padding:10px 24px; } .signatureBridge svg { width:118px; height:28px; } }
 @media(prefers-reduced-motion:reduce) { .heroCopy > :is(.eyebrow,h1,.intro,.actions), .heroArt::before, .heroArt::after { animation:none !important; } .actions svg { transition:none; } .actions a:is(:hover,:focus-visible,:active) svg { transform:none; } }
 
 .audience { max-width:1280px; margin:auto; padding:44px 32px 56px; border-top:1px solid var(--border); display:grid; grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr); gap:56px; align-items:end; }
