@@ -157,21 +157,19 @@ export default async function NetworkPage() {
               />
             </div>
 
-            <div className="mt-6 grid max-w-2xl grid-cols-1 gap-2.5 sm:grid-cols-3">
-              {stats.map(({ label, value, helper, icon: Icon }) => (
+            <div className="mt-6 grid max-w-2xl grid-cols-3 border-y border-border/80">
+              {stats.map(({ label, value, helper, icon: Icon }, index) => (
                 <div
                   key={label}
-                  className="flex min-w-0 items-center gap-3 rounded-[var(--radius)] border border-border/80 bg-background/80 px-3.5 py-3"
+                  className={`min-w-0 py-3.5 ${index > 0 ? "border-l border-border/80 pl-4 sm:pl-5" : "pr-4 sm:pr-5"}`}
                 >
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary">
-                    <Icon aria-hidden="true" className="size-4" />
-                  </span>
-                  <div className="min-w-0">
-                    <div className="flex items-baseline gap-1.5">
-                      <p className="text-lg font-bold tracking-tight text-foreground">{value}</p>
-                      <p className="truncate text-xs font-medium text-muted-foreground">{helper}</p>
-                    </div>
-                    <p className="truncate text-xs text-muted-foreground">{label}</p>
+                  <div className="flex items-center gap-2 text-primary">
+                    <Icon aria-hidden="true" className="size-3.5 shrink-0" />
+                    <p className="truncate text-[0.68rem] font-semibold uppercase tracking-[0.12em]">{label}</p>
+                  </div>
+                  <div className="mt-2 flex min-w-0 items-baseline gap-1.5">
+                    <p className="text-xl font-bold tracking-tight text-foreground">{value}</p>
+                    <p className="truncate text-xs text-muted-foreground">{helper}</p>
                   </div>
                 </div>
               ))}
