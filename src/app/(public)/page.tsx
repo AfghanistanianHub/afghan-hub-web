@@ -13,7 +13,7 @@ import { CommunityHeroMotion } from "@/components/public/community-hero-motion";
 import { CommunityNetwork } from "@/components/public/community-network";
 import styles from "./landing.module.css";
 import { ListingCard } from "@/components/public/listing-card";
-import { publicCategories, publicKinds, type PublicKind } from "@/lib/public-catalog";
+import { publicCategories, publicKinds } from "@/lib/public-catalog";
 import { getPublicListings } from "@/lib/public-content";
 
 const description =
@@ -124,20 +124,13 @@ export default async function PublicHome() {
 
               <div className="min-w-0">
                 {feed.unavailable ? (
-                  <div role="status" aria-live="polite" className="relative min-h-32 overflow-hidden rounded-2xl border border-border/80 bg-card p-6 text-sm text-muted-foreground">
-                    <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-primary/[0.05] blur-3xl" />
-                    <p className="relative font-medium text-foreground">Listings are temporarily unavailable.</p>
-                    <p className="relative mt-2 leading-6">Please try again shortly.</p>
+                  <div role="status" aria-live="polite" className="border-y border-border/80 bg-card/65 px-1 py-5 text-sm text-muted-foreground">
+                    <p className="font-medium text-foreground">Listings are temporarily unavailable.</p>
+                    <p className="mt-1.5 leading-6">Please try again shortly.</p>
                   </div>
                 ) : feed.items.length ? (
                   <div
-                    className={`grid gap-5 ${
-                      feed.items.length === 1
-                        ? "grid-cols-1"
-                        : feed.items.length === 2
-                          ? "md:grid-cols-2"
-                          : "md:grid-cols-2 xl:grid-cols-3"
-                    }`}
+                    className={`grid gap-5 ${feed.items.length === 1 ? "grid-cols-1" : "md:grid-cols-2"}`}
                   >
                     {feed.items.map(item => (
                       <div key={item.slug} className={feed.items.length === 1 ? "w-full max-w-xl" : ""}>
