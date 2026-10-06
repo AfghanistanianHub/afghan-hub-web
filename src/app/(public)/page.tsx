@@ -110,7 +110,7 @@ export default async function PublicHome() {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{categoryKicker[kind]}</p>
                 <div className="mt-3 flex items-center gap-3">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary">
+                  <span className="flex size-8 shrink-0 items-center justify-center text-primary">
                     {(() => {
                       const Icon = icons[kind];
                       return <Icon aria-hidden="true" className="size-4.5" />;
