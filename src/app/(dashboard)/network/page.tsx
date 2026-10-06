@@ -126,10 +126,10 @@ export default async function NetworkPage() {
       <div className="mx-auto w-full max-w-[1500px]">
         <section
           data-illustration-trigger
-          className="relative overflow-hidden rounded-[var(--radius)] border border-border bg-card px-5 py-6 sm:px-7 sm:py-7 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.75fr)] lg:items-center lg:gap-10 lg:px-9 lg:py-8 xl:gap-14"
+          className="relative overflow-hidden border-y border-border/80 px-1 py-7 sm:px-2 sm:py-8 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.75fr)] lg:items-center lg:gap-10 lg:px-4 lg:py-9 xl:gap-14"
         >
           <div className="relative min-w-0">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.07] px-3 py-1.5 text-xs font-semibold text-primary">
+            <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
               <Sparkles aria-hidden="true" className="size-3.5" />
               Community network
             </div>
