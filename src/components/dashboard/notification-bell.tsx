@@ -37,6 +37,7 @@ type NotificationBellProps = {
   currentUserId: string;
   notifications: NotificationSummary[];
   unreadCount: number;
+  unavailable?: boolean;
 };
 
 function getActorName(actor: NotificationSummary["actor"]) {
@@ -75,7 +76,7 @@ function formatNotificationTime(value: string) {
   }).format(new Date(value));
 }
 
-export function NotificationBell({ currentUserId, notifications, unreadCount }: NotificationBellProps) {
+export function NotificationBell({ currentUserId, notifications, unreadCount, unavailable = false }: NotificationBellProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -120,7 +121,11 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
     };
   }, [isOpen]);
 
-  const bellLabel = unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications";
+  const bellLabel = unavailable
+    ? "Notifications temporarily unavailable"
+    : unreadCount > 0
+      ? `Notifications, ${unreadCount} unread`
+      : "Notifications";
 
   return (
     <div ref={containerRef} className="relative">
@@ -155,10 +160,14 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
             <div className="relative">
               <p className="font-semibold tracking-tight text-foreground">Notifications</p>
               <p className="mt-0.5 text-xs text-muted-foreground">
-                {unreadCount > 0 ? `${unreadCount} unread` : "You’re all caught up"}
+                {unavailable
+                  ? "Temporarily unavailable"
+                  : unreadCount > 0
+                    ? `${unreadCount} unread`
+                    : "You’re all caught up"}
               </p>
             </div>
-            {unreadCount > 0 ? (
+            {!unavailable && unreadCount > 0 ? (
               <form action={markAllNotificationsRead}>
                 <NotificationSubmit className={`relative min-w-32 border border-primary/20 bg-secondary px-3 py-2 text-xs font-semibold text-primary hover:bg-primary/10 ${styles.control}`}>
                   Mark all read
@@ -167,7 +176,17 @@ export function NotificationBell({ currentUserId, notifications, unreadCount }: 
             ) : null}
           </div>
 
-          {notifications.length > 0 ? (
+          {unavailable ? (
+            <div role="status" aria-live="polite" className="relative px-6 py-10 text-center">
+              <span className="relative mx-auto flex size-12 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary">
+                <Bell aria-hidden="true" className="size-6" />
+              </span>
+              <p className="mt-4 text-sm font-semibold text-foreground">Notifications are temporarily unavailable</p>
+              <p className="mx-auto mt-1 max-w-64 text-xs leading-5 text-muted-foreground">
+                Please close this panel and try again shortly.
+              </p>
+            </div>
+          ) : notifications.length > 0 ? (
             <div className="max-h-[min(24rem,calc(100dvh-12rem))] overflow-y-auto">
               {notifications.map((notification) => {
                 const actorName = getActorName(notification.actor);
