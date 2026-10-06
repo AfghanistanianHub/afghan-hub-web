@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 type Point = readonly [number, number, number?];
 
 const clusters: Array<{
@@ -56,7 +58,7 @@ export function GlobalNetworkBackground() {
           <g
             key={cluster.key}
             className={`global-network-cluster ${cluster.className ?? ""}`}
-            style={{ "--cluster-index": clusterIndex } as React.CSSProperties}
+            style={{ "--cluster-index": clusterIndex } as CSSProperties}
           >
             <g className="global-network-cluster-lines">
               {cluster.edges.map(([from, to], index) => {
@@ -72,7 +74,7 @@ export function GlobalNetworkBackground() {
                   cx={cx}
                   cy={cy}
                   r={r}
-                  style={{ "--node-index": index } as React.CSSProperties}
+                  style={{ "--node-index": index } as CSSProperties}
                 />
               ))}
             </g>
