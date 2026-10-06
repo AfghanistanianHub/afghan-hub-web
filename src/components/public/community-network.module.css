@@ -1,5 +1,5 @@
-.network { position:relative; padding-block:18px 20px; }
-.nodes { position:absolute; inset:0 0 46px; }
+.network { position:relative; padding-block:10px 6px; }
+.nodes { position:absolute; inset:0; }
 .node { position:absolute; display:flex; align-items:center; gap:8px; min-height:44px; padding:8px 4px; border:0; border-radius:0; background:transparent; color:var(--foreground); font-size:.78rem; font-weight:650; white-space:nowrap; box-shadow:none; transition:color 180ms, transform 180ms; }
 .node::after { content:""; position:absolute; left:4px; bottom:4px; width:18px; height:1px; background:color-mix(in srgb,var(--primary) 32%,transparent); transition:width 180ms, background 180ms; }
 .node:is(:hover,:focus-visible) { color:var(--primary); transform:translateY(-1px); z-index:2; }
