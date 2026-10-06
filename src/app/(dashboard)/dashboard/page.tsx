@@ -239,7 +239,7 @@ export default async function DashboardPage() {
         <RecommendedMembers members={recommendedMembers} />
 
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_350px]">
-          <section className="rounded-[var(--radius)] border border-border/80 bg-card p-5 shadow-[0_1px_0_rgb(48_43_53/0.025)] md:p-6">
+          <section className="border-y border-border py-6 md:py-7">
             <div className="flex items-end justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Recommended for you</p>
@@ -271,7 +271,7 @@ export default async function DashboardPage() {
                     <Link
                       key={opportunity.id}
                       href={`/opportunities/${opportunity.slug}`}
-                      className={`group relative overflow-hidden rounded-[var(--radius)] border border-border bg-background p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_8px_22px_rgb(48_43_53/0.05)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${index === 0 ? "md:col-span-2 2xl:col-span-1" : ""}`}
+                      className={`group relative overflow-hidden rounded-[var(--radius-control)] border border-border bg-card p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_8px_22px_rgb(48_43_53/0.05)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${index === 0 ? "md:col-span-2 2xl:col-span-1" : ""}`}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <span className="rounded-full bg-primary/[0.08] px-2.5 py-1 text-[0.68rem] font-semibold capitalize text-primary">
@@ -305,7 +305,7 @@ export default async function DashboardPage() {
                 })}
               </div>
             ) : (
-              <div className="relative mt-6 overflow-hidden rounded-[var(--radius)] border border-dashed border-border bg-muted/40 px-5 py-10 text-center">
+              <div className="relative mt-6 overflow-hidden border-y border-dashed border-border bg-muted/25 px-5 py-9 text-center">
                 <div aria-hidden="true" className="absolute -right-8 -top-8 size-28 rounded-full border border-primary/10" />
                 <BriefcaseBusiness aria-hidden="true" className="relative mx-auto size-9 text-muted-foreground" />
                 <h3 className="relative mt-3 font-semibold text-foreground">No active opportunities yet</h3>
