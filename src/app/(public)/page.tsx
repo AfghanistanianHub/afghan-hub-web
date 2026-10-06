@@ -93,7 +93,7 @@ export default async function PublicHome() {
             href="/explore"
             className="inline-flex min-h-11 shrink-0 items-center gap-2 self-start rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary md:self-auto"
           >
-            Browse everything <ArrowRight aria-hidden="true" className="size-4" />
+            Browse all listings <ArrowRight aria-hidden="true" className="size-4" />
           </Link>
         </div>
 
@@ -155,7 +155,7 @@ export default async function PublicHome() {
               href="/login?mode=join"
               className="inline-flex min-h-11 shrink-0 items-center gap-2 self-start rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:self-auto"
             >
-              Add something <ArrowRight aria-hidden="true" className="size-4" />
+              Add a listing <ArrowRight aria-hidden="true" className="size-4" />
             </Link>
           </div>
         ) : null}
@@ -165,7 +165,7 @@ export default async function PublicHome() {
         <div className={styles.audienceCopy}>
           <p className={styles.eyebrow}>A place for your next chapter</p>
           <h2 id="community-audience">New to a city. Building a career. Growing a business. Bringing people together.</h2>
-          <p className={styles.audienceText}>Afghan Hub brings professionals, entrepreneurs, organizations and community members into one shared space — rooted in British Columbia and open to Afghans around the world.</p>
+          <p className={styles.audienceText}>Afghan Hub brings professionals, entrepreneurs, organizations and community members into one shared space to connect, contribute and move ideas forward.</p>
         </div>
         <div className={styles.audienceAction}>
           <p className={styles.audiencePrompt}>Build your profile, connect with members, and contribute what is happening around you.</p>
