@@ -1,4 +1,4 @@
-.hero { position: relative; isolation: isolate; max-width: 1280px; margin-inline: auto; padding: 58px 24px 50px; display: grid; align-items: center; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 34px; min-height: 560px; }
+.hero { position: relative; isolation: isolate; max-width: 1280px; margin-inline: auto; padding: 52px 24px 38px; display: grid; align-items: center; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 30px; min-height: 530px; }
 .heroCopy { min-width: 0; max-width: 560px; }
 .eyebrow { margin: 0; font-size: .7rem; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; color: var(--primary); }
 .hero h1 { max-width: 560px; font-size: clamp(2.35rem, 4vw, 3.65rem); font-weight: 500; line-height: 1.08; letter-spacing: -.045em; margin: 28px 0 24px; text-wrap: balance; }
@@ -20,12 +20,12 @@
 .heroArt { min-width: 0; width: 108%; justify-self: end; }
 .heroArt svg { width: 100%; height: auto; display: block; }
 @media (max-width: 900px) {
-  .hero { grid-template-columns: 1fr; padding-top: 48px; padding-bottom: 34px; gap: 30px; min-height: 0; }
+  .hero { grid-template-columns: 1fr; padding-top: 44px; padding-bottom: 28px; gap: 26px; min-height: 0; }
   .hero h1 { font-size: clamp(2.35rem, 7vw, 3rem); }
   .heroArt { max-width: 620px; width: 100%; justify-self: center; }
 }
 @media (max-width: 550px) {
-  .hero { gap: 26px; padding: 38px 24px 28px; min-height: 0; }
+  .hero { gap: 22px; padding: 34px 24px 24px; min-height: 0; }
   .hero h1 { font-size: 2.05rem; line-height: 1.16; letter-spacing: -.04em; margin: 26px 0 20px; }
   .intro { font-size: 1rem; }
   .actions { align-items: flex-start; flex-direction: column; gap: 10px; margin-top: 26px; }
