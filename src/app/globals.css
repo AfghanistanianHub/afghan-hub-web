@@ -189,8 +189,7 @@
 @media(prefers-reduced-motion:reduce) { [data-community-story] section svg[aria-hidden="true"] { opacity:1 !important; transition:none; } }
 
 
-/* Global Afghan Hub constellation background.
-   Sparse local clusters, large negative space, and restrained motion. */
+/* APNBC canvas: exact dots/lines; fixed globally behind the content. */
 .global-network-background {
   position: fixed;
   inset: 0;
@@ -200,111 +199,25 @@
   background: var(--background);
 }
 
-.global-network-background svg {
+.global-network-background canvas {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  min-width: 980px;
-  opacity: 0.9;
-}
-
-.global-network-cluster {
-  color: #aebbdc;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: constellation-drift 18s ease-in-out infinite alternate;
-  animation-delay: calc(var(--cluster-index) * -2.3s);
-}
-
-.global-network-cluster--teal {
-  color: #57c9c3;
-}
-
-.global-network-cluster-lines {
-  stroke: currentColor;
-  stroke-width: 1.05;
-  opacity: 0.18;
-  vector-effect: non-scaling-stroke;
-}
-
-.global-network-cluster-nodes circle {
-  fill: currentColor;
-  opacity: 0.72;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: constellation-breathe 6.8s ease-in-out infinite;
-  animation-delay: calc(var(--node-index) * -0.7s);
-}
-
-.global-network-cluster--teal .global-network-cluster-lines {
-  opacity: 0.24;
-}
-
-.global-network-cluster--teal .global-network-cluster-nodes circle {
-  opacity: 0.88;
-}
-
-.global-network-isolated circle {
-  fill: #aebbdc;
-  opacity: 0.58;
-  animation: isolated-breathe 8s ease-in-out infinite;
-  transform-box: fill-box;
-  transform-origin: center;
+  display: block;
 }
 
 .app-content {
   isolation: isolate;
 }
 
-/* Large shells remain translucent so the constellation field stays visible,
-   while cards/forms keep their own opaque readable surfaces. */
+/* Expose the original canvas colors without changing cards, forms or navigation surfaces. */
 .public-shell {
-  background: color-mix(in oklab, var(--background) 76%, transparent);
+  background: transparent;
   color: var(--foreground);
 }
 
-.app-content > main.min-h-screen.bg-background {
-  background: color-mix(in oklab, var(--background) 82%, transparent) !important;
-}
-
+.app-content > main.min-h-screen.bg-background,
 .app-content > .relative.min-h-screen.bg-background {
-  background: color-mix(in oklab, var(--background) 82%, transparent) !important;
-}
-
-@keyframes constellation-drift {
-  from { transform: translate3d(-4px, -3px, 0); }
-  to { transform: translate3d(5px, 4px, 0); }
-}
-
-@keyframes constellation-breathe {
-  0%, 100% { transform: scale(0.92); opacity: 0.58; }
-  50% { transform: scale(1.16); opacity: 0.9; }
-}
-
-@keyframes isolated-breathe {
-  0%, 100% { transform: scale(0.9); opacity: 0.38; }
-  50% { transform: scale(1.12); opacity: 0.68; }
-}
-
-@media (max-width: 760px) {
-  .global-network-background svg {
-    min-width: 820px;
-    opacity: 0.72;
-    transform: translateX(-16%);
-  }
-
-  .global-network-cluster:nth-of-type(3n) {
-    opacity: 0.72;
-  }
-
-  .public-shell {
-    background: color-mix(in oklab, var(--background) 82%, transparent);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .global-network-cluster,
-  .global-network-cluster-nodes circle,
-  .global-network-isolated circle {
-    animation: none;
-  }
+  background: transparent !important;
 }
