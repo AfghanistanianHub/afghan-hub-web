@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { CommunitySignature } from "@/components/public/community-signature";
 import styles from "./network-surfaces.module.css";
 
 import { ArrowUpRight, MapPin, UserRound } from "lucide-react";
@@ -88,8 +87,6 @@ export function MyConnections({
               href={"/members/" + member.id}
               className={`group relative overflow-hidden border px-5 py-4 ${styles.surface} ${styles.profile}`}
             >
-              <CommunitySignature className={styles.signature} />
-
               <div className="relative flex items-center gap-3">
                 {member.avatar_url ? (
                   <ExternalImage
@@ -97,10 +94,10 @@ export function MyConnections({
                     alt={name}
                     width={44}
                     height={44}
-                    className="size-11 shrink-0 rounded-[var(--radius)] border border-border object-cover"
+                    className="size-11 shrink-0 rounded-[var(--radius-control)] border border-border object-cover"
                   />
                 ) : (
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-[var(--radius)] bg-secondary font-bold text-primary transition group-hover:bg-primary/[0.14]">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-secondary font-bold text-primary transition group-hover:bg-primary/[0.14]">
                     {name.charAt(0).toUpperCase() || (
                       <UserRound aria-hidden="true" className="size-5" />
                     )}
