@@ -8,6 +8,7 @@
 .node > svg { transition:transform 180ms; }
 .node:is(:hover,:focus-visible) > svg { transform:translate(2px,-2px); }
 .network [data-hero-layer] { transition:opacity 180ms, filter 180ms, transform var(--motion-step,420ms) var(--motion-ease,ease-out); }
+.network [data-hero-subject] { transition:opacity 180ms, filter 180ms; }
 .network:has(.node:is(:hover,:focus-visible)) [data-hero-layer] { opacity:.18; }
 .node:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
 .mobileDetail { display:none; }
@@ -22,7 +23,10 @@
 .network:has([data-community-node=people]:is(:hover,:focus-visible)) [data-hero-layer=network],
 .network:has([data-community-node=opportunities]:is(:hover,:focus-visible)) [data-hero-layer=openings],
 .network:has([data-community-node=events]:is(:hover,:focus-visible)) [data-hero-layer=gathering],
-.network:has([data-community-node=organizations]:is(:hover,:focus-visible),[data-community-node=businesses]:is(:hover,:focus-visible)) [data-hero-layer=architecture] { opacity:1 !important; filter:drop-shadow(0 4px 7px #62429145); }
+.network:has([data-community-node=organizations]:is(:hover,:focus-visible),[data-community-node=businesses]:is(:hover,:focus-visible)) [data-hero-layer=architecture] { opacity:1 !important; }
+.network:has([data-community-node=organizations]:is(:hover,:focus-visible),[data-community-node=businesses]:is(:hover,:focus-visible)) [data-hero-layer=architecture] [data-hero-subject] { opacity:.22; }
+.network:has([data-community-node=organizations]:is(:hover,:focus-visible)) [data-hero-subject=organizations],
+.network:has([data-community-node=businesses]:is(:hover,:focus-visible)) [data-hero-subject=businesses] { opacity:1 !important; filter:drop-shadow(0 4px 7px #62429145); }
 @media(max-width:700px) {
  .network { padding:0; }
  .network > svg { max-height:210px; }
@@ -32,4 +36,4 @@
  .nodeText { flex:1; }
  .mobileDetail { display:block; margin-top:2px; font-size:.6875rem; font-weight:400; line-height:1.5; color:var(--muted-foreground); }
 }
-@media(prefers-reduced-motion:reduce) { .node,.node > svg,.network [data-hero-layer] { transition:none; } .node:is(:hover,:focus-visible) > svg { transform:none; } }
+@media(prefers-reduced-motion:reduce) { .node,.node > svg,.network [data-hero-layer],.network [data-hero-subject] { transition:none; } .node:is(:hover,:focus-visible) > svg { transform:none; } }
