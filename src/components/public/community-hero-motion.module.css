@@ -6,19 +6,19 @@
 .motion [data-hero-layer="network"] { transform: translate(calc(var(--depth-x) * .75), calc(var(--depth-y) * .75)); }
 .motion [data-hero-layer="openings"] { transform: translate(calc(var(--depth-x) * 1.35), calc(var(--depth-y) * 1.35)); }
 .motion [data-hero-draw] { stroke-dasharray: 1; animation: draw-path 900ms var(--motion-ease) both; }
-.motion [data-hero-layer="network"] [data-hero-draw] { animation-delay: 700ms; }
-.motion [data-hero-layer="gathering"] [data-hero-draw] { animation-delay: 1400ms; }
-.motion [data-hero-layer="openings"] [data-hero-draw] { animation-delay: 3000ms; }
-.motion [data-hero-reveal] { animation: reveal-form 700ms var(--motion-ease) 2200ms both; }
+.motion [data-hero-layer="network"] [data-hero-draw] { animation-delay: 320ms; }
+.motion [data-hero-layer="gathering"] [data-hero-draw] { animation-delay: 780ms; }
+.motion [data-hero-layer="openings"] [data-hero-draw] { animation-delay: 1450ms; }
+.motion [data-hero-reveal] { animation: reveal-form 650ms var(--motion-ease) 1050ms both; }
 .motion [data-hero-accent] { animation: reveal-form 550ms var(--motion-ease) both; }
-.motion [data-hero-layer="network"] [data-hero-accent] { animation-delay: 180ms; }
-.motion [data-hero-layer="gathering"] [data-hero-accent] { animation-delay: 1450ms; }
-.motion [data-hero-layer="openings"] [data-hero-accent] { animation-delay: 3250ms; }
-.motion > svg > g > [data-hero-accent] { animation-delay: 4200ms; }
-.motion [data-hero-pulse] { stroke-dasharray: .09 .91; opacity: 0; animation: travel var(--motion-narrative) var(--motion-ease) 3650ms both; }
-.motion [data-hero-pulse="opening"] { animation-delay: 4050ms; }
-.motion [data-hero-node] { opacity: 0; animation: activate-node 500ms var(--motion-ease) 1200ms both; }
-.motion [data-hero-node="opening"] { animation-delay: 3450ms; }
+.motion [data-hero-layer="network"] [data-hero-accent] { animation-delay: 120ms; }
+.motion [data-hero-layer="gathering"] [data-hero-accent] { animation-delay: 840ms; }
+.motion [data-hero-layer="openings"] [data-hero-accent] { animation-delay: 1600ms; }
+.motion > svg > g > [data-hero-accent] { animation-delay: 2050ms; }
+.motion [data-hero-pulse] { stroke-dasharray: .09 .91; opacity: 0; animation: travel 900ms var(--motion-ease) 1900ms both; }
+.motion [data-hero-pulse="opening"] { animation-delay: 2250ms; }
+.motion [data-hero-node] { opacity: 0; animation: activate-node 420ms var(--motion-ease) 720ms both; }
+.motion [data-hero-node="opening"] { animation-delay: 1750ms; }
 .motion [data-hero-focus] { opacity: 0; }
 :global([data-hero-region]:has([data-landing-cta="explore"]:focus-visible)) .motion [data-hero-focus] { animation: focus-connection 1100ms ease-out both; }
 @keyframes draw-path { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
