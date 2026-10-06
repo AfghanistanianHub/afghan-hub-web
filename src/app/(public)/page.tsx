@@ -1,18 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ArrowRight,
-  BriefcaseBusiness,
-  Building2,
-  CalendarDays,
-  UsersRound,
-} from "lucide-react";
-import { CommunitySignature } from "@/components/public/community-signature";
-import { CommunityStoryMotion } from "@/components/public/community-story-motion";
-import { CommunityHeroMotion } from "@/components/public/community-hero-motion";
-import { CommunityNetwork } from "@/components/public/community-network";
+import { ArrowRight } from "lucide-react";
 import styles from "./landing.module.css";
-import { ListingCard } from "@/components/public/listing-card";
 import { publicCategories, publicKinds } from "@/lib/public-catalog";
 import { getPublicListings } from "@/lib/public-content";
 
@@ -20,161 +9,96 @@ const description =
   "A global community for Afghans to find people, opportunities, organizations, businesses and events — and build meaningful connections.";
 
 export const metadata: Metadata = {
-  title: "Your Afghan community, connected.",
+  title: "Afghan Hub — People and possibility, connected.",
   description,
   alternates: { canonical: "https://app.apnbc.ca/" },
-  openGraph: {
-    title: "Afghan Hub — Your Afghan community, connected",
-    description,
-    url: "https://app.apnbc.ca/",
-    type: "website",
-    images: [
-      {
-        url: "/opengraph-image",
-        width: 1200,
-        height: 630,
-        alt: "Afghan Hub — community, opportunities, organizations, businesses, and events",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Afghan Hub — Your Afghan community, connected",
-    description,
-    images: ["/opengraph-image"],
-  },
 };
 
-const icons = {
-  opportunities: BriefcaseBusiness,
-  events: CalendarDays,
-  businesses: Building2,
-  organizations: UsersRound,
-};
+const index = [
+  { label: "People", href: "/network", note: "Meet the community" },
+  { label: "Businesses", href: "/explore?type=businesses", note: "Find what Afghans are building" },
+  { label: "Organizations", href: "/explore?type=organizations", note: "Discover groups doing the work" },
+  { label: "Opportunities", href: "/explore?type=opportunities", note: "Move your next chapter forward" },
+  { label: "Events", href: "/explore?type=events", note: "Know where people are gathering" },
+] as const;
 
 export default async function PublicHome() {
-  const feeds = await Promise.all(
-    publicKinds.map(kind => getPublicListings(kind, { limit: 2 })),
-  );
-  const feedRows = publicKinds.map((kind, index) => ({ kind, feed: feeds[index] }));
-  const visibleRows = feedRows.filter(({ feed }) => feed.unavailable || feed.items.length > 0);
-  const emptyKinds = feedRows.filter(({ feed }) => !feed.unavailable && feed.items.length === 0).map(({ kind }) => kind);
+  const feeds = await Promise.all(publicKinds.map(kind => getPublicListings(kind, { limit: 3 })));
+  const rows = publicKinds.map((kind, i) => ({ kind, feed: feeds[i] }));
 
   return (
-    <main id="main-content" className="!flex-none" data-community-story>
-      <CommunityStoryMotion />
-      <section className={styles.hero} data-hero-region aria-labelledby="landing-title">
-        <div className={styles.heroCopy}>
-          <p className={styles.eyebrow}>For Afghans, wherever life takes you.</p>
-          <h1 id="landing-title">Your Afghan community,<span>connected.</span></h1>
-          <p className={styles.intro}>Find people, opportunities, organizations, businesses and events. Build connections that move you forward.</p>
-          <div className={styles.actions}>
-            <Link href="/explore" data-landing-cta="explore" className={styles.primary}>Explore the community<ArrowRight size={17} aria-hidden="true" /></Link>
-            <Link href="/login?mode=join" data-landing-cta="join" className={styles.join}>Join Afghan Hub<ArrowRight size={17} aria-hidden="true" /></Link>
-          </div>
-          <p className={styles.note}>Explore listings without an account. Sign in to discover members.</p>
+    <main id="main-content" className={styles.page}>
+      <section className={styles.hero} aria-labelledby="landing-title">
+        <p className={styles.kicker}>A global network for Afghan people and possibility.</p>
+        <h1 id="landing-title" className={styles.display} aria-label="Afghan Hub">
+          <span className={styles.afghan}>AFGHAN</span>
+          <span className={styles.hub}>HUB</span>
+        </h1>
+        <div className={styles.heroAside}>
+          <p>Find each other. Share what you&apos;re building. Discover what comes next.</p>
+          <Link href="/explore">Enter the community <ArrowRight aria-hidden="true" /></Link>
         </div>
-        <CommunityHeroMotion className={styles.heroArt} depth={10} scrollDepth><CommunityNetwork /></CommunityHeroMotion>
+        <p className={styles.heroFoot}>Rooted in British Columbia <span>—</span> open to the world.</p>
       </section>
 
-      <div className={styles.signatureBridge}><CommunitySignature /><span>Rooted in British Columbia. Open to the world.</span></div>
-      <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-14" aria-labelledby="community-now-heading">
-        <div className="mb-8 flex flex-col gap-5 border-b border-border pb-6 sm:mb-10 md:flex-row md:items-end md:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">From the community</p>
-            <h2 id="community-now-heading" className="mt-3 text-3xl font-medium tracking-[-0.03em] sm:text-4xl">
-              What&apos;s happening now
-            </h2>
-            <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base">
-              Browse current opportunities, gatherings, community businesses and organizations in one clear view.
-            </p>
-          </div>
-          <Link
-            href="/explore"
-            className="inline-flex min-h-11 shrink-0 items-center gap-2 self-start rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary md:self-auto"
-          >
-            Browse all listings <ArrowRight aria-hidden="true" className="size-4" />
+      <nav className={styles.index} aria-label="Explore Afghan Hub">
+        {index.map((item, i) => (
+          <Link href={item.href} key={item.label} className={styles.indexRow}>
+            <span className={styles.number}>0{i + 1}</span>
+            <span className={styles.indexLabel}>{item.label}</span>
+            <span className={styles.indexNote}>{item.note}</span>
+            <ArrowRight aria-hidden="true" />
           </Link>
-        </div>
+        ))}
+      </nav>
 
-        <div className="divide-y divide-border">
-          {visibleRows.map(({ kind, feed }) => (
-            <section key={kind} aria-labelledby={`${kind}-heading`} className="grid gap-6 py-7 first:pt-0 last:pb-0 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[240px_minmax(0,1fr)]">
-              <div>
-                <div className="flex items-center gap-3">
-                  <span className="flex size-8 shrink-0 items-center justify-center text-primary">
-                    {(() => {
-                      const Icon = icons[kind];
-                      return <Icon aria-hidden="true" className="size-4.5" />;
-                    })()}
-                  </span>
-                  <h3 id={`${kind}-heading`} className="text-xl font-semibold tracking-tight sm:text-2xl">
-                    {publicCategories[kind].label}
-                  </h3>
-                </div>
-                <p className="mt-3 max-w-xs text-sm leading-6 text-muted-foreground">{publicCategories[kind].description}</p>
-                <Link
-                  href={`/explore?type=${kind}`}
-                  className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-                >
-                  Explore all <ArrowRight aria-hidden="true" className="size-4" />
-                </Link>
+      <section className={styles.statement} aria-labelledby="statement-title">
+        <p className={styles.sectionMark}>One shared space</p>
+        <h2 id="statement-title">Distance changes where we live.<br /><em>Not what we can build together.</em></h2>
+        <p className={styles.statementBody}>Afghan Hub brings community, work, ideas and gatherings into one public network — designed to make useful connections easier to find.</p>
+      </section>
+
+      <section className={styles.live} aria-labelledby="live-title">
+        <header className={styles.liveHeader}>
+          <p className={styles.sectionMark}>Live index / 2026</p>
+          <h2 id="live-title">From the community</h2>
+          <Link href="/explore">View everything <ArrowRight aria-hidden="true" /></Link>
+        </header>
+        <div className={styles.feedRows}>
+          {rows.map(({ kind, feed }, rowIndex) => (
+            <section className={styles.feedRow} key={kind} aria-labelledby={`${kind}-title`}>
+              <div className={styles.feedTitle}>
+                <span>0{rowIndex + 2}</span>
+                <h3 id={`${kind}-title`}>{publicCategories[kind].label}</h3>
+                <p>{publicCategories[kind].description}</p>
               </div>
-
-              <div className="min-w-0">
-                {feed.unavailable ? (
-                  <div role="status" aria-live="polite" className="border-y border-border/80 bg-card/65 px-1 py-5 text-sm text-muted-foreground">
-                    <p className="font-medium text-foreground">Listings are temporarily unavailable.</p>
-                    <p className="mt-1.5 leading-6">Please try again shortly.</p>
-                  </div>
-                ) : feed.items.length ? (
-                  <div
-                    className={`grid gap-5 ${feed.items.length === 1 ? "grid-cols-1" : "md:grid-cols-2"}`}
-                  >
-                    {feed.items.map(item => (
-                      <div key={item.slug} className="min-w-0">
-                        <ListingCard item={item} kind={kind} />
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
+              <div className={styles.feedItems}>
+                {feed.unavailable ? <p className={styles.empty}>Temporarily unavailable.</p> : feed.items.length ? feed.items.map(item => (
+                  <Link key={item.slug} href={`/explore/${kind}/${item.slug}`} className={styles.feedItem}>
+                    <span>{item.title}</span><ArrowRight aria-hidden="true" />
+                  </Link>
+                )) : <p className={styles.empty}>Waiting for the first community listing.</p>}
               </div>
             </section>
           ))}
         </div>
-
-        {emptyKinds.length > 0 ? (
-          <div className="mt-9 flex flex-col gap-5 border-t border-border pt-7 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold text-foreground">Some community sections are still waiting for their first listing.</p>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                {emptyKinds.map(kind => publicCategories[kind].label).join(" · ")}
-              </p>
-            </div>
-            <Link
-              href="/login?mode=join"
-              className="inline-flex min-h-11 shrink-0 items-center gap-2 self-start rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:self-auto"
-            >
-              Add a listing <ArrowRight aria-hidden="true" className="size-4" />
-            </Link>
-          </div>
-        ) : null}
       </section>
 
-      <section className={styles.audience} aria-labelledby="community-audience">
-        <div className={styles.audienceCopy}>
-          <p className={styles.eyebrow}>A place for your next chapter</p>
-          <h2 id="community-audience">New to a city. Building a career. Growing a business. Bringing people together.</h2>
-          <p className={styles.audienceText}>Afghan Hub brings professionals, entrepreneurs, organizations and community members into one shared space to connect, contribute and move ideas forward.</p>
+      <section className={styles.story} aria-labelledby="story-title">
+        <p className={styles.sectionMark}>Community / not audience</p>
+        <h2 id="story-title">New city.<br />New work.<br /><em>Same network.</em></h2>
+        <div className={styles.storyCopy}>
+          <p>For the professional looking for a collaborator. The newcomer looking for a first connection. The business looking for customers. The organization looking for people. The community member looking for somewhere to belong.</p>
+          <Link href="/login?mode=join">Make your place in it <ArrowRight aria-hidden="true" /></Link>
         </div>
-        <div className={styles.audienceAction}>
-          <p className={styles.audiencePrompt}>Build your profile, connect with members, and contribute what is happening around you.</p>
-          <Link
-            href="/login?mode=join"
-            className={styles.audienceButton}
-          >
-            Join Afghan Hub <ArrowRight aria-hidden="true" className="size-4" />
-          </Link>
+      </section>
+
+      <section className={styles.finalCta} aria-labelledby="cta-title">
+        <p>AFGHAN HUB / GLOBAL COMMUNITY NETWORK</p>
+        <h2 id="cta-title">Find your people.<br /><span>Build what&apos;s next.</span></h2>
+        <div className={styles.finalLinks}>
+          <Link href="/login?mode=join">Join Afghan Hub <ArrowRight aria-hidden="true" /></Link>
+          <Link href="/explore">Explore first</Link>
         </div>
       </section>
     </main>
