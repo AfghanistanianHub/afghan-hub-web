@@ -101,8 +101,7 @@ export default async function PublicHome() {
           {visibleRows.map(({ kind, feed }) => (
             <section key={kind} aria-labelledby={`${kind}-heading`} className="grid gap-6 py-8 first:pt-0 last:pb-0 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[240px_minmax(0,1fr)]">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{categoryKicker[kind]}</p>
-                <div className="mt-3 flex items-center gap-3">
+                <div className="flex items-center gap-3">
                   <span className="flex size-8 shrink-0 items-center justify-center text-primary">
                     {(() => {
                       const Icon = icons[kind];
