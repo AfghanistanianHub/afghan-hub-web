@@ -3,10 +3,11 @@
   background: var(--card);
   border-color: color-mix(in srgb, var(--border) 92%, var(--foreground) 8%);
   box-shadow: 0 1px 0 rgb(48 43 53 / 0.025);
+  transition: border-color var(--motion-fast), background var(--motion-fast), box-shadow var(--motion-fast);
 }
 
 .profile {
-  border-radius: var(--radius);
+  border-radius: var(--radius-control);
   transition:
     border-color var(--motion-fast),
     background var(--motion-fast),
