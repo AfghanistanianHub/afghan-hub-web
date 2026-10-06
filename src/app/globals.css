@@ -219,8 +219,9 @@
   color: var(--foreground);
 }
 
-.app-content > .public-shell,
-.app-content > main.min-h-screen.bg-background,
-.app-content > .relative.min-h-screen.bg-background {
-  background: transparent !important;
+/* Every route shell is transparent at the root so the fixed APNBC canvas
+   remains visible site-wide. Component surfaces (header, sidebar, cards,
+   forms, dialogs, etc.) keep their own backgrounds above the canvas. */
+.app-content > * {
+  background-color: transparent !important;
 }
