@@ -70,10 +70,14 @@ export function CommunityIllustration() { return (
   <path d="M83 249l247 139 M81 305l289-166 M181 193l247 139 M179 361l289-166 M279 137l247 139 M277 417l289-166" stroke="#d9d2c6" strokeWidth=".82" />
   <g data-hero-layer="architecture">
    <g data-hero-reveal stroke="#9e978e">
-    <path d="M108 192 193 143 278 192 193 241Z M108 192v74l85 49 85-49v-74 M193 241v74" strokeWidth="1.52" />
-    <path d="M140 136 193 105 246 136 193 167Z M140 136v57l53 30 53-30v-57 M193 167v56" strokeWidth="1.52" />
-    <path d="M140 136 193 105 246 136 193 167Z" strokeWidth="1.17" fill="#eee7dc" />
-    <path d="M152 202v28m16-18v28 M211 257v28" strokeWidth="1.17" />
+    <g data-hero-subject="businesses">
+     <path d="M108 192 193 143 278 192 193 241Z M108 192v74l85 49 85-49v-74 M193 241v74" strokeWidth="1.52" />
+     <path d="M152 202v28m16-18v28 M211 257v28" strokeWidth="1.17" />
+    </g>
+    <g data-hero-subject="organizations">
+     <path d="M140 136 193 105 246 136 193 167Z M140 136v57l53 30 53-30v-57 M193 167v56" strokeWidth="1.52" />
+     <path d="M140 136 193 105 246 136 193 167Z" strokeWidth="1.17" fill="#eee7dc" />
+    </g>
    </g>
   </g>
   <g data-hero-layer="gathering">
