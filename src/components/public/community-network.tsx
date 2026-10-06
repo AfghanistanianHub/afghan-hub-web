@@ -24,10 +24,13 @@ export function CommunityNetwork() {
           </Link>
         ))}
       </nav>
-      <p className={styles.caption}>
-        <span className={styles.defaultCaption}>One community. Many ways forward.</span>
-        {nodes.map(node => <span key={node.key} id={`network-${node.key}`} data-community-description={node.key} className={styles.preview}>{node.detail}</span>)}
-      </p>
+      <div className={styles.descriptions}>
+        {nodes.map(node => (
+          <span key={node.key} id={`network-${node.key}`}>
+            {node.detail}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
