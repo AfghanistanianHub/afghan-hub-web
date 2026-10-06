@@ -99,7 +99,7 @@ export default async function PublicHome() {
 
         <div className="divide-y divide-border">
           {visibleRows.map(({ kind, feed }) => (
-            <section key={kind} aria-labelledby={`${kind}-heading`} className="grid gap-6 py-8 first:pt-0 last:pb-0 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[240px_minmax(0,1fr)]">
+            <section key={kind} aria-labelledby={`${kind}-heading`} className="grid gap-6 py-7 first:pt-0 last:pb-0 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[240px_minmax(0,1fr)]">
               <div>
                 <div className="flex items-center gap-3">
                   <span className="flex size-8 shrink-0 items-center justify-center text-primary">
@@ -132,7 +132,7 @@ export default async function PublicHome() {
                     className={`grid gap-5 ${feed.items.length === 1 ? "grid-cols-1" : "md:grid-cols-2"}`}
                   >
                     {feed.items.map(item => (
-                      <div key={item.slug} className={feed.items.length === 1 ? "w-full max-w-xl" : ""}>
+                      <div key={item.slug} className="min-w-0">
                         <ListingCard item={item} kind={kind} />
                       </div>
                     ))}
