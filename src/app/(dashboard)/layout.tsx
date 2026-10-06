@@ -28,8 +28,8 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
   const [
     { data: profile },
     { data: accessContext },
-    { data: notificationRows },
-    { count: unreadNotificationCount },
+    { data: notificationRows, error: notificationRowsError },
+    { count: unreadNotificationCount, error: unreadNotificationCountError },
     { data: unreadMessageRows },
   ] = await Promise.all([
     supabase
