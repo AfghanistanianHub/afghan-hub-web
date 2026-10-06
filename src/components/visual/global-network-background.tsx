@@ -1,38 +1,90 @@
+import type { CSSProperties } from "react";
+
+type Point = readonly [number, number, number?];
+
+const clusters: Array<{
+  key: string;
+  className?: string;
+  points: readonly Point[];
+  edges: readonly [number, number][];
+}> = [
+  {
+    key: "north-west",
+    className: "global-network-cluster--teal",
+    points: [[64,74,4],[25,198,5],[168,34,8],[194,222,11],[141,377,6],[315,482,8]],
+    edges: [[0,1],[0,2],[0,3],[1,2],[1,3],[1,4],[2,3],[2,4],[3,4],[3,5],[4,5]],
+  },
+  {
+    key: "north-east",
+    points: [[1160,96,5],[1328,70,4],[1460,165,8],[1388,246,5],[1518,307,4]],
+    edges: [[0,1],[1,2],[1,3],[2,3],[2,4],[3,4]],
+  },
+  {
+    key: "east",
+    points: [[1265,505,6],[1390,575,5],[1510,548,8],[1565,653,4],[1425,690,5]],
+    edges: [[0,1],[0,4],[1,2],[1,4],[2,3],[2,4],[3,4]],
+  },
+  {
+    key: "centre",
+    points: [[620,362,4],[690,418,5],[650,486,4],[750,440,4],[705,560,6]],
+    edges: [[0,1],[0,2],[1,2],[1,3],[1,4],[2,4],[3,4]],
+  },
+  {
+    key: "south-west",
+    points: [[108,690,6],[205,762,5],[155,840,8],[268,875,5]],
+    edges: [[0,1],[0,2],[1,2],[1,3],[2,3]],
+  },
+  {
+    key: "south-centre",
+    points: [[540,790,5],[618,845,4],[700,815,8],[752,896,5],[634,935,4]],
+    edges: [[0,1],[0,2],[1,2],[1,4],[2,3],[2,4],[3,4]],
+  },
+  {
+    key: "north-mid",
+    points: [[790,36,5],[860,86,4],[900,176,6]],
+    edges: [[0,1],[1,2],[0,2]],
+  },
+];
+
+const isolated: readonly Point[] = [
+  [530,105,7],[940,278,4],[1060,390,5],[338,610,5],[1010,760,4],[382,924,5],[1200,900,4],
+];
+
 export function GlobalNetworkBackground() {
   return (
     <div className="global-network-background" aria-hidden="true">
-      <svg
-        viewBox="0 0 1600 1000"
-        preserveAspectRatio="xMidYMid slice"
-        role="presentation"
-      >
-        <g className="global-network-lines">
-          <path d="M110 170L310 245L510 150L720 260L925 180L1160 285L1430 190" />
-          <path d="M180 520L390 430L610 560L830 450L1040 600L1280 500L1500 610" />
-          <path d="M120 820L360 700L570 815L790 705L1010 830L1240 720L1460 810" />
-          <path d="M310 245L390 430L360 700" />
-          <path d="M510 150L610 560L570 815" />
-          <path d="M720 260L830 450L790 705" />
-          <path d="M925 180L1040 600L1010 830" />
-          <path d="M1160 285L1280 500L1240 720" />
-        </g>
+      <svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" role="presentation">
+        {clusters.map((cluster, clusterIndex) => (
+          <g
+            key={cluster.key}
+            className={`global-network-cluster ${cluster.className ?? ""}`}
+            style={{ "--cluster-index": clusterIndex } as CSSProperties}
+          >
+            <g className="global-network-cluster-lines">
+              {cluster.edges.map(([from, to], index) => {
+                const [x1, y1] = cluster.points[from];
+                const [x2, y2] = cluster.points[to];
+                return <line key={index} x1={x1} y1={y1} x2={x2} y2={y2} />;
+              })}
+            </g>
+            <g className="global-network-cluster-nodes">
+              {cluster.points.map(([cx, cy, r = 4], index) => (
+                <circle
+                  key={index}
+                  cx={cx}
+                  cy={cy}
+                  r={r}
+                  style={{ "--node-index": index } as CSSProperties}
+                />
+              ))}
+            </g>
+          </g>
+        ))}
 
-        <g className="global-network-nodes">
-          {[
-            [110,170],[310,245],[510,150],[720,260],[925,180],[1160,285],[1430,190],
-            [180,520],[390,430],[610,560],[830,450],[1040,600],[1280,500],[1500,610],
-            [120,820],[360,700],[570,815],[790,705],[1010,830],[1240,720],[1460,810],
-          ].map(([cx, cy], index) => (
-            <circle key={index} cx={cx} cy={cy} r={index % 5 === 0 ? 5.5 : 3.5} />
+        <g className="global-network-isolated">
+          {isolated.map(([cx, cy, r = 4], index) => (
+            <circle key={index} cx={cx} cy={cy} r={r} />
           ))}
-        </g>
-
-        <g className="global-network-labels">
-          <text x="420" y="320">Community</text>
-          <text x="960" y="350">Opportunities</text>
-          <text x="240" y="655">Organizations</text>
-          <text x="860" y="705">Events</text>
-          <text x="1270" y="655">Businesses</text>
         </g>
       </svg>
     </div>
