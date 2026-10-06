@@ -52,16 +52,9 @@ const icons = {
   organizations: UsersRound,
 };
 
-const categoryKicker: Record<PublicKind, string> = {
-  opportunities: "Move forward",
-  events: "Come together",
-  businesses: "Support community",
-  organizations: "Find your people",
-};
-
 export default async function PublicHome() {
   const feeds = await Promise.all(
-    publicKinds.map(kind => getPublicListings(kind, { limit: 3 })),
+    publicKinds.map(kind => getPublicListings(kind, { limit: 2 })),
   );
   const feedRows = publicKinds.map((kind, index) => ({ kind, feed: feeds[index] }));
   const visibleRows = feedRows.filter(({ feed }) => feed.unavailable || feed.items.length > 0);
