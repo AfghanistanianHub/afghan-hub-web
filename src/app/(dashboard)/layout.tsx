@@ -139,10 +139,6 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-background text-foreground">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 -z-10 opacity-[0.018] [background-image:linear-gradient(to_right,var(--foreground)_1px,transparent_1px),linear-gradient(to_bottom,var(--foreground)_1px,transparent_1px)] [background-size:48px_48px]"
-      />
       <RealtimeMessageRefresh currentUserId={user.id} />
       <div className="flex min-h-screen">
         <Sidebar

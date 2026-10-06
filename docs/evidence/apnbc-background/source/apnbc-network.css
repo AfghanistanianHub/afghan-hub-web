@@ -1,0 +1,37 @@
+#apnbc-hero-section{
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+#apnbc-hero-section > .apnbc-network-html{
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+}
+
+#apnbc-hero-section .elementor-container,
+#apnbc-hero-section .elementor-column,
+#apnbc-hero-section .elementor-widget-wrap,
+#apnbc-hero-section .e-con-inner,
+#apnbc-hero-section .e-child{
+  position: relative;
+  z-index: 2;
+}
+
+#apnbc-network-layer{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#apnbc-network-canvas{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
