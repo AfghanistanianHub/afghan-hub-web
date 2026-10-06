@@ -1,4 +1,4 @@
-.catalog { background: var(--background); }
+.catalog { background: transparent; }
 .intro { display:grid; grid-template-columns:minmax(0,1fr) 14rem; align-items:center; gap:3rem; }
 .introArt { width:100%; max-width:14rem; }
 .introArt svg, .detailArt svg { display:block; width:100%; height:auto; }

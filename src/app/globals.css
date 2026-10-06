@@ -225,3 +225,12 @@
 .app-content > * {
   background-color: transparent !important;
 }
+
+
+/* Route-level page surfaces must not repaint an opaque page background over
+   the fixed APNBC canvas. Keep this scoped to semantic page roots; cards,
+   forms, headers, sidebars and other component surfaces retain their own
+   backgrounds. */
+.app-content main {
+  background-color: transparent !important;
+}
