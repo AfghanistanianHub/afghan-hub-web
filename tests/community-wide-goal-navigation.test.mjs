@@ -48,15 +48,16 @@ test("search empty state offers visual goal navigation instead of a dead end", (
 });
 
 
-test("public landing positions Afghan Hub for the whole community", () => {
-  assert.match(publicHome, /Afghan Hub brings professionals, entrepreneurs, organizations and community members/);
-  for (const audience of [
-    "professionals",
-    "entrepreneurs",
-    "organizations",
-    "community members",
-  ]) {
-    assert.ok(publicHome.includes(audience), `Missing audience path: ${audience}`);
+test("public landing exposes all five community areas and discovery paths", () => {
+  assert.match(publicHome, /Find your people/);
+  assert.match(publicHome, /Build what’s next/);
+  assert.match(publicHome, /People/);
+  for (const kind of ["opportunities", "events", "businesses", "organizations"]) {
+    assert.match(publicHome, new RegExp('primary\\("'+kind+'"\\)'));
   }
+  assert.match(publicHome, /publicHref\(kind, item.slug\)/);
+  assert.match(publicHome, /\/explore\?type=\$\{kind\}/);
+  assert.match(publicHome, /\/login\?mode=join/);
+  assert.match(publicHome, /getPublicListings/);
   assert.doesNotMatch(goalPaths, /label: "Settle"/);
 });
