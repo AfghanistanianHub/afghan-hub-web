@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import styles from "./landing.module.css";
+import { publicCategories, publicKinds } from "@/lib/public-catalog";
+import { getPublicListings } from "@/lib/public-content";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -27,7 +31,7 @@ const description =
   "A global community for Afghans to find people, opportunities, organizations, businesses and events — and build meaningful connections.";
 
 export const metadata: Metadata = {
-  title: "Your Afghan community, connected.",
+  title: "Afghan Hub — People and possibility, connected.",
   description,
   alternates: { canonical: "https://app.apnbc.ca/" },
   openGraph: {
