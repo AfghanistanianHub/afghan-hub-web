@@ -6,9 +6,10 @@ import { ArrowUpRight, Compass, Search, Sparkles, X } from "lucide-react";
 import { trackAssistantEvent } from "@/lib/assistant/analytics";
 import { ASSISTANT_OPEN_EVENT } from "@/components/assistant/contextual-assistant-prompt";
 import { resolveNavigatorContext, type NavigatorContext } from "@/lib/assistant/conversation";
+import { memberNavigatorCopy as copy, memberNavigatorPrompts as prompts, memberNavigatorDialogue as dialogue, memberNavigatorLocales, memberNavigatorUtility } from "@/lib/assistant/member-navigator-copy";
 import styles from "./community-navigator.module.css";
 
-type Language = "en" | "fa" | "ps";
+type Language = "en" | "fa-AF" | "fa" | "ps";
 type Result = {
   entityType: "profile" | "business" | "organization" | "opportunity" | "event";
   entityId: string; title: string; subtitle: string | null; city: string | null;
@@ -17,93 +18,6 @@ type Result = {
 type Group = { memberSignal: NavigatorContext["memberSignal"] | null; results: Result[] };
 type Turn = { id: number; query: string; status: "pending" | "ready" | "failed"; context?: NavigatorContext; groups: Group[]; relatedUnavailable?: boolean; scopeLimited?: boolean; browseOnly?: boolean };
 type Payload = { browseOnly?: boolean; context: NavigatorContext; groups: Group[]; results: Result[]; intent: string; entityType: Result["entityType"] | null; relatedUnavailable?: boolean };
-
-const copy = {
-  en: {
-    ask: "Community Navigator",
-    title: "What are you looking for?",
-    description:
-      "Find people, organizations, businesses, opportunities and upcoming events across Afghan Hub.",
-    placeholder: "Try “volunteer opportunities in Vancouver”…",
-    search: "Search",
-    searching: "Searching…",
-    empty: "No matching Afghan Hub results yet.",
-    recovery: "Try a broader search or browse a section directly.",
-    browsePeople: "Browse people",
-    browseOrganizations: "Browse organizations",
-    browseOpportunities: "Browse opportunities",
-    browseEvents: "Browse events",
-    browseBusinesses: "Browse businesses",
-    error: "Search is temporarily unavailable. Please try again.",
-    scopeError: "This mentor catalogue exceeds the search limit. Browse people in Network.",
-    readOnly: "Discovery only · no actions will be taken",
-  },
-  fa: {
-    ask: "راهنمای جامعه",
-    title: "دنبال چه چیزی هستید؟",
-    description:
-      "افراد، سازمان‌ها، کسب‌وکارها، فرصت‌ها و رویدادهای آینده را در افغان هاب پیدا کنید.",
-    placeholder: "مثلاً «فرصت‌های داوطلبی در ونکوور»…",
-    search: "جست‌وجو",
-    searching: "در حال جست‌وجو…",
-    empty: "نتیجه مرتبطی پیدا نشد.",
-    recovery: "عبارت عمومی‌تری را امتحان کنید یا مستقیماً یک بخش را مرور کنید.",
-    browsePeople: "مرور افراد",
-    browseOrganizations: "مرور سازمان‌ها",
-    browseOpportunities: "مرور فرصت‌ها",
-    browseEvents: "مرور رویدادها",
-    browseBusinesses: "مرور کسب‌وکارها",
-    error: "جست‌وجو فعلاً در دسترس نیست. دوباره تلاش کنید.",
-    scopeError: "تعداد اعضای این جست‌وجو از محدودیت بیشتر است. افراد را در بخش شبکه مرور کنید.",
-    readOnly: "فقط برای پیدا کردن اطلاعات · هیچ اقدامی انجام نمی‌شود",
-  },
-  ps: {
-    ask: "ټولنیز لارښود",
-    title: "تاسو څه لټوئ؟",
-    description:
-      "په افغان هب کې خلک، سازمانونه، کاروبارونه، فرصتونه او راتلونکې غونډې ومومئ.",
-    placeholder: "لکه «په ونکوور کې د رضاکارۍ فرصتونه»…",
-    search: "لټون",
-    searching: "لټون روان دی…",
-    empty: "اړوند پایله ونه موندل شوه.",
-    recovery: "پراخه لټون وازمویئ یا یوه برخه مستقیمه وګورئ.",
-    browsePeople: "خلک وګورئ",
-    browseOrganizations: "سازمانونه وګورئ",
-    browseOpportunities: "فرصتونه وګورئ",
-    browseEvents: "غونډې وګورئ",
-    browseBusinesses: "کاروبارونه وګورئ",
-    error: "لټون اوس مهال شتون نه لري. بیا هڅه وکړئ.",
-    scopeError: "د دې لټون د غړو شمېر له حد څخه زیات دی. خلک په شبکه کې وګورئ.",
-    readOnly: "یوازې موندنه · هېڅ اقدام نه ترسره کېږي",
-  },
-} as const;
-
-const prompts = {
-  en: [
-    "Find volunteer opportunities",
-    "Show me upcoming community events",
-    "Find organizations that support employment",
-    "Find professionals working in technology",
-  ],
-  fa: [
-    "فرصت‌های داوطلبی را پیدا کن",
-    "رویدادهای آینده جامعه را نشان بده",
-    "سازمان‌های مرتبط با کاریابی را پیدا کن",
-    "متخصصان حوزه تکنولوژی را پیدا کن",
-  ],
-  ps: [
-    "د رضاکارۍ فرصتونه پیدا کړه",
-    "راتلونکې ټولنیزې غونډې را وښیه",
-    "د کار موندنې اړوند سازمانونه پیدا کړه",
-    "د ټکنالوژۍ مسلکي کسان پیدا کړه",
-  ],
-} as const;
-
-const dialogue = {
-  en: { retry: "Try again", privacy: "Your search is sent to Afghan Hub to find matches. Avoid sensitive personal details. Conversation stays on this page; no messages are sent to members.", title: "Community Navigator", you: "You", matches: "Matches from Afghan Hub", start: "Start a new search", grounded: "Grounded in Afghan Hub listings and public member profiles.", mentors: "Members open to mentoring", mentees: "Members looking for a mentor", preference: "Mentorship is a member preference, not an endorsement.", follow: "Keep exploring", events: "Show me events too", people: "Show me people too", anywhere: "All locations", partial: "Related member results could not be loaded.", types: { profile: "Members", event: "Events", opportunity: "Opportunities", organization: "Organizations", business: "Businesses" } },
-  fa: { retry: "دوباره تلاش کنید", privacy: "جست‌وجوی شما برای یافتن نتایج به افغان هاب فرستاده می‌شود. اطلاعات حساس ننویسید. تاریخچه فقط در این جلسه می‌ماند؛ پیام یا درخواستی فرستاده نمی‌شود.", title: "راهنمای جامعه", you: "شما", matches: "نتایج از افغان هاب", start: "جست‌وجوی تازه", grounded: "بر اساس آگهی‌ها و پروفایل‌های عمومی افغان هاب.", mentors: "اعضای آماده برای راهنمایی", mentees: "اعضای در جست‌وجوی راهنما", preference: "راهنمایی ترجیح عضو است، نه تأیید صلاحیت.", follow: "به کشف ادامه دهید", events: "رویدادها را هم نشان بده", people: "افراد را هم نشان بده", anywhere: "همه جا", partial: "نتایج اعضای مرتبط بارگیری نشد.", types: { profile: "اعضا", event: "رویدادها", opportunity: "فرصت‌ها", organization: "سازمان‌ها", business: "کسب‌وکارها" } },
-  ps: { retry: "بیا هڅه وکړئ", privacy: "ستاسو لټون د پایلو موندلو لپاره افغان هب ته لېږل کېږي. حساس معلومات مه لیکئ. تاریخچه یوازې په دې ناسته کې پاتې کېږي؛ پیغام یا غوښتنه نه لېږل کېږي.", title: "ټولنیز لارښود", you: "تاسو", matches: "د افغان هب پایلې", start: "نوی لټون", grounded: "د افغان هب د اعلانونو او عامه پروفایلونو پر بنسټ.", mentors: "لارښوونې ته چمتو غړي", mentees: "د لارښود په لټه کې غړي", preference: "لارښوونه د غړي خوښه ده، د وړتیا تایید نه دی.", follow: "موندنې ته دوام ورکړئ", events: "غونډې هم را وښیه", people: "خلک هم را وښیه", anywhere: "هر ځای", partial: "د اړوندو غړو پایلې ترلاسه نه شوې.", types: { profile: "غړي", event: "غونډې", opportunity: "فرصتونه", organization: "سازمانونه", business: "کاروبارونه" } },
-} as const;
 
 export function CommunityNavigator() {
   const [open, setOpen] = useState(false);
@@ -234,12 +148,12 @@ export function CommunityNavigator() {
     <button type="button" className={styles.launcher} aria-label={strings.ask} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(true)}>
       <Compass size={17} aria-hidden="true" /><span className={styles.launcherLabel}>{strings.ask}</span><kbd className="hidden text-[10px] text-muted-foreground lg:inline">⌘K</kbd>
     </button>
-    {open ? <dialog ref={panelRef} aria-modal="true" aria-labelledby="community-navigator-title" className={styles.drawer} dir={language === "en" ? "ltr" : "rtl"} lang={language === "fa" ? "fa" : language} onCancel={() => setOpen(false)} onKeyDown={containDialogFocus}
+    {open ? <dialog ref={panelRef} aria-modal="true" aria-labelledby="community-navigator-title" className={styles.drawer} dir={language === "en" ? "ltr" : "rtl"} lang={language} onCancel={() => setOpen(false)} onKeyDown={containDialogFocus}
       onMouseDown={event => { if (event.target === event.currentTarget) {const r=event.currentTarget.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)setOpen(false);} }}>
       <header className={styles.header}>
-        <div className={styles.brand}><span className={styles.identity}><span className={styles.identityMark}><Compass size={17} aria-hidden="true" /></span><span><small>AFGHAN HUB</small><strong>Community Navigator</strong></span></span><button type="button" className={styles.close} aria-label={language === "en" ? "Close Community Navigator" : language === "fa" ? "بستن راهنما" : "لارښود بند کړئ"} onClick={() => setOpen(false)}><X size={19} aria-hidden="true" /></button></div>
+        <div className={styles.brand}><span className={styles.identity}><span className={styles.identityMark}><Compass size={17} aria-hidden="true" /></span><span><small>AFGHAN HUB</small><strong>Community Navigator</strong></span></span><button type="button" className={styles.close} aria-label={memberNavigatorUtility[language].close} onClick={() => setOpen(false)}><X size={19} aria-hidden="true" /></button></div>
         <p className={styles.kicker}><Sparkles size={13} aria-hidden="true" />{labels.title}</p><h2 id="community-navigator-title">{strings.title}</h2><p className={styles.description}>{strings.description}</p>
-        <div className={styles.toolbar}>{(["en","fa","ps"] as const).map(option => <button type="button" key={option} aria-pressed={language===option} onClick={() => {setLanguage(option);trackAssistantEvent({event:"assistant_language_change",language:option});}}>{option==="en"?"English":option==="fa"?"دری":"پښتو"}</button>)}<button type="button" className={styles.reset} onClick={startOver}>{labels.start}</button></div>
+        <div className={styles.toolbar}>{memberNavigatorLocales.map(({value:option,label}) => <button type="button" key={option} aria-pressed={language===option} onClick={() => {setLanguage(option);trackAssistantEvent({event:"assistant_language_change",language:option});}}>{label}</button>)}<button type="button" className={styles.reset} onClick={startOver}>{labels.start}</button></div>
       </header>
       <p role="status" aria-live="polite" className="sr-only">{pending ? strings.searching : turns.at(-1)?.status === "ready" ? `${labels.matches}: ${turns.at(-1)?.groups.reduce((count,group)=>count+group.results.length,0)}` : ""}</p>
       <div className={styles.conversation} aria-label={labels.title}>
@@ -261,7 +175,7 @@ export function CommunityNavigator() {
         </article>)}
         <div ref={bottomRef} />
       </div>
-      <form onSubmit={submit} className={styles.composer}><div className={styles.composerLabel}><span>{strings.ask}</span><span>{query.length}/120</span></div><div className={styles.inputRow}><div className={styles.inputWrap}><Search size={16} aria-hidden="true" /><input ref={inputRef} aria-label={strings.ask} value={query} onChange={event => setQuery(event.target.value)} maxLength={120} placeholder={strings.placeholder} /></div><button type="submit" disabled={pending||query.trim().length<2}>{pending?strings.searching:strings.search}</button></div><p className={styles.scope}>{strings.readOnly}</p><details className={styles.privacy}><summary>{language === "en" ? "How your search works" : language === "fa" ? "جست‌وجو چگونه کار می‌کند" : "لټون څنګه کار کوي"}</summary><p>{labels.grounded} {labels.privacy}</p></details></form>
+      <form onSubmit={submit} className={styles.composer}><div className={styles.composerLabel}><span>{strings.ask}</span><span>{query.length}/120</span></div><div className={styles.inputRow}><div className={styles.inputWrap}><Search size={16} aria-hidden="true" /><input ref={inputRef} aria-label={strings.ask} dir="auto" value={query} onChange={event => setQuery(event.target.value)} maxLength={120} placeholder={strings.placeholder} /></div><button type="submit" disabled={pending||query.trim().length<2}>{pending?strings.searching:strings.search}</button></div><p className={styles.scope}>{strings.readOnly}</p><details className={styles.privacy}><summary>{memberNavigatorUtility[language].privacy}</summary><p>{labels.grounded} {labels.privacy}</p></details></form>
     </dialog> : null}
   </>;
 }

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { isSameOriginRequest } from "@/lib/http/request-origin";
 import { createClient } from "@/lib/supabase/server";
 
-const languageSchema = z.enum(["en", "fa", "ps"]);
+const languageSchema = z.enum(["en", "fa-AF", "fa", "ps"]);
 const entityTypeSchema = z.enum([
   "profile",
   "business",
