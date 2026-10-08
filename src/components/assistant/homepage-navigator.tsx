@@ -8,6 +8,7 @@ import { navigatorCopy, guidedGoals, guidedTopics, type NavigatorLanguage } from
 import type { DiscoveryFilters } from "@/lib/assistant/public-discovery";
 import { guidedSearch, nextGuidedQuestion, understandGuidedGoal } from "@/lib/assistant/guided-discovery";
 import { NAVIGATOR_JOURNEY_EVENT } from "./navigator-journey-link";
+import { navigatorNotice } from "@/lib/assistant/navigator-notice";
 import { publicDiscoveryResponseSchema, type PublicDiscoveryResponse } from "@/lib/assistant/public-discovery-contract";
 import styles from "./homepage-navigator.module.css";
 
@@ -26,7 +27,6 @@ export function HomepageNavigator() {
   const [pending, setPending] = useState(false);
   const [guide, setGuide] = useState<Guide | null>(null);
   const [custom, setCustom] = useState("");
-  const [notice, setNotice] = useState("");
   const heading = useRef<HTMLHeadingElement>(null);
   const input = useRef<HTMLInputElement>(null);
   const busy = useRef(false);
@@ -34,6 +34,7 @@ export function HomepageNavigator() {
   const journeySeen = useRef<string | null>(null);
   const turnSequence = useRef(0);
   const latest = turns.at(-1);
+  const notice = navigatorNotice(pending, latest, t);
   const previousDiscovery = turns.findLast(turn => turn.data)?.data;
 
   useEffect(() => () => { controller.current?.abort(); }, []);
@@ -63,7 +64,7 @@ export function HomepageNavigator() {
     const text = value.trim().slice(0, 120);
     if (busy.current || text.length < 2) return;
     const activeFilters = filters;
-    busy.current = true; setPending(true); setNotice(t.searching); setGuide(null); setQuery("");
+    busy.current = true; setPending(true); setGuide(null); setQuery("");
     const id = ++turnSequence.current;
     setTurns(previous => [...previous.slice(-7), { id, query: text, filters: activeFilters }]);
     const abort = new AbortController(); controller.current = abort;
@@ -74,12 +75,10 @@ export function HomepageNavigator() {
       const data = publicDiscoveryResponseSchema.parse(await response.json());
       if (controller.current !== abort) return;
       setTurns(previous => previous.map(turn => turn.id === id ? { ...turn, data } : turn));
-      setNotice(data.clarification ? data.clarification : data.unavailable.length ? t.partial : data.results.length ? `${t.results}: ${data.results.length}` : t.empty);
     } catch (error) {
       if (controller.current !== abort) return;
       const failed = error instanceof Error && error.message === "busy" ? "busy" : "unavailable";
       setTurns(previous => previous.map(turn => turn.id === id ? { ...turn, failed } : turn));
-      setNotice(failed === "busy" ? t.rate : t.error);
     } finally {
       window.clearTimeout(timeout);
       if (controller.current === abort) { controller.current = null; busy.current = false; setPending(false); }
@@ -87,7 +86,7 @@ export function HomepageNavigator() {
   }
   function restart() {
     controller.current?.abort(); controller.current = null; busy.current = false;
-    setPending(false); setTurns([]); setQuery(""); setNotice(""); setGuide(null); setCustom("");
+    setPending(false); setTurns([]); setQuery(""); setGuide(null); setCustom("");
     input.current?.focus();
   }
   function startGuide() { setGuide(initialGuide); setCustom(""); }
@@ -126,7 +125,7 @@ export function HomepageNavigator() {
       <form className={styles.search} onSubmit={directSubmit}><Search size={19} aria-hidden="true" /><input ref={input} value={query} onChange={event => setQuery(event.target.value)} aria-label={t.placeholder} placeholder={t.placeholder} dir="auto" minLength={2} maxLength={120} required /><button type="submit" aria-label={pending ? t.searching : t.search} disabled={pending || query.trim().length < 2}><ArrowUp size={19} aria-hidden="true" /></button></form>
     </div>
     <div className={styles.entries}><button type="button" className={styles.guideEntry} disabled={pending} onClick={startGuide}><Compass size={24} strokeWidth={1.5} aria-hidden="true" /><span><strong>{t.guide}</strong><small>{t.guideDescription}</small></span></button><div className={styles.examples}>{examples.map(example => <button key={example} type="button" disabled={pending} onClick={() => { setQuery(example); input.current?.focus(); }}>{example}</button>)}</div></div>
-    <div className={styles.utility}><label>{t.language}<select aria-label="Navigator language" value={language} onChange={event => { setLanguage(event.target.value as NavigatorLanguage); setNotice(""); }}>{locales.map(locale => <option key={locale.value} value={locale.value}>{locale.label}</option>)}</select></label><details><summary>{t.privacy}</summary><p>{t.disclosure}</p></details>{(turns.length > 0 || guide) && <button type="button" onClick={restart}>{t.restart}</button>}</div>
+    <div className={styles.utility}><label>{t.language}<select aria-label="Navigator language" value={language} onChange={event => { setLanguage(event.target.value as NavigatorLanguage); }}>{locales.map(locale => <option key={locale.value} value={locale.value}>{locale.label}</option>)}</select></label><details><summary>{t.privacy}</summary><p>{t.disclosure}</p></details>{(turns.length > 0 || guide) && <button type="button" onClick={restart}>{t.restart}</button>}</div>
 
     {guide && <div className={styles.guide}>
       <div className={styles.guideHeading}><span>{t.step} {guide.history.length + 1} / {guide.history.length + (guide.step === 0 ? 3 : guide.step === 1 && !guide.location ? 2 : 1)}</span><button type="button" aria-label={t.close} onClick={() => { setGuide(null); input.current?.focus(); }}><X size={18} aria-hidden="true" /></button></div>
