@@ -6,14 +6,15 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowRight, ArrowUp, Compass, Search, Sparkles, X } from "lucide-react";
 import { navigatorCopy, guidedGoals, guidedTopics, type NavigatorLanguage } from "@/lib/assistant/navigator-copy";
 import type { DiscoveryFilters } from "@/lib/assistant/public-discovery";
-import { resolveNavigatorContext } from "@/lib/assistant/conversation";
+import { guidedSearch, nextGuidedQuestion, understandGuidedGoal } from "@/lib/assistant/guided-discovery";
 import { NAVIGATOR_JOURNEY_EVENT } from "./navigator-journey-link";
 import { publicDiscoveryResponseSchema, type PublicDiscoveryResponse } from "@/lib/assistant/public-discovery-contract";
 import styles from "./homepage-navigator.module.css";
 
 type Turn = { id: number; query: string; filters?: DiscoveryFilters; data?: PublicDiscoveryResponse; failed?: "busy" | "unavailable" };
-type Guide = { step: 0 | 1 | 2; goal: string; topic: string; location: string };
-const initialGuide: Guide = { step: 0, goal: "", topic: "", location: "" };
+type GuideSnapshot = { step: 0 | 1 | 2; goal: string; topic: string; location: string };
+type Guide = GuideSnapshot & { history: GuideSnapshot[] };
+const initialGuide: Guide = { step: 0, goal: "", topic: "", location: "", history: [] };
 const locales = [{ value: "en", label: "English" }, { value: "fa-AF", label: "دری" }, { value: "fa", label: "فارسی" }, { value: "ps", label: "پښتو" }] as const;
 
 export function HomepageNavigator() {
@@ -33,6 +34,7 @@ export function HomepageNavigator() {
   const journeySeen = useRef<string | null>(null);
   const turnSequence = useRef(0);
   const latest = turns.at(-1);
+  const previousPlan = turns.findLast(turn => turn.data)?.data?.plan;
 
   useEffect(() => () => { controller.current?.abort(); }, []);
   useEffect(() => {
@@ -60,25 +62,19 @@ export function HomepageNavigator() {
   async function search(value: string, filters?: DiscoveryFilters) {
     const text = value.trim().slice(0, 120);
     if (busy.current || text.length < 2) return;
-    let activeFilters = filters;
-    if (!filters && latest?.data && /^(?:only|just|anywhere|all locations|فقط|تنها|یوازې|هر جا|هر ځای)\b|\b(?:too|also|as well)\b/iu.test(text)) {
-      const previous = latest.data.plan;
-      const entityType = previous.kinds.length === 1 ? ({ businesses: "business", organizations: "organization", opportunities: "opportunity", events: "event" } as const)[previous.kinds[0]] : undefined;
-      const resolved = resolveNavigatorContext(text, { topic: previous.topic, city: previous.location || undefined, entityType });
-      const goal = resolved.entityType ? ({ profile: "Meet people", business: "businesses", organization: "organizations", opportunity: "opportunities", event: "events" } as const)[resolved.entityType] : previous.kinds.join(" and ");
-      activeFilters = { goal, topic: resolved.topic, location: resolved.city ?? "" };
-    }
+    const activeFilters = filters;
     busy.current = true; setPending(true); setNotice(t.searching); setGuide(null); setQuery("");
     const id = ++turnSequence.current;
     setTurns(previous => [...previous.slice(-7), { id, query: text, filters: activeFilters }]);
     const abort = new AbortController(); controller.current = abort;
-    const timeout = window.setTimeout(() => abort.abort(), 12_000);
+    const timeout = window.setTimeout(() => abort.abort(), 20_000);
     try {
-      const response = await fetch("/api/assistant/public-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: text, filters: activeFilters }), signal: abort.signal });
+      const response = await fetch("/api/assistant/public-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: text, filters: activeFilters, language, context: previousPlan }), signal: abort.signal });
       if (!response.ok) throw new Error(response.status === 429 ? "busy" : "unavailable");
       const data = publicDiscoveryResponseSchema.parse(await response.json());
+      if (controller.current !== abort) return;
       setTurns(previous => previous.map(turn => turn.id === id ? { ...turn, data } : turn));
-      setNotice(data.unavailable.length ? t.partial : data.results.length ? `${t.results}: ${data.results.length}` : t.empty);
+      setNotice(data.clarification ? data.clarification : data.unavailable.length ? t.partial : data.results.length ? `${t.results}: ${data.results.length}` : t.empty);
     } catch (error) {
       if (controller.current !== abort) return;
       const failed = error instanceof Error && error.message === "busy" ? "busy" : "unavailable";
@@ -95,16 +91,24 @@ export function HomepageNavigator() {
     input.current?.focus();
   }
   function startGuide() { setGuide(initialGuide); setCustom(""); }
+  function finish(answers: GuideSnapshot | null = guide) {
+    if (!answers) return;
+    const prepared = guidedSearch(answers);
+    void search(prepared.query, prepared.filters);
+  }
   function choose(value: string) {
     if (!guide) return;
-    if (guide.step === 0) setGuide({ ...guide, goal: value, step: 1 });
-    else if (guide.step === 1) setGuide({ ...guide, topic: value, step: 2 });
+    const answers = guide.step === 0 ? understandGuidedGoal(value) : { goal: guide.goal, topic: value, location: guide.location };
+    const step = nextGuidedQuestion(answers, guide.step === 0 ? "goal" : "topic");
+    if (step === null) finish({ ...answers, step: guide.step });
+    else setGuide({ ...answers, step, history: [...guide.history, { ...answers, step: guide.step }] });
     setCustom("");
   }
-  function finish() {
-    if (!guide) return;
-    const filters = { goal: guide.goal, topic: guide.topic, location: guide.location };
-    void search([guide.goal || "Explore the community", guide.topic, guide.location].filter(Boolean).join(" · "), filters);
+  function back() {
+    if (!guide || guide.step === 0) return;
+    const previous = guide.history.at(-1) ?? { ...guide, step: (guide.step - 1) as 0 | 1 };
+    setGuide({ ...previous, history: guide.history.slice(0, -1) });
+    setCustom(previous.step === 0 ? previous.goal : previous.topic);
   }
   function guideSubmit(event: FormEvent) {
     event.preventDefault();
@@ -125,11 +129,11 @@ export function HomepageNavigator() {
     <div className={styles.utility}><label>{t.language}<select aria-label="Navigator language" value={language} onChange={event => { setLanguage(event.target.value as NavigatorLanguage); setNotice(""); }}>{locales.map(locale => <option key={locale.value} value={locale.value}>{locale.label}</option>)}</select></label><details><summary>{t.privacy}</summary><p>{t.disclosure}</p></details>{(turns.length > 0 || guide) && <button type="button" onClick={restart}>{t.restart}</button>}</div>
 
     {guide && <div className={styles.guide}>
-      <div className={styles.guideHeading}><span>{t.step} {guide.step + 1} / 3</span><button type="button" aria-label={t.close} onClick={() => { setGuide(null); input.current?.focus(); }}><X size={18} aria-hidden="true" /></button></div>
+      <div className={styles.guideHeading}><span>{t.step} {guide.history.length + 1} / {guide.history.length + (guide.step === 0 ? 3 : guide.step === 1 && !guide.location ? 2 : 1)}</span><button type="button" aria-label={t.close} onClick={() => { setGuide(null); input.current?.focus(); }}><X size={18} aria-hidden="true" /></button></div>
       <h3 ref={heading} tabIndex={-1}>{guide.step === 0 ? t.goalsTitle : guide.step === 1 ? t.topicsTitle : guide.goal === "Explore events" ? t.eventLocationTitle : t.locationTitle}</h3>
       {guide.step < 2 && <div className={styles.choices}>{(guide.step === 0 ? t.goals : t.topics).map((label, index) => <button type="button" key={label} onClick={() => choose(guide.step === 0 ? guidedGoals[index] : guidedTopics[index])}>{label}<ArrowRight size={15} aria-hidden="true" /></button>)}</div>}
       <form onSubmit={guideSubmit} className={styles.guideForm}><label htmlFor="navigator-guide-input">{guide.step === 2 ? t.location : t.custom}</label><div><input id="navigator-guide-input" dir="auto" value={guide.step === 2 ? guide.location : custom} maxLength={guide.step === 2 ? 60 : 80} onChange={event => guide.step === 2 ? setGuide({ ...guide, location: event.target.value }) : setCustom(event.target.value)} /><button type="submit" disabled={guide.step < 2 && custom.trim().length < 2}>{guide.step === 2 ? t.find : t.next}</button></div></form>
-      <div className={styles.guideActions}>{guide.step > 0 && <button type="button" onClick={() => { setGuide({ ...guide, step: (guide.step - 1) as 0 | 1 }); setCustom(""); }}>{t.back}</button>}<button type="button" onClick={() => guide.step === 2 ? finish() : choose("")}>{t.skip}</button></div>
+      <div className={styles.guideActions}>{guide.step > 0 && <button type="button" onClick={back}>{t.back}</button>}<button type="button" onClick={() => guide.step === 2 ? finish() : choose("")}>{t.skip}</button></div>
     </div>}
 
     <p className={styles.status} role="status" aria-live="polite">{notice}</p>
@@ -137,14 +141,15 @@ export function HomepageNavigator() {
       {turns.map(turn => <article key={turn.id} className={styles.turn} aria-busy={!turn.data && !turn.failed}>
         <p className={styles.query} dir="auto">{turn.query}</p>
         {turn.failed ? <div><p>{turn.failed === "busy" ? t.rate : t.error}</p><button type="button" disabled={pending} onClick={() => void search(turn.query, turn.filters)}>{t.retry}</button></div> : !turn.data ? <p>{t.searching}</p> : <>
-          <h3>{t.results}</h3><p className={styles.understanding}>{t.looking}: <bdi>{turn.data.plan.topic || t.all}</bdi> · <bdi>{turn.data.plan.location || t.anywhere}</bdi></p>
+          <p className={styles.engine} data-discovery-engine={turn.data.engine}>{turn.data.engine === "model-assisted" ? t.modelMode : t.structuredMode}{turn.data.fallback && turn.data.fallback !== "disabled" ? ` · ${t.fallbackNotice}` : ""}</p>
+          <h3>{t.results}</h3>{turn.data.understanding && <p dir="auto">{turn.data.understanding}</p>}{turn.data.clarification && <p dir="auto">{turn.data.clarification}</p>}<p className={styles.understanding}>{t.looking}: <bdi>{turn.data.plan.topic || t.all}</bdi> · <bdi>{turn.data.plan.location || t.anywhere}</bdi></p>
           {turn.data.plan.people && <div className={styles.people}><p>{t.peopleNote}</p><Link href="/network">{t.people}<ArrowRight size={15} aria-hidden="true" /></Link></div>}
           {turn.data.unavailable.length > 0 && <p>{t.partial}</p>}
-          {!turn.data.results.length && <p>{t.empty} {t.recovery}</p>}
+          {!turn.data.clarification && !turn.data.results.length && <p>{t.empty} {t.recovery}</p>}
           <ul className={styles.results}>{turn.data.results.map(result => <li key={result.href}><Link href={result.href}><span><small>{t.types[result.kind]}</small><strong dir="auto">{result.title}</strong>{result.summary && <p dir="auto">{result.summary}</p>}<span className={styles.reason}>{result.location} · {turn.data?.plan.topic ? t.reason : turn.data?.plan.location ? t.locationReason : t.generalReason}</span></span><ArrowRight size={17} aria-hidden="true" /></Link></li>)}</ul>
         </>}
       </article>)}
-      <div className={styles.nextSteps}>{kinds.map(kind => <Link key={kind} href={`/explore?type=${kind}`}>{t.browse} · {t.types[kind]}<ArrowRight size={14} aria-hidden="true" /></Link>)}{latest?.data?.plan.location && <button type="button" disabled={pending} onClick={() => void search(latest.query, { ...latest.filters, goal: latest.filters?.goal ?? latest.query, topic: latest.data?.plan.topic, location: "" })}>{t.clearLocation}</button>}</div>
+      <div className={styles.nextSteps}>{kinds.map(kind => <Link key={kind} href={`/explore?type=${kind}`}>{t.browse} · {t.types[kind]}<ArrowRight size={14} aria-hidden="true" /></Link>)}{latest?.data?.plan.location && <button type="button" disabled={pending} onClick={() => void search("Anywhere", { goal: latest.data?.plan.kinds.join(" and "), topic: latest.data?.plan.topic, location: "" })}>{t.clearLocation}</button>}</div>
     </div>}
   </section>;
 }

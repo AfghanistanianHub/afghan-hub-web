@@ -5,15 +5,17 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import { z } from 'zod';
 
-function harness({ unavailable = [], rows = {} } = {}) {
+function harness({ unavailable = [], rows = {}, planner } = {}) {
   const calls = [];
   const modules = new Map();
   function load(file) {
     if (modules.has(file)) return modules.get(file);
     const exports = {}; modules.set(file, exports);
     vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, {
-      exports, Request, Response, TextDecoder, Date, URL, console: { info() {}, error() {} },
+      exports, Request, Response, TextDecoder, Date, URL, AbortSignal, Set, console: { info() {}, error() {} },
       require(name) {
+        if (name === 'server-only') return {};
+        if (name === '@/lib/assistant/discovery-provider') return {discoveryPlanner: () => planner};
         if (name === 'zod') return { z };
         if (name === 'next/server') return { NextResponse: { json: Response.json } };
         if (name === '@/lib/public-content') return { getPublicListings: async (kind, options) => { calls.push({kind,options}); return {items:rows[kind] ?? [],unavailable:unavailable.includes(kind)}; } };
@@ -22,6 +24,11 @@ function harness({ unavailable = [], rows = {} } = {}) {
           '@/lib/http/request-origin': 'src/lib/http/request-origin.ts',
           '@/lib/assistant/public-discovery': 'src/lib/assistant/public-discovery.ts',
           '@/lib/assistant/public-discovery-contract': 'src/lib/assistant/public-discovery-contract.ts',
+          '@/lib/assistant/discovery-orchestrator':'src/lib/assistant/discovery-orchestrator.ts',
+          '@/lib/assistant/discovery-tools':'src/lib/assistant/discovery-tools.ts',
+          './public-discovery-contract':'src/lib/assistant/public-discovery-contract.ts',
+          './public-discovery':'src/lib/assistant/public-discovery.ts',
+          './discovery-location':'src/lib/assistant/discovery-location.ts',
           './intents':'src/lib/assistant/intents.ts', './conversation':'src/lib/assistant/conversation.ts', './query':'src/lib/assistant/query.ts',
         };
         assert.ok(files[name], `Unexpected dependency ${name}`); return load(files[name]);
@@ -38,7 +45,7 @@ test('public Navigator rejects cross-origin, malformed, oversized and extra-fiel
   const h = harness();
   assert.equal((await h.POST(request({query:'art'},'https://evil.example'))).status,403);
   assert.equal((await h.POST(request('broken'))).status,400);
-  assert.equal((await h.POST(request('x'.repeat(2049)))).status,413);
+  assert.equal((await h.POST(request('x'.repeat(4097)))).status,413);
   for (const body of [{query:'x'},{query:'x'.repeat(121)},{query:'art',userId:'private'},{query:'art',filters:{topic:'art',role:'admin'}}]) assert.equal((await h.POST(request(body))).status,400);
   assert.equal(h.calls.length,0);
 });
@@ -46,7 +53,7 @@ test('public Navigator spans explicit areas, returns real safe links and caps re
   const rows = Object.fromEntries(['businesses','organizations','opportunities','events'].map(kind=>[kind,Array.from({length:12},(_,i)=>listing(`${kind}-${i}`))]));
   const h=harness({rows}); const response=await h.POST(request({query:'businesses and opportunities',filters:{topic:'arts',location:'Vancouver'}}));
   assert.equal(response.status,200); const data=await response.json();
-  assert.deepEqual(data.plan.kinds,['businesses','opportunities']); assert.equal(data.results.length,8);
+  assert.deepEqual(data.plan.kinds,['businesses','opportunities']); assert.equal(data.results.length,8); assert.equal(data.engine,'structured-search'); assert.equal(data.fallback,'disabled');
   assert.ok(data.results.some(r=>r.kind==='businesses') && data.results.some(r=>r.kind==='opportunities'));
   assert.ok(data.results.every(r=>r.href.startsWith('/explore/') && !('description' in r) && !('entityId' in r)));
   assert.ok(h.calls.every(c=>c.options.limit===24 && c.options.discoveryLocation==='Vancouver'));
@@ -75,4 +82,45 @@ test('date and location ranking excludes unrelated data and allows remote partic
   assert.equal(h.rankDiscoveryListing(listing('local'),'arts','Toronto',false,'organizations'),0);
   assert.ok(h.rankDiscoveryListing({...listing('remote'),location:'Remote'},'arts','Toronto',false,'opportunities')>0);
   assert.ok(h.rankDiscoveryListing({...listing('creative'),title:'Design studio'},'Artists & Creatives','',false,'businesses')>0);
+});
+
+const decision = {plan:{kinds:['organizations'],people:false,topic:'arts',location:'Vancouver',thisMonth:false},understanding:'Find arts organizations in Vancouver.',clarification:null};
+test('model planning is validated before the same permission-aware tool runs', async () => {
+  const h=harness({planner:async input=>{assert.equal(input.language,'fa-AF');return decision;},rows:{organizations:[listing('actual-organization')]}});
+  const data=await(await h.POST(request({query:'help me find my path',language:'fa-AF'}))).json();
+  assert.equal(data.engine,'model-assisted');assert.equal(data.fallback,null);assert.equal(data.results[0].href,'/explore/organizations/actual-organization');assert.equal(h.calls.length,1);
+});
+test('invalid or failed model output falls back without executing arbitrary tools', async () => {
+  for (const planner of [async()=>({...decision,plan:{...decision.plan,kinds:['profiles']}}),async()=>({...decision,results:[{href:'https://evil.example'}]}),async()=>{throw new Error('provider failure with sensitive details');}]) {
+    const h=harness({planner});const data=await(await h.POST(request({query:'art businesses'}))).json();
+    assert.equal(data.engine,'structured-search');assert.equal(data.fallback,'unavailable');assert.deepEqual(data.plan.kinds,['businesses']);assert.equal(h.calls.length,1);assert.ok(!JSON.stringify(data).includes('sensitive'));
+  }
+});
+test('essential clarifications do not fabricate results or query public data prematurely', async () => {
+  const h=harness({planner:async()=>({...decision,clarification:'Which city would you like to connect in?'})});
+  const data=await(await h.POST(request({query:'help me connect'}))).json();
+  assert.equal(data.clarification,'Which city would you like to connect in?');assert.deepEqual(data.results,[]);assert.equal(h.calls.length,0);
+});
+test('guided answers override inferred model filters and avoid needless clarification', async () => {
+  const h=harness({planner:async()=>({...decision,clarification:'Which city?'})});const data=await(await h.POST(request({query:'Find opportunities',filters:{goal:'Find opportunities',topic:'technology',location:'Toronto'}}))).json();
+  assert.deepEqual(data.plan.kinds,['opportunities']);assert.equal(data.plan.location,'Toronto');assert.equal(data.clarification,null);
+});
+test('bounded context preserves date, interest and location for explicit follow-ups', async () => {
+  const h=harness();const context={kinds:['events'],people:false,topic:'arts',location:'Vancouver',thisMonth:true};
+  for (const query of ['Only opportunities','فقط فرصت‌ها','یوازې فرصتونه']) {
+    const data=await(await h.POST(request({query,context}))).json();
+    assert.deepEqual(data.plan.kinds,['opportunities']);assert.equal(data.plan.topic,'arts');assert.equal(data.plan.location,'Vancouver');assert.equal(data.plan.thisMonth,true);
+  }
+  const data=await(await h.POST(request({query:'Anywhere',context}))).json();assert.equal(data.plan.location,'');assert.equal(data.plan.topic,'arts');
+  assert.equal((await h.POST(request({query:'art',context:{...context,kinds:['profiles']}}))).status,400);
+});
+test('province aliases match the actual province field without treating BC as a substring', () => {
+  const h=harness();const row={...listing('bc'),region:'BC'};
+  assert.ok(h.rankDiscoveryListing(row,'arts','British Columbia',false,'businesses')>0);
+  assert.equal(h.rankDiscoveryListing({...row,region:'Quebec'},'arts','BC',false,'businesses'),0);
+});
+test('English, Persian/Dari and Pashto example searches share canonical public filters', () => {
+  const h=harness();for(const query of ['Technology opportunities in British Columbia','فرصت‌های فناوری در بریتیش کلمبیا','په بریټش کولمبیا کې د ټکنالوژۍ فرصتونه']) {
+    const plan=h.planPublicDiscovery(query);assert.equal(plan.location,'British Columbia');assert.equal(plan.topic,'technology');assert.deepEqual(Array.from(plan.kinds),['opportunities']);
+  }
 });

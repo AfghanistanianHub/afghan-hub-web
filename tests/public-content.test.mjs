@@ -17,6 +17,7 @@ function loadContent({ data = [], error = null, configured = true } = {}) {
     exports, AbortSignal, Date, fetch: () => {}, Set,
     process: { env: configured ? { NEXT_PUBLIC_SUPABASE_URL: "https://public.example", NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "publishable-test-key" } : {} },
     require(name) {
+      if (name === "@/lib/assistant/discovery-location") return { discoveryLocationTerms: value => value === "British Columbia" ? ["British Columbia", "BC"] : value ? [value] : [] };
       if (name === "server-only") return {};
       if (name === "react") return { cache: fn => fn };
       if (name === "@/lib/opportunities") return { getUtcDateKey: () => "2026-09-10" };
@@ -116,4 +117,9 @@ test('Navigator field filters bound and sanitize user input while preserving pub
   assert.match(filter,/city\.ilike\.%Vancouver%/);
   assert.doesNotMatch(filter,/a,b\)\.or\(status\.eq\.draft/);
   assert.ok(app.calls.some(call=>call[0]==='eq'&&call[1]==='status'&&call[2]==='published'));
+});
+
+test('province discovery uses fixed safe fields and exact short regional aliases', async () => {
+  const app=loadContent();await app.load('organizations',{discoveryLocation:'British Columbia'});
+  const filter=app.calls.find(call=>call[0]==='or')[1];assert.match(filter,/province_state\.ilike\.%British Columbia%/);assert.match(filter,/province_state\.ilike\.BC/);assert.doesNotMatch(filter,/ilike\.%BC%/);
 });
