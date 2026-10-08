@@ -21,7 +21,7 @@ const appUrl = requireLocalTarget('http://localhost:3100', 3100);
 const admin = createClient(apiUrl, status.SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
 const chromePath = ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/opt/google/chrome/chrome'].find(existsSync);
 assert.ok(chromePath, 'The Linux CI runner must provide sandboxed Chrome');
-const users = [], pages = [], children = [], results = [];
+const users = [], pages = [], children = [], results = [], listings = [];
 const password = `QA-${randomUUID()}-aA1!`;
 const stamp = randomUUID().slice(0, 8);
 let browser, profile, fixtureB, conversationId, step = 'prerequisites', scenario = 'prerequisites';
@@ -103,6 +103,25 @@ async function click(page, selector) {
   const point = await until(() => page.evaluate(`(() => { const target=document.querySelector(${JSON.stringify(selector)}); if(!target || target.disabled)return null; target.scrollIntoView({block:'center'}); const r=target.getBoundingClientRect(); return r.width && r.height ? {x:r.x+r.width/2,y:r.y+r.height/2}:null; })()`), 'clickable control');
   await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...point });
   await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...point });
+}
+async function select(page, selector, value) {
+  await until(() => page.evaluate(`!!document.querySelector(${JSON.stringify(selector)})`), 'select field');
+  await page.evaluate(`(() => { const field=document.querySelector(${JSON.stringify(selector)}); field.value=${JSON.stringify(value)}; field.dispatchEvent(new Event('change',{bubbles:true})); return true; })()`);
+}
+async function eventStart(page) {
+  await click(page, 'button[aria-label^="Select start date & time:"]');
+  await click(page, '[role=dialog] .rdp-day:not([data-disabled=true]) .rdp-day_button:not([disabled])');
+  await select(page, '#starts_at-hour', '11');
+  await select(page, '#starts_at-minute', '30');
+  await select(page, '#starts_at-period', 'PM');
+  await click(page, '[role=dialog] > div:last-child > button:last-child');
+  await until(() => page.evaluate(`!!document.querySelector('[name=starts_at]')?.value`), 'selected event start');
+}
+async function listingRow(table, titleField, title) {
+  return until(async () => {
+    const rows = await data(admin.from(table).select('*').eq(titleField, title));
+    return rows[0];
+  }, 'listing persisted');
 }
 async function login(page, email, secret = password) {
   await visit(page, '/login');
@@ -209,6 +228,66 @@ try {
     await pageB.send('Network.emulateNetworkConditions', { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
     await until(() => pageB.evaluate(`document.body.innerText.includes(${JSON.stringify(message('offline'))})`), 'reconnect catch-up', 35000);
   });
+  for (const [table, titleField, ownerField] of [
+    ['organizations', 'name', 'owner_id'],
+    ['opportunities', 'title', 'author_id'],
+    ['events', 'title', 'creator_id'],
+  ]) {
+    await check(`${table}: owner create/edit, draft privacy and foreign edit boundary through browser`, async () => {
+      const title = `Synthetic ${stamp} ${table}`;
+      await visit(pageA, `/${table}/new`);
+      await fill(pageA, `[name=${titleField}]`, title);
+      if (table === 'organizations') await fill(pageA, '[name=short_description]', 'Synthetic organization summary');
+      else {
+        await fill(pageA, '[name=summary]', 'Synthetic listing summary');
+        await fill(pageA, '[name=description]', 'Synthetic listing description for isolated browser verification.');
+        if (table === 'opportunities') await select(pageA, '[name=type]', 'volunteer');
+        else await eventStart(pageA);
+      }
+      await click(pageA, `form:has([name=${titleField}]) button[type=submit]`);
+      const row = await listingRow(table, titleField, title);
+      listings.push({table, id:row.id});
+      assert.equal(row[ownerField], a.id); assert.equal(row.status, 'draft');
+      const path = `/${table}/${row.slug}`;
+      await pathname(pageA, path);
+      await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes(${JSON.stringify(title)})`), 'owner draft detail');
+      await visit(pageB, path);
+      await until(() => pageB.evaluate(`document.querySelector('main')?.innerText.includes('404')`), 'foreign draft hidden');
+      await visit(pageB, `${path}/edit`);
+      await until(() => pageB.evaluate(`document.querySelector('main')?.innerText.includes('404') && !document.querySelector(${JSON.stringify(`[name=${titleField}]`)})`), 'foreign edit refused');
+      await visit(pageA, `${path}/edit`);
+      const edited = `${title} edited`;
+      await fill(pageA, `[name=${titleField}]`, edited);
+      await click(pageA, `form:has([name=${titleField}]) button[type=submit]`);
+      await pathname(pageA, path);
+      const saved = await listingRow(table, titleField, edited);
+      assert.equal(saved.id, row.id); assert.equal(saved.status, 'draft');
+      await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes(${JSON.stringify(edited)})`), 'edited listing detail');
+      // Organizations have no delete UI; API deletion is covered separately.
+      if (table !== 'organizations') {
+        const deleteButton = `form:has(input[name=slug][value="${row.slug}"]) button[type=submit]`;
+        let dialogs = 0;
+        const handler = event => {
+          const packet = JSON.parse(event.data);
+          if (packet.method === 'Page.javascriptDialogOpening') {
+            dialogs++;
+            void pageA.send('Page.handleJavaScriptDialog', {accept: dialogs > 1});
+          }
+        };
+        pageA.socket.addEventListener('message', handler);
+        try {
+          await click(pageA, deleteButton);
+          await until(() => dialogs === 1, 'cancel delete confirmation');
+          await until(() => pageA.evaluate(`!!document.querySelector(${JSON.stringify(deleteButton)})`), 'cancel leaves owner detail');
+          assert.equal((await data(admin.from(table).select('id').eq('id',row.id))).length, 1);
+          await click(pageA, deleteButton);
+          await pathname(pageA, `/${table}`);
+          assert.equal(dialogs, 2);
+          assert.equal((await data(admin.from(table).select('id').eq('id',row.id))).length, 0);
+        } finally { pageA.socket.removeEventListener('message', handler); }
+      }
+    });
+  }
   await check('Sign-out clears browser access while the other account remains signed in', async () => {
     await click(pageA, 'button[aria-label="Sign out"]');
     await pathname(pageA, '/login');
@@ -239,10 +318,11 @@ try {
   await delay(300);
   if (profile) await fs.rm(profile, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
   try {
+    for (const {table,id} of [...listings].reverse()) await data(admin.from(table).delete().eq('id',id));
     for (const id of users) await data(admin.auth.admin.deleteUser(id));
     results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'pass' });
   } catch { results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'fail' }); process.exitCode = 1; }
   mkdirSync('reports', { recursive: true });
-  writeFileSync('reports/local-member-browser.json', JSON.stringify({ environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, limitations: ['Signup email delivery/callback not covered; fixtures are preconfirmed', 'Organization/opportunity/event CRUD forms and native-language review remain pending', 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
+  writeFileSync('reports/local-member-browser.json', JSON.stringify({ environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, limitations: ['Signup email delivery/callback not covered; fixtures are preconfirmed', 'Organization deletion UI is absent; moderator forms, native-language review and multi-tab read receipts remain pending', 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
   console.log(`${results.filter(r => r.status === 'pass').length} passed; ${results.filter(r => r.status === 'fail').length} failed`);
 }
