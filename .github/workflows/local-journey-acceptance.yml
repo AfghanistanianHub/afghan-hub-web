@@ -1,0 +1,51 @@
+name: Isolated local member journeys
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/qa/**'
+      - '.github/workflows/local-journey-acceptance.yml'
+      - 'supabase/migrations/**'
+      - 'src/app/(auth)/**'
+      - 'src/app/(dashboard)/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: local-journeys-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  journeys:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+          cache: npm
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.117.0
+      - run: npm ci
+      - name: Prepare fresh loopback-only fixture stack
+        run: node scripts/qa/prepare-local-journey.mjs
+      - name: Start local services and replay migrations
+        run: |
+          if ! supabase --workdir "$LOCAL_QA_DIR" start --exclude studio,logflare,vector,edge-runtime > "$RUNNER_TEMP/local-stack-start.log" 2>&1; then
+            node scripts/qa/summarize-stack-error.mjs "$RUNNER_TEMP/local-stack-start.log"
+            exit 1
+          fi
+      - name: Run real authenticated API and RLS journeys
+        run: node scripts/qa/local-member-journeys.mjs
+      - name: Upload sanitized scenario results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: local-member-journey-results
+          path: reports/local-member-journeys.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Destroy this run's isolated stack
+        if: always() && env.LOCAL_QA_DIR != ''
+        run: supabase --workdir "$LOCAL_QA_DIR" stop --no-backup
