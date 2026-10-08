@@ -5,7 +5,8 @@ const base = new URL(process.env.SMOKE_BASE_URL || "http://localhost:3000");
 assert.ok(["http:", "https:"].includes(base.protocol), "Use an HTTP(S) base URL");
 assert.ok(!base.username && !base.password, "Do not put credentials in the base URL");
 const checks = [
-  ["/", 200, /One network/],
+  // PR checks still target the existing production homepage until approval.
+  ["/", 200, /One network|Rooted in community/],
   ["/about", 200, /<h1[ >]/],
   ["/privacy", 200, /info@apnbc\.ca/],
   ["/terms", 200, /info@apnbc\.ca/],
