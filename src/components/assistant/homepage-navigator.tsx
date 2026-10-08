@@ -34,7 +34,7 @@ export function HomepageNavigator() {
   const journeySeen = useRef<string | null>(null);
   const turnSequence = useRef(0);
   const latest = turns.at(-1);
-  const previousPlan = turns.findLast(turn => turn.data)?.data?.plan;
+  const previousDiscovery = turns.findLast(turn => turn.data)?.data;
 
   useEffect(() => () => { controller.current?.abort(); }, []);
   useEffect(() => {
@@ -69,7 +69,7 @@ export function HomepageNavigator() {
     const abort = new AbortController(); controller.current = abort;
     const timeout = window.setTimeout(() => abort.abort(), 20_000);
     try {
-      const response = await fetch("/api/assistant/public-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: text, filters: activeFilters, language, context: previousPlan }), signal: abort.signal });
+      const response = await fetch("/api/assistant/public-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: text, filters: activeFilters, language, context: previousDiscovery?.plan, clarification: previousDiscovery?.clarification || undefined }), signal: abort.signal });
       if (!response.ok) throw new Error(response.status === 429 ? "busy" : "unavailable");
       const data = publicDiscoveryResponseSchema.parse(await response.json());
       if (controller.current !== abort) return;

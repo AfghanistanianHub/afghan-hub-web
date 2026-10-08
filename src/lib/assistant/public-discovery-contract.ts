@@ -7,6 +7,7 @@ export const discoveryRequestSchema = z.object({
   language: z.enum(["en", "fa", "fa-AF", "ps"]).default("en"),
   filters: z.object({ goal: z.string().trim().max(80).optional(), topic: z.string().trim().max(80).optional(), location: z.string().trim().max(60).optional() }).strict().optional(),
   context: discoveryPlanSchema.optional(),
+  clarification: z.string().trim().min(2).max(180).optional(),
 }).strict();
 export type DiscoveryRequest = z.infer<typeof discoveryRequestSchema>;
 export type DiscoveryPlan = z.infer<typeof discoveryPlanSchema>;
