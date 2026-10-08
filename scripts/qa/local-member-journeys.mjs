@@ -19,10 +19,12 @@ const anon=makeClient(),users=[],clients=[],channels=[],connections=[],conversat
 const password=`QA-${randomUUID()}-aA1!`;
 const stamp=randomUUID().slice(0,8);
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+let step='start';
+const note=value=>{step=value;};
 const data=async promise=>{const r=await promise;assert.ifError(r.error);return r.data;};
 async function check(scenario,expected,fn){
- try{await fn();results.push({scenario,expected,status:'pass',actual:expected});console.log(`PASS ${scenario}`);}
- catch{results.push({scenario,expected,status:'fail',actual:'Assertion failed; sensitive provider details withheld'});console.error(`FAIL ${scenario}`);}
+ try{step='start';await fn();results.push({scenario,expected,status:'pass',actual:expected});console.log(`PASS ${scenario}`);}
+ catch(error){const code=/^[A-Z0-9_]{3,30}$/.test(error.code??'')?error.code:error.name;const line=error.stack?.split('\n').find(value=>value.includes('local-member-journeys.mjs:'))?.match(/:(\d+):\d+\)?$/)?.[1];const diagnostic={step,code,line};results.push({scenario,expected,status:'fail',actual:'Assertion failed; sensitive provider details withheld',diagnostic});console.error(`FAIL ${scenario} ${JSON.stringify(diagnostic)}`);}
 }
 async function member(label,signup=false){
  const email=`journey-${stamp}-${label}@example.invalid`; const client=makeClient();clients.push(client);
@@ -96,10 +98,11 @@ try{
  });
  await check('C/D: realtime delivery and reconnection','Messages and notification changes arrive after subscription and resubscription',async()=>{
    for(let cycle=0;cycle<2;cycle++){
+     note(`subscribe cycle ${cycle}`);
      const seen=new Set();const channel=b.client.channel(`qa-${stamp}-${cycle}`).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:`conversation_id=eq.${conversationId}`},()=>seen.add('message')).on('postgres_changes',{event:'*',schema:'public',table:'notifications',filter:`recipient_id=eq.${b.id}`},()=>seen.add('notification'));channels.push({client:b.client,channel});
      await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Subscription timeout')),10000);channel.subscribe(state=>{if(state==='SUBSCRIBED'){clearTimeout(timer);resolve();}if(state==='CHANNEL_ERROR'){clearTimeout(timer);reject(new Error('Subscription error'));}});});
-     await data(a.client.from('messages').insert({conversation_id:conversationId,sender_id:a.id,body:`Synthetic realtime ${cycle}`}));
-     const start=Date.now();while(seen.size<2&&Date.now()-start<10000)await new Promise(r=>setTimeout(r,100));assert.equal(seen.size,2);
+     note(`send cycle ${cycle}`);await data(a.client.from('messages').insert({conversation_id:conversationId,sender_id:a.id,body:`Synthetic realtime ${cycle}`}));
+     const start=Date.now();while(seen.size<2&&Date.now()-start<10000)await new Promise(r=>setTimeout(r,100));note(`delivery cycle ${cycle}: ${[...seen].sort().join(',') || 'none'}`);assert.equal(seen.size,2);
      await b.client.removeChannel(channel);
    }
  });
@@ -111,15 +114,15 @@ try{
    ['opportunities','author_id',{title:'Synthetic QA opportunity',description:'Disposable QA description',type:'job'},'moderate_opportunity','target_opportunity_id'],
    ['events','creator_id',{title:'Synthetic QA event',starts_at:new Date(Date.now()+86400000).toISOString()},'moderate_event','target_event_id'],
  ])await check(`E: ${table} ownership/moderation/CRUD`,'Owner can create/update/delete; outsiders cannot modify drafts; moderator publishes',async()=>{
-   const row=await data(a.client.from(table).insert({...payload,[owner]:a.id,slug:`qa-${table}-${stamp}`}).select('id,status').single());content.push({table,id:row.id});assert.equal(row.status,'draft');
-   assert.equal((await data(anon.from(table).select('id').eq('id',row.id))).length,0);
+   note('create owner draft');const row=await data(a.client.from(table).insert({...payload,[owner]:a.id,status:'draft',slug:`qa-${table}-${stamp}`}).select('id,status').single());content.push({table,id:row.id});assert.equal(row.status,'draft');
+   note('anonymous visibility');assert.equal((await data(anon.from(table).select('id').eq('id',row.id))).length,0);
    const edit=table==='organizations'?{name:'Synthetic QA edited organization'}:{title:'Synthetic QA edited listing'};
-   assert.equal((await data(c.client.from(table).update(edit).eq('id',row.id).select('id'))).length,0);
-   assert.ok((await c.client.rpc(rpc,{[param]:row.id,target_decision:'approve',target_note:null})).error);
-   await data(a.client.from(table).update(edit).eq('id',row.id));
-   await data(moderator.client.rpc(rpc,{[param]:row.id,target_decision:'approve',target_note:null}));
-   assert.equal((await data(anon.from(table).select('status').eq('id',row.id)))[0].status,'published');
-   await data(a.client.from(table).delete().eq('id',row.id));assert.equal((await data(anon.from(table).select('id').eq('id',row.id))).length,0);
+   note('outsider update');assert.equal((await data(c.client.from(table).update(edit).eq('id',row.id).select('id'))).length,0);
+   note('outsider moderation');assert.ok((await c.client.rpc(rpc,{[param]:row.id,target_decision:'approve',target_note:null})).error);
+   note('owner update');await data(a.client.from(table).update(edit).eq('id',row.id));
+   note('moderator approval');await data(moderator.client.rpc(rpc,{[param]:row.id,target_decision:'approve',target_note:null}));
+   note('published visibility');assert.equal((await data(anon.from(table).select('status').eq('id',row.id)))[0].status,'published');
+   note('owner delete');await data(a.client.from(table).delete().eq('id',row.id));assert.equal((await data(anon.from(table).select('id').eq('id',row.id))).length,0);
  });
 }catch{results.push({scenario:'Harness prerequisite',expected:'All local fixtures prepared',status:'fail',actual:'Prerequisite failed; provider details withheld'});console.error('FAIL harness prerequisite');}
 finally{
