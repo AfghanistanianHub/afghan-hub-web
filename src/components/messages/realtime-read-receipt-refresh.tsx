@@ -30,6 +30,13 @@ export function RealtimeReadReceiptRefresh({
           router.refresh();
         },
       )
+      .on("system", {}, (payload) => {
+        // A joined socket can precede PostgreSQL readiness. Refetch once the
+        // stream is ready, including after rejoining, to recover missed changes.
+        if (payload.extension === "postgres_changes" && payload.status === "ok") {
+          router.refresh();
+        }
+      })
       .subscribe();
 
     return () => {

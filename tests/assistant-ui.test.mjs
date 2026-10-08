@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
 
+const localeResources = fs.readFileSync(new URL("../src/lib/assistant/member-navigator-copy.ts", import.meta.url), "utf8");
 const component = fs.readFileSync(
   new URL("../src/components/assistant/community-navigator.tsx", import.meta.url),
   "utf8",
@@ -38,10 +39,12 @@ test("assistant explicitly contains Tab focus inside the modal drawer", () => {
   assert.match(component, /first\.focus\(\)/);
 });
 
-test("assistant interface exposes English, Dari and Pashto", () => {
-  assert.match(component, /English/);
-  assert.match(component, /دری/);
-  assert.match(component, /پښتو/);
+test("assistant interface exposes English, Dari, Persian and Pashto", () => {
+  assert.match(localeResources, /English/);
+  assert.match(localeResources, /دری/);
+  assert.match(localeResources, /فارسی/);
+  assert.match(component, /memberNavigatorLocales.map/);
+  assert.match(localeResources, /پښتو/);
 });
 
 test("assistant UI only calls the read-only assistant endpoint", () => {

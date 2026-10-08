@@ -19,8 +19,8 @@ function mount(currentUserId) {
   let onStatus;
   let removed = false;
   const channel = {
-    on(_type, filter, callback) {
-      listeners.push({ filter, callback });
+    on(type, filter, callback) {
+      listeners.push({ type, filter, callback });
       return this;
     },
     subscribe(callback) {
@@ -64,6 +64,7 @@ function mount(currentUserId) {
       }
     },
     status: (value) => onStatus?.(value),
+    system(payload) { if (!removed) for (const listener of listeners) if (listener.type === "system") listener.callback(payload); },
     refreshes: () => refreshes,
     cleanup: () => cleanup(),
     removed: () => removed,
@@ -83,8 +84,14 @@ test("new messages and successful reconnects refresh server data", () => {
   app.emit("messages", "INSERT", {});
   assert.equal(app.refreshes(), 1);
   app.status("SUBSCRIBED");
+  assert.equal(app.refreshes(), 1, "socket join does not mean PostgreSQL is ready");
+  app.system({extension:"broadcast",status:"ok"});
+  app.system({extension:"postgres_changes",status:"error"});
+  assert.equal(app.refreshes(), 1);
+  app.system({extension:"postgres_changes",status:"ok"});
   app.status("CHANNEL_ERROR");
   app.status("SUBSCRIBED");
+  app.system({extension:"postgres_changes",status:"ok"});
   assert.equal(app.refreshes(), 3);
 });
 
