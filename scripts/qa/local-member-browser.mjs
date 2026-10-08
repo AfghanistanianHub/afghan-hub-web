@@ -96,8 +96,9 @@ async function pathname(page, path) {
   await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), 'expected route');
 }
 async function fill(page, selector, value) {
-  await until(() => page.evaluate(`!!document.querySelector(${JSON.stringify(selector)})`), 'form field');
-  await page.evaluate(`(() => { const field=document.querySelector(${JSON.stringify(selector)}); field.focus(); Object.getOwnPropertyDescriptor(field instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,'value').set.call(field,${JSON.stringify(value)}); field.dispatchEvent(new Event('input',{bubbles:true})); return true; })()`);
+  const fieldSelector = `form ${selector}`;
+  await until(() => page.evaluate(`!!document.querySelector(${JSON.stringify(fieldSelector)})`), 'form field');
+  await page.evaluate(`(() => { const field=document.querySelector(${JSON.stringify(fieldSelector)}); field.focus(); Object.getOwnPropertyDescriptor(field instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,'value').set.call(field,${JSON.stringify(value)}); field.dispatchEvent(new Event('input',{bubbles:true})); return true; })()`);
 }
 async function click(page, selector) {
   const point = await until(() => page.evaluate(`(() => { const target=document.querySelector(${JSON.stringify(selector)}); if(!target || target.disabled)return null; target.scrollIntoView({block:'center'}); const r=target.getBoundingClientRect(); return r.width && r.height ? {x:r.x+r.width/2,y:r.y+r.height/2}:null; })()`), 'clickable control');
