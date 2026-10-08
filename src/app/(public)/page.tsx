@@ -1,147 +1,77 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  BriefcaseBusiness,
-  Building2,
-  CalendarDays,
-  MapPin,
-  Sparkles,
-  UsersRound,
-} from "lucide-react";
-import { CommunitySignature } from "@/components/public/community-signature";
-import { CommunityStoryMotion } from "@/components/public/community-story-motion";
+import { ArrowRight, CalendarDays, ChartNoAxesColumnIncreasing, Globe2, Search, Share2, UsersRound } from "lucide-react";
+import { communityAreas } from "@/components/public/community-areas";
+import { communityIcons, LivingNetwork } from "@/components/public/living-network";
+import { NavigatorJourneyLink } from "@/components/assistant/navigator-journey-link";
+import { HomepageNavigator } from "@/components/assistant/homepage-navigator";
 import { ListingDate } from "@/components/public/listing-card";
-import { publicCategories, publicHref, publicKinds, type PublicKind } from "@/lib/public-catalog";
-import { getPublicListings, type PublicListing } from "@/lib/public-content";
+import { publicHref, publicKinds, type PublicKind } from "@/lib/public-catalog";
+import { getPublicListings } from "@/lib/public-content";
 import styles from "./landing.module.css";
 
-const description =
-  "A global community for Afghans to find people, opportunities, organizations, businesses and events — and build meaningful connections.";
-
+const description = "Afghan Hub connects people, businesses, organizations, opportunities, and events — creating space for meaningful connections, collaboration, and shared progress.";
 export const metadata: Metadata = {
-  title: "Your Afghan community, connected.",
-  description,
+  title: "One network. Many ways to belong.", description,
   alternates: { canonical: "https://app.apnbc.ca/" },
-  openGraph: {
-    title: "Afghan Hub — Your Afghan community, connected",
-    description,
-    url: "https://app.apnbc.ca/",
-    type: "website",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Afghan Hub — community, opportunities, organizations, businesses, and events" }],
-  },
-  twitter: { card: "summary_large_image", title: "Afghan Hub — Your Afghan community, connected", description, images: ["/opengraph-image"] },
+  openGraph: { title: "Afghan Hub — One network. Many ways to belong.", description, url: "https://app.apnbc.ca/", type: "website", images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Afghan Hub community network" }] },
+  twitter: { card: "summary_large_image", title: "Afghan Hub — One network. Many ways to belong.", description, images: ["/opengraph-image"] },
 };
-
-const icons = {
-  opportunities: BriefcaseBusiness,
-  events: CalendarDays,
-  businesses: Building2,
-  organizations: UsersRound,
-};
-
-function ListingModule({ item, kind, className = "" }: { item?: PublicListing; kind: PublicKind; className?: string }) {
-  const Icon = icons[kind];
-  const meta = publicCategories[kind];
-  return (
-    <article className={`${styles.module} ${styles[kind]} ${className}`}>
-      <div className={styles.moduleTop}>
-        <span className={styles.moduleKind}><Icon size={15} aria-hidden="true" />{meta.label}</span>
-        <ArrowUpRight size={17} aria-hidden="true" />
-      </div>
-      {item ? (
-        <>
-          <p className={styles.moduleCategory}>{item.category}</p>
-          <h2><Link href={publicHref(kind, item.slug)}>{item.title}</Link></h2>
-          <p className={styles.moduleSummary}>{item.summary || meta.description}</p>
-          <div className={styles.moduleMeta}>
-            <span><MapPin size={13} aria-hidden="true" />{item.location}</span>
-            {item.date ? <span><ListingDate item={item} kind={kind} /></span> : null}
-          </div>
-        </>
-      ) : (
-        <>
-          <p className={styles.moduleCategory}>Community directory</p>
-          <h2>{meta.label}</h2>
-          <p className={styles.moduleSummary}>{meta.description}</p>
-          <Link className={styles.textLink} href={`/explore?type=${kind}`}>Explore {meta.label.toLowerCase()} <ArrowRight size={15} aria-hidden="true" /></Link>
-        </>
-      )}
-    </article>
-  );
-}
+const steps = [
+  { title: "Discover", description: "Find people, businesses, organizations, opportunities, and events.", icon: Search },
+  { title: "Connect", description: "Build meaningful relationships across communities.", icon: Share2 },
+  { title: "Participate", description: "Join events, pursue opportunities, and collaborate.", icon: CalendarDays },
+  { title: "Grow", description: "Create visibility, strengthen relationships, and increase impact.", icon: ChartNoAxesColumnIncreasing },
+];
+const paths = [
+  { title: "Find my community", query: "Meet people" },
+  { title: "Grow my business", query: "Grow my work or business" },
+  { title: "Discover opportunities", query: "Find opportunities" },
+  { title: "Connect with organizations", query: "Connect with organizations" },
+  { title: "Explore arts and culture", query: "Artists & Creatives" },
+  { title: "Attend or host events", query: "Explore events" },
+];
 
 export default async function PublicHome() {
-  const feeds = await Promise.all(publicKinds.map(kind => getPublicListings(kind, { limit: 3 })));
+  const feeds = await Promise.all(publicKinds.map(kind => getPublicListings(kind, { limit: 2 })));
   const byKind = Object.fromEntries(publicKinds.map((kind, index) => [kind, feeds[index]])) as Record<PublicKind, (typeof feeds)[number]>;
-  const primary = (kind: PublicKind) => byKind[kind].items[0];
+  return <main id="main-content" className={styles.page}>
+    <section className={styles.hero} aria-labelledby="landing-title">
+      <div className={styles.statement}>
+        <p className={styles.eyebrow}>A MORE CONNECTED AFGHAN FUTURE</p>
+        <h1 id="landing-title">One network.<br />Many ways to <em>belong.</em></h1>
+        <p className={styles.intro}>{description}</p>
+        <div className={styles.actions}><Link href="/login?mode=join" data-landing-cta="join" className={styles.primary}>Join the community <ArrowRight size={17} aria-hidden="true" /></Link><Link href="/explore" data-landing-cta="explore" className={styles.secondary}>Explore the network <ArrowRight size={17} aria-hidden="true" /></Link></div>
+      </div>
+      <LivingNetwork />
+    </section>
 
-  return (
-    <main id="main-content" className={styles.page} data-community-story>
-      <CommunityStoryMotion />
+    <HomepageNavigator />
 
-      <section className={styles.board} aria-labelledby="landing-title">
-        <div className={styles.statement}>
-          <p className={styles.eyebrow}><Sparkles size={13} aria-hidden="true" /> A living Afghan network</p>
-          <h1 id="landing-title">Find your people.<span>Build what’s next.</span></h1>
-          <p className={styles.intro}>One shared place for Afghan people, businesses, organizations, opportunities and events — across cities and borders.</p>
-          <div className={styles.actions}>
-            <Link href="/explore" className={styles.primary}>Explore the community <ArrowRight size={17} aria-hidden="true" /></Link>
-            <Link href="/login?mode=join" className={styles.secondary}>Join Afghan Hub</Link>
-          </div>
-        </div>
+    <section id="how-it-works" className={styles.orientation} aria-labelledby="how-heading">
+      <div><h2 id="how-heading">How Afghan Hub works</h2><p>A simple path to meaningful connections.</p></div>
+      <ol className={styles.steps}>{steps.map(({ title, description, icon: Icon }) => <li key={title}><span className={styles.stepIcon}><Icon size={21} strokeWidth={1.6} aria-hidden="true" /></span><div><h3>{title}</h3><p>{description}</p></div></li>)}</ol>
+    </section>
 
-        <Link href="/login?mode=join" className={`${styles.module} ${styles.people}`}>
-          <div className={styles.moduleTop}><span className={styles.moduleKind}><UsersRound size={15} aria-hidden="true" />People</span><ArrowUpRight size={17} aria-hidden="true" /></div>
-          <div className={styles.peopleGlyphs} aria-hidden="true"><i /><i /><i /><i /><i /></div>
-          <p className={styles.moduleCategory}>Member network</p>
-          <h2>Meet people who can move an idea forward.</h2>
-          <p className={styles.moduleSummary}>Profiles are available to signed-in members, keeping community discovery inside the network.</p>
-        </Link>
+    <section id="community" className={styles.explore} aria-labelledby="explore-heading">
+      <div className={styles.sectionIntro}><div><h2 id="explore-heading">Explore the community</h2><p>Discover people, businesses, organizations, opportunities, and events across Afghan communities.</p></div><Link href="/explore" className={styles.textLink}>View all <ArrowRight size={16} aria-hidden="true" /></Link></div>
+      <div className={styles.discovery}>{communityAreas.map(area => {
+        const Icon = communityIcons[area.key];
+        const feed = area.key === "people" ? null : byKind[area.key];
+        return <article key={area.key} className={styles.discoveryArea}>
+          <span className={`${styles.areaIcon} ${styles[area.key]}`}><Icon size={23} strokeWidth={1.5} aria-hidden="true" /></span>
+          <h3><Link href={area.href}>{area.label}</Link></h3>
+          <p>{area.description}</p>
+          {feed ? <ul>{feed.items.length ? feed.items.map(item => <li key={item.slug}><Link href={publicHref(area.key as PublicKind, item.slug)}>{item.title}<ArrowRight size={13} aria-hidden="true" /></Link><small>{item.date ? <ListingDate item={item} kind={area.key as PublicKind} /> : item.location}</small></li>) : <li className={styles.empty}>{feed.unavailable ? "Listings are temporarily unavailable." : "No public listings yet."}</li>}</ul> : <p className={styles.memberNote}>Sign in to discover member profiles and build connections.</p>}
+          <Link href={area.href} className={styles.textLink}>Explore {area.label.toLowerCase()} <ArrowRight size={14} aria-hidden="true" /></Link>
+        </article>;
+      })}</div>
+    </section>
 
-        <ListingModule kind="opportunities" item={primary("opportunities")} className={styles.opportunityFeature} />
-        <ListingModule kind="events" item={primary("events")} className={styles.eventFeature} />
-        <ListingModule kind="businesses" item={primary("businesses")} className={styles.businessFeature} />
-        <ListingModule kind="organizations" item={primary("organizations")} className={styles.organizationFeature} />
+    <section className={styles.paths} aria-labelledby="paths-heading"><div><p className={styles.eyebrow}>START WITH YOUR GOAL</p><h2 id="paths-heading">Your next step starts here.</h2><p>There’s more than one way into the network.<br />Let the Navigator help you find yours.</p></div><div className={styles.pathLinks}>{paths.map(path => <NavigatorJourneyLink key={path.title} query={path.query} title={path.title} />)}</div></section>
 
-        <div className={styles.boardRail} aria-label="Afghan Hub community areas">
-          <span>People</span><span>Businesses</span><span>Organizations</span><span>Opportunities</span><span>Events</span>
-        </div>
-      </section>
+    <section className={styles.value} aria-labelledby="value-heading"><div><h2 id="value-heading">A stronger, more connected<br />Afghan community</h2><p>A shared space to make community work visible, exchange knowledge, and build relationships that open new possibilities.</p></div><div className={styles.valuePoints}><div><UsersRound size={24} strokeWidth={1.5} aria-hidden="true" /><h3>Greater visibility</h3><p>Give your work a place to be discovered.</p></div><div><Share2 size={24} strokeWidth={1.5} aria-hidden="true" /><h3>Stronger connections</h3><p>Find common ground and move forward together.</p></div><div><Globe2 size={24} strokeWidth={1.5} aria-hidden="true" /><h3>More possibilities</h3><p>Share opportunities and collaborate across communities.</p></div></div></section>
 
-      <div className={styles.signatureBridge}><CommunitySignature /><span>Rooted in British Columbia · open to the world</span></div>
-
-      <section className={styles.live} aria-labelledby="live-heading">
-        <div className={styles.sectionIntro}>
-          <p className={styles.eyebrow}>Live from the community</p>
-          <h2 id="live-heading">Different things are happening at the same time.</h2>
-          <p>Not a row of identical cards. A changing view of what people can discover, join and build through Afghan Hub.</p>
-        </div>
-        <div className={styles.liveGrid}>
-          {publicKinds.map((kind, kindIndex) =>
-            byKind[kind].items.slice(1).map((item, itemIndex) => (
-              <ListingModule key={`${kind}-${item.slug}`} kind={kind} item={item} className={(kindIndex + itemIndex) % 3 === 0 ? styles.wide : ""} />
-            ))
-          )}
-          <Link href="/explore" className={styles.exploreModule}>
-            <span>Explore everything</span>
-            <strong>One directory.<br />Many ways in.</strong>
-            <ArrowRight size={26} aria-hidden="true" />
-          </Link>
-        </div>
-      </section>
-
-      <section className={styles.manifesto} aria-labelledby="manifesto-heading">
-        <div>
-          <p className={styles.eyebrow}>A community utility, not a feed</p>
-          <h2 id="manifesto-heading">New to a city. Growing a business. Looking for work. Organizing an event. Finding collaborators.</h2>
-        </div>
-        <div className={styles.manifestoAction}>
-          <p>Afghan Hub is designed to make the distance between “I’m looking” and “I found it” shorter — while giving community work a place to be visible.</p>
-          <Link href="/login?mode=join" className={styles.primary}>Create your place in the network <ArrowRight size={17} aria-hidden="true" /></Link>
-        </div>
-      </section>
-    </main>
-  );
+    <section className={styles.final} aria-labelledby="join-heading"><div><h2 id="join-heading">Be part of what&apos;s next.</h2><p>Join Afghan Hub and help build a more connected, supportive, and vibrant community.</p></div><div className={styles.actions}><Link href="/login?mode=join" className={styles.primary}>Get started <ArrowRight size={17} aria-hidden="true" /></Link><Link href="/explore" className={styles.secondary}>Explore the platform <ArrowRight size={17} aria-hidden="true" /></Link></div></section>
+  </main>;
 }

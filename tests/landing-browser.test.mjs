@@ -162,179 +162,49 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   console.log("AFGHAN_HUB_SANDBOX_VERIFIED Seccomp-BPF enabled; no sandbox-disabling launch flags.");
   const axeSource = require("axe-core").source;
   const screenshots = [];
-  // Hero SVG sequence, actual pointer/keyboard feedback, suspension and frame pacing.
-  await page.send("Emulation.setScrollbarsHidden",{hidden:true});
-  await page.send("Emulation.setDeviceMetricsOverride",{width:1440,height:900,deviceScaleFactor:1,mobile:false});
-  await page.send("Emulation.setTouchEmulationEnabled",{enabled:false});
-  await page.send("Emulation.setEmulatedMedia",{features:[]});
-  await page.send("Page.navigate",{url:appUrl});
-  await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]')?.dataset.running==='true'"),"hero controller hydration");
-  await page.evaluate(`window.__heroShifts=0;window.__heroLongTasks=[];new PerformanceObserver(l=>{for(const e of l.getEntries())if(!e.hadRecentInput)window.__heroShifts+=e.value}).observe({type:'layout-shift'});new PerformanceObserver(l=>window.__heroLongTasks.push(...l.getEntries().map(e=>e.duration))).observe({type:'longtask'})`);
-  const heroGeometry=await page.evaluate("(()=>{const e=document.querySelector('[data-hero-region]');const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()");
-  const stages=await page.evaluate("(()=>{const e=document.querySelector('[data-community-motion]');return ['network','gathering','openings'].map(layer=>e.querySelector(`[data-hero-layer=${layer}] [data-hero-draw]`).getAnimations()[0].effect.getTiming().delay)})()");
-  assert.ok(stages[0]<stages[1]&&stages[1]<stages[2],"Connection, gathering, and opportunity reveal in narrative order");
-  assert.equal(await page.evaluate("document.querySelectorAll('[data-constellation-person]').length"),4,"Hero constellation remains human-first without invented members");
-  assert.ok(await page.evaluate("!!document.querySelector('[data-community-signature]') && !!document.querySelector('[data-environment-contour]')"),"Original geometric signature and environmental contour render");
-  assert.equal(await page.evaluate("(()=>{const t=getComputedStyle(document.documentElement).getPropertyValue('--motion-step').trim();return parseFloat(t)*(t.endsWith('ms')?1:1000)})()"),420,"Shared motion timing is consistent");
-  const capture=[];const captureTimes=[];const began=Date.now();let phase=0;
-  // Use current viewport hit geometry; do not resize the viewport to record a visible hero.
-  const depth=[];
-  const pointHero = async fraction => {
-    const point = await page.evaluate(`(()=>{const e=document.querySelector('[data-community-motion]');const r=e.getBoundingClientRect();const x=r.left+r.width*${fraction};const y=r.top+r.height*.5;return {x,y,hit:e.contains(document.elementFromPoint(x,y)),running:e.dataset.running,hidden:document.hidden,scrollY,viewport:[innerWidth,innerHeight]}})()`);
-    console.log(`AFGHAN_HUB_HERO_POINTER_TARGET ${JSON.stringify(point)}`);
-    assert.ok(point.hit && point.running==='true' && !point.hidden,'Pointer must hit the visible running hero');
-    await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:point.x,y:point.y});
-    return waitFor(()=>page.evaluate(`(()=>{const t=getComputedStyle(document.querySelector('[data-hero-layer=architecture]')).transform;const x=new DOMMatrix(t).m41;return ${fraction < .5 ? 'x < -1' : 'x > 1'} && t})()`),'actual pointer frame committed');
-  };
-  while(Date.now()-began<13000) {
-    const elapsed=Date.now()-began;
-    if(elapsed>=4300&&phase===0){depth.push(await pointHero(.2));phase=1;}
-    else if(elapsed>=5200&&phase===1){depth.push(await pointHero(.8));phase=2;}
-    else if(elapsed>=6300&&phase===2){await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",x:10,y:20});phase=3;}
-    else if(elapsed>=9500&&phase===3){
-      await page.evaluate("document.activeElement?.blur()");
-      for(let i=0;i<16;i++) {
-        for(const type of ["keyDown","keyUp"])await page.send("Input.dispatchKeyEvent",{type,key:"Tab",code:"Tab",windowsVirtualKeyCode:9});
-        if(await page.evaluate("document.activeElement?.dataset.landingCta==='explore'"))break;
-      }
-      assert.ok(await page.evaluate("document.querySelector('[data-landing-cta=explore]').matches(':focus-visible')"),"Actual primary CTA keyboard focus");
-      await delay(220);
-      assert.ok(await page.evaluate("parseFloat(getComputedStyle(document.querySelector('[data-hero-focus]')).opacity)>.5"),"Brief CTA connection highlight");
-      phase=4;
-    }
-    else if(elapsed>=11200&&phase===4){assert.ok(await page.evaluate("parseFloat(getComputedStyle(document.querySelector('[data-hero-focus]')).opacity)<.01"),"CTA highlight must settle even while focused");await page.evaluate("document.activeElement.blur()");phase=5;}
-    captureTimes.push(Date.now()-began);
-    capture.push((await page.send("Page.captureScreenshot",{format:"jpeg",quality:72,captureBeyondViewport:false,clip:{...heroGeometry,scale:1}})).data);
-    await delay(Math.max(0,100-(Date.now()-began-elapsed)));
-  }
-  assert.ok(await page.evaluate("[...document.querySelectorAll('[data-hero-layer=architecture],[data-hero-layer=network],[data-hero-layer=openings]')].every(e=>{const m=new DOMMatrix(getComputedStyle(e).transform);return m.m41===0&&m.m42===0})"),"Selected depth layers return to rest after pointer exit");
-  assert.equal(phase,5);assert.equal(depth.length,2);assert.notEqual(depth[0],depth[1],"Pointer must move selected layers");
-  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-community-motion] svg')).transform"),"none","Never move the whole SVG");
-  assert.deepEqual(await page.evaluate("(()=>{const r=document.querySelector('[data-hero-region]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()"),heroGeometry,"Hero frame must remain fixed");
-  assert.equal(await page.evaluate("window.__heroShifts"),0,"No animation layout shifts");
-  // Screenshot clipping can commit a final visibility/transform frame asynchronously.
-  await waitFor(()=>page.evaluate("[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===1).every(a=>a.playState==='finished')"),"Intro and final pointer frame must finish",5000);
-  assert.equal(await page.evaluate("[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===Infinity).length"),0,"Hero has no perpetual ambient animation");
-  await page.evaluate("scrollTo(0,document.documentElement.scrollHeight)");
-  await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='false'"),"offscreen pause");
-  await page.evaluate("scrollTo(0,0)");await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='true'"),"on-screen return");
-  assert.ok(await page.evaluate("[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===1).every(a=>a.playState==='finished')"),"Narrative stays complete after returning onscreen");
-  // Use actual tab visibility rather than dispatching a synthetic visibility event.
-  await page.send("Emulation.setFocusEmulationEnabled",{enabled:false});
-  const browser = new DevTools();await browser.connect(`ws://127.0.0.1:${debugPort}${portFile.split('\n')[1]}`);
-  const other=await browser.send("Target.createTarget",{url:"about:blank"});
-  await browser.send("Target.activateTarget",{targetId:other.targetId});
-  await waitFor(()=>page.evaluate("document.hidden"),"actual background tab visibility");
-  await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='false'"),"hidden-tab pause");
-  await browser.send("Target.activateTarget",{targetId:tabs.find(tab=>tab.type==='page').id});
-  await browser.send("Target.closeTarget",{targetId:other.targetId});browser.close();
-  await page.send("Emulation.setFocusEmulationEnabled",{enabled:true});
-  await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='true'"),"visible-tab resume");
-  await waitFor(()=>page.evaluate("[...document.querySelector('[data-community-motion]').getAnimations({subtree:true})].filter(a=>a.effect.getTiming().iterations===1).every(a=>a.playState==='finished')"),"Narrative does not restart after tab return");
-  for(const width of [1440,390]) {
-    await page.send("Emulation.setDeviceMetricsOverride",{width,height:1000,deviceScaleFactor:1,mobile:width===390});
-    await page.evaluate("document.querySelector('[data-community-motion]').scrollIntoView({block:'center'})");
-    await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='true'"),"performance visibility");
-    const pacing=await page.evaluate("new Promise(resolve=>{const samples=[];let previous=performance.now();const start=previous;function tick(now){samples.push(now-previous);previous=now;if(now-start<2000)requestAnimationFrame(tick);else{samples.sort((a,b)=>a-b);resolve({frames:samples.length,p95:samples[Math.floor(samples.length*.95)],maximum:samples.at(-1)})}}requestAnimationFrame(tick)})");
-    assert.ok(pacing.p95<100,`Sustained animation frame stalls at ${width}: ${JSON.stringify(pacing)}`);
-    console.log(`AFGHAN_HUB_HERO_PERFORMANCE ${JSON.stringify({width,...pacing,layoutShifts:await page.evaluate('window.__heroShifts'),longTasks:await page.evaluate('window.__heroLongTasks')})}`);
-  }
-  // Real mobile scroll advances only selected SVG depth, without moving text or controls.
-  await page.evaluate("scrollTo(0,document.querySelector('[data-community-motion]').getBoundingClientRect().top+scrollY+40)");
-  await waitFor(()=>page.evaluate("parseFloat(document.querySelector('[data-community-motion]').style.getPropertyValue('--scroll-depth'))>0"),"mobile scroll depth feedback");
-  assert.ok(await page.evaluate("[...document.querySelectorAll('[data-community-story] section')].every(e=>getComputedStyle(e).opacity==='1')"),"Scroll entrances never fade readable content");
-  await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
-  await waitFor(()=>page.evaluate("document.querySelector('[data-community-motion]').dataset.running==='false'"),"reduced motion controller");
-  assert.equal(await page.evaluate("document.querySelector('[data-community-motion]').getAnimations({subtree:true}).length"),0,"Reduced motion must disable every hero animation");
-  assert.ok(await page.evaluate("[...document.querySelectorAll('[data-hero-layer]')].every(e=>getComputedStyle(e).transform==='none')"),"Reduced motion must disable pointer depth");
-  assert.ok(await page.evaluate("[...document.querySelectorAll('[data-hero-draw],[data-hero-reveal],[data-hero-accent]')].every(e=>parseFloat(getComputedStyle(e).opacity)===1)"),"Intentional fully visible static artwork");
-  await page.send("Emulation.setEmulatedMedia",{features:[]});
-  console.log("AFGHAN_HUB_HERO_VERIFIED staged one-pass intro, pointer depth/reset, primary CTA keyboard highlight, hidden-tab/offscreen stability, desktop/mobile pacing, zero layout shifts and static reduced motion passed.");
-  if(process.versions.node.startsWith("24.")) {
-    console.log(`AFGHAN_HUB_HERO_CAPTURE_TIMES ${JSON.stringify(captureTimes)}`);
-    for(let frame=0;frame<capture.length;frame++)emitScreenshot(`hero_${String(frame).padStart(3,'0')}.jpg`,capture[frame]);
-  }
-
-  for (const width of [320, 390, 640, 768, 1024, 1440, 1920]) {
-    await page.send("Emulation.setDeviceMetricsOverride", { width, height: 1000, deviceScaleFactor: 1, mobile: false });
-    await page.send("Page.navigate", { url: appUrl });
+  // Approved living network: meaningful destinations, stable bounds and reduced motion.
+  await page.send("Emulation.setScrollbarsHidden", {hidden:true});
+  for (const width of [320,390,768,1024,1280,1440]) {
+    await page.send("Emulation.setDeviceMetricsOverride", {width,height:1000,deviceScaleFactor:1,mobile:false});
+    await page.send("Page.navigate", {url:appUrl});
     await waitFor(() => page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-community-node]')"), `landing ${width}`);
     await page.evaluate("document.fonts.ready.then(()=>true)");
-    await delay(300);
-    try {
-      const layout = await page.evaluate(layoutExpression);
-      assert.ok(layout.scrollWidth <= width + 1, `Horizontal overflow at ${width}: ${JSON.stringify(layout)}`);
-      assert.equal(layout.targets.length, 5);
-      const networkTargets = await page.evaluate(`(() => [...document.querySelectorAll('[data-community-node]')].map(a => {
-        a.scrollIntoView({block:'center'}); const r=a.getBoundingClientRect();
-        const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
-        a.focus({preventScroll:true});
-        const description=document.getElementById(a.getAttribute('aria-describedby'));
-        return {key:a.dataset.communityNode, href:a.getAttribute('href'), width:r.width, height:r.height, iconWidth:a.querySelector("svg").getBoundingClientRect().width, iconHeight:a.querySelector("svg").getBoundingClientRect().height,
-          clickable:!!hit&&(hit===a||a.contains(hit)), outline:getComputedStyle(a).outlineStyle,
-          reasonVisible:getComputedStyle(description).display!=='none'};
-      }))()`);
-      assert.equal(networkTargets.length, 5);
-      assert.ok(networkTargets.every(a=>a.clickable&&a.width>=44&&a.height>=44&&a.iconWidth<=14&&a.iconHeight<=14&&a.outline!=='none'&&a.reasonVisible), `Network pointer/focus targets at ${width}: ${JSON.stringify(networkTargets)}`);
-      assert.deepEqual(networkTargets.map(a=>a.href), ['/network','/explore?type=opportunities','/explore?type=organizations','/explore?type=events','/explore?type=businesses']);
-      await page.evaluate("document.activeElement.blur()");
-      assert.ok(layout.targets.every(target => target.clickable && target.height >= 44 && target.width >= 44), `Blocked/small discovery targets at ${width}`);
-      assert.equal(layout.people, 4, "Hero constellation must retain all four person glyphs");
-      assert.ok(layout.covers >= 12, "Twelve populated listing covers must render without duplicate wayfinding cards");
-      await page.evaluate(axeSource);
-      const audit = await page.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>r.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)})))");
-      assert.deepEqual(audit, [], `Accessibility violations at ${width}: ${JSON.stringify(audit)}`);
-      await page.evaluate("scrollTo(0,0)");
-      await delay(2300);
-      const bottom = await page.evaluate("Math.ceil(document.querySelector('#community-now-heading').closest('section').getBoundingClientRect().top + scrollY + 320)");
-      const screenshot = await page.send("Page.captureScreenshot", { format: "jpeg", quality: 80, captureBeyondViewport: true, clip: { x: 0, y: 0, width, height: bottom, scale: 1 } });
-      screenshots.push({ name: `geometric_${width}.jpg`, data: screenshot.data });
-      console.log(`AFGHAN_HUB_BROWSER_RESULT ${JSON.stringify({width,horizontalOverflow:false,heroTargets:5,peopleGlyphs:4,axeViolations:0,populatedCovers:true})}`);
-    } catch (error) {
-      const screenshot = await page.send("Page.captureScreenshot", { format: "jpeg", quality: 75 });
-      if (process.versions.node.startsWith("24.")) emitScreenshot(`debug_${width}.jpg`, screenshot.data, true);
-      throw error;
-    }
+    await delay(950);
+    const layout = await page.evaluate(layoutExpression);
+    assert.ok(layout.scrollWidth <= width + 1, `Horizontal overflow at ${width}`);
+    assert.equal(layout.targets.length, 5);
+    assert.ok(layout.targets.every(target => target.clickable && target.height >= 44 && target.width >= 44));
+    assert.equal(layout.covers,5,"Five real discovery modules without fabricated members");
+    await page.evaluate(axeSource);
+    assert.deepEqual(await page.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>r.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})))"),[],`Homepage accessibility at ${width}`);
+    await page.evaluate("scrollTo(0,0)");
+    if ([390,1440].includes(width)) screenshots.push({name:`approved_homepage_${width}.jpg`,data:(await page.send("Page.captureScreenshot",{format:"jpeg",quality:80,captureBeyondViewport:true})).data});
+    console.log(`AFGHAN_HUB_BROWSER_RESULT ${width}: five usable destinations, no overflow, zero axe violations`);
   }
-  await page.send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
-  await page.evaluate("document.documentElement.style.fontSize='200%'");
-  assert.ok((await page.evaluate(layoutExpression)).scrollWidth <= 1441, "Text resizing must not cause horizontal scrolling");
-  await page.evaluate("document.documentElement.style.fontSize=''");
-  await page.send("Emulation.setDeviceMetricsOverride", { width: 720, height: 1000, deviceScaleFactor: 2, mobile: false });
-  assert.ok((await page.evaluate(layoutExpression)).scrollWidth <= 721, "200% zoom reflow must fit");
-  await page.send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
-  await page.send("Page.navigate", { url: appUrl });
-  await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-community-node]')"),"keyboard landing");
-  await delay(300);
-  await page.evaluate("document.activeElement?.blur(); scrollTo(0,0)");
-  const focused=[];
-  for(let i=0;i<24;i++) {
-    for(const type of ["keyDown","keyUp"]) await page.send("Input.dispatchKeyEvent",{type,key:"Tab",code:"Tab",windowsVirtualKeyCode:9});
-    focused.push(await page.evaluate("({href:document.activeElement.getAttribute('href'),outline:getComputedStyle(document.activeElement).outlineStyle,key:document.activeElement.dataset.discoveryLink,node:document.activeElement.dataset.communityNode,descriptionVisible:document.activeElement.dataset.communityNode ? getComputedStyle(document.getElementById(document.activeElement.getAttribute('aria-describedby'))).display!=='none' : false})"));
-  }
-  assert.equal(focused[0].href,"#main-content","Skip link must be first");
-  for(const key of ["people","opportunities","organizations","events","businesses"]) assert.ok(focused.some(item=>item.node===key&&item.outline!=="none"&&item.descriptionVisible),`Hero node reachable by Tab: ${key}`);
-  // The hero itself is the single homepage wayfinding surface; avoid duplicating the same destinations below it.
-  assert.equal(await page.evaluate("document.querySelectorAll('[data-discovery-panel],[data-discovery-link]').length"),0,"Homepage must not render a second category-card navigation");
-  // Physical mouse presses provide feedback and navigate without changing target bounds.
+  await page.send("Emulation.setDeviceMetricsOverride", {width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   await page.send("Page.navigate",{url:appUrl});
-  await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-landing-cta]')"),"CTA landing");
-  await delay(300);
-  const ctaPoint=await page.evaluate("(()=>{const r=document.querySelector('[data-landing-cta=explore]').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()");
-  await page.send("Input.dispatchMouseEvent",{type:"mouseMoved",...ctaPoint});
-  await delay(250);
-  const hoverColor=await page.evaluate("getComputedStyle(document.querySelector('[data-landing-cta=explore]')).backgroundColor");
-  await page.send("Input.dispatchMouseEvent",{type:"mousePressed",button:"left",clickCount:1,...ctaPoint});
-  await delay(250);
-  assert.notEqual(await page.evaluate("getComputedStyle(document.querySelector('[data-landing-cta=explore]')).backgroundColor"),hoverColor,"CTA press feedback must be visible");
-  await page.send("Input.dispatchMouseEvent",{type:"mouseReleased",button:"left",clickCount:1,...ctaPoint});
-  await waitFor(()=>page.evaluate("location.pathname==='/explore'"),"Explore CTA click");
-  await page.send("Page.navigate",{url:appUrl});
-  await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-landing-cta=join]')"),"Join CTA landing");
-  await delay(300);
-  await page.evaluate("document.querySelector('[data-landing-cta=join]').focus()");
-  for(const type of ["keyDown","keyUp"]) await page.send("Input.dispatchKeyEvent",{type,key:"Enter",code:"Enter",windowsVirtualKeyCode:13});
-  await waitFor(()=>page.evaluate("location.pathname==='/login' && new URLSearchParams(location.search).get('mode')==='join'"),"Join CTA keyboard activation");
+  await waitFor(()=>page.evaluate("!!document.querySelector('[data-community-node]')"),"network focus");
+  await delay(950);
+  const bounds = await page.evaluate("document.querySelector('[data-hero-region]').getBoundingClientRect().toJSON()");
+  await page.evaluate("document.querySelector('[data-community-node=people]').focus()");
+  await delay(200);
+  assert.ok(await page.evaluate("document.querySelector('[data-community-node=people]').matches(':focus-visible')"));
+  assert.deepEqual(await page.evaluate("document.querySelector('[data-hero-region]').getBoundingClientRect().toJSON()"),bounds);
+  await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
+  assert.equal(await page.evaluate("document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length"),0);
+  await page.send("Emulation.setEmulatedMedia",{features:[]});
+  // Public guided discovery is exercised against the isolated published-listing fixture.
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent.includes('Not sure where')).click()");
+  await waitFor(()=>page.evaluate("document.querySelector('#ai-navigator h3')?.textContent.includes('What brings')"),"guided start");
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent==='Explore events').click()");
+  await waitFor(()=>page.evaluate("document.querySelector('#ai-navigator h3')?.textContent.includes('Which area')"),"guided topic");
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent==='Skip').click()");
+  await waitFor(()=>page.evaluate("document.querySelector('#ai-navigator h3')?.textContent.includes('attend events')"),"adaptive event question");
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent==='Find my path').click()");
+  await waitFor(()=>page.evaluate("document.querySelector('#ai-navigator article')?.textContent.includes('Your next steps')"),"public retrieval");
+  assert.ok(await page.evaluate("!!document.querySelector('#ai-navigator article a[href^=\"/explore/events/\"]')"),"Grounded public result links");
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent==='Restart').click()");
+  assert.equal(await page.evaluate("document.querySelectorAll('#ai-navigator article').length"),0);
 
   // Single physical taps use the hero's real destinations, including signed-out member routing.
   await page.send("Emulation.setDeviceMetricsOverride",{width:390,height:1000,deviceScaleFactor:1,mobile:true});

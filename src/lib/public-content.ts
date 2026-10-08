@@ -20,7 +20,7 @@ export type PublicListing = {
   endDate: string | null;
 };
 type Result = { items: PublicListing[]; hasMore: boolean; unavailable: boolean };
-type Options = { slug?: string; search?: string; page?: number; limit?: number };
+type Options = { slug?: string; search?: string; page?: number; limit?: number; discoveryTerms?: string[]; discoveryLocation?: string };
 const unavailable: Result = { items: [], hasMore: false, unavailable: true };
 const location = (city: string | null, country: string | null) => [city, country].filter(Boolean).join(", ") || "Location not listed";
 const placeholderText = new Set(["n/a", "na", "test", "testing"]);
@@ -49,6 +49,19 @@ export async function getPublicListings(kind: PublicKind, options: Options = {})
   const start = options.slug ? 0 : (Math.min(Math.max(options.page ?? 1, 1), 9999) - 1) * limit;
   const end = options.slug ? 0 : start + limit; // One extra row for pagination.
   const pattern = `%${(options.search ?? "").slice(0, 100).replace(/[\\%_]/g, "\\$&")}%`;
+  // Only the Navigator opts into broader public-field matching. Remove filter
+  // grammar characters before constructing PostgREST expressions; field names
+  // are fixed by the application, never supplied by the visitor.
+  const safeTerm = (value: string) => value.slice(0, 80).replace(/[^\p{L}\p{N} +#'-]/gu, " ").replace(/\s+/g, " ").trim();
+  const discoveryTerms = options.discoveryTerms?.slice(0, 8).map(safeTerm).filter(Boolean) ?? [];
+  const discoveryLocation = safeTerm(options.discoveryLocation ?? "");
+  const discoveryFilter = (fields: string[], current?: string, remote?: string) => {
+    const clauses = current ? [`or(${current})`] : [];
+    if (discoveryTerms.length) clauses.push(`or(${discoveryTerms.flatMap(term => fields.map(field => `${field}.ilike.%${term}%`)).join(",")})`);
+    if (discoveryLocation) clauses.push(`or(city.ilike.%${discoveryLocation}%,country.ilike.%${discoveryLocation}%${remote ? `,${remote}.eq.true` : ""})`);
+    return clauses.length ? `and(${clauses.join(",")})` : "";
+  };
+  const discovery = options.discoveryTerms !== undefined || options.discoveryLocation !== undefined;
   const finish = (items: PublicListing[], error: unknown): Result => error ? unavailable : ({ items: items.slice(0, limit), hasMore: items.length > limit, unavailable: false });
   try {
     const client = publicClient();
@@ -59,6 +72,7 @@ export async function getPublicListings(kind: PublicKind, options: Options = {})
         .select("slug,title,summary,description,type,city,country,is_remote,deadline")
         .eq("status", "published");
       if (options.slug) query = query.eq("slug", options.slug);
+      else if (discovery) query = query.or(discoveryFilter(["title", "summary", "description"], currentOpportunityFilter(getUtcDateKey()), "is_remote"));
       else query = query.or(currentOpportunityFilter(getUtcDateKey())).ilike("title", pattern);
       const { data, error } = await query.order("created_at", { ascending: false }).order("slug").range(start, end).abortSignal(signal);
       const items = (data ?? []).flatMap(row => {
@@ -72,6 +86,7 @@ export async function getPublicListings(kind: PublicKind, options: Options = {})
         .select("slug,title,summary,description,city,country,is_online,starts_at,ends_at")
         .eq("status", "published");
       if (options.slug) query = query.eq("slug", options.slug);
+      else if (discovery) query = query.or(discoveryFilter(["title", "summary", "description"], currentEventFilter(new Date().toISOString()), "is_online"));
       else query = query.or(currentEventFilter(new Date().toISOString())).ilike("title", pattern);
       const { data, error } = await query.order("starts_at").order("slug").range(start, end).abortSignal(signal);
       const items = (data ?? []).flatMap(row => {
@@ -85,6 +100,7 @@ export async function getPublicListings(kind: PublicKind, options: Options = {})
         .select("slug,name,short_description,description,category,city,country")
         .eq("status", "published");
       if (options.slug) query = query.eq("slug", options.slug);
+      else if (discovery && discoveryFilter(["name", "short_description", "description", "category"])) query = query.or(discoveryFilter(["name", "short_description", "description", "category"]));
       else query = query.ilike("name", pattern);
       const { data, error } = await query.order("name").order("slug").range(start, end).abortSignal(signal);
       const items = (data ?? []).flatMap(row => {
@@ -97,6 +113,7 @@ export async function getPublicListings(kind: PublicKind, options: Options = {})
       .select("slug,name,short_description,description,organization_type,city,country")
       .eq("status", "published");
     if (options.slug) query = query.eq("slug", options.slug);
+    else if (discovery && discoveryFilter(["name", "short_description", "description", "organization_type"])) query = query.or(discoveryFilter(["name", "short_description", "description", "organization_type"]));
     else query = query.ilike("name", pattern);
     const { data, error } = await query.order("name").order("slug").range(start, end).abortSignal(signal);
     const items = (data ?? []).flatMap(row => {

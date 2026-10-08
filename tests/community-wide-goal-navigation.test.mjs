@@ -49,14 +49,14 @@ test("search empty state offers visual goal navigation instead of a dead end", (
 
 
 test("public landing exposes all five community areas and discovery paths", () => {
-  assert.match(publicHome, /Find your people/);
-  assert.match(publicHome, /Build what’s next/);
-  assert.match(publicHome, /People/);
+  assert.match(publicHome, /One network/);
+  assert.match(publicHome, /Many ways to/);
+  assert.match(publicHome, /communityAreas/);
   for (const kind of ["opportunities", "events", "businesses", "organizations"]) {
-    assert.match(publicHome, new RegExp('primary\\("'+kind+'"\\)'));
+    assert.match(publicHome, new RegExp(kind));
   }
-  assert.match(publicHome, /publicHref\(kind, item.slug\)/);
-  assert.match(publicHome, /\/explore\?type=\$\{kind\}/);
+  assert.match(publicHome, /publicHref\(area.key as PublicKind, item.slug\)/);
+  assert.match(publicHome, /communityAreas.map/);
   assert.match(publicHome, /\/login\?mode=join/);
   assert.match(publicHome, /getPublicListings/);
   assert.doesNotMatch(goalPaths, /label: "Settle"/);
