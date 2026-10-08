@@ -1,0 +1,206 @@
+import assert from 'node:assert/strict';
+import { execFileSync, spawn } from 'node:child_process';
+import { existsSync, readFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import fs from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
+import { basename, resolve, join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { setTimeout as delay } from 'node:timers/promises';
+import { createClient } from '@supabase/supabase-js';
+import { requireLocalTarget } from './local-target.mjs';
+import { DevTools } from './browser-cdp.mjs';
+
+// No hosted target, credential file, injected session or mock API is accepted.
+const dir = resolve(process.env.LOCAL_QA_DIR ?? '');
+assert.ok(basename(dir).startsWith('afghan-local-journey-'));
+assert.match(readFileSync(join(dir, 'supabase/config.toml'), 'utf8'), /project_id = "afghan-hub-local-journey"/);
+const status = JSON.parse(execFileSync('supabase', ['status', '-o', 'json'], { cwd: dir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }));
+const apiUrl = requireLocalTarget(status.API_URL);
+assert.ok(status.ANON_KEY && status.SERVICE_ROLE_KEY);
+const appUrl = requireLocalTarget('http://localhost:3100', 3100);
+const admin = createClient(apiUrl, status.SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
+const chromePath = ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/opt/google/chrome/chrome'].find(existsSync);
+assert.ok(chromePath, 'The Linux CI runner must provide sandboxed Chrome');
+const users = [], pages = [], children = [], results = [];
+const password = `QA-${randomUUID()}-aA1!`;
+const stamp = randomUUID().slice(0, 8);
+let browser, profile, scenario = 'prerequisites';
+async function data(promise) {
+  const result = await promise;
+  if (result.error) throw new Error('Local fixture request failed; details withheld');
+  return result.data;
+}
+async function until(fn, label, timeout = 20000) {
+  const end = Date.now() + timeout;
+  while (Date.now() < end) {
+    try { const value = await fn(); if (value) return value; } catch { /* navigation/readiness */ }
+    await delay(100);
+  }
+  throw new Error(`Timed out: ${label}`);
+}
+async function check(name, fn) {
+  scenario = name;
+  await fn();
+  results.push({ scenario: name, status: 'pass' });
+  console.log(`PASS ${name}`);
+}
+function launch(command, args, env) {
+  const child = spawn(command, args, { env, stdio: ['ignore', 'pipe', 'pipe'] });
+  // Do not retain or publish logs containing cookie/session/provider payloads.
+  child.stdout.resume(); child.stderr.resume();
+  children.push(child);
+  return child;
+}
+async function page() {
+  const { browserContextId } = await browser.send('Target.createBrowserContext');
+  const { targetId } = await browser.send('Target.createTarget', { url: 'about:blank', browserContextId });
+  const connection = new DevTools();
+  await connection.connect(`ws://127.0.0.1:${browser.port}/devtools/page/${targetId}`);
+  pages.push(connection);
+  await connection.send('Page.enable');
+  await connection.send('Runtime.enable');
+  await connection.send('Network.enable');
+  return connection;
+}
+async function visit(page, path) {
+  assert.ok(path.startsWith('/') && !path.startsWith('//'));
+  await page.send('Page.navigate', { url: appUrl + path });
+  await until(() => page.evaluate(`location.origin===${JSON.stringify(appUrl)} && document.readyState==='complete'`), 'local page');
+}
+async function pathname(page, path) {
+  await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), 'expected route');
+}
+async function fill(page, selector, value) {
+  await until(() => page.evaluate(`!!document.querySelector(${JSON.stringify(selector)})`), 'form field');
+  await page.evaluate(`(() => { const field=document.querySelector(${JSON.stringify(selector)}); field.focus(); Object.getOwnPropertyDescriptor(field instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,'value').set.call(field,${JSON.stringify(value)}); field.dispatchEvent(new Event('input',{bubbles:true})); return true; })()`);
+}
+async function click(page, selector) {
+  const point = await until(() => page.evaluate(`(() => { const target=document.querySelector(${JSON.stringify(selector)}); if(!target || target.disabled)return null; target.scrollIntoView({block:'center'}); const r=target.getBoundingClientRect(); return r.width && r.height ? {x:r.x+r.width/2,y:r.y+r.height/2}:null; })()`), 'clickable control');
+  await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...point });
+  await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...point });
+}
+async function login(page, email, secret = password) {
+  await visit(page, '/login');
+  await fill(page, '[name=email]', email);
+  await fill(page, '[name=password]', secret);
+  await click(page, '#join button[type=submit]');
+}
+async function onboard(page, name) {
+  await pathname(page, '/profile');
+  await fill(page, '[name=first_name]', 'Synthetic');
+  await fill(page, '[name=last_name]', name);
+  await fill(page, '[name=city]', 'Vancouver');
+  await click(page, 'form:has([name=first_name]) button[type=submit]');
+  await pathname(page, '/dashboard');
+}
+async function member(label) {
+  const email = `browser-${stamp}-${label}@example.invalid`;
+  const { user } = await data(admin.auth.admin.createUser({ email, password, email_confirm: true }));
+  users.push(user.id);
+  return { id: user.id, email };
+}
+const message = text => `Synthetic browser ${stamp} ${text}`;
+async function send(page, text) {
+  await fill(page, 'textarea[name=message]', text);
+  await click(page, 'button[aria-label="Send message"]');
+  await until(() => page.evaluate(`document.body.innerText.includes(${JSON.stringify(text)}) && document.querySelector('textarea[name=message]')?.value===''`), 'message persisted');
+}
+try {
+  const env = { ...process.env, NEXT_PUBLIC_SITE_URL: appUrl, NEXT_PUBLIC_SUPABASE_URL: apiUrl, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: status.ANON_KEY, NAVIGATOR_MODEL_PROVIDER: 'structured', NAVIGATOR_MODEL_ENABLED: 'false', NEXT_TELEMETRY_DISABLED: '1' };
+  const nextCli = resolve('node_modules/next/dist/bin/next');
+  const build = launch(process.execPath, [nextCli, 'build'], env);
+  const code = await new Promise((resolve, reject) => { build.once('exit', resolve); build.once('error', reject); });
+  assert.equal(code, 0, 'Local production build failed; logs withheld');
+  launch(process.execPath, [nextCli, 'start', '--hostname', '127.0.0.1', '--port', '3100'], env);
+  await until(async () => (await fetch(appUrl)).ok, 'local production server');
+  profile = await fs.mkdtemp(join(tmpdir(), 'afghan-member-browser-'));
+  const chrome = launch(chromePath, ['--headless=new', '--enable-automation', '--no-first-run', '--no-default-browser-check', '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'], process.env);
+  const portFile = await until(async () => chrome.exitCode === null && await fs.readFile(join(profile, 'DevToolsActivePort'), 'utf8'), 'sandboxed Chrome');
+  browser = new DevTools(); browser.port = portFile.split('\n')[0];
+  await browser.connect(`ws://127.0.0.1:${browser.port}${portFile.split('\n')[1]}`);
+  const a = await member('a'), b = await member('b');
+  const pageA = await page(), pageB = await page();
+  await check('Chrome renderer sandbox enabled', async () => {
+    await pageA.send('Page.navigate', { url: 'chrome://sandbox' });
+    await until(() => pageA.evaluate(`/Seccomp-BPF sandbox\\s+Yes/.test(document.body?.innerText ?? '')`), 'renderer sandbox');
+  });
+  await check('Anonymous protected route redirects to sign-in', async () => {
+    await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
+  });
+  await check('Wrong password shows accessible error and preserves auth boundary', async () => {
+    await login(pageA, a.email, 'Incorrect-synthetic-password-1!');
+    await until(() => pageA.evaluate(`location.pathname==='/login' && !!document.querySelector('[role=alert]')`), 'login error');
+  });
+  await check('Real sign-in and onboarding forms persist both synthetic profiles', async () => {
+    for (const [page, user, label] of [[pageA, a, 'MemberA'], [pageB, b, 'MemberB']]) {
+      await login(page, user.email); await onboard(page, label);
+      const row = await data(admin.from('profiles').select('onboarding_completed,first_name,last_name').eq('id', user.id).single());
+      assert.equal(row.onboarding_completed, true); assert.equal(row.last_name, label);
+    }
+  });
+  await check('Cookie sessions survive reload and remain separate', async () => {
+    for (const [page, user] of [[pageA, a], [pageB, b]]) {
+      await page.send('Page.reload'); await pathname(page, '/dashboard');
+      await until(() => page.evaluate(`document.body.innerText.includes(${JSON.stringify(user.email)})`), 'signed-in identity');
+    }
+  });
+  await check('Two-account connection request and acceptance through real forms', async () => {
+    await visit(pageA, `/members/${b.id}`);
+    await click(pageA, 'form:has([name=recipient_id]) button[type=submit]');
+    await until(() => pageA.evaluate(`document.body.innerText.includes('Request sent')`), 'pending connection');
+    await visit(pageB, '/network');
+    await click(pageB, 'button[name=decision][value=accepted]');
+    await until(() => pageB.evaluate(`document.body.innerText.includes('My connections')`), 'accepted connection');
+    await visit(pageA, `/members/${b.id}`);
+    await click(pageA, 'form:has([name=member_id]) button[type=submit]');
+    await until(() => pageA.evaluate(`!!document.querySelector('textarea[name=message]')`), 'conversation composer');
+  });
+  const conversationPath = await pageA.evaluate('location.pathname');
+  assert.match(conversationPath, /^\/messages\/[0-9a-f-]{36}$/);
+  await check('Realtime unread notification and notification navigation', async () => {
+    await visit(pageB, '/dashboard');
+    const before = await pageB.evaluate(`Number(document.querySelector('button[aria-controls][aria-haspopup=dialog][aria-label^="Notifications"]')?.getAttribute('aria-label')?.match(/([0-9]+) unread/)?.[1] ?? 0)`);
+    await send(pageA, message('notification'));
+    await until(() => pageB.evaluate(`Number(document.querySelector('button[aria-label^="Notifications"]')?.getAttribute('aria-label')?.match(/([0-9]+) unread/)?.[1] ?? 0)>${before}`), 'realtime unread badge');
+    await click(pageB, 'button[aria-label^="Notifications"]');
+    const rows = await data(admin.from('notifications').select('id').eq('recipient_id', b.id).eq('conversation_id', conversationPath.split('/').at(-1)));
+    assert.ok(rows.length);
+    await click(pageB, `form:has(input[name=notification_id][value="${rows[0].id}"]) button[type=submit]`);
+    await pathname(pageB, conversationPath);
+    await until(() => pageB.evaluate(`document.body.innerText.includes(${JSON.stringify(message('notification'))})`), 'notification conversation');
+  });
+  await check('Live conversation delivery and offline reconnect catch-up without reload', async () => {
+    await send(pageA, message('live'));
+    await until(() => pageB.evaluate(`document.body.innerText.includes(${JSON.stringify(message('live'))})`), 'live message');
+    await pageB.send('Network.emulateNetworkConditions', { offline: true, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
+    await delay(500);
+    await send(pageA, message('offline'));
+    await delay(500);
+    assert.equal(await pageB.evaluate(`document.body.innerText.includes(${JSON.stringify(message('offline'))})`), false, 'Offline browser must miss this message before reconnect');
+    await pageB.send('Network.emulateNetworkConditions', { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
+    await until(() => pageB.evaluate(`document.body.innerText.includes(${JSON.stringify(message('offline'))})`), 'reconnect catch-up', 35000);
+  });
+  await check('Sign-out clears browser access while the other account remains signed in', async () => {
+    await click(pageA, 'button[aria-label="Sign out"]');
+    await pathname(pageA, '/login');
+    await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
+    await visit(pageB, '/dashboard'); await pathname(pageB, '/dashboard');
+  });
+} catch (error) {
+  results.push({ scenario, status: 'fail', diagnostic: { type: error.name, line: error.stack?.match(/local-member-browser\.mjs:(\d+)/)?.[1] } });
+  console.error(`FAIL ${scenario}; sensitive browser/provider details withheld`);
+  process.exitCode = 1;
+} finally {
+  for (const page of pages) page.close();
+  browser?.close();
+  for (const child of children) if (child.exitCode === null) child.kill();
+  await delay(300);
+  if (profile) await fs.rm(profile, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+  try {
+    for (const id of users) await data(admin.auth.admin.deleteUser(id));
+    results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'pass' });
+  } catch { results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'fail' }); process.exitCode = 1; }
+  mkdirSync('reports', { recursive: true });
+  writeFileSync('reports/local-member-browser.json', JSON.stringify({ environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, limitations: ['Signup email delivery/callback not covered; fixtures are preconfirmed', 'Organization/opportunity/event CRUD forms and native-language review remain pending', 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
+  console.log(`${results.filter(r => r.status === 'pass').length} passed; ${results.filter(r => r.status === 'fail').length} failed`);
+}

@@ -1,7 +1,7 @@
 name: Isolated local member journeys
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feat/approved-community-homepage]
     paths:
       - 'scripts/qa/**'
       - '.github/workflows/local-journey-acceptance.yml'
@@ -40,6 +40,8 @@ jobs:
           fi
       - name: Run real authenticated API and RLS journeys
         run: node scripts/qa/local-member-journeys.mjs
+      - name: Run real authenticated browser journeys
+        run: node scripts/qa/local-member-browser.mjs
       - name: Upload sanitized scenario results
         if: always()
         uses: actions/upload-artifact@v4
@@ -48,6 +50,7 @@ jobs:
           path: |
             reports/local-member-journeys.json
             reports/local-model-budget.json
+            reports/local-member-browser.json
           if-no-files-found: warn
           retention-days: 14
       - name: Destroy this run's isolated stack
