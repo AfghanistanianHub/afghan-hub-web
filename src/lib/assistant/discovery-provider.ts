@@ -1,4 +1,5 @@
 import "server-only";
+import { claimDiscoveryBudget } from "./discovery-budget";
 import { discoveryDecisionSchema } from "./public-discovery-contract";
 import { PlannerUnavailable, type DiscoveryPlanner } from "./discovery-orchestrator";
 
@@ -16,8 +17,9 @@ export const configuredDiscoveryPlanner: DiscoveryPlanner = async (request, sign
   if (!credential) throw new PlannerUnavailable("not-configured");
   const now = Date.now();
   if (now - windowStart >= 60_000) { windowStart = now; calls = 0; }
-  // Fixed per-instance cost ceiling; deployment-wide limits are required at launch.
+  // Per-instance ceiling complements the fail-closed shared budget below.
   if (calls >= 10) throw new PlannerUnavailable("capacity");
+  await claimDiscoveryBudget(signal);
   calls++;
   const { generateText, Output, createGateway } = await import("ai");
   const model = provider === "openai"
