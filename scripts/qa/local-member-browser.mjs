@@ -63,10 +63,11 @@ async function page() {
     if (packet.method === 'Network.webSocketCreated') connection.telemetry.sockets++;
     if (packet.method === 'Network.webSocketFrameReceived' || packet.method === 'Network.webSocketFrameSent') {
       try {
-        const frame = JSON.parse(packet.params.response.payloadData);
+        const decoded = JSON.parse(packet.params.response.payloadData);
+        const frame = Array.isArray(decoded) ? {event:decoded[3],payload:decoded[4]} : decoded;
         if (packet.method === 'Network.webSocketFrameReceived') {
           connection.telemetry.frames++;
-          if(frame.event === 'system') connection.telemetry.systems.push({extension:frame.payload.extension,status:frame.payload.status,permissionError:/permission|unauthoriz/i.test(frame.payload.message ?? '')});
+          if(frame.event === 'system') connection.telemetry.systems.push({extension:frame.payload.extension,status:frame.payload.status,permissionError:/permission|unauthoriz/i.test(frame.payload.message ?? ''),databaseError:/database|connect/i.test(frame.payload.message ?? '')});
           if(frame.event === 'phx_reply') connection.telemetry.replies.push(frame.payload.status);
           if(frame.event === 'postgres_changes') connection.telemetry.changes++;
         } else if (frame.event === 'phx_join') {
