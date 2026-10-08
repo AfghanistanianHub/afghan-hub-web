@@ -140,9 +140,11 @@ try {
     }
   });
   await check('Cookie sessions survive reload and remain separate', async () => {
-    for (const [page, user] of [[pageA, a], [pageB, b]]) {
-      await page.send('Page.reload'); await pathname(page, '/dashboard');
-      await until(() => page.evaluate(`document.body.innerText.includes(${JSON.stringify(user.email)})`), 'signed-in identity');
+    for (const [page, label] of [[pageA, 'MemberA'], [pageB, 'MemberB']]) {
+      await visit(page, '/profile');
+      await page.send('Page.reload');
+      await until(() => page.evaluate(`location.pathname==='/profile' && document.readyState==='complete' && document.querySelector('[name=last_name]')?.value===${JSON.stringify(label)}`), 'persisted own-profile identity');
+      await visit(page, '/dashboard'); await pathname(page, '/dashboard');
     }
   });
   await check('Two-account connection request and acceptance through real forms', async () => {
@@ -189,7 +191,12 @@ try {
   });
 } catch (error) {
   results.push({ scenario, status: 'fail', diagnostic: { type: error.name, line: error.stack?.match(/local-member-browser\.mjs:(\d+)/)?.[1] } });
-  console.error(`FAIL ${scenario}; sensitive browser/provider details withheld`);
+  const states = [];
+  for (const page of pages) {
+    try { states.push(await page.evaluate(`({width:innerWidth,ready:document.readyState,header:!!document.querySelector('header'),profileForm:!!document.querySelector('[name=last_name]'),loginForm:!!document.querySelector('#join'),errorBoundary:document.body.innerText.includes('Something went wrong'),applicationError:document.body.innerText.includes('Application error'),alert:!!document.querySelector('[role=alert]')})`)); } catch { states.push({unavailable:true}); }
+  }
+  results.at(-1).browserStates = states;
+  console.error(`FAIL ${scenario}; sanitized browser states: ${JSON.stringify(states)}`);
   process.exitCode = 1;
 } finally {
   for (const page of pages) page.close();
