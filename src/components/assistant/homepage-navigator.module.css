@@ -7,10 +7,11 @@
 .identity p { color:#615b6e; font-size:12px; line-height:1.5; margin-top:5px; }
 .beta { font-size:10px; color:#53317c; padding:3px 8px; border-radius:20px; border:1px solid #d5bce9; background:#f5effa; }
 .search { display:flex; align-items:center; gap:12px; border:1px solid #cfb9e6; border-radius:30px; padding:5px 5px 5px 16px; min-height:48px; color:var(--primary); background:#fff; }
+.search input:disabled { cursor:wait; }
 .search input { min-width:0; width:100%; border:0; outline:0; font-size:12px; color:#19152b; background:transparent; min-height:36px; }
 .search:focus-within { outline:2px solid var(--primary); outline-offset:3px; }
 .search input::placeholder { color:#726783; opacity:1; }
-.search button { width:37px; height:37px; flex-shrink:0; display:grid; place-items:center; background:var(--primary); color:white; border-radius:50%; }
+.search button { width:44px; height:44px; flex-shrink:0; display:grid; place-items:center; background:var(--primary); color:white; border-radius:50%; }
 .entries { display:flex; align-items:stretch; gap:12px; margin-top:22px; }
 .guideEntry { display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:24px; color:#53317c; background:#eee4f8; text-align:start; max-width:280px; flex-shrink:0; }
 .guideEntry>svg { flex-shrink:0; }
@@ -68,3 +69,6 @@
 @media(max-width:1100px) { .top { grid-template-columns:1fr; gap:18px; } .guideEntry { max-width:240px; } }
 @media(max-width:768px) { .entries { flex-direction:column; } .guideEntry { max-width:none; } .examples { grid-template-columns:1fr 1fr; } .choices { grid-template-columns:1fr 1fr; } }
 @media(max-width:480px) { .navigator { padding:20px 16px 12px; border-radius:22px; } .identity { gap:12px; } .identity h2 { font-size:23px; } .identity>svg { width:26px; } .search { gap:8px; padding-inline-start:12px; } .search input { font-size:16px; } .examples { gap:8px; } .examples button { padding:10px 12px; } .choices { grid-template-columns:1fr; } .results { grid-template-columns:1fr; } .guideForm>div { flex-wrap:wrap; } .guideForm input { flex-basis:100%; font-size:16px; } .guideForm button { width:100%; } }
+
+.engine { font-size:11px; color:#53317c; margin:6px 0; }
+@media(prefers-reduced-motion:reduce) { .navigator button,.navigator a { transition:none; } }
