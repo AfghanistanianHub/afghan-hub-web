@@ -1,0 +1,264 @@
+{
+  "environment": "local dev Chrome; measurements before final documentation commit",
+  "observations": [
+    {
+      "canvas": 1,
+      "nodes": [
+        {
+          "height": 124.484375,
+          "label": "People",
+          "width": 128,
+          "x": 971.046875,
+          "y": 101.1953125
+        },
+        {
+          "height": 124.484375,
+          "label": "Businesses",
+          "width": 128,
+          "x": 786.6640625,
+          "y": 182.8984375
+        },
+        {
+          "height": 124.484375,
+          "label": "Organizations",
+          "width": 128,
+          "x": 1182.71875,
+          "y": 178.59375
+        },
+        {
+          "height": 124.484375,
+          "label": "Opportunities",
+          "width": 128,
+          "x": 715.5,
+          "y": 303.296875
+        },
+        {
+          "height": 124.484375,
+          "label": "Events",
+          "width": 128,
+          "x": 1228,
+          "y": 303.296875
+        }
+      ],
+      "overflow": false,
+      "width": 1440
+    },
+    {
+      "canvas": 1,
+      "nodes": [
+        {
+          "height": 124.484375,
+          "label": "People",
+          "width": 128,
+          "x": 883.40625,
+          "y": 101.1953125
+        },
+        {
+          "height": 124.484375,
+          "label": "Businesses",
+          "width": 128,
+          "x": 704.9453125,
+          "y": 182.8984375
+        },
+        {
+          "height": 124.484375,
+          "label": "Organizations",
+          "width": 128,
+          "x": 1084.171875,
+          "y": 178.59375
+        },
+        {
+          "height": 124.484375,
+          "label": "Opportunities",
+          "width": 128,
+          "x": 636.0625,
+          "y": 303.296875
+        },
+        {
+          "height": 124.484375,
+          "label": "Events",
+          "width": 128,
+          "x": 1128,
+          "y": 303.296875
+        }
+      ],
+      "overflow": false,
+      "width": 1280
+    },
+    {
+      "canvas": 1,
+      "nodes": [
+        {
+          "height": 124.484375,
+          "label": "People",
+          "width": 114,
+          "x": 693.3828125,
+          "y": 123.796875
+        },
+        {
+          "height": 124.484375,
+          "label": "Businesses",
+          "width": 114,
+          "x": 566.953125,
+          "y": 194.09375
+        },
+        {
+          "height": 124.484375,
+          "label": "Organizations",
+          "width": 114,
+          "x": 877.7734375,
+          "y": 190.3984375
+        },
+        {
+          "height": 124.484375,
+          "label": "Opportunities",
+          "width": 114,
+          "x": 511.3203125,
+          "y": 297.6953125
+        },
+        {
+          "height": 124.484375,
+          "label": "Events",
+          "width": 114,
+          "x": 898,
+          "y": 297.6953125
+        }
+      ],
+      "overflow": false,
+      "width": 1024
+    },
+    {
+      "canvas": 1,
+      "nodes": [
+        {
+          "height": 124.484375,
+          "label": "People",
+          "width": 128,
+          "x": 323.1953125,
+          "y": 432.5859375
+        },
+        {
+          "height": 124.484375,
+          "label": "Businesses",
+          "width": 128,
+          "x": 140.796875,
+          "y": 514.2890625
+        },
+        {
+          "height": 124.484375,
+          "label": "Organizations",
+          "width": 128,
+          "x": 531.203125,
+          "y": 509.984375
+        },
+        {
+          "height": 124.484375,
+          "label": "Opportunities",
+          "width": 128,
+          "x": 70.3984375,
+          "y": 634.6875
+        },
+        {
+          "height": 124.484375,
+          "label": "Events",
+          "width": 128,
+          "x": 576,
+          "y": 634.6875
+        }
+      ],
+      "overflow": false,
+      "width": 768
+    },
+    {
+      "canvas": 1,
+      "nodes": [
+        {
+          "height": 126,
+          "label": "People",
+          "width": 116.6640625,
+          "x": 136.6640625,
+          "y": 438.328125
+        },
+        {
+          "height": 126,
+          "label": "Businesses",
+          "width": 116.6640625,
+          "x": 20,
+          "y": 582.328125
+        },
+        {
+          "height": 126,
+          "label": "Organizations",
+          "width": 116.6640625,
+          "x": 253.328125,
+          "y": 582.328125
+        },
+        {
+          "height": 126,
+          "label": "Opportunities",
+          "width": 116.6640625,
+          "x": 78.328125,
+          "y": 726.328125
+        },
+        {
+          "height": 126,
+          "label": "Events",
+          "width": 116.671875,
+          "x": 194.9921875,
+          "y": 726.328125
+        }
+      ],
+      "overflow": false,
+      "width": 390
+    },
+    {
+      "canvas": 1,
+      "nodes": [
+        {
+          "height": 126,
+          "label": "People",
+          "width": 93.3359375,
+          "x": 113.328125,
+          "y": 487.6328125
+        },
+        {
+          "height": 139.234375,
+          "label": "Businesses",
+          "width": 93.328125,
+          "x": 20,
+          "y": 631.6328125
+        },
+        {
+          "height": 139.234375,
+          "label": "Organizations",
+          "width": 93.3359375,
+          "x": 206.6640625,
+          "y": 631.6328125
+        },
+        {
+          "height": 126,
+          "label": "Opportunities",
+          "width": 93.3359375,
+          "x": 66.6640625,
+          "y": 788.8671875
+        },
+        {
+          "height": 126,
+          "label": "Events",
+          "width": 93.328125,
+          "x": 160,
+          "y": 788.8671875
+        }
+      ],
+      "overflow": false,
+      "width": 320
+    }
+  ],
+  "preview": "https://afghan-hub-d7dh97387-afghan-hub-s-projects.vercel.app/",
+  "previewChecks": [
+    "1440 desktop: one canvas, no overflow",
+    "390 mobile: actual viewport and readable destinations",
+    "Expandable mobile menu opened and closed",
+    "Fera Media structured public search, Dari announcement, real detail navigation"
+  ]
+}

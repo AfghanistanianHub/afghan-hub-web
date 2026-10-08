@@ -1,0 +1,97 @@
+{
+  "environment": "fresh local Supabase; synthetic accounts only",
+  "results": [
+    {
+      "scenario": "A: registration and token confirmation",
+      "expected": "Unconfirmed sign-in refused; confirmation and password sign-in succeed",
+      "status": "pass",
+      "actual": "Unconfirmed sign-in refused; confirmation and password sign-in succeed"
+    },
+    {
+      "scenario": "A: onboarding/profile update",
+      "expected": "Own profile is created and updated; onboarding access state changes",
+      "status": "pass",
+      "actual": "Own profile is created and updated; onboarding access state changes"
+    },
+    {
+      "scenario": "A: session refresh/sign-out/sign-in",
+      "expected": "Refreshed session belongs to same user; local sign-out clears session; sign-in succeeds",
+      "status": "pass",
+      "actual": "Refreshed session belongs to same user; local sign-out clears session; sign-in succeeds"
+    },
+    {
+      "scenario": "A: profile visibility and role tampering",
+      "expected": "Private profile hidden from other members; anonymous directory hidden; role escalation refused",
+      "status": "pass",
+      "actual": "Private profile hidden from other members; anonymous directory hidden; role escalation refused"
+    },
+    {
+      "scenario": "B: request/cancel/decline/accept/disconnect",
+      "expected": "Each connection transition respects actor and recipient",
+      "status": "pass",
+      "actual": "Each connection transition respects actor and recipient"
+    },
+    {
+      "scenario": "B: invalid and unrelated actions",
+      "expected": "Self requests and unrelated connection reads are rejected/hidden",
+      "status": "pass",
+      "actual": "Self requests and unrelated connection reads are rejected/hidden"
+    },
+    {
+      "scenario": "C: direct conversation and messages",
+      "expected": "Connected members create a conversation, send and retrieve a real message",
+      "status": "pass",
+      "actual": "Connected members create a conversation, send and retrieve a real message"
+    },
+    {
+      "scenario": "C: membership and invalid recipient boundaries",
+      "expected": "Unrelated member cannot read/send messages or conversations; invalid recipient refused",
+      "status": "pass",
+      "actual": "Unrelated member cannot read/send messages or conversations; invalid recipient refused"
+    },
+    {
+      "scenario": "D: notification creation/read/privacy/idempotence",
+      "expected": "Generated notification belongs to recipient; unrelated read/mark refused; repeated read is safe",
+      "status": "pass",
+      "actual": "Generated notification belongs to recipient; unrelated read/mark refused; repeated read is safe"
+    },
+    {
+      "scenario": "C/D: realtime delivery and reconnection",
+      "expected": "Messages and notification changes arrive after subscription and resubscription",
+      "status": "pass",
+      "actual": "Messages and notification changes arrive after subscription and resubscription"
+    },
+    {
+      "scenario": "E: organizations ownership/moderation/CRUD",
+      "expected": "Owner can create/update/delete; outsiders cannot modify drafts; moderator publishes",
+      "status": "pass",
+      "actual": "Owner can create/update/delete; outsiders cannot modify drafts; moderator publishes"
+    },
+    {
+      "scenario": "E: opportunities ownership/moderation/CRUD",
+      "expected": "Owner can create/update/delete; outsiders cannot modify drafts; moderator publishes",
+      "status": "pass",
+      "actual": "Owner can create/update/delete; outsiders cannot modify drafts; moderator publishes"
+    },
+    {
+      "scenario": "E: events ownership/moderation/CRUD",
+      "expected": "Owner can create/update/delete; outsiders cannot modify drafts; moderator publishes",
+      "status": "pass",
+      "actual": "Owner can create/update/delete; outsiders cannot modify drafts; moderator publishes"
+    },
+    {
+      "scenario": "Cleanup: captured local fixtures",
+      "expected": "Only fixture IDs created by this run are deleted",
+      "status": "pass",
+      "actual": "Only fixture IDs created by this run are deleted"
+    }
+  ],
+  "limitations": [
+    "API/RLS integration, not browser UI E2E",
+    "Confirmation token tested; email delivery and confirmation redirect UI not verified",
+    "Realtime resubscription tested; network-level transport interruption not simulated",
+    "Unread badge UI and navigation not covered by this API suite"
+  ],
+  "testedCommit": "0d2144eb41646730b1a9ba4011e643efb25271f7",
+  "evidence": "https://github.com/AfghanistanianHub/afghan-hub-web/actions/runs/37736285676/job/113176442533"
+}
