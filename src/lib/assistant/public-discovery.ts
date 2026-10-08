@@ -35,7 +35,8 @@ export function planPublicDiscovery(query: string, filters: DiscoveryFilters = {
   const thisMonth = /\bthis month\b|این ماه|دې میاشتې/iu.test(query);
   if (thisMonth) topic = topic.replace(/این ماه|دې میاشتې|\bthis month\b/giu, " ").trim();
   if (nativePlace) topic = topic.replace(nativePlace, " ").trim();
-  return { kinds, people: people || (!!previous?.people && refinement), topic: topic.slice(0, 80), location: location.slice(0, 60), thisMonth: thisMonth || (!!previous?.thisMonth && refinement) };
+  const exclusiveArea = /^(?:only|just|فقط|تنها|یوازې)\s/iu.test(query) && !!inferred.entityType && inferred.entityType !== "profile";
+  return { kinds, people: people || (!!previous?.people && refinement && !exclusiveArea), topic: topic.slice(0, 80), location: location.slice(0, 60), thisMonth: thisMonth || (!!previous?.thisMonth && refinement) };
 }
 
 export function discoveryTerms(topic: string) {

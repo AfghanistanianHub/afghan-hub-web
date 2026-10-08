@@ -100,6 +100,9 @@ test('essential clarifications do not fabricate results or query public data pre
   const h=harness({planner:async()=>({...decision,clarification:'Which city would you like to connect in?'})});
   const data=await(await h.POST(request({query:'help me connect'}))).json();
   assert.equal(data.clarification,'Which city would you like to connect in?');assert.deepEqual(data.results,[]);assert.equal(h.calls.length,0);
+  const follow=harness({planner:async input=>{assert.equal(input.clarification,data.clarification);assert.deepEqual(input.context,data.plan);return {...decision,plan:{...decision.plan,location:input.query}};},rows:{organizations:[listing('actual-organization')]}});
+  const answer=await(await follow.POST(request({query:'Vancouver',context:data.plan,clarification:data.clarification}))).json();
+  assert.equal(answer.engine,'model-assisted');assert.equal(answer.results[0].href,'/explore/organizations/actual-organization');
 });
 test('guided answers override inferred model filters and avoid needless clarification', async () => {
   const h=harness({planner:async()=>({...decision,clarification:'Which city?'})});const data=await(await h.POST(request({query:'Find opportunities',filters:{goal:'Find opportunities',topic:'technology',location:'Toronto'}}))).json();
@@ -112,6 +115,7 @@ test('bounded context preserves date, interest and location for explicit follow-
     assert.deepEqual(data.plan.kinds,['opportunities']);assert.equal(data.plan.topic,'arts');assert.equal(data.plan.location,'Vancouver');assert.equal(data.plan.thisMonth,true);
   }
   const data=await(await h.POST(request({query:'Anywhere',context}))).json();assert.equal(data.plan.location,'');assert.equal(data.plan.topic,'arts');
+  const only=await(await h.POST(request({query:'Only businesses',context:{...context,people:true}}))).json();assert.equal(only.plan.people,false);
   assert.equal((await h.POST(request({query:'art',context:{...context,kinds:['profiles']}}))).status,400);
 });
 test('province aliases match the actual province field without treating BC as a substring', () => {

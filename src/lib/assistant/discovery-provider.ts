@@ -24,7 +24,7 @@ export const configuredDiscoveryPlanner: DiscoveryPlanner = async (request, sign
     ? (await import("@ai-sdk/openai")).createOpenAI({ apiKey: credential })(modelId)
     : createGateway({ apiKey: credential })(modelId);
   const result = await generateText({
-    model, system, prompt: JSON.stringify({ query: request.query, language: request.language, previous: request.context ?? null, filters: request.filters ?? null }),
+    model, system, prompt: JSON.stringify({ query: request.query, language: request.language, previous: request.context ?? null, previousQuestion: request.context ? request.clarification ?? null : null, filters: request.filters ?? null }),
     output: Output.object({ schema: discoveryDecisionSchema }),
     abortSignal: AbortSignal.any([signal, AbortSignal.timeout(6000)]),
     maxOutputTokens: 600, maxRetries: 0,
