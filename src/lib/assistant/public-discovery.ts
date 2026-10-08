@@ -20,9 +20,9 @@ export function planPublicDiscovery(query: string, filters: DiscoveryFilters = {
   if (previous && locationFollowup) query = `Only ${locationFollowup[1]}`;
   if (previous && replacement) query = query.replace(/\b(?:instead|rather)\b/giu, " ").trim();
   if (previous && eventFollowup) query = query.replace(/^are there any\s+/iu, " ").trim();
-  const refinement = (!!previous && !!(topicalFollowup || locationFollowup || replacement || eventFollowup)) || /^(?:only|just|anywhere|all locations|فقط|تنها|یوازې|هر جا|هر ځای)(?:\s|$)|(?:\b(?:too|also|as well)\b|(?:^|\s)هم(?:\s|$))/iu.test(query);
+  const refinement = (!!previous && !!(topicalFollowup || locationFollowup || replacement || eventFollowup)) || /^(?:only|just|anywhere|all locations|فقط|تنها|یوازې|هر جا|همه جا|هر ځای)(?:\s|$)|(?:\b(?:too|also|as well)\b|(?:^|\s)هم(?:\s|$))/iu.test(query);
   const previousEntity = previous?.kinds.length === 1 ? ({businesses:"business",organizations:"organization",opportunities:"opportunity",events:"event"} as const)[previous.kinds[0]] : undefined;
-  const context = resolveNavigatorContext(query.replace(/^(only|just)\s+(?:in|near|at)\s+/iu, "$1 "), refinement && previous ? { topic: previous.topic, city: previous.location || undefined, entityType: previousEntity } : undefined);
+  const context = resolveNavigatorContext(query.replace(/^(only|just|فقط|تنها|یوازې)\s+(?:in|near|at|در|په)\s+/iu, "$1 "), refinement && previous ? { topic: previous.topic, city: previous.location || undefined, entityType: previousEntity } : undefined);
   const goal = filters.goal ?? query;
   const inferred = inferAssistantIntent(goal);
   const explicit = discoveryKinds.filter(kind => inferAssistantIntent(kind).entityType &&

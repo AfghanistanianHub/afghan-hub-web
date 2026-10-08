@@ -10,6 +10,7 @@ on:
   pull_request:
     branches:
       - main
+      - feat/approved-community-homepage
     paths-ignore:
       - "docs/**"
       - "**/*.md"
