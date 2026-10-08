@@ -1,6 +1,6 @@
 "use client";
 
-export type AssistantAnalyticsLanguage = "en" | "fa" | "ps";
+export type AssistantAnalyticsLanguage = "en" | "fa-AF" | "fa" | "ps";
 export type AssistantAnalyticsEntityType =
   | "profile"
   | "business"
