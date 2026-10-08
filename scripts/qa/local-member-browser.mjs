@@ -251,10 +251,11 @@ try {
       const path = `/${table}/${row.slug}`;
       await pathname(pageA, path);
       await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes(${JSON.stringify(title)})`), 'owner draft detail');
+      const unavailableHeading = table === 'organizations' ? 'Organization not found' : 'This page isn’t available.';
       await visit(pageB, path);
-      await until(() => pageB.evaluate(`document.querySelector('main')?.innerText.includes('404')`), 'foreign draft hidden');
+      await until(() => pageB.evaluate(`document.querySelector('main h1')?.textContent.trim()===${JSON.stringify(unavailableHeading)} && !document.querySelector('main')?.innerText.includes(${JSON.stringify(title)})`), 'foreign draft hidden');
       await visit(pageB, `${path}/edit`);
-      await until(() => pageB.evaluate(`document.querySelector('main')?.innerText.includes('404') && !document.querySelector(${JSON.stringify(`[name=${titleField}]`)})`), 'foreign edit refused');
+      await until(() => pageB.evaluate(`document.querySelector('main h1')?.textContent.trim()===${JSON.stringify(unavailableHeading)} && !document.querySelector(${JSON.stringify(`[name=${titleField}]`)})`), 'foreign edit refused');
       await visit(pageA, `${path}/edit`);
       const edited = `${title} edited`;
       await fill(pageA, `[name=${titleField}]`, edited);
