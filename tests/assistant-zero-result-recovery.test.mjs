@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
 
+const localeResources = fs.readFileSync(new URL("../src/lib/assistant/member-navigator-copy.ts", import.meta.url), "utf8");
 const component = fs.readFileSync(
   new URL("../src/components/assistant/community-navigator.tsx", import.meta.url),
   "utf8",
@@ -20,9 +21,9 @@ test("zero-result state provides direct recovery destinations", () => {
 });
 
 test("zero-result state remains multilingual", () => {
-  assert.match(component, /Browse people/);
-  assert.match(component, /مرور افراد/);
-  assert.match(component, /خلک وګورئ/);
+  assert.match(localeResources, /Browse people/);
+  assert.match(localeResources, /مرور افراد/);
+  assert.match(localeResources, /خلک وګورئ/);
 });
 
 test("recovery analytics stores only broad destination categories", () => {

@@ -102,7 +102,8 @@ try{
      note(`subscribe cycle ${cycle}`);
      const seen=new Set(),systems=[];const channel=b.client.channel(`qa-${stamp}-${cycle}`).on('system',{},payload=>systems.push({status:payload.status,extension:payload.extension})).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:`conversation_id=eq.${conversationId}`},()=>seen.add('message')).on('postgres_changes',{event:'*',schema:'public',table:'notifications',filter:`recipient_id=eq.${b.id}`},()=>seen.add('notification'));channels.push({client:b.client,channel});
      await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Subscription timeout')),10000);channel.subscribe(state=>{if(state==='SUBSCRIBED'){clearTimeout(timer);resolve();}if(state==='CHANNEL_ERROR'){clearTimeout(timer);reject(new Error('Subscription error'));}});});
-     const readiness=Date.now();while(!systems.some(value=>value.status==='ok')&&Date.now()-readiness<10000)await new Promise(r=>setTimeout(r,100));
+     const readiness=Date.now();while(!systems.some(value=>value.extension==='postgres_changes'&&value.status==='ok')&&Date.now()-readiness<10000)await new Promise(r=>setTimeout(r,100));
+     assert.ok(systems.some(value=>value.extension==='postgres_changes'&&value.status==='ok'),'PostgreSQL stream must become ready');
      console.log(`Realtime system statuses: ${JSON.stringify(systems)}`);
      note(`send cycle ${cycle}`);await data(a.client.from('messages').insert({conversation_id:conversationId,sender_id:a.id,body:`Synthetic realtime ${cycle}`}));
      const start=Date.now();while(seen.size<2&&Date.now()-start<10000)await new Promise(r=>setTimeout(r,100));note(`delivery cycle ${cycle}: ${[...seen].sort().join(',') || 'none'}`);

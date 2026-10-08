@@ -50,12 +50,14 @@ export function RealtimeMessageRefresh({
           router.refresh();
         },
       )
-      .subscribe((status) => {
-        // Recover changes missed before joining or while disconnected.
-        if (status === "SUBSCRIBED") {
+      .on("system", {}, (payload) => {
+        // A joined socket can precede PostgreSQL readiness. Refetch once the
+        // stream is ready, including after rejoining, to recover missed changes.
+        if (payload.extension === "postgres_changes" && payload.status === "ok") {
           router.refresh();
         }
-      });
+      })
+      .subscribe();
 
     return () => {
       void supabase.removeChannel(channel);
