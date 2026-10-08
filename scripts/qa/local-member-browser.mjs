@@ -24,13 +24,14 @@ assert.ok(chromePath, 'The Linux CI runner must provide sandboxed Chrome');
 const users = [], pages = [], children = [], results = [];
 const password = `QA-${randomUUID()}-aA1!`;
 const stamp = randomUUID().slice(0, 8);
-let browser, profile, scenario = 'prerequisites';
+let browser, profile, fixtureB, conversationId, step = 'prerequisites', scenario = 'prerequisites';
 async function data(promise) {
   const result = await promise;
   if (result.error) throw new Error('Local fixture request failed; details withheld');
   return result.data;
 }
 async function until(fn, label, timeout = 20000) {
+  step = label;
   const end = Date.now() + timeout;
   while (Date.now() < end) {
     try { const value = await fn(); if (value) return value; } catch { /* navigation/readiness */ }
@@ -56,6 +57,13 @@ async function page() {
   const { targetId } = await browser.send('Target.createTarget', { url: 'about:blank', browserContextId });
   const connection = new DevTools();
   await connection.connect(`ws://127.0.0.1:${browser.port}/devtools/page/${targetId}`);
+  connection.telemetry = { sockets: 0, frames: 0, socketErrors: 0 };
+  connection.socket.addEventListener('message', event => {
+    const packet = JSON.parse(event.data);
+    if (packet.method === 'Network.webSocketCreated') connection.telemetry.sockets++;
+    if (packet.method === 'Network.webSocketFrameReceived') connection.telemetry.frames++;
+    if (packet.method === 'Network.webSocketFrameError') connection.telemetry.socketErrors++;
+  });
   pages.push(connection);
   await connection.send('Page.enable');
   await connection.send('Runtime.enable');
@@ -120,6 +128,7 @@ try {
   browser = new DevTools(); browser.port = portFile.split('\n')[0];
   await browser.connect(`ws://127.0.0.1:${browser.port}${portFile.split('\n')[1]}`);
   const a = await member('a'), b = await member('b');
+  fixtureB = b.id;
   const pageA = await page(), pageB = await page();
   await check('Chrome renderer sandbox enabled', async () => {
     await pageA.send('Page.navigate', { url: 'chrome://sandbox' });
@@ -160,6 +169,7 @@ try {
   });
   const conversationPath = await pageA.evaluate('location.pathname');
   assert.match(conversationPath, /^\/messages\/[0-9a-f-]{36}$/);
+  conversationId = conversationPath.split('/').at(-1);
   await check('Realtime unread notification and notification navigation', async () => {
     await visit(pageB, '/dashboard');
     const before = await pageB.evaluate(`Number(document.querySelector('button[aria-controls][aria-haspopup=dialog][aria-label^="Notifications"]')?.getAttribute('aria-label')?.match(/([0-9]+) unread/)?.[1] ?? 0)`);
@@ -190,13 +200,21 @@ try {
     await visit(pageB, '/dashboard'); await pathname(pageB, '/dashboard');
   });
 } catch (error) {
-  results.push({ scenario, status: 'fail', diagnostic: { type: error.name, line: error.stack?.match(/local-member-browser\.mjs:(\d+)/)?.[1] } });
+  results.push({ scenario, status: 'fail', diagnostic: { step, type: error.name, line: error.stack?.match(/local-member-browser\.mjs:(\d+)/)?.[1] } });
   const states = [];
   for (const page of pages) {
-    try { states.push(await page.evaluate(`({width:innerWidth,ready:document.readyState,header:!!document.querySelector('header'),profileForm:!!document.querySelector('[name=last_name]'),loginForm:!!document.querySelector('#join'),errorBoundary:document.body.innerText.includes('Something went wrong'),applicationError:document.body.innerText.includes('Application error'),alert:!!document.querySelector('[role=alert]')})`)); } catch { states.push({unavailable:true}); }
+    try { states.push({telemetry:page.telemetry,dom:await page.evaluate(`({width:innerWidth,ready:document.readyState,header:!!document.querySelector('header'),profileForm:!!document.querySelector('[name=last_name]'),loginForm:!!document.querySelector('#join'),errorBoundary:document.body.innerText.includes('Something went wrong'),applicationError:document.body.innerText.includes('Application error'),alert:!!document.querySelector('[role=alert]'),composer:!!document.querySelector('textarea[name=message]'),composerEmpty:document.querySelector('textarea[name=message]')?.value==='',messagePresent:document.body.textContent.includes(${JSON.stringify(message('notification'))}),bells:[...document.querySelectorAll('button[aria-label^=Notifications]')].map(node=>node.getAttribute('aria-label'))})`)}); } catch { states.push({unavailable:true}); }
   }
   results.at(-1).browserStates = states;
-  console.error(`FAIL ${scenario}; sanitized browser states: ${JSON.stringify(states)}`);
+  if (fixtureB && conversationId) {
+    try {
+      const notifications = await data(admin.from('notifications').select('id,read_at').eq('recipient_id', fixtureB).eq('conversation_id', conversationId));
+      const messages = await data(admin.from('messages').select('id').eq('conversation_id', conversationId));
+      results.at(-1).databaseState = { notifications: notifications.length, unread: notifications.filter(row=>!row.read_at).length, messages: messages.length };
+      console.log('Fixture database counts: '+JSON.stringify(results.at(-1).databaseState));
+    } catch { /* Never expose provider payloads */ }
+  }
+  console.error(`FAIL ${scenario} at ${step}; sanitized browser states: ${JSON.stringify(states)}`);
   process.exitCode = 1;
 } finally {
   for (const page of pages) page.close();
