@@ -129,7 +129,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   });
   t.after(() => new Promise(resolve => fixture.close(resolve)));
   const fixturePort = await listen(fixture);
-  const env = { ...process.env, NEXT_PUBLIC_SUPABASE_URL: `http://127.0.0.1:${fixturePort}`, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "layout-fixture-public-key" };
+  const env = { ...process.env, NAVIGATOR_MODEL_PROVIDER: "structured", NEXT_PUBLIC_SUPABASE_URL: `http://127.0.0.1:${fixturePort}`, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "layout-fixture-public-key" };
   const build = launch(process.execPath, [nextCli, "build"], env);
   t.after(() => build.child.kill());
   const buildCode = await new Promise(resolve => build.child.on("exit", resolve));
@@ -139,7 +139,8 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   await new Promise(resolve => portProbe.close(resolve));
   const app = launch(process.execPath, [nextCli, "start", "--hostname", "127.0.0.1", "--port", String(appPort)], env);
   t.after(() => app.child.kill());
-  const appUrl = `http://127.0.0.1:${appPort}`;
+  // Next normalizes loopback request URLs to localhost; keep browser Origin identical.
+  const appUrl = `http://localhost:${appPort}`;
   await waitFor(async () => (await fetch(appUrl)).ok, "local production server");
   const profile = await fs.mkdtemp(path.join(os.tmpdir(), "afghan-browser-"));
   const chrome = launch(chromePath, ["--headless=new", "--enable-automation", "--no-first-run", "--no-default-browser-check", "--remote-debugging-port=0", `--user-data-dir=${profile}`, "about:blank"], process.env);
@@ -191,6 +192,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   assert.ok(await page.evaluate("document.querySelector('[data-community-node=people]').matches(':focus-visible')"));
   assert.deepEqual(await page.evaluate("document.querySelector('[data-hero-region]').getBoundingClientRect().toJSON()"),bounds);
   await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
+  await waitFor(()=>page.evaluate("matchMedia('(prefers-reduced-motion: reduce)').matches && document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length===0"),"network reduced-motion resting state");
   assert.equal(await page.evaluate("document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length"),0);
   await page.send("Emulation.setEmulatedMedia",{features:[]});
   // Public guided discovery is exercised against the isolated published-listing fixture.
@@ -204,7 +206,20 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   await waitFor(()=>page.evaluate("document.querySelector('#ai-navigator article')?.textContent.includes('Your next steps')"),"public retrieval");
   assert.ok(await page.evaluate("!!document.querySelector('#ai-navigator article a[href^=\"/explore/events/\"]')"),"Grounded public result links");
   await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent==='Restart').click()");
+  await waitFor(()=>page.evaluate("document.querySelectorAll('#ai-navigator article').length===0"),"Navigator restart clears conversation");
   assert.equal(await page.evaluate("document.querySelectorAll('#ai-navigator article').length"),0);
+
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent.includes('Not sure where')).click()");
+  await page.evaluate("document.querySelector('#navigator-guide-input').focus()");
+  await page.send("Input.insertText",{text:"Organizations in Vancouver"});
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent==='Continue').click()");
+  await waitFor(()=>page.evaluate("document.querySelector('#ai-navigator h3')?.textContent.includes('Which area') && document.querySelector('#ai-navigator').textContent.includes('2 / 2')"),"known city reduces guided questions");
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent==='Back').click()");
+  await waitFor(()=>page.evaluate("document.querySelector('#navigator-guide-input')?.value==='Organizations in Vancouver'"),"Back preserves free-text answer");
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent==='Continue').click()");
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent==='Skip').click()");
+  await waitFor(()=>page.evaluate("!!document.querySelector('#ai-navigator article a[href^=\"/explore/organizations/\"]')"),"adaptive guided public result");
+  assert.equal(await page.evaluate("document.querySelector('[data-discovery-engine]')?.dataset.discoveryEngine"),"structured-search");
 
   // Single physical taps use the hero's real destinations, including signed-out member routing.
   await page.send("Emulation.setDeviceMetricsOverride",{width:390,height:1000,deviceScaleFactor:1,mobile:true});
