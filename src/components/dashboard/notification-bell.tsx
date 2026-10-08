@@ -13,6 +13,7 @@ import {
 } from "@/app/(dashboard)/notifications/actions";
 import { ExternalImage } from "@/components/ui/external-image";
 import { createClient } from "@/lib/supabase/client";
+import { subscribeMemberChannel } from "@/lib/supabase/member-realtime";
 
 export type NotificationSummary = {
   id: string;
@@ -97,12 +98,9 @@ export function NotificationBell({ currentUserId, notifications, unreadCount, un
         if (payload.extension === "postgres_changes" && payload.status === "ok") {
           router.refresh();
         }
-      })
-      .subscribe();
+      });
 
-    return () => {
-      void supabase.removeChannel(channel);
-    };
+    return subscribeMemberChannel(supabase, channel);
   }, [currentUserId, router]);
 
   useEffect(() => {

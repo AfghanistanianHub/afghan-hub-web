@@ -16,6 +16,7 @@ for (const [file,component,props] of [
    if(name==='react/jsx-runtime')return {jsx:()=>null,jsxs:()=>null};
    if(name==='next/navigation')return {useRouter:()=>({refresh(){refreshes++;}})};
    if(name==='@/lib/supabase/client')return {createClient:()=>({channel:()=>channel,removeChannel(value){assert.equal(value,channel);removed=true;}})};
+   if(name==='@/lib/supabase/member-realtime')return {subscribeMemberChannel(client,channel){channel.subscribe();return ()=>client.removeChannel(channel);}};
    if(name.endsWith('.css'))return {default:{}};
    return {};
  }});
