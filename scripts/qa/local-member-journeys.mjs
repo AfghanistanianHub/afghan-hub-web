@@ -21,7 +21,7 @@ const stamp=randomUUID().slice(0,8);
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 let step='start';
 const note=value=>{step=value;};
-const data=async promise=>{const r=await promise;assert.ifError(r.error);return r.data;};
+const data=async promise=>{const r=await promise;if(r.error){const error=new Error('Database request failed; details withheld');error.code=r.error.code;throw error;}return r.data;};
 async function check(scenario,expected,fn){
  try{step='start';await fn();results.push({scenario,expected,status:'pass',actual:expected});console.log(`PASS ${scenario}`);}
  catch(error){const code=/^[A-Z0-9_]{3,30}$/.test(error.code??'')?error.code:error.name;const line=error.stack?.split('\n').find(value=>value.includes('local-member-journeys.mjs:'))?.match(/:(\d+):\d+\)?$/)?.[1];const diagnostic={step,code,line};results.push({scenario,expected,status:'fail',actual:'Assertion failed; sensitive provider details withheld',diagnostic});console.error(`FAIL ${scenario} ${JSON.stringify(diagnostic)}`);}
@@ -97,6 +97,7 @@ try{
    await data(b.client.rpc('mark_notification_read',{target_notification_id:id}));await data(b.client.rpc('mark_notification_read',{target_notification_id:id}));assert.ok((await data(b.client.from('notifications').select('read_at').eq('id',id)))[0].read_at);
  });
  await check('C/D: realtime delivery and reconnection','Messages and notification changes arrive after subscription and resubscription',async()=>{
+   await b.client.realtime.setAuth((await data(b.client.auth.getSession())).session.access_token);
    for(let cycle=0;cycle<2;cycle++){
      note(`subscribe cycle ${cycle}`);
      const seen=new Set();const channel=b.client.channel(`qa-${stamp}-${cycle}`).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:`conversation_id=eq.${conversationId}`},()=>seen.add('message')).on('postgres_changes',{event:'*',schema:'public',table:'notifications',filter:`recipient_id=eq.${b.id}`},()=>seen.add('notification'));channels.push({client:b.client,channel});
@@ -108,7 +109,8 @@ try{
  });
  // Only the newly created local fixture receives moderation privilege.
  assert.match(moderator.id,uuid);
- execFileSync('docker',['exec','supabase_db_afghan-hub-local-journey','psql','-U','postgres','-d','postgres','-v','ON_ERROR_STOP=1','-c',`update public.profiles set role='moderator' where id='${moderator.id}'::uuid`],{stdio:['ignore','pipe','pipe']});
+ await data(admin.from('profiles').update({role:'moderator'}).eq('id',moderator.id));
+ assert.equal(await data(moderator.client.rpc('can_moderate')),true,'Local moderator fixture must be correctly provisioned');
  for(const [table,owner,payload,rpc,param] of [
    ['organizations','owner_id',{name:'Synthetic QA organization'},'moderate_organization','target_organization_id'],
    ['opportunities','author_id',{title:'Synthetic QA opportunity',description:'Disposable QA description',type:'job'},'moderate_opportunity','target_opportunity_id'],
