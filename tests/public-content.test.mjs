@@ -105,3 +105,15 @@ test("query failures and missing configuration remain distinguishable from empty
   assert.equal(result.unavailable, false);
   assert.equal(result.items.length, 0);
 });
+
+test('Navigator field filters bound and sanitize user input while preserving public eligibility', async () => {
+  const app = loadContent();
+  await app.load('opportunities', {discoveryTerms:['technology', 'a,b).or(status.eq.draft'],discoveryLocation:'Vancouver',limit:24});
+  const filter=app.calls.find(call=>call[0]==='or')[1];
+  assert.match(filter,/deadline\.is\.null/);
+  assert.match(filter,/summary\.ilike\.%technology%/);
+  assert.doesNotMatch(filter,/\btype\.ilike/); // opportunity_type is a PostgreSQL enum.
+  assert.match(filter,/city\.ilike\.%Vancouver%/);
+  assert.doesNotMatch(filter,/a,b\)\.or\(status\.eq\.draft/);
+  assert.ok(app.calls.some(call=>call[0]==='eq'&&call[1]==='status'&&call[2]==='published'));
+});

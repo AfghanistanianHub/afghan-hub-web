@@ -1,0 +1,34 @@
+.network { position:relative; width:100%; min-width:0; height:430px; }
+.geometry { position:absolute; width:100%; height:100%; inset:0; pointer-events:none; animation:appear 700ms both; }
+.branch { stroke:#b69bcc; transition:opacity 180ms,stroke 180ms; }
+.branch circle { fill:currentColor; stroke:none; }
+.branch path { stroke-dasharray:1000; stroke-dashoffset:0; animation:draw 900ms ease-out both; }
+.people,.events { color:#624291; }
+.businesses,.opportunities { color:#bb542c; }
+.organizations { color:#465fb0; }
+.businesses.branch,.opportunities.branch { stroke:#e6b69f; }
+.organizations.branch { stroke:#b3bfe2; }
+.node { position:absolute; display:flex; flex-direction:column; align-items:center; width:128px; min-height:118px; text-align:center; padding:6px; border-radius:12px; animation:appear 500ms both; transition:color 180ms; }
+.node.people { left:40.5%; top:4%; animation-delay:100ms; }
+.node.businesses { left:12%; top:23%; animation-delay:160ms; }
+.node.organizations { right:7%; top:22%; animation-delay:220ms; }
+.node.opportunities { left:1%; top:51%; animation-delay:280ms; }
+.node.events { right:0; top:51%; animation-delay:340ms; }
+.icon { width:47px; height:47px; border:1px solid currentColor; border-radius:50%; display:grid; place-items:center; background:color-mix(in srgb,var(--background) 94%,white); transition:background 180ms,box-shadow 180ms,transform 180ms; }
+.label { margin-top:7px; color:#19152b; font:18px/1.2 Georgia,serif; transition:color 180ms; }
+.description { margin-top:5px; font-size:11px; line-height:1.45; color:#615b6e; max-width:110px; }
+.node:hover .icon,.node:focus-visible .icon { background:#f1e8f9; box-shadow:0 0 0 5px #6242910b; transform:translateY(-2px); }
+.node:hover .label,.node:focus-visible .label { color:var(--primary); }
+.node:focus-visible { outline:2px solid var(--primary); outline-offset:3px; }
+.node:active .icon { transform:translateY(0); }
+.network:has(.node:hover) .branch,.network:has(.node:focus-visible) .branch { opacity:.3; }
+.network:has(.node.people:is(:hover,:focus-visible)) .branch.people,
+.network:has(.node.businesses:is(:hover,:focus-visible)) .branch.businesses,
+.network:has(.node.organizations:is(:hover,:focus-visible)) .branch.organizations,
+.network:has(.node.opportunities:is(:hover,:focus-visible)) .branch.opportunities,
+.network:has(.node.events:is(:hover,:focus-visible)) .branch.events { opacity:1; stroke:currentColor; stroke-width:1.5; }
+@keyframes appear { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+@keyframes draw { from { stroke-dashoffset:1000; } to { stroke-dashoffset:0; } }
+@media(max-width:1120px) and (min-width:961px) { .network { height:370px; } .node { width:114px; } .node.people { left:37%; } .node.organizations { right:4%; } }
+@media(max-width:600px) { .network { height:auto; display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:18px 0; padding:16px 0 26px; } .geometry { height:100%; opacity:.6; } .node { position:relative; inset:auto !important; width:auto; grid-column:span 2; min-height:126px; } .node.people { grid-column:3/5; } .node.businesses { grid-column:1/3; grid-row:2; } .node.organizations { grid-column:5/7; grid-row:2; } .node.opportunities { grid-column:2/4; grid-row:3; } .node.events { grid-column:4/6; grid-row:3; } .label { font-size:17px; } .description { font-size:11px; } }
+@media(prefers-reduced-motion:reduce) { .node,.geometry,.branch path { animation:none; } .icon { transition:none; } .node:hover .icon,.node:focus-visible .icon { transform:none; } }
