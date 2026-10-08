@@ -60,6 +60,7 @@ async function page() {
   await connection.send('Page.enable');
   await connection.send('Runtime.enable');
   await connection.send('Network.enable');
+  await connection.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   return connection;
 }
 async function visit(page, path) {
