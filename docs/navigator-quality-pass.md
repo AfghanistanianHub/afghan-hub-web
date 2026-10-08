@@ -1,5 +1,7 @@
 # Homepage Navigator — implementation and activation handoff
 
+**Historical handoff for c8dd6bf.** The current reliability work supersedes its dependency, Dari and model-budget limitations; see [controlled activation](release/model-activation.md) and [localization review](release/localization-review.md). Historical test and screenshot counts below are not the current release result.
+
 ## Delivered behavior
 
 The approved homepage and its five destinations are preserved. The existing APNBC canvas remains the only particle background. Reduced-motion mode now disables network transitions as well as entrance animations; hover and keyboard focus retain immediate visual feedback.

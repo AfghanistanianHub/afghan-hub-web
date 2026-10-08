@@ -1,0 +1,19 @@
+{
+  "environment": "disposable Redis 7.4; no network or public ports",
+  "results": [
+    {
+      "scenario": "Atomic concurrent minute ceiling and expirations",
+      "status": "pass",
+      "actual": "Exactly 10 of 30 concurrent reservations accepted; fixed TTLs set"
+    },
+    {
+      "scenario": "Daily ceiling without resetting an existing expiration",
+      "status": "pass",
+      "actual": "199 to 200 accepted; next reservation denied and day TTL retained"
+    }
+  ],
+  "limitations": [
+    "Upstash HTTP transport tested with stubs; live service unconfigured",
+    "No live model calls or measured provider costs"
+  ]
+}
