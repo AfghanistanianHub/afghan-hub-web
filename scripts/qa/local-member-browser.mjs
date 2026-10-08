@@ -57,11 +57,26 @@ async function page() {
   const { targetId } = await browser.send('Target.createTarget', { url: 'about:blank', browserContextId });
   const connection = new DevTools();
   await connection.connect(`ws://127.0.0.1:${browser.port}/devtools/page/${targetId}`);
-  connection.telemetry = { sockets: 0, frames: 0, socketErrors: 0 };
+  connection.telemetry = { sockets: 0, frames: 0, socketErrors: 0, systems: [], replies: [], changes: 0, authenticatedJoins: 0, anonymousJoins: 0 };
   connection.socket.addEventListener('message', event => {
     const packet = JSON.parse(event.data);
     if (packet.method === 'Network.webSocketCreated') connection.telemetry.sockets++;
-    if (packet.method === 'Network.webSocketFrameReceived') connection.telemetry.frames++;
+    if (packet.method === 'Network.webSocketFrameReceived' || packet.method === 'Network.webSocketFrameSent') {
+      try {
+        const frame = JSON.parse(packet.params.response.payloadData);
+        if (packet.method === 'Network.webSocketFrameReceived') {
+          connection.telemetry.frames++;
+          if(frame.event === 'system') connection.telemetry.systems.push({extension:frame.payload.extension,status:frame.payload.status,permissionError:/permission|unauthoriz/i.test(frame.payload.message ?? '')});
+          if(frame.event === 'phx_reply') connection.telemetry.replies.push(frame.payload.status);
+          if(frame.event === 'postgres_changes') connection.telemetry.changes++;
+        } else if (frame.event === 'phx_join') {
+          const token = frame.payload.access_token;
+          let role = '';
+          try { role = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString()).role; } catch { /* Token is never retained */ }
+          if(role === 'authenticated') connection.telemetry.authenticatedJoins++; else connection.telemetry.anonymousJoins++;
+        }
+      } catch { /* Ignore non-JSON frames; never log raw transport data */ }
+    }
     if (packet.method === 'Network.webSocketFrameError') connection.telemetry.socketErrors++;
   });
   pages.push(connection);
