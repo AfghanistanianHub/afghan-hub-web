@@ -6,7 +6,7 @@ assert.ok(["http:", "https:"].includes(base.protocol), "Use an HTTP(S) base URL"
 assert.ok(!base.username && !base.password, "Do not put credentials in the base URL");
 const checks = [
   // PR checks still target the existing production homepage until approval.
-  ["/", 200, /One network|Rooted in community/],
+  ["/", 200, /One network|Find your people/],
   ["/about", 200, /<h1[ >]/],
   ["/privacy", 200, /info@apnbc\.ca/],
   ["/terms", 200, /info@apnbc\.ca/],
