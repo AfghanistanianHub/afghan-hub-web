@@ -28,6 +28,8 @@ jobs:
         with:
           version: 2.117.0
       - run: npm ci
+      - name: Verify atomic model budget with disposable Redis
+        run: node scripts/qa/model-budget-redis.mjs
       - name: Prepare fresh loopback-only fixture stack
         run: node scripts/qa/prepare-local-journey.mjs
       - name: Start local services and replay migrations
@@ -43,7 +45,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: local-member-journey-results
-          path: reports/local-member-journeys.json
+          path: |
+            reports/local-member-journeys.json
+            reports/local-model-budget.json
           if-no-files-found: warn
           retention-days: 14
       - name: Destroy this run's isolated stack
