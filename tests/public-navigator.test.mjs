@@ -128,3 +128,18 @@ test('English, Persian/Dari and Pashto example searches share canonical public f
     const plan=h.planPublicDiscovery(query);assert.equal(plan.location,'British Columbia');assert.equal(plan.topic,'technology');assert.deepEqual(Array.from(plan.kinds),['opportunities']);
   }
 });
+
+test('public follow-up evaluation preserves and updates only the requested dimensions',()=>{
+  const h=harness();let plan={kinds:['opportunities'],people:false,topic:'technology',location:'Toronto',thisMonth:false};
+  for(const [query,expected] of [
+    ['Only in Vancouver.',{location:'Vancouver',topic:'technology',kinds:['opportunities']}],
+    ['What about artists?',{location:'Vancouver',topic:'arts',people:true}],
+    ['Show organizations instead.',{location:'Vancouver',topic:'arts',kinds:['organizations'],people:false}],
+    ['Are there any events this month?',{location:'Vancouver',topic:'arts',kinds:['events'],thisMonth:true}],
+    ['Expand the search to British Columbia.',{location:'British Columbia',topic:'arts',kinds:['events'],thisMonth:true}],
+  ]) {
+    plan=h.planPublicDiscovery(query,{},plan);
+    for(const [key,value] of Object.entries(expected))assert.deepEqual(JSON.parse(JSON.stringify(plan[key])),value,query+' '+key);
+  }
+  const independent=h.planPublicDiscovery('Find software businesses in Toronto',{},plan);assert.deepEqual(Array.from(independent.kinds),['businesses']);assert.equal(independent.location,'Toronto');assert.equal(independent.thisMonth,false);
+});

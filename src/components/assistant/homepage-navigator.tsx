@@ -20,7 +20,7 @@ const locales = [{ value: "en", label: "English" }, { value: "fa-AF", label: "د
 export function HomepageNavigator() {
   const params = useSearchParams();
   const [language, setLanguage] = useState<NavigatorLanguage>("en");
-  const t = navigatorCopy[language === "fa-AF" ? "fa" : language];
+  const t = navigatorCopy[language];
   const [query, setQuery] = useState("");
   const [turns, setTurns] = useState<Turn[]>([]);
   const [pending, setPending] = useState(false);
