@@ -18,13 +18,14 @@ const status = JSON.parse(execFileSync('supabase', ['status', '-o', 'json'], { c
 const apiUrl = requireLocalTarget(status.API_URL);
 assert.ok(status.ANON_KEY && status.SERVICE_ROLE_KEY);
 const appUrl = requireLocalTarget('http://localhost:3100', 3100);
+const mailUrl = requireLocalTarget('http://127.0.0.1:55324', 55324);
 const admin = createClient(apiUrl, status.SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
 const chromePath = ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/opt/google/chrome/chrome'].find(existsSync);
 assert.ok(chromePath, 'The Linux CI runner must provide sandboxed Chrome');
 const users = [], pages = [], children = [], results = [], listings = [];
 const password = `QA-${randomUUID()}-aA1!`;
 const stamp = randomUUID().slice(0, 8);
-let browser, profile, fixtureB, conversationId, step = 'prerequisites', scenario = 'prerequisites';
+let browser, profile, fixtureB, conversationId, confirmationLink, step = 'prerequisites', scenario = 'prerequisites';
 async function data(promise) {
   const result = await promise;
   if (result.error) throw new Error('Local fixture request failed; details withheld');
@@ -138,6 +139,24 @@ async function onboard(page, name) {
   await click(page, 'form:has([name=first_name]) button[type=submit]');
   await pathname(page, '/dashboard');
 }
+async function deliveredConfirmation(email) {
+  const summary = await until(async () => {
+    const response = await fetch(`${mailUrl}/api/v1/messages`, {redirect:'error'});
+    assert.ok(response.ok);
+    const inbox = await response.json();
+    return inbox.messages.find(message => message.To?.some(to => to.Address === email));
+  }, 'local confirmation email delivered');
+  const response = await fetch(`${mailUrl}/api/v1/message/${encodeURIComponent(summary.ID)}`, {redirect:'error'});
+  assert.ok(response.ok);
+  const message = await response.json();
+  assert.ok(message.To.some(to => to.Address === email));
+  const links = [...message.HTML.matchAll(/href=["']([^"']+)["']/g)].map(match => match[1].replaceAll('&amp;', '&'));
+  const link = links.map(value => new URL(value)).find(url => url.origin === apiUrl && url.pathname === '/auth/v1/verify');
+  assert.ok(link, 'Email must contain the loopback Auth verification URL');
+  assert.equal(link.searchParams.get('type'), 'signup');
+  assert.equal(link.searchParams.get('redirect_to'), `${appUrl}/auth/callback?next=/dashboard&flow=signup`);
+  return link.href;
+}
 async function member(label) {
   const email = `browser-${stamp}-${label}@example.invalid`;
   const { user } = await data(admin.auth.admin.createUser({ email, password, email_confirm: true }));
@@ -163,7 +182,7 @@ try {
   const portFile = await until(async () => chrome.exitCode === null && await fs.readFile(join(profile, 'DevToolsActivePort'), 'utf8'), 'sandboxed Chrome');
   browser = new DevTools(); browser.port = portFile.split('\n')[0];
   await browser.connect(`ws://127.0.0.1:${browser.port}${portFile.split('\n')[1]}`);
-  const a = await member('a'), b = await member('b');
+  const a = {email:`browser-${stamp}-signup@example.invalid`}, b = await member('b');
   fixtureB = b.id;
   const pageA = await page(), pageB = await page();
   await check('Chrome renderer sandbox enabled', async () => {
@@ -177,9 +196,38 @@ try {
     await login(pageA, a.email, 'Incorrect-synthetic-password-1!');
     await until(() => pageA.evaluate(`location.pathname==='/login' && !!document.querySelector('[role=alert]')`), 'login error');
   });
+  await check('Missing/invalid signup callbacks show accessible errors and reject external destinations', async () => {
+    for (const query of ['flow=signup&next=https%3A%2F%2Fexample.invalid', 'flow=signup&code=synthetic-invalid-code&next=%2F%2Fexample.invalid']) {
+      await visit(pageA, `/auth/callback?${query}`);
+      await pathname(pageA, '/login');
+      await until(() => pageA.evaluate(`location.origin===${JSON.stringify(appUrl)} && !!document.querySelector('[role=alert]') && document.body.innerText.includes('confirmation link is invalid or has expired')`), 'invalid confirmation feedback');
+      await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
+    }
+  });
+  await check('Real signup, local email delivery and PKCE callback establish the browser session', async () => {
+    await visit(pageA, '/login?mode=join');
+    await fill(pageA, '[name=email]', a.email);
+    await fill(pageA, '[name=password]', password);
+    await click(pageA, '#join button[type=submit]');
+    await until(() => pageA.evaluate(`location.pathname==='/login' && document.body.innerText.includes('Account created.')`), 'signup confirmation notice');
+    const {users:registered} = await data(admin.auth.admin.listUsers());
+    const user = registered.find(user => user.email === a.email);
+    assert.ok(user); a.id = user.id; users.push(user.id);
+    assert.ok(!user.email_confirmed_at);
+    await login(pageA, a.email);
+    await until(() => pageA.evaluate(`location.pathname==='/login' && !!document.querySelector('[role=alert]')`), 'unconfirmed sign-in refused');
+    confirmationLink = await deliveredConfirmation(a.email);
+    // Navigate the authentic delivered link in the registering browser, which
+    // retains the PKCE verifier cookie; never fabricate a session or auth link.
+    await pageA.send('Page.navigate', {url:confirmationLink});
+    await pathname(pageA, '/profile');
+    const confirmed = await data(admin.auth.admin.getUserById(a.id));
+    assert.ok(confirmed.user.email_confirmed_at);
+  });
   await check('Real sign-in and onboarding forms persist both synthetic profiles', async () => {
     for (const [page, user, label] of [[pageA, a, 'MemberA'], [pageB, b, 'MemberB']]) {
-      await login(page, user.email); await onboard(page, label);
+      if (user !== a) await login(page, user.email);
+      await onboard(page, label);
       const row = await data(admin.from('profiles').select('onboarding_completed,first_name,last_name').eq('id', user.id).single());
       assert.equal(row.onboarding_completed, true); assert.equal(row.last_name, label);
     }
@@ -296,6 +344,12 @@ try {
     await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
     await visit(pageB, '/dashboard'); await pathname(pageB, '/dashboard');
   });
+  await check('Replayed confirmation cannot restore a signed-out browser session', async () => {
+    await pageA.send('Page.navigate', {url:confirmationLink});
+    await pathname(pageA, '/login');
+    await until(() => pageA.evaluate(`!!document.querySelector('[role=alert]')`), 'used confirmation feedback');
+    await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
+  });
 } catch (error) {
   results.push({ scenario, status: 'fail', diagnostic: { step, type: error.name, line: error.stack?.match(/local-member-browser\.mjs:(\d+)/)?.[1] } });
   const states = [];
@@ -325,6 +379,6 @@ try {
     results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'pass' });
   } catch { results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'fail' }); process.exitCode = 1; }
   mkdirSync('reports', { recursive: true });
-  writeFileSync('reports/local-member-browser.json', JSON.stringify({ environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, limitations: ['Signup email delivery/callback not covered; fixtures are preconfirmed', 'Organization deletion UI is absent; moderator forms, native-language review and multi-tab read receipts remain pending', 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
+  writeFileSync('reports/local-member-browser.json', JSON.stringify({ environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, limitations: ['Email delivery is verified only with disposable local Mailpit; external SMTP/deliverability and cross-device confirmation remain untested', 'Organization deletion UI is absent; moderator forms, native-language review and multi-tab read receipts remain pending', 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
   console.log(`${results.filter(r => r.status === 'pass').length} passed; ${results.filter(r => r.status === 'fail').length} failed`);
 }
