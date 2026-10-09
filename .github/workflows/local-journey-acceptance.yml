@@ -36,6 +36,8 @@ jobs:
         with:
           version: 2.117.0
       - run: npm ci
+      - name: Check browser harness syntax before starting services
+        run: node --check scripts/qa/local-member-browser.mjs
       - name: Verify atomic model budget with disposable Redis
         run: node scripts/qa/model-budget-redis.mjs
       - name: Prepare fresh loopback-only fixture stack
