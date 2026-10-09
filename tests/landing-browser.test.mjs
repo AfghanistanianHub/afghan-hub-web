@@ -428,8 +428,10 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
       for(const type of ['keyDown','keyUp'])await page.send('Input.dispatchKeyEvent',{type,key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
       assert.ok(await page.evaluate("document.querySelector('dialog').contains(document.activeElement)"),'Native dialog contains keyboard focus');
     }
-    for(const option of ['دری','پښتو']) {
+    assert.deepEqual(await page.evaluate("[...document.querySelectorAll('dialog button')].map(b=>b.textContent).filter(label=>['English','فارسی / Persian','پښتو / Pashto','دری'].includes(label))"),['English','فارسی / Persian','پښتو / Pashto'],'Navigator exposes exactly the consolidated languages');
+    for(const [option, language] of [['فارسی / Persian','fa'],['پښتو / Pashto','ps']]) {
       await page.evaluate(`[...document.querySelectorAll('dialog button')].find(b=>b.textContent===${JSON.stringify(option)}).click()`);
+      assert.equal(await page.evaluate("document.querySelector('dialog').lang"),language);
       assert.equal(await page.evaluate("document.querySelector('dialog').dir"),'rtl');
       assert.ok(await page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'RTL drawer fits');
     }
