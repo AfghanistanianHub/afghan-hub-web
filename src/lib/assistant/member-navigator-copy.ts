@@ -1,4 +1,4 @@
-import { dariMemberCopy, dariMemberDialogue, dariMemberPrompts } from "./member-navigator-copy-dari";
+export { navigatorLocales as memberNavigatorLocales } from "./navigator-language";
 
 export const memberNavigatorCopy = {
   en: {
@@ -20,7 +20,6 @@ export const memberNavigatorCopy = {
     scopeError: "This mentor catalogue exceeds the search limit. Browse people in Network.",
     readOnly: "Discovery only · no actions will be taken",
   },
-  "fa-AF": dariMemberCopy,
   fa: {
     ask: "راهنمای جامعه",
     title: "دنبال چه چیزی هستید؟",
@@ -68,7 +67,6 @@ export const memberNavigatorPrompts = {
     "Find organizations that support employment",
     "Find professionals working in technology",
   ],
-  "fa-AF": dariMemberPrompts,
   fa: [
     "فرصت‌های داوطلبی را پیدا کن",
     "رویدادهای آینده جامعه را نشان بده",
@@ -85,10 +83,8 @@ export const memberNavigatorPrompts = {
 
 export const memberNavigatorDialogue = {
   en: { retry: "Try again", privacy: "Your search is sent to Afghan Hub to find matches. Avoid sensitive personal details. Conversation stays on this page; no messages are sent to members.", title: "Community Navigator", you: "You", matches: "Matches from Afghan Hub", start: "Start a new search", grounded: "Grounded in Afghan Hub listings and public member profiles.", mentors: "Members open to mentoring", mentees: "Members looking for a mentor", preference: "Mentorship is a member preference, not an endorsement.", follow: "Keep exploring", events: "Show me events too", people: "Show me people too", anywhere: "All locations", partial: "Related member results could not be loaded.", types: { profile: "Members", event: "Events", opportunity: "Opportunities", organization: "Organizations", business: "Businesses" } },
-  "fa-AF": dariMemberDialogue,
   fa: { retry: "دوباره تلاش کنید", privacy: "جست‌وجوی شما برای یافتن نتایج به افغان هاب فرستاده می‌شود. اطلاعات حساس ننویسید. تاریخچه فقط در این جلسه می‌ماند؛ پیام یا درخواستی فرستاده نمی‌شود.", title: "راهنمای جامعه", you: "شما", matches: "نتایج از افغان هاب", start: "جست‌وجوی تازه", grounded: "بر اساس آگهی‌ها و پروفایل‌های عمومی افغان هاب.", mentors: "اعضای آماده برای راهنمایی", mentees: "اعضای در جست‌وجوی راهنما", preference: "راهنمایی ترجیح عضو است، نه تأیید صلاحیت.", follow: "به کشف ادامه دهید", events: "رویدادها را هم نشان بده", people: "افراد را هم نشان بده", anywhere: "همه جا", partial: "نتایج اعضای مرتبط بارگیری نشد.", types: { profile: "اعضا", event: "رویدادها", opportunity: "فرصت‌ها", organization: "سازمان‌ها", business: "کسب‌وکارها" } },
   ps: { retry: "بیا هڅه وکړئ", privacy: "ستاسو لټون د پایلو موندلو لپاره افغان هب ته لېږل کېږي. حساس معلومات مه لیکئ. تاریخچه یوازې په دې ناسته کې پاتې کېږي؛ پیغام یا غوښتنه نه لېږل کېږي.", title: "ټولنیز لارښود", you: "تاسو", matches: "د افغان هب پایلې", start: "نوی لټون", grounded: "د افغان هب د اعلانونو او عامه پروفایلونو پر بنسټ.", mentors: "لارښوونې ته چمتو غړي", mentees: "د لارښود په لټه کې غړي", preference: "لارښوونه د غړي خوښه ده، د وړتیا تایید نه دی.", follow: "موندنې ته دوام ورکړئ", events: "غونډې هم را وښیه", people: "خلک هم را وښیه", anywhere: "هر ځای", partial: "د اړوندو غړو پایلې ترلاسه نه شوې.", types: { profile: "غړي", event: "غونډې", opportunity: "فرصتونه", organization: "سازمانونه", business: "کاروبارونه" } },
 } as const;
 
-export const memberNavigatorLocales = [{value:"en",label:"English"},{value:"fa-AF",label:"دری"},{value:"fa",label:"فارسی"},{value:"ps",label:"پښتو"}] as const;
-export const memberNavigatorUtility = {en:{close:"Close Community Navigator",privacy:"How your search works"},"fa-AF":{close:"بستن راهنمای جامعه",privacy:"جستجو چگونه کار می‌کند؟"},fa:{close:"بستن راهنما",privacy:"جست‌وجو چگونه کار می‌کند"},ps:{close:"لارښود بند کړئ",privacy:"لټون څنګه کار کوي"}};
+export const memberNavigatorUtility = {en:{close:"Close Community Navigator",privacy:"How your search works"},fa:{close:"بستن راهنما",privacy:"جست‌وجو چگونه کار می‌کند"},ps:{close:"لارښود بند کړئ",privacy:"لټون څنګه کار کوي"}};

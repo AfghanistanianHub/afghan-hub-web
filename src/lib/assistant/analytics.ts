@@ -1,6 +1,8 @@
 "use client";
 
-export type AssistantAnalyticsLanguage = "en" | "fa-AF" | "fa" | "ps";
+import type { NavigatorLanguage } from "./navigator-language";
+
+export type AssistantAnalyticsLanguage = NavigatorLanguage;
 export type AssistantAnalyticsEntityType =
   | "profile"
   | "business"
