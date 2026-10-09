@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getSiteUrl } from "@/lib/site-url";
 
 const allowedNextPaths = new Set(["/dashboard", "/update-password"]);
 
@@ -12,9 +13,8 @@ export async function GET(request: NextRequest) {
   const flow = request.nextUrl.searchParams.get("flow") === "signup" ? "signup" : "recovery";
   const nextPath = getSafeNextPath(request.nextUrl.searchParams.get("next"));
 
-  const redirectTo = request.nextUrl.clone();
-  redirectTo.pathname = nextPath;
-  redirectTo.search = "";
+  // The upstream host can differ from the public URL behind a proxy.
+  const redirectTo = new URL(nextPath, getSiteUrl());
 
   if (code) {
     const supabase = await createClient();
