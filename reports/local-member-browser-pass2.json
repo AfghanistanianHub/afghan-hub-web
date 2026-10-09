@@ -1,0 +1,223 @@
+{
+  "environment": "disposable loopback Supabase and production Next.js server; sandboxed Chrome",
+  "results": [
+    {
+      "scenario": "Chrome renderer sandbox enabled",
+      "status": "pass"
+    },
+    {
+      "scenario": "Navigator exposes three languages and migrates legacy Persian preference with RTL",
+      "status": "pass"
+    },
+    {
+      "scenario": "Served callback redirects use configured origin despite upstream Host",
+      "status": "pass"
+    },
+    {
+      "scenario": "Anonymous protected route redirects to sign-in",
+      "status": "pass"
+    },
+    {
+      "scenario": "Wrong password shows accessible error and preserves auth boundary",
+      "status": "pass"
+    },
+    {
+      "scenario": "Missing/invalid signup callbacks show accessible errors and reject external destinations",
+      "status": "pass"
+    },
+    {
+      "scenario": "Real signup, local email delivery and PKCE callback establish the browser session",
+      "status": "pass"
+    },
+    {
+      "scenario": "Real sign-in and onboarding forms persist both synthetic profiles",
+      "status": "pass"
+    },
+    {
+      "scenario": "Member Navigator exposes the same three languages and RTL without changing profile languages",
+      "status": "pass"
+    },
+    {
+      "scenario": "Cookie sessions survive reload and remain separate",
+      "status": "pass"
+    },
+    {
+      "scenario": "Two-account connection request and acceptance through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "Realtime unread notification and notification navigation",
+      "status": "pass"
+    },
+    {
+      "scenario": "organizations: owner create/edit, draft privacy and foreign edit boundary through browser",
+      "status": "pass"
+    },
+    {
+      "scenario": "opportunities: owner create/edit, draft privacy and foreign edit boundary through browser",
+      "status": "pass"
+    },
+    {
+      "scenario": "events: owner create/edit, draft privacy and foreign edit boundary through browser",
+      "status": "pass"
+    },
+    {
+      "scenario": "Members and anonymous browsers cannot access moderation or admin team controls",
+      "status": "pass"
+    },
+    {
+      "scenario": "admin: moderation access respects admin-only team boundary",
+      "status": "pass"
+    },
+    {
+      "scenario": "admin: organizations rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "admin: opportunities rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "admin: events rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "admin: businesses rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "moderator: moderation access respects admin-only team boundary",
+      "status": "pass"
+    },
+    {
+      "scenario": "moderator: organizations rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "moderator: opportunities rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "moderator: events rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "moderator: businesses rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "Live conversation delivery and offline reconnect catch-up without reload",
+      "status": "pass"
+    },
+    {
+      "scenario": "Sign-out clears browser access while the other account remains signed in",
+      "status": "pass"
+    },
+    {
+      "scenario": "Replayed confirmation cannot restore a signed-out browser session",
+      "status": "pass"
+    },
+    {
+      "scenario": "Cleanup captured synthetic account IDs",
+      "status": "pass"
+    }
+  ],
+  "reconnectEvidence": [
+    {
+      "phase": "live",
+      "at": 1791538854030,
+      "online": true,
+      "closes": 0,
+      "open": 1,
+      "connecting": 0,
+      "route": "/messages/4e30437f-a9e9-4aeb-a6d7-a13a81c2a530",
+      "missedVisible": false,
+      "cdpActiveSockets": 29,
+      "cdpCloses": 0,
+      "authenticatedJoins": 62,
+      "ready": 28,
+      "changes": 9,
+      "refreshRequests": 861
+    },
+    {
+      "phase": "disconnected",
+      "at": 1791538859614,
+      "online": true,
+      "closes": 1,
+      "open": 0,
+      "connecting": 0,
+      "route": "/messages/4e30437f-a9e9-4aeb-a6d7-a13a81c2a530",
+      "missedVisible": false,
+      "cdpActiveSockets": 28,
+      "cdpCloses": 1,
+      "authenticatedJoins": 62,
+      "ready": 28,
+      "changes": 12,
+      "refreshRequests": 894
+    },
+    {
+      "phase": "persisted",
+      "messageIds": [
+        "ac8b1669-f826-43a6-8c7e-49524fe923e3"
+      ],
+      "count": 1
+    },
+    {
+      "phase": "missed",
+      "at": 1791538861776,
+      "online": true,
+      "closes": 2,
+      "open": 0,
+      "connecting": 0,
+      "route": "/messages/4e30437f-a9e9-4aeb-a6d7-a13a81c2a530",
+      "missedVisible": false,
+      "cdpActiveSockets": 28,
+      "cdpCloses": 2,
+      "authenticatedJoins": 62,
+      "ready": 28,
+      "changes": 12,
+      "refreshRequests": 894
+    },
+    {
+      "phase": "http-restored",
+      "pausedRefreshes": 0
+    },
+    {
+      "phase": "rejoined",
+      "at": 1791538862790,
+      "online": true,
+      "closes": 2,
+      "open": 1,
+      "connecting": 0,
+      "route": "/messages/4e30437f-a9e9-4aeb-a6d7-a13a81c2a530",
+      "missedVisible": false,
+      "cdpActiveSockets": 29,
+      "cdpCloses": 2,
+      "authenticatedJoins": 65,
+      "ready": 29,
+      "changes": 12,
+      "refreshRequests": 901
+    },
+    {
+      "phase": "caught-up",
+      "at": 1791538866145,
+      "online": true,
+      "closes": 2,
+      "open": 1,
+      "connecting": 0,
+      "route": "/messages/4e30437f-a9e9-4aeb-a6d7-a13a81c2a530",
+      "missedVisible": true,
+      "cdpActiveSockets": 29,
+      "cdpCloses": 2,
+      "authenticatedJoins": 65,
+      "ready": 29,
+      "changes": 12,
+      "refreshRequests": 915
+    }
+  ],
+  "limitations": [
+    "Email delivery is verified only with disposable local Mailpit; external SMTP/deliverability and cross-device confirmation remain untested",
+    "Organization deletion UI is absent; native-language review and multi-tab read receipts remain pending",
+    "Admin team role mutations are not tested; no production, hosted test target or model provider calls"
+  ]
+}
