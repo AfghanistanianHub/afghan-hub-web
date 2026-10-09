@@ -156,6 +156,9 @@ test('multilingual location follow-ups preserve prior topic and category', () =>
 });
 
 test('all-location follow-ups in Persian retain the current search', () => {
+ });
+
+test('all-location follow-ups in Persian and Dari retain the current search', () => {
   const h=harness();
   const previous={kinds:['events'],people:true,topic:'arts',location:'Vancouver',thisMonth:true};
   for(const query of ['Anywhere','All locations','هر جا','همه جا','هر ځای']) {

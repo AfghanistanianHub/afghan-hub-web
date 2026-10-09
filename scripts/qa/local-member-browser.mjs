@@ -76,6 +76,12 @@ const receiverProxyPort=receiverProxy.address().port;
 const password = `QA-${randomUUID()}-aA1!`;
 const stamp = randomUUID().slice(0, 8);
 let browser, profile, fixtureB, conversationId, confirmationLink, step = 'prerequisites', scenario = 'prerequisites', expectedListingPath;
+const chromePath = ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/opt/google/chrome/chrome'].find(existsSync);
+assert.ok(chromePath, 'The Linux CI runner must provide sandboxed Chrome');
+const users = [], pages = [], children = [], results = [], listings = [];
+const password = `QA-${randomUUID()}-aA1!`;
+const stamp = randomUUID().slice(0, 8);
+let browser, profile, fixtureB, conversationId, confirmationLink, step = 'prerequisites', scenario = 'prerequisites';
 async function data(promise) {
   const result = await promise;
   if (result.error) throw new Error('Local fixture request failed; details withheld');
@@ -129,6 +135,22 @@ async function page(existingContext, proxied = false) {
         if (packet.method === 'Network.webSocketFrameReceived') {
           connection.telemetry.frames++;
           if(frame.event === 'system') connection.telemetry.systems.push({at:Date.now(),stream:frame.topic?.startsWith('realtime:messages:') ? 'messages' : 'other',extension:frame.payload.extension,status:frame.payload.status,permissionError:/permission|unauthoriz/i.test(frame.payload.message ?? ''),databaseError:/database|connect/i.test(frame.payload.message ?? '')});
+async function page() {
+  const { browserContextId } = await browser.send('Target.createBrowserContext');
+  const { targetId } = await browser.send('Target.createTarget', { url: 'about:blank', browserContextId });
+  const connection = new DevTools();
+  await connection.connect(`ws://127.0.0.1:${browser.port}/devtools/page/${targetId}`);
+  connection.telemetry = { sockets: 0, frames: 0, socketErrors: 0, systems: [], replies: [], changes: 0, authenticatedJoins: 0, anonymousJoins: 0 };
+  connection.socket.addEventListener('message', event => {
+    const packet = JSON.parse(event.data);
+    if (packet.method === 'Network.webSocketCreated') connection.telemetry.sockets++;
+    if (packet.method === 'Network.webSocketFrameReceived' || packet.method === 'Network.webSocketFrameSent') {
+      try {
+        const decoded = JSON.parse(packet.params.response.payloadData);
+        const frame = Array.isArray(decoded) ? {event:decoded[3],payload:decoded[4]} : decoded;
+        if (packet.method === 'Network.webSocketFrameReceived') {
+          connection.telemetry.frames++;
+          if(frame.event === 'system') connection.telemetry.systems.push({extension:frame.payload.extension,status:frame.payload.status,permissionError:/permission|unauthoriz/i.test(frame.payload.message ?? ''),databaseError:/database|connect/i.test(frame.payload.message ?? '')});
           if(frame.event === 'phx_reply') connection.telemetry.replies.push(frame.payload.status);
           if(frame.event === 'postgres_changes') connection.telemetry.changes++;
         } else if (frame.event === 'phx_join') {
@@ -160,6 +182,8 @@ async function page(existingContext, proxied = false) {
       state() { return { online: navigator.onLine, closes, open: [...sockets].filter(socket => socket.readyState === NativeSocket.OPEN).length, connecting: [...sockets].filter(socket => socket.readyState === NativeSocket.CONNECTING).length }; }
     };
   })()` });
+  await connection.send('Runtime.enable');
+  await connection.send('Network.enable');
   await connection.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   return connection;
 }
@@ -167,6 +191,7 @@ async function visit(page, path) {
   assert.ok(path.startsWith('/') && !path.startsWith('//'));
   const navigation = await page.send('Page.navigate', { url: appUrl + path });
   if (navigation.loaderId) await until(() => page.loadedDocuments.has(navigation.loaderId), 'requested document loaded');
+  await page.send('Page.navigate', { url: appUrl + path });
   await until(() => page.evaluate(`location.origin===${JSON.stringify(appUrl)} && document.readyState==='complete'`), 'local page');
 }
 async function pathname(page, path) {
@@ -174,6 +199,7 @@ async function pathname(page, path) {
 }
 async function fill(page, selector, value) {
   const fieldSelector = selector.startsWith('form') ? selector : `form ${selector}`;
+  const fieldSelector = `form ${selector}`;
   await until(() => page.evaluate(`!!document.querySelector(${JSON.stringify(fieldSelector)})`), 'form field');
   await page.evaluate(`(() => { const field=document.querySelector(${JSON.stringify(fieldSelector)}); field.focus(); Object.getOwnPropertyDescriptor(field instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,'value').set.call(field,${JSON.stringify(value)}); field.dispatchEvent(new Event('input',{bubbles:true})); return true; })()`);
 }
@@ -287,11 +313,18 @@ try {
     await select(pageA, '#ai-navigator select', 'ps');
     await until(() => pageA.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')==='ps' && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`), 'Pashto RTL');
     await select(pageA, '#ai-navigator select', 'en');
+  const pageA = await page(), pageB = await page();
+  await check('Chrome renderer sandbox enabled', async () => {
+    await pageA.send('Page.navigate', { url: 'chrome://sandbox' });
+    await until(() => pageA.evaluate(`/Seccomp-BPF sandbox\\s+Yes/.test(document.body?.innerText ?? '')`), 'renderer sandbox');
   });
   await check('Served callback redirects use configured origin despite upstream Host', async () => {
     const upstream = requireLocalTarget('http://127.0.0.1:3100', 3100);
     for (const flow of ['signup', 'recovery']) {
       const response = await fetch(`${upstream}/auth/callback?flow=${flow}&next=https%3A%2F%2Fexample.invalid`, {redirect:'manual', headers:{host:'upstream.internal:3100'}});
+      const response = await fetch(`${upstream}/auth/callback?flow=${flow}&next=https%3A%2F%2Fexample.invalid`, {
+        redirect:'manual', headers:{host:'upstream.internal:3100'},
+      });
       assert.equal(response.status, 307);
       const destination = new URL(response.headers.get('location'));
       assert.equal(destination.origin, appUrl);
@@ -309,6 +342,8 @@ try {
   await check('Missing/invalid signup callbacks show accessible errors and reject external destinations', async () => {
     for (const query of ['flow=signup&next=https%3A%2F%2Fexample.invalid', 'flow=signup&code=synthetic-invalid-code&next=%2F%2Fexample.invalid']) {
       await visit(pageA, `/auth/callback?${query}`); await pathname(pageA, '/login');
+      await visit(pageA, `/auth/callback?${query}`);
+      await pathname(pageA, '/login');
       await until(() => pageA.evaluate(`location.origin===${JSON.stringify(appUrl)} && !!document.querySelector('[role=alert]') && document.body.innerText.includes('confirmation link is invalid or has expired')`), 'invalid confirmation feedback');
       await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
     }
@@ -316,6 +351,8 @@ try {
   await check('Real signup, local email delivery and PKCE callback establish the browser session', async () => {
     await visit(pageA, '/login?mode=join');
     await fill(pageA, '[name=email]', a.email); await fill(pageA, '[name=password]', password);
+    await fill(pageA, '[name=email]', a.email);
+    await fill(pageA, '[name=password]', password);
     await click(pageA, '#join button[type=submit]');
     await until(() => pageA.evaluate(`location.pathname==='/login' && document.body.innerText.includes('Account created.')`), 'signup confirmation notice');
     const {users:registered} = await data(admin.auth.admin.listUsers());
@@ -326,6 +363,17 @@ try {
     confirmationLink = await deliveredConfirmation(a.email);
     await pageA.send('Page.navigate', {url:confirmationLink}); await pathname(pageA, '/profile');
     const confirmed = await data(admin.auth.admin.getUserById(a.id)); assert.ok(confirmed.user.email_confirmed_at);
+    assert.ok(user); a.id = user.id; users.push(user.id);
+    assert.ok(!user.email_confirmed_at);
+    await login(pageA, a.email);
+    await until(() => pageA.evaluate(`location.pathname==='/login' && !!document.querySelector('[role=alert]')`), 'unconfirmed sign-in refused');
+    confirmationLink = await deliveredConfirmation(a.email);
+    // Navigate the authentic delivered link in the registering browser, which
+    // retains the PKCE verifier cookie; never fabricate a session or auth link.
+    await pageA.send('Page.navigate', {url:confirmationLink});
+    await pathname(pageA, '/profile');
+    const confirmed = await data(admin.auth.admin.getUserById(a.id));
+    assert.ok(confirmed.user.email_confirmed_at);
   });
   await check('Real sign-in and onboarding forms persist both synthetic profiles', async () => {
     for (const [page, user, label] of [[pageA, a, 'MemberA'], [pageB, b, 'MemberB']]) {
@@ -346,6 +394,10 @@ try {
   await check('Cookie sessions survive reload and remain separate', async () => {
     for (const [page, label] of [[pageA, 'MemberA'], [pageB, 'MemberB']]) {
       await visit(page, '/profile'); await page.send('Page.reload');
+  await check('Cookie sessions survive reload and remain separate', async () => {
+    for (const [page, label] of [[pageA, 'MemberA'], [pageB, 'MemberB']]) {
+      await visit(page, '/profile');
+      await page.send('Page.reload');
       await until(() => page.evaluate(`location.pathname==='/profile' && document.readyState==='complete' && document.querySelector('[name=last_name]')?.value===${JSON.stringify(label)}`), 'persisted own-profile identity');
       await visit(page, '/dashboard'); await pathname(page, '/dashboard');
     }
@@ -360,6 +412,19 @@ try {
   });
   const conversationPath = await pageA.evaluate('location.pathname');
   assert.match(conversationPath, /^\/messages\/[0-9a-f-]{36}$/); conversationId = conversationPath.split('/').at(-1);
+    await visit(pageA, `/members/${b.id}`);
+    await click(pageA, 'form:has([name=recipient_id]) button[type=submit]');
+    await until(() => pageA.evaluate(`document.body.innerText.includes('Request sent')`), 'pending connection');
+    await visit(pageB, '/network');
+    await click(pageB, 'button[name=decision][value=accepted]');
+    await until(() => pageB.evaluate(`document.body.innerText.includes('My connections')`), 'accepted connection');
+    await visit(pageA, `/members/${b.id}`);
+    await click(pageA, 'form:has([name=member_id]) button[type=submit]');
+    await until(() => pageA.evaluate(`!!document.querySelector('textarea[name=message]')`), 'conversation composer');
+  });
+  const conversationPath = await pageA.evaluate('location.pathname');
+  assert.match(conversationPath, /^\/messages\/[0-9a-f-]{36}$/);
+  conversationId = conversationPath.split('/').at(-1);
   await check('Realtime unread notification and notification navigation', async () => {
     await visit(pageB, '/dashboard');
     const before = await pageB.evaluate(`Number(document.querySelector('button[aria-controls][aria-haspopup=dialog][aria-label^="Notifications"]')?.getAttribute('aria-label')?.match(/([0-9]+) unread/)?.[1] ?? 0)`);
@@ -381,6 +446,45 @@ try {
       await click(pageA, `form:has([name=${titleField}]) button[type=submit]`);
       const row = await listingRow(table, titleField, title); listings.push({table, id:row.id}); assert.equal(row[ownerField], a.id); assert.equal(row.status, 'draft');
       const path = `/${table}/${row.slug}`; await pathname(pageA, path);
+    const rows = await data(admin.from('notifications').select('id').eq('recipient_id', b.id).eq('conversation_id', conversationPath.split('/').at(-1)));
+    assert.ok(rows.length);
+    await click(pageB, `form:has(input[name=notification_id][value="${rows[0].id}"]) button[type=submit]`);
+    await pathname(pageB, conversationPath);
+    await until(() => pageB.evaluate(`document.body.innerText.includes(${JSON.stringify(message('notification'))})`), 'notification conversation');
+  });
+  await check('Live conversation delivery and offline reconnect catch-up without reload', async () => {
+    await send(pageA, message('live'));
+    await until(() => pageB.evaluate(`document.body.innerText.includes(${JSON.stringify(message('live'))})`), 'live message');
+    await pageB.send('Network.emulateNetworkConditions', { offline: true, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
+    await delay(500);
+    await send(pageA, message('offline'));
+    await delay(500);
+    assert.equal(await pageB.evaluate(`document.body.innerText.includes(${JSON.stringify(message('offline'))})`), false, 'Offline browser must miss this message before reconnect');
+    await pageB.send('Network.emulateNetworkConditions', { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
+    await until(() => pageB.evaluate(`document.body.innerText.includes(${JSON.stringify(message('offline'))})`), 'reconnect catch-up', 35000);
+  });
+  for (const [table, titleField, ownerField] of [
+    ['organizations', 'name', 'owner_id'],
+    ['opportunities', 'title', 'author_id'],
+    ['events', 'title', 'creator_id'],
+  ]) {
+    await check(`${table}: owner create/edit, draft privacy and foreign edit boundary through browser`, async () => {
+      const title = `Synthetic ${stamp} ${table}`;
+      await visit(pageA, `/${table}/new`);
+      await fill(pageA, `[name=${titleField}]`, title);
+      if (table === 'organizations') await fill(pageA, '[name=short_description]', 'Synthetic organization summary');
+      else {
+        await fill(pageA, '[name=summary]', 'Synthetic listing summary');
+        await fill(pageA, '[name=description]', 'Synthetic listing description for isolated browser verification.');
+        if (table === 'opportunities') await select(pageA, '[name=type]', 'volunteer');
+        else await eventStart(pageA);
+      }
+      await click(pageA, `form:has([name=${titleField}]) button[type=submit]`);
+      const row = await listingRow(table, titleField, title);
+      listings.push({table, id:row.id});
+      assert.equal(row[ownerField], a.id); assert.equal(row.status, 'draft');
+      const path = `/${table}/${row.slug}`;
+      await pathname(pageA, path);
       await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes(${JSON.stringify(title)})`), 'owner draft detail');
       const unavailableHeading = table === 'organizations' ? 'Organization not found' : 'This page isn’t available.';
       await visit(pageB, path);
@@ -400,6 +504,35 @@ try {
           await until(() => pageA.evaluate(`!!document.querySelector(${JSON.stringify(deleteButton)})`), 'cancel leaves owner detail');
           assert.equal((await data(admin.from(table).select('id').eq('id',row.id))).length, 1);
           await click(pageA, deleteButton); await pathname(pageA, `/${table}`); assert.equal(dialogs, 2); assert.equal((await data(admin.from(table).select('id').eq('id',row.id))).length, 0);
+      await visit(pageA, `${path}/edit`);
+      const edited = `${title} edited`;
+      await fill(pageA, `[name=${titleField}]`, edited);
+      await click(pageA, `form:has([name=${titleField}]) button[type=submit]`);
+      await pathname(pageA, path);
+      const saved = await listingRow(table, titleField, edited);
+      assert.equal(saved.id, row.id); assert.equal(saved.status, 'draft');
+      await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes(${JSON.stringify(edited)})`), 'edited listing detail');
+      // Organizations have no delete UI; API deletion is covered separately.
+      if (table !== 'organizations') {
+        const deleteButton = `form:has(input[name=slug][value="${row.slug}"]) button[type=submit]`;
+        let dialogs = 0;
+        const handler = event => {
+          const packet = JSON.parse(event.data);
+          if (packet.method === 'Page.javascriptDialogOpening') {
+            dialogs++;
+            void pageA.send('Page.handleJavaScriptDialog', {accept: dialogs > 1});
+          }
+        };
+        pageA.socket.addEventListener('message', handler);
+        try {
+          await click(pageA, deleteButton);
+          await until(() => dialogs === 1, 'cancel delete confirmation');
+          await until(() => pageA.evaluate(`!!document.querySelector(${JSON.stringify(deleteButton)})`), 'cancel leaves owner detail');
+          assert.equal((await data(admin.from(table).select('id').eq('id',row.id))).length, 1);
+          await click(pageA, deleteButton);
+          await pathname(pageA, `/${table}`);
+          assert.equal(dialogs, 2);
+          assert.equal((await data(admin.from(table).select('id').eq('id',row.id))).length, 0);
         } finally { pageA.socket.removeEventListener('message', handler); }
       }
     });
@@ -550,6 +683,17 @@ try {
   await check('Replayed confirmation cannot restore a signed-out browser session', async () => {
     await pageA.send('Page.navigate', {url:confirmationLink}); await pathname(pageA, '/login');
     await until(() => pageA.evaluate(`!!document.querySelector('[role=alert]')`), 'used confirmation feedback'); await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
+  await check('Sign-out clears browser access while the other account remains signed in', async () => {
+    await click(pageA, 'button[aria-label="Sign out"]');
+    await pathname(pageA, '/login');
+    await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
+    await visit(pageB, '/dashboard'); await pathname(pageB, '/dashboard');
+  });
+  await check('Replayed confirmation cannot restore a signed-out browser session', async () => {
+    await pageA.send('Page.navigate', {url:confirmationLink});
+    await pathname(pageA, '/login');
+    await until(() => pageA.evaluate(`!!document.querySelector('[role=alert]')`), 'used confirmation feedback');
+    await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
   });
 } catch (error) {
   results.push({ scenario, status: 'fail', diagnostic: { step, type: error.name, line: error.stack?.match(/local-member-browser\.mjs:(\d+)/)?.[1] } });
@@ -559,6 +703,8 @@ try {
   }
   for (const page of pages) {
     try { states.push({telemetry:page.telemetry,dom:await page.evaluate(`({ready:document.readyState,alert:!!document.querySelector('[role=alert]'),moderationForm:!!document.querySelector('[name=entity_id]'),unavailableListing:document.querySelector('main h1')?.textContent.includes('couldn’t load'),notFound:document.querySelector('main h1')?.textContent.includes('available'),route:location.pathname.replace(/browser-[^/]+/g,'[synthetic-slug]'),composer:!!document.querySelector('textarea[name=message]'),errorBoundary:document.body.innerText.includes('Something went wrong')})`)}); } catch { states.push({unavailable:true}); }
+  for (const page of pages) {
+    try { states.push({telemetry:page.telemetry,dom:await page.evaluate(`({width:innerWidth,ready:document.readyState,header:!!document.querySelector('header'),profileForm:!!document.querySelector('[name=last_name]'),loginForm:!!document.querySelector('#join'),errorBoundary:document.body.innerText.includes('Something went wrong'),applicationError:document.body.innerText.includes('Application error'),alert:!!document.querySelector('[role=alert]'),composer:!!document.querySelector('textarea[name=message]'),composerEmpty:document.querySelector('textarea[name=message]')?.value==='',messagePresent:document.body.textContent.includes(${JSON.stringify(message('notification'))}),bells:[...document.querySelectorAll('button[aria-label^=Notifications]')].map(node=>node.getAttribute('aria-label'))})`)}); } catch { states.push({unavailable:true}); }
   }
   results.at(-1).browserStates = states;
   if (fixtureB && conversationId) {
@@ -574,6 +720,14 @@ try {
   for(const socket of receiverNetwork.sockets)socket.destroy();
   receiverProxy.closeAllConnections();receiverProxy.close();
   for (const page of pages) page.close(); browser?.close();
+      console.log('Fixture database counts: '+JSON.stringify(results.at(-1).databaseState));
+    } catch { /* Never expose provider payloads */ }
+  }
+  console.error(`FAIL ${scenario} at ${step}; sanitized browser states: ${JSON.stringify(states)}`);
+  process.exitCode = 1;
+} finally {
+  for (const page of pages) page.close();
+  browser?.close();
   for (const child of children) if (child.exitCode === null) child.kill();
   await delay(300);
   if (profile) await fs.rm(profile, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
@@ -584,5 +738,6 @@ try {
   } catch { results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'fail' }); process.exitCode = 1; }
   mkdirSync('reports', { recursive: true });
   writeFileSync('reports/local-member-browser.json', JSON.stringify({ environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery is verified only with disposable local Mailpit; external SMTP/deliverability and cross-device confirmation remain untested', 'Organization deletion UI is absent; native-language review and multi-tab read receipts remain pending', 'Admin team role mutations are not tested; no production, hosted test target or model provider calls'] }, null, 2) + '\n');
+  writeFileSync('reports/local-member-browser.json', JSON.stringify({ environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, limitations: ['Email delivery is verified only with disposable local Mailpit; external SMTP/deliverability and cross-device confirmation remain untested', 'Organization deletion UI is absent; moderator forms, native-language review and multi-tab read receipts remain pending', 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
   console.log(`${results.filter(r => r.status === 'pass').length} passed; ${results.filter(r => r.status === 'fail').length} failed`);
 }

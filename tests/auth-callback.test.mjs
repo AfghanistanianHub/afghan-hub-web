@@ -53,6 +53,7 @@ test("expired recovery link returns to reset request so the user can retry", asy
   assert.match(location.searchParams.get("error"), /request a new link/i);
 });
 
+
 test("successful callbacks use the configured public origin when upstream origin differs", async () => {
   for (const [next, expected] of [["/dashboard", "/dashboard"], ["/update-password", "/update-password"], ["https://evil.example", "/dashboard"], ["//evil.example", "/dashboard"]]) {
     const result = await callback({ siteUrl: "https://preview.example/" })(request(`/auth/callback?code=good&next=${encodeURIComponent(next)}`, "http://localhost:3000"));
