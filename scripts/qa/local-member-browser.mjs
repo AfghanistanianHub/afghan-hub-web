@@ -189,6 +189,19 @@ try {
     await pageA.send('Page.navigate', { url: 'chrome://sandbox' });
     await until(() => pageA.evaluate(`/Seccomp-BPF sandbox\\s+Yes/.test(document.body?.innerText ?? '')`), 'renderer sandbox');
   });
+  await check('Served callback redirects use configured origin despite upstream Host', async () => {
+    const upstream = requireLocalTarget('http://127.0.0.1:3100', 3100);
+    for (const flow of ['signup', 'recovery']) {
+      const response = await fetch(`${upstream}/auth/callback?flow=${flow}&next=https%3A%2F%2Fexample.invalid`, {
+        redirect:'manual', headers:{host:'upstream.internal:3100'},
+      });
+      assert.equal(response.status, 307);
+      const destination = new URL(response.headers.get('location'));
+      assert.equal(destination.origin, appUrl);
+      assert.equal(destination.pathname, flow === 'signup' ? '/login' : '/forgot-password');
+      assert.equal(destination.searchParams.has('next'), false);
+    }
+  });
   await check('Anonymous protected route redirects to sign-in', async () => {
     await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
   });
