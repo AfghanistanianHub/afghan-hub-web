@@ -1,3 +1,4 @@
+// CDP transport for isolated browser journeys; never disables Chrome's sandbox.
 // CDP transport for isolated CI browser journeys; uses the runner's sandboxed Chrome.
 export class DevTools {
   async connect(url) {

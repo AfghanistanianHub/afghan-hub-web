@@ -1,4 +1,4 @@
-import { dariNavigatorCopy } from "./navigator-copy-dari";
+export type { NavigatorLanguage } from "./navigator-language";
 
 export const navigatorCopy = {
   en: {
@@ -21,7 +21,6 @@ export const navigatorCopy = {
     custom: "یا با کلمات خود توضیح دهید", location: "شهر یا منطقه (اختیاری)", back: "بازگشت", skip: "رد کردن", next: "ادامه", restart: "شروع دوباره", find: "مسیرم را پیدا کن", close: "بستن راهنما",
     searching: "در حال جست‌وجوی فهرست‌های عمومی…", empty: "نتیجه عمومی مرتبطی پیدا نشد.", error: "جست‌وجو فعلاً در دسترس نیست. دوباره تلاش کنید.", rate: "راهنما مشغول است. یک دقیقه صبر کنید و دوباره تلاش کنید.", retry: "تلاش دوباره", results: "گام‌های بعدی شما", looking: "در جست‌وجوی", all: "همه علاقه‌ها", anywhere: "همه مکان‌ها", browse: "بیشتر ببینید", people: "برای آشنایی با افراد وارد شوید", peopleNote: "پروفایل اعضا در شبکه پس از ورود در دسترس است.", partial: "برخی فهرست‌ها فعلاً در دسترس نیستند. نتایج موجود در زیر آمده است.", recovery: "موضوع گسترده‌تر یا مکان دیگری را امتحان کنید یا فهرست‌ها را ببینید.", reason: "مرتبط با علاقه شما", locationReason: "مرتبط با مکان شما یا قابل دسترسی از راه دور", generalReason: "یک فهرست عمومی در حوزه انتخابی شما", clearLocation: "جست‌وجو در همه مکان‌ها", privacy: "روش جست‌وجو", disclosure: "هر پاسخ نوع جست‌وجو را نشان می‌دهد: ساختاریافته یا با کمک مدل. در صورت فعال‌سازی مدل، متن جست‌وجو و فیلترهای قبلی به ارائه‌دهنده مدل فرستاده می‌شود؛ داده‌های فهرست به مدل فرستاده نمی‌شود. فقط فهرست‌های عمومی منتشرشده جست‌وجو می‌شوند. افراد را در راهنمای اعضا پس از ورود پیدا کنید. گفتگو فقط در همین نشست صفحه می‌ماند؛ متن جست‌وجو ثبت نمی‌شود. نتایج محدودند و ممکن است همه موارد را پوشش ندهند. محتوا به زبان اصلی نمایش داده می‌شود.", history: "تاریخچه جست‌وجو", step: "پرسش", types: {businesses:"کسب‌وکارها",organizations:"سازمان‌ها",opportunities:"فرصت‌ها",events:"رویدادها"},
   },
-  "fa-AF": dariNavigatorCopy,
   ps: {
     structuredMode: "جوړښتي عامه لټون", modelMode: "د ماډل په مرسته لټون", fallbackNotice: "ماډل نشته؛ عامه لټون وکارول شو", language: "پښتو", title: "د افغان هب هوښیار لارښود", beta: "ازمایښتي نسخه", description: "خلک، فرصتونه او خپل راتلونکی ګام ومومئ.",
     placeholder: "نن څه ترلاسه کول غواړئ؟", search: "لټون", guide: "نه پوهېږئ له کومه پیل وکړئ؟", guideDescription: "څو لنډې پوښتنې ځواب کړئ او خپله لاره ومومئ.",
@@ -33,8 +32,7 @@ export const navigatorCopy = {
     searching: "د عامه لېستونو لټون روان دی…", empty: "اړوند عامه پایله ونه موندل شوه.", error: "لټون اوس شتون نه لري. بیا هڅه وکړئ.", rate: "لارښود بوخت دی. یوه دقیقه صبر وکړئ او بیا هڅه وکړئ.", retry: "بیا هڅه", results: "ستاسو راتلونکي ګامونه", looking: "د موندلو لپاره", all: "ټولې علاقې", anywhere: "هر ځای", browse: "نور وګورئ", people: "د خلکو د موندلو لپاره ننوځئ", peopleNote: "د غړو پروفایلونه له ننوتلو وروسته په شبکه کې شته.", partial: "ځینې لېستونه اوس شتون نه لري. شته پایلې لاندې ښودل کېږي.", recovery: "پراخه موضوع یا بل ځای وازمویئ، یا لېستونه وګورئ.", reason: "ستاسو له علاقې سره تړاو لري", locationReason: "ستاسو له ځای سره تړاو لري یا له لرې شته", generalReason: "ستاسو په ټاکل شوې برخه کې عامه لېست", clearLocation: "په هر ځای کې لټون", privacy: "لټون څنګه کار کوي", disclosure: "هر ځواب د لټون ډول ښيي: جوړښتي یا د ماډل په مرسته. که ماډل فعال وي، ستاسو پوښتنه او مخکیني فلټرونه ماډل ته استول کېږي؛ د لېستونو معلومات نه استول کېږي. یوازې خپاره شوي عامه لېستونه لټوي. د غړو موندنه له ننوتلو وروسته په لارښود کې دوام لري. خبرې یوازې د دې پاڼې په ناسته کې پاتې کېږي؛ د لټون متن نه ثبتېږي. پایلې محدودې دي او ښايي ټول لېستونه ونه پوښي. منځپانګه په اصلي ژبه ښودل کېږي.", history: "د لټون تاریخ", step: "پوښتنه", types: {businesses:"کاروبارونه",organizations:"سازمانونه",opportunities:"فرصتونه",events:"غونډې"},
   },
 } as const;
-export type NavigatorLanguage = "en" | "fa" | "fa-AF" | "ps";
 export const guidedGoals = ["Meet people", "Find opportunities", "Grow my work or business", "Connect with organizations", "Explore events", "I'm still exploring"];
 export const guidedTopics = ["technology", "arts", "education", "business", "community"];
 
-export const navigatorLocaleReview = { en: "source", "fa-AF": "awaiting-native-review", fa: "awaiting-native-review", ps: "awaiting-native-review" } as const;
+export const navigatorLocaleReview = { en: "source", fa: "awaiting-native-review", ps: "awaiting-native-review" } as const;

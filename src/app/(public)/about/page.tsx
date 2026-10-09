@@ -1,5 +1,3 @@
-import { CommunityIllustration } from "@/components/public/community-illustrations";
-import styles from "@/components/public/catalog.module.css";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Compass, HandHeart, Network, Sparkles } from "lucide-react";
@@ -33,7 +31,7 @@ export default function AboutPage() {
     <main id="main-content">
       <section className="relative overflow-hidden border-b border-border/70">
         <div className="relative mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-24">
-          <div className={styles.intro}>
+          <div className="max-w-3xl">
             <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-background/80 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
               <Sparkles aria-hidden="true" className="size-3.5" />
@@ -42,7 +40,6 @@ export default function AboutPage() {
             <h1 className="mt-6 text-3xl font-medium leading-tight tracking-tight sm:text-4xl">More connected.<br /><span className="text-primary">More possible.</span></h1>
             <p className="mt-7 max-w-3xl text-lg leading-8 text-muted-foreground sm:text-xl">Afghan Hub is a shared place for Afghan people to discover opportunities, support businesses, find organizations, meet one another, and contribute something of their own.</p>
             </div>
-            <div className={styles.introArt}><CommunityIllustration /></div>
           </div>
         </div>
       </section>

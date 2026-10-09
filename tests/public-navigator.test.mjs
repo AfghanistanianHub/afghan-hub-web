@@ -86,7 +86,7 @@ test('date and location ranking excludes unrelated data and allows remote partic
 
 const decision = {plan:{kinds:['organizations'],people:false,topic:'arts',location:'Vancouver',thisMonth:false},understanding:'Find arts organizations in Vancouver.',clarification:null};
 test('model planning is validated before the same permission-aware tool runs', async () => {
-  const h=harness({planner:async input=>{assert.equal(input.language,'fa-AF');return decision;},rows:{organizations:[listing('actual-organization')]}});
+  const h=harness({planner:async input=>{assert.equal(input.language,'fa');return decision;},rows:{organizations:[listing('actual-organization')]}});
   const data=await(await h.POST(request({query:'help me find my path',language:'fa-AF'}))).json();
   assert.equal(data.engine,'model-assisted');assert.equal(data.fallback,null);assert.equal(data.results[0].href,'/explore/organizations/actual-organization');assert.equal(h.calls.length,1);
 });
@@ -153,9 +153,9 @@ test('multilingual location follow-ups preserve prior topic and category', () =>
     assert.equal(plan.topic,'technology',query);
     assert.deepEqual(Array.from(plan.kinds),['opportunities'],query);
   }
- });
+});
 
-test('all-location follow-ups in Persian and Dari retain the current search', () => {
+test('all-location follow-ups in Persian retain the current search', () => {
   const h=harness();
   const previous={kinds:['events'],people:true,topic:'arts',location:'Vancouver',thisMonth:true};
   for(const query of ['Anywhere','All locations','هر جا','همه جا','هر ځای']) {

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { CommunityIllustration } from "./community-illustrations";
 import styles from "./community-network.module.css";
 
 const nodes = [
@@ -14,7 +13,6 @@ const nodes = [
 export function CommunityNetwork() {
   return (
     <div className={styles.network}>
-      <CommunityIllustration />
       <nav aria-label="Explore the Afghan Hub community" className={styles.nodes}>
         {nodes.map(node => (
           <Link key={node.key} href={node.href} prefetch={false} className={styles.node}

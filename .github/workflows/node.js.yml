@@ -53,7 +53,9 @@ jobs:
         run: npm run security:migration-grants
 
       - name: Agent runtime syntax check
-        run: node --check agents/orchestrator.mjs
+        run: |
+          node --check agents/orchestrator.mjs
+          node --check scripts/qa/local-member-browser.mjs
 
       - name: Build
         run: npm run build

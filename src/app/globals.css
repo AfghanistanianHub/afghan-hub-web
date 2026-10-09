@@ -148,6 +148,20 @@
   }
 }
 
+/* Focused authentication: one task column, not a vacant illustration panel. */
+.auth-page { display:flex; flex-direction:column; padding:clamp(1.25rem,4vw,3rem); }
+.auth-brand { width:100%; max-width:72rem; margin-inline:auto; }
+.auth-form-region { display:flex; flex:1; justify-content:center; align-items:center; padding-block:clamp(2.5rem,7vh,5rem); }
+.auth-form-region > div { background:var(--card); border:1px solid var(--border-subtle); border-radius:var(--radius-card); padding:clamp(1.5rem,4vw,2.5rem); box-shadow:var(--shadow-surface); max-width:32rem; }
+@media(max-width:479px) { .auth-form-region > div { padding:1.25rem; } .auth-form-region { padding-block:2rem; } }
+
+/* Shared member rhythm leaves task cards intact and caps oversized page widths. */
+.member-shell main { width:100%; max-width:88rem; margin-inline:auto; }
+.member-shell main > section:first-child, .member-shell main > div > section:first-child { scroll-margin-block-start:6rem; }
+.member-shell :where(button, a)[aria-disabled=true], .member-shell button:disabled { cursor:not-allowed; }
+:where(input, textarea) { unicode-bidi:plaintext; }
+:where([dir=rtl]) :where(input[type=email],input[type=url],input[type=password]) { direction:ltr; text-align:start; }
+
 /* Public, authentication and member shells share the approved identity. */
 .public-shell { background:var(--background); color:var(--foreground); }
 

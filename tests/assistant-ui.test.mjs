@@ -39,12 +39,14 @@ test("assistant explicitly contains Tab focus inside the modal drawer", () => {
   assert.match(component, /first\.focus\(\)/);
 });
 
-test("assistant interface exposes English, Dari, Persian and Pashto", () => {
-  assert.match(localeResources, /English/);
-  assert.match(localeResources, /دری/);
-  assert.match(localeResources, /فارسی/);
+test("assistant interface uses shared canonical language choices and retains RTL", () => {
+  assert.match(localeResources, /navigatorLocales as memberNavigatorLocales/);
+  assert.doesNotMatch(localeResources, /fa-AF|dariMember/);
+  assert.match(component, /dir=\{language === "en" \? "ltr" : "rtl"\}/);
+  const languages = fs.readFileSync(new URL("../src/lib/assistant/navigator-language.ts", import.meta.url), "utf8");
+  assert.match(languages, /فارسی \/ Persian/);
   assert.match(component, /memberNavigatorLocales.map/);
-  assert.match(localeResources, /پښتو/);
+  assert.match(languages, /پښتو \/ Pashto/);
 });
 
 test("assistant UI only calls the read-only assistant endpoint", () => {

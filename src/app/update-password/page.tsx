@@ -1,4 +1,4 @@
-import { CommunityIllustration } from "@/components/public/community-illustrations";
+import Link from "next/link";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -35,33 +35,16 @@ export default async function UpdatePasswordPage({
     "w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10";
 
   return (
-    <main className="min-h-screen bg-background text-foreground lg:grid lg:grid-cols-[0.95fr_1.05fr]">
-      <section className="relative hidden min-h-screen overflow-hidden border-r border-border/80 bg-card p-10 text-foreground lg:flex lg:flex-col lg:justify-between xl:p-14">
+    <main className="auth-page min-h-screen text-foreground">
+      <header className="auth-brand">
+        <Link href="/" className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Afghan Hub</Link>
+      </header>
 
-        <p className="relative z-10 text-sm font-semibold uppercase tracking-[0.22em] text-primary">Afghan Hub</p>
-
-        <div aria-hidden="true" className="relative mx-auto my-6 w-full max-w-sm"><CommunityIllustration /></div>
-        <div className="relative z-10 max-w-xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Finish account recovery</p>
-          <h1 className="mt-4 text-4xl font-medium leading-tight tracking-tight">Choose a password built to last.</h1>
-          <p className="mt-5 max-w-lg text-base leading-7 text-muted-foreground">A stronger password protects your profile, conversations, connections, and the work you share with the community.</p>
-        </div>
-
-        <div className="relative z-10 rounded-sm border border-primary/10 bg-background/72 p-5 text-sm leading-6 text-muted-foreground">
-          <p className="font-semibold text-foreground">Password baseline</p>
-          <p className="mt-2">{PASSWORD_POLICY_HINT}</p>
-        </div>
-      </section>
-
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-10 sm:px-8 lg:min-h-0 lg:px-12">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 lg:hidden">
-          <div className="absolute left-1/2 top-[-18rem] size-[38rem] -translate-x-1/2 rounded-full border border-primary/10" />
-          <div className="absolute left-1/2 top-[-12rem] size-[28rem] -translate-x-1/2 rounded-full border border-primary/10" />
-        </div>
+      <section className="auth-form-region">
 
         <div className="relative w-full max-w-md">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Secure your account</p>
-          <h2 className="mt-3 text-3xl font-bold tracking-[-0.03em] sm:text-4xl">Choose a new password</h2>
+          <h1 className="mt-3 text-3xl font-medium tracking-[-0.03em] sm:text-4xl">Choose a new password</h1>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">{PASSWORD_POLICY_HINT} Enter the same password twice.</p>
 
           {error ? (

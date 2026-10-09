@@ -118,7 +118,9 @@ try{
  });
  // Only the newly created local fixture receives moderation privilege.
  assert.match(moderator.id,uuid);
- await data(admin.from('profiles').update({role:'moderator'}).eq('id',moderator.id));
+ assert.ok(users.includes(moderator.id));
+ // Captured synthetic fixture only; do not alter database grants or policies.
+ execFileSync('docker',['exec','supabase_db_afghan-hub-local-journey','psql','-U','postgres','-d','postgres','-v','ON_ERROR_STOP=1','-c',`BEGIN; SELECT set_config('request.jwt.claim.role','service_role',true); UPDATE public.profiles SET role='moderator' WHERE id='${moderator.id}'; COMMIT;`],{stdio:'ignore'});
  assert.equal(await data(moderator.client.rpc('can_moderate')),true,'Local moderator fixture must be correctly provisioned');
  for(const [table,owner,payload,rpc,param] of [
    ['organizations','owner_id',{name:'Synthetic QA organization'},'moderate_organization','target_organization_id'],

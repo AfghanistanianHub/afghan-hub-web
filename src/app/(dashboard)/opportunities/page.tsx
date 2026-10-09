@@ -1,4 +1,3 @@
-import { CatalogIllustration } from "@/components/public/catalog-illustration";
 import Link from "next/link";
 import { ArrowUpRight, BriefcaseBusiness, Search } from "lucide-react";
 import {
@@ -127,8 +126,8 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
 
   return (
     <main data-illustration-focus-scope className="mx-auto w-full max-w-[1500px] px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
-      <section data-illustration-trigger className="relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-7 shadow-[0_1px_0_rgb(48_43_53/0.025)] md:px-8 md:py-9">
-        <div className="relative grid gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(220px,300px)] lg:items-center">
+      <section className="relative border-b border-border pb-7 md:pb-9">
+        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             <BriefcaseBusiness aria-hidden="true" className="size-3.5" />
@@ -140,7 +139,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
           </p>
         </div>
 
-        <div className="flex flex-col items-start gap-5 lg:items-end"><div className="w-full max-w-[280px]" aria-hidden="true"><CatalogIllustration interactive kind="opportunities" /></div>
+        <div className="flex flex-col items-start gap-5 lg:items-end">
         <Link
           href="/opportunities/new"
           className="inline-flex w-fit items-center gap-2 rounded-[var(--radius)] bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
