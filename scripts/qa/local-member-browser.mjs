@@ -177,11 +177,43 @@ async function fill(page, selector, value) {
   await until(() => page.evaluate(`!!document.querySelector(${JSON.stringify(fieldSelector)})`), 'form field');
   await page.evaluate(`(() => { const field=document.querySelector(${JSON.stringify(fieldSelector)}); field.focus(); Object.getOwnPropertyDescriptor(field instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,'value').set.call(field,${JSON.stringify(value)}); field.dispatchEvent(new Event('input',{bubbles:true})); return true; })()`);
 }
+async function actionable(page, selector) {
+  // Prefer an element that is laid out, visible and not covered, so a real mouse
+  // click at the returned point reaches it. Fall back to any laid-out match.
+  return page.evaluate(`(() => {
+    let fallback = null;
+    for (const target of document.querySelectorAll(${JSON.stringify(selector)})) {
+      if (target.disabled || target.getAttribute('aria-hidden')==='true') continue;
+      target.scrollIntoView({block:'center'});
+      const rect = target.getBoundingClientRect();
+      if (!rect.width || !rect.height) continue;
+      const style = getComputedStyle(target);
+      if (style.display==='none' || style.visibility==='hidden' || style.pointerEvents==='none') continue;
+      const point = {x:rect.x+rect.width/2, y:rect.y+rect.height/2};
+      if (!fallback) fallback = point;
+      const hit = document.elementFromPoint(point.x, point.y);
+      if (hit && (hit===target || target.contains(hit) || hit.contains(target))) return point;
+    }
+    return fallback;
+  })()`);
+}
 async function click(page, selector) {
   await page.send('Page.bringToFront');
-  const point = await until(() => page.evaluate(`(() => { const target=document.querySelector(${JSON.stringify(selector)}); if(!target || target.disabled)return null; target.scrollIntoView({block:'center'}); const r=target.getBoundingClientRect(); return r.width && r.height ? {x:r.x+r.width/2,y:r.y+r.height/2}:null; })()`), 'clickable control');
+  const point = await until(() => actionable(page, selector), 'clickable control');
   await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...point });
   await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...point });
+}
+async function openMemberNavigator(page) {
+  // The launcher renders in a hydrated header; a click dispatched before it is
+  // laid out can be swallowed. Retry until the dialog actually opens.
+  const launcher = 'button[aria-haspopup="dialog"][aria-expanded="false"]:has(svg.lucide-compass)';
+  await until(() => page.evaluate(`!!document.querySelector(${JSON.stringify(launcher)})`), 'member Navigator launcher');
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await click(page, launcher);
+    const opened = await until(() => page.evaluate(`!!document.querySelector('dialog[open]')`), 'member Navigator dialog', 5000).then(() => true, () => false);
+    if (opened) return;
+  }
+  throw new Error('Member Navigator launcher did not open the dialog');
 }
 async function select(page, selector, value) {
   await until(() => page.evaluate(`!!document.querySelector(${JSON.stringify(selector)})`), 'select field');
@@ -336,7 +368,7 @@ try {
     }
   });
   await check('Member Navigator exposes the same three languages and RTL without changing profile languages', async () => {
-    await click(pageA, 'button[aria-haspopup="dialog"][aria-expanded="false"]:has(svg.lucide-compass)');
+    await openMemberNavigator(pageA);
     await until(() => pageA.evaluate(`document.querySelectorAll('dialog[open] button[aria-pressed]').length===3`), 'member language choices');
     await click(pageA, 'dialog[open] button[aria-pressed]:nth-child(2)');
     await until(() => pageA.evaluate(`document.querySelector('dialog[open]')?.getAttribute('lang')==='fa' && document.querySelector('dialog[open]')?.getAttribute('dir')==='rtl'`), 'member Persian RTL');
