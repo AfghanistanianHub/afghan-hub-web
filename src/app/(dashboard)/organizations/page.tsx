@@ -1,4 +1,3 @@
-import { CatalogIllustration } from "@/components/public/catalog-illustration";
 import Link from "next/link";
 import { ArrowUpRight, Search, UsersRound } from "lucide-react";
 
@@ -35,10 +34,10 @@ export default async function OrganizationsPage({ searchParams }: OrganizationsP
   const hasFilters = Boolean(search || organizationType || city || volunteers || verified);
 
   return <main data-illustration-focus-scope className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 lg:py-10 xl:px-12"><div className="mx-auto w-full max-w-[1500px]">
-    <section data-illustration-trigger className="relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-7 shadow-[0_1px_0_rgb(48_43_53/0.025)] md:px-8 md:py-9">
-      <div className="relative grid gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(220px,300px)] lg:items-center">
+    <section className="relative border-b border-border pb-7 md:pb-9">
+      <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl"><div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary"><UsersRound className="size-3.5" aria-hidden="true"/>Community organizations</div><h1 className="mt-5 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">Discover organizations</h1><p className="mt-3 max-w-2xl leading-7 text-muted-foreground">Explore Afghan-led nonprofits, associations, cultural groups, community initiatives, and professional organizations.</p></div>
-        <div className="flex flex-col items-start gap-5 lg:items-end"><div className="w-full max-w-[280px]" aria-hidden="true"><CatalogIllustration interactive kind="organizations" /></div><Link href="/organizations/new" className="inline-flex w-fit items-center gap-2 rounded-[var(--radius)] bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Add organization<ArrowUpRight className="size-4" aria-hidden="true"/></Link></div>
+        <div className="flex flex-col items-start gap-5 lg:items-end"><Link href="/organizations/new" className="inline-flex w-fit items-center gap-2 rounded-[var(--radius)] bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Add organization<ArrowUpRight className="size-4" aria-hidden="true"/></Link></div>
       </div>
     </section>
     <form action="/organizations" method="get" className={`${catalogFilterPanelClass} md:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_auto_auto_auto]`}>

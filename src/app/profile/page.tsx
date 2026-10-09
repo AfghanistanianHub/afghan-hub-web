@@ -41,8 +41,8 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
 
   const fieldClassName =
     `${styles.search} mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10`;
-  const displayName = [profile?.first_name, profile?.last_name].filter(Boolean).join("") ||"Your profile";
-  const location = [profile?.city, profile?.province_state, profile?.country].filter(Boolean).join(",");
+  const displayName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || "Your profile";
+  const location = [profile?.city, profile?.province_state, profile?.country].filter(Boolean).join(", ");
   const hasProfessionalDetails = Boolean(profile?.headline || profile?.profession || profile?.company);
   const hasDiscoveryDetails = Boolean(profile?.skills?.length || profile?.languages?.length || location);
 
@@ -72,11 +72,11 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
 
               <div className="mt-6 space-y-3 text-sm">
                 <div className="flex items-center gap-3 rounded-[var(--radius)] border border-border/80 bg-background/72 p-3.5">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><BriefcaseBusiness aria-hidden="true" className="size-4" /></span>
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-primary"><BriefcaseBusiness aria-hidden="true" className="size-4" /></span>
                   <div className="min-w-0"><p className="text-xs text-muted-foreground">Professional story</p><p className="mt-0.5 break-words font-semibold">{hasProfessionalDetails ?"Started" :"Add your work"}</p></div>
                 </div>
                 <div className="flex items-center gap-3 rounded-[var(--radius)] border border-border/80 bg-background/72 p-3.5">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><Sparkles aria-hidden="true" className="size-4" /></span>
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-primary"><Sparkles aria-hidden="true" className="size-4" /></span>
                   <div className="min-w-0"><p className="text-xs text-muted-foreground">Discovery details</p><p className="mt-0.5 break-words font-semibold">{hasDiscoveryDetails ?"People can find more about you" :"Add skills, language, location"}</p></div>
                 </div>
                 {location ? <div className="flex items-start gap-2 px-1 text-xs leading-5 text-muted-foreground"><MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" /><span className="min-w-0 break-words">{location}</span></div> : null}
@@ -100,7 +100,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
 
               <form action={saveProfile} className="mt-8 space-y-9">
                 <fieldset className="space-y-6">
-                  <legend className="flex items-center gap-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><UserRound aria-hidden="true" className="size-4" /></span>Identity</legend>
+                  <legend className="flex items-center gap-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-full bg-secondary text-primary"><UserRound aria-hidden="true" className="size-4" /></span>Identity</legend>
                   <div className="grid gap-6 sm:grid-cols-2">
                     <label className="block"><span className="text-sm font-medium">First name</span><input name="first_name" defaultValue={profile?.first_name ?? ""} required className={fieldClassName} /></label>
                     <label className="block"><span className="text-sm font-medium">Last name</span><input name="last_name" defaultValue={profile?.last_name ?? ""} required className={fieldClassName} /></label>
@@ -110,7 +110,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                 </fieldset>
 
                 <fieldset className="space-y-6 border-t border-border/70 pt-8">
-                  <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><BriefcaseBusiness aria-hidden="true" className="size-4" /></span>Work and skills</legend>
+                  <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-full bg-secondary text-primary"><BriefcaseBusiness aria-hidden="true" className="size-4" /></span>Work and skills</legend>
                   <div className="grid gap-6 sm:grid-cols-2">
                     <label className="block"><span className="text-sm font-medium">Profession</span><input name="profession" defaultValue={profile?.profession ?? ""} placeholder="Computer technician" className={fieldClassName} /></label>
                     <label className="block"><span className="text-sm font-medium">Company</span><input name="company" defaultValue={profile?.company ?? ""} placeholder="BC Computers" className={fieldClassName} /></label>
@@ -120,7 +120,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                 </fieldset>
 
                 <fieldset className="space-y-6 border-t border-border/70 pt-8">
-                  <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><HandHeart aria-hidden="true" className="size-4" /></span>Mentorship</legend>
+                  <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-full bg-secondary text-primary"><HandHeart aria-hidden="true" className="size-4" /></span>Mentorship</legend>
                   <p className="text-sm leading-6 text-muted-foreground">Mentorship preferences are optional and member-selected. They are not credentials or endorsements by Afghan Hub.</p>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <label className={`${styles.control} flex min-h-12 cursor-pointer items-start gap-3 rounded-[var(--radius-control)] border border-border/80 bg-background/72 p-4 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary`}>
@@ -136,7 +136,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                 </fieldset>
 
                 <fieldset className="space-y-6 border-t border-border/70 pt-8">
-                  <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><Globe2 aria-hidden="true" className="size-4" /></span>Location and links</legend>
+                  <legend className="flex items-center gap-3 pr-3 text-lg font-bold"><span className="flex size-9 items-center justify-center rounded-full bg-secondary text-primary"><Globe2 aria-hidden="true" className="size-4" /></span>Location and links</legend>
                   <div className="grid gap-6 sm:grid-cols-3">
                     <label className="block"><span className="text-sm font-medium">City</span><input name="city" defaultValue={profile?.city ?? ""} placeholder="Vancouver" className={fieldClassName} /></label>
                     <label className="block"><span className="text-sm font-medium">Province/State</span><input name="province_state" defaultValue={profile?.province_state ?? ""} placeholder="British Columbia" className={fieldClassName} /></label>

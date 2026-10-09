@@ -1,5 +1,4 @@
 import { ContextualAssistantPrompt } from "@/components/assistant/contextual-assistant-prompt";
-import { CatalogIllustration } from "@/components/public/catalog-illustration";
 import {
   ArrowRight,
   Sparkles,
@@ -126,7 +125,7 @@ export default async function NetworkPage() {
       <div className="mx-auto w-full max-w-[1500px]">
         <section
           data-illustration-trigger
-          className="relative overflow-hidden border-y border-border/80 px-1 py-7 sm:px-2 sm:py-8 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.75fr)] lg:items-center lg:gap-10 lg:px-4 lg:py-9 xl:gap-14"
+          className="relative overflow-hidden border-y border-border/80 px-1 py-7 sm:px-2 sm:py-8 lg:px-4 lg:py-9"
         >
           <div className="relative min-w-0">
             <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
@@ -157,11 +156,11 @@ export default async function NetworkPage() {
               />
             </div>
 
-            <div className="mt-6 grid max-w-2xl grid-cols-3 border-y border-border/80">
+            <div className="mt-6 grid max-w-2xl grid-cols-1 border-y sm:grid-cols-3 border-border/80">
               {stats.map(({ label, value, helper, icon: Icon }, index) => (
                 <div
                   key={label}
-                  className={`min-w-0 py-3.5 ${index > 0 ? "border-l border-border/80 pl-4 sm:pl-5" : "pr-4 sm:pr-5"}`}
+                  className={`min-w-0 py-3.5 ${index > 0 ? "border-t border-border/80 sm:border-t-0 sm:border-s sm:ps-5" : "sm:pe-5"}`}
                 >
                   <div className="flex items-center gap-2 text-primary">
                     <Icon aria-hidden="true" className="size-3.5 shrink-0" />
@@ -176,12 +175,6 @@ export default async function NetworkPage() {
             </div>
           </div>
 
-          <div className="relative mt-7 flex min-h-52 items-center justify-center lg:mt-0 lg:min-h-0 lg:justify-end">
-            <div className="pointer-events-none absolute inset-x-8 top-1/2 h-36 -translate-y-1/2 rounded-full bg-primary/[0.035] blur-3xl" />
-            <div className="relative w-full max-w-[360px] lg:max-w-[390px] xl:max-w-[420px]" aria-hidden="true">
-              <CatalogIllustration interactive kind="people" />
-            </div>
-          </div>
         </section>
 
         <div className="mt-7 space-y-7 lg:mt-8 lg:space-y-8">

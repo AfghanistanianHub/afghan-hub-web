@@ -138,7 +138,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
   );
 
   return (
-    <div className="relative min-h-screen overflow-x-clip bg-background text-foreground">
+    <div className="member-shell relative min-h-screen overflow-x-clip bg-background text-foreground">
       <RealtimeMessageRefresh currentUserId={user.id} />
       <div className="flex min-h-screen">
         <Sidebar
