@@ -5,10 +5,8 @@ import {
   getUtcDateKey,
 } from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
-import styles from "@/components/network/network-surfaces.module.css";
+import { MemberPageHeader, DirectoryEmptyState } from "@/components/catalog/member-page-header";
 import {
-  catalogCheckboxInputClass,
-  catalogCheckboxLabelClass,
   catalogClearClass,
   catalogFieldClass,
   catalogFilterPanelClass,
@@ -126,29 +124,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
 
   return (
     <main data-illustration-focus-scope className="mx-auto w-full max-w-[1500px] px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
-      <section className="relative border-b border-border pb-7 md:pb-9">
-        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-            <BriefcaseBusiness aria-hidden="true" className="size-3.5" />
-            Opportunity board
-          </div>
-          <h1 className="mt-5 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">Opportunities</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
-            Discover jobs, volunteering, scholarships, mentorship, education, investment, and community opportunities.
-          </p>
-        </div>
-
-        <div className="flex flex-col items-start gap-5 lg:items-end">
-        <Link
-          href="/opportunities/new"
-          className="inline-flex w-fit items-center gap-2 rounded-[var(--radius)] bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-        >
-          Post opportunity
-          <ArrowUpRight aria-hidden="true" className="size-4" />
-        </Link></div>
-        </div>
-      </section>
+      <MemberPageHeader title="Opportunities" description="Find jobs, volunteering, scholarships, mentorship and community opportunities." icon={BriefcaseBusiness}><Link href="/opportunities/new" className={catalogSubmitClass}>Post opportunity</Link></MemberPageHeader>
 
       <form
         action="/opportunities"
@@ -229,7 +205,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
         ) : null}
       </div>
 
-      <div className="mt-6 grid gap-5 lg:grid-cols-2">
+      <div className="mt-4 divide-y divide-border border-y border-border bg-card">
         {error ? (
           <div role="alert" aria-live="assertive" className="relative overflow-hidden rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.05] p-8 text-center"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-destructive/[0.06] blur-3xl"/>
             <h2 className="text-xl font-semibold text-destructive">We could not load opportunities</h2>
@@ -240,9 +216,8 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
             <Link
               key={opportunity.id}
               href={`/opportunities/${opportunity.slug}`}
-              className={`group relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card p-5 ${styles.surface} ${styles.profile}`}
+              className="group block px-4 py-5 transition hover:bg-muted/40 focus-visible:relative focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary"
             >
-              <div aria-hidden="true" className="absolute -right-10 -top-10 size-28 rounded-full border border-primary/10" />
               <div className="relative flex flex-wrap items-center gap-2">
                 <span className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
                   {formatType(opportunity.type)}
@@ -252,7 +227,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
                 </span>
               </div>
 
-              <div className="relative mt-5 flex items-start justify-between gap-4">
+              <div className="relative mt-3 flex items-start justify-between gap-4">
                 <h2 className="break-words text-xl font-semibold tracking-tight text-foreground transition group-hover:text-primary md:text-2xl">
                   {opportunity.title}
                 </h2>
@@ -267,7 +242,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
 
               <p className="relative mt-3 line-clamp-3 break-words text-sm leading-7 text-muted-foreground md:text-base">{opportunity.summary}</p>
 
-              <div className="relative mt-5 flex flex-wrap gap-x-6 gap-y-2 border-t border-border/70 pt-4 text-sm text-muted-foreground">
+              <div className="relative mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
                 {opportunity.city ? <span>{opportunity.city}</span> : null}
                 {opportunity.country ? <span>{opportunity.country}</span> : null}
                 {opportunity.deadline ? <span>Deadline {formatOpportunityDeadline(opportunity.deadline)}</span> : null}
@@ -275,23 +250,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
             </Link>
           ))
         ) : (
-          <div className="relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card p-12 text-center shadow-[0_1px_0_rgb(48_43_53/0.025)]"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-primary/[0.06] blur-3xl"/><span className="relative mx-auto flex size-14 items-center justify-center rounded-[var(--radius)] bg-primary/10 text-primary"><BriefcaseBusiness aria-hidden="true" className="size-7"/></span>
-            <h2 className="relative mt-5 text-2xl font-semibold text-foreground">
-              {hasFilters ? "No opportunities match these filters" : "No opportunities yet"}
-            </h2>
-            <p className="relative mx-auto mt-3 max-w-md text-muted-foreground">
-              {hasFilters ? "Try adjusting or clearing your filters." : "The first opportunities will appear here."}
-            </p>
-
-            {hasFilters ? (
-              <Link
-                href="/opportunities"
-                className="relative mt-5 inline-flex rounded-[var(--radius)] border border-border px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-              >
-                Clear filters
-              </Link>
-            ) : null}
-          </div>
+          <DirectoryEmptyState title={hasFilters ? "No opportunities match these filters" : "No opportunities yet"} description={hasFilters ? "Try adjusting or clearing your filters." : "Published opportunities will appear here."} href={hasFilters ? "/opportunities" : "/opportunities/new"} action={hasFilters ? "Clear filters" : "Post opportunity"} />
         )}
       </div>
     </main>
