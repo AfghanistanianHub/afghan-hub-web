@@ -15,7 +15,7 @@ let container;
 const run=promisify(execFile);
 const results=[];
 try {
- container=execFileSync('docker',['run','--detach','--network','none','--name',name,'redis:7.4-alpine'],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+ container=execFileSync('docker',['run','--detach','--network','none','--name',name,'mirror.gcr.io/library/redis:7.4-alpine'],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
  assert.match(container,/^[a-f0-9]{64}$/);
  const redis=async(...args)=>(await run('docker',['exec',container,'redis-cli','--raw',...args],{encoding:'utf8'})).stdout.trim();
  for(let attempt=0;attempt<30;attempt++) {try{if(await redis('PING')==='PONG')break;}catch{}if(attempt===29)throw Error('Disposable Redis startup failed');await new Promise(r=>setTimeout(r,100));}
