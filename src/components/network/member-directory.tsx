@@ -123,7 +123,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
         <div className="relative w-full">
           <Search
             aria-hidden="true"
-            className="absolute left-4 top-1/2 size-4.5 -translate-y-1/2 text-muted-foreground"
+            className="absolute start-4 top-1/2 size-4.5 -translate-y-1/2 text-muted-foreground"
           />
           <input
             ref={searchInputRef}
@@ -132,7 +132,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
             onChange={(event) => setSearchQuery(event.target.value)}
             aria-label="Search members"
             placeholder="Search people, skills, companies..."
-            className={`${styles.search} w-full border border-border bg-card py-3 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground hover:border-primary/40`}
+            className={`${styles.search} w-full border border-border bg-card py-3 ps-11 pe-4 text-sm text-foreground placeholder:text-muted-foreground hover:border-primary/40`}
           />
         </div>
       </div>
@@ -166,7 +166,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
       </div>
 
       {filteredMembers.length > 0 ? (
-        <div className="mt-4 grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-4 grid items-start gap-3 md:grid-cols-2">
           {filteredMembers.map((member) => {
             const memberName = getMemberName(member);
             const location = [member.city, member.province_state, member.country]
@@ -190,10 +190,10 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                         alt={memberName}
                         width={48}
                         height={48}
-                        className="size-12 shrink-0 rounded-[var(--radius-control)] border border-border object-cover"
+                        className="size-12 shrink-0 rounded-full border border-border object-cover"
                       />
                     ) : (
-                      <div className="flex size-12 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-secondary font-bold text-primary">
+                      <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-secondary font-bold text-primary">
                         {getInitials(memberName) || (
                           <UserRound aria-hidden="true" className="size-5" />
                         )}
@@ -277,7 +277,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
         </div>
       ) : (
         <div
-          className={`relative mt-5 flex min-h-64 flex-col items-center justify-center overflow-hidden border px-6 text-center ${styles.surface}`}
+          className={`relative mt-5 flex py-6 flex-col items-center justify-center overflow-hidden border px-6 text-center ${styles.surface}`}
         >
           <CommunitySignature className={styles.signature} />
           <span className="relative flex size-12 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary">
