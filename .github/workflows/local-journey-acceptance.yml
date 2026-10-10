@@ -2,6 +2,7 @@ name: Isolated local member journeys
 on:
   pull_request:
     branches: [main, feat/approved-community-homepage]
+    branches: [main]
     paths:
       - 'scripts/qa/**'
       - '.github/workflows/local-journey-acceptance.yml'
@@ -15,6 +16,7 @@ on:
       - 'src/lib/supabase/member-realtime.ts'
       - 'src/lib/site-url.ts'
       - 'tests/auth-callback.test.mjs'
+      - 'src/app/(auth)/**'
       - 'src/app/(dashboard)/**'
   workflow_dispatch:
 permissions:
@@ -54,6 +56,8 @@ jobs:
         run: node scripts/qa/local-member-journeys.mjs
       - name: Run real authenticated browser journeys
         run: node scripts/qa/local-member-browser.mjs
+      - name: Run real authenticated API and RLS journeys
+        run: node scripts/qa/local-member-journeys.mjs
       - name: Upload sanitized scenario results
         if: always()
         uses: actions/upload-artifact@v4

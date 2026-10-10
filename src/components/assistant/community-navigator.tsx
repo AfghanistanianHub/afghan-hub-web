@@ -10,6 +10,7 @@ import { memberNavigatorCopy as copy, memberNavigatorPrompts as prompts, memberN
 import styles from "./community-navigator.module.css";
 
 import { readNavigatorLanguagePreference, saveNavigatorLanguagePreference, subscribeNavigatorLanguagePreference, serverNavigatorLanguagePreference, type NavigatorLanguage } from "@/lib/assistant/navigator-language";
+type Language = "en" | "fa-AF" | "fa" | "ps";
 type Result = {
   entityType: "profile" | "business" | "organization" | "opportunity" | "event";
   entityId: string; title: string; subtitle: string | null; city: string | null;
@@ -156,6 +157,7 @@ export function CommunityNavigator() {
         <div className={styles.brand}><span className={styles.identity}><span className={styles.identityMark}><Compass size={17} aria-hidden="true" /></span><span><small>AFGHAN HUB</small><strong>Community Navigator</strong></span></span><button type="button" className={styles.close} aria-label={memberNavigatorUtility[language].close} onClick={() => setOpen(false)}><X size={19} aria-hidden="true" /></button></div>
         <p className={styles.kicker}><Sparkles size={13} aria-hidden="true" />{labels.title}</p><h2 id="community-navigator-title">{strings.title}</h2><p className={styles.description}>{strings.description}</p>
         <div className={styles.toolbar}>{memberNavigatorLocales.map(({value:option,label}) => <button type="button" key={option} aria-pressed={language===option} onClick={() => {setLanguage(saveNavigatorLanguagePreference(option));trackAssistantEvent({event:"assistant_language_change",language:option});}}>{label}</button>)}<button type="button" className={styles.reset} onClick={startOver}>{labels.start}</button></div>
+        <div className={styles.toolbar}>{memberNavigatorLocales.map(({value:option,label}) => <button type="button" key={option} aria-pressed={language===option} onClick={() => {setLanguage(option);trackAssistantEvent({event:"assistant_language_change",language:option});}}>{label}</button>)}<button type="button" className={styles.reset} onClick={startOver}>{labels.start}</button></div>
       </header>
       <p role="status" aria-live="polite" className="sr-only">{pending ? strings.searching : turns.at(-1)?.status === "ready" ? `${labels.matches}: ${turns.at(-1)?.groups.reduce((count,group)=>count+group.results.length,0)}` : ""}</p>
       <div className={styles.conversation} aria-label={labels.title}>

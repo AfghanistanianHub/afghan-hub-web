@@ -5,6 +5,7 @@ import { isSameOriginRequest } from "@/lib/http/request-origin";
 import { createClient } from "@/lib/supabase/server";
 
 import { navigatorLanguageSchema as languageSchema } from "@/lib/assistant/public-discovery-contract";
+const languageSchema = z.enum(["en", "fa-AF", "fa", "ps"]);
 const entityTypeSchema = z.enum([
   "profile",
   "business",

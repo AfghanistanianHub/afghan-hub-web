@@ -1,4 +1,5 @@
 export type { NavigatorLanguage } from "./navigator-language";
+import { dariNavigatorCopy } from "./navigator-copy-dari";
 
 export const navigatorCopy = {
   en: {
@@ -21,6 +22,7 @@ export const navigatorCopy = {
     custom: "یا با کلمات خود توضیح دهید", location: "شهر یا منطقه (اختیاری)", back: "بازگشت", skip: "رد کردن", next: "ادامه", restart: "شروع دوباره", find: "مسیرم را پیدا کن", close: "بستن راهنما",
     searching: "در حال جست‌وجوی فهرست‌های عمومی…", empty: "نتیجه عمومی مرتبطی پیدا نشد.", error: "جست‌وجو فعلاً در دسترس نیست. دوباره تلاش کنید.", rate: "راهنما مشغول است. یک دقیقه صبر کنید و دوباره تلاش کنید.", retry: "تلاش دوباره", results: "گام‌های بعدی شما", looking: "در جست‌وجوی", all: "همه علاقه‌ها", anywhere: "همه مکان‌ها", browse: "بیشتر ببینید", people: "برای آشنایی با افراد وارد شوید", peopleNote: "پروفایل اعضا در شبکه پس از ورود در دسترس است.", partial: "برخی فهرست‌ها فعلاً در دسترس نیستند. نتایج موجود در زیر آمده است.", recovery: "موضوع گسترده‌تر یا مکان دیگری را امتحان کنید یا فهرست‌ها را ببینید.", reason: "مرتبط با علاقه شما", locationReason: "مرتبط با مکان شما یا قابل دسترسی از راه دور", generalReason: "یک فهرست عمومی در حوزه انتخابی شما", clearLocation: "جست‌وجو در همه مکان‌ها", privacy: "روش جست‌وجو", disclosure: "هر پاسخ نوع جست‌وجو را نشان می‌دهد: ساختاریافته یا با کمک مدل. در صورت فعال‌سازی مدل، متن جست‌وجو و فیلترهای قبلی به ارائه‌دهنده مدل فرستاده می‌شود؛ داده‌های فهرست به مدل فرستاده نمی‌شود. فقط فهرست‌های عمومی منتشرشده جست‌وجو می‌شوند. افراد را در راهنمای اعضا پس از ورود پیدا کنید. گفتگو فقط در همین نشست صفحه می‌ماند؛ متن جست‌وجو ثبت نمی‌شود. نتایج محدودند و ممکن است همه موارد را پوشش ندهند. محتوا به زبان اصلی نمایش داده می‌شود.", history: "تاریخچه جست‌وجو", step: "پرسش", types: {businesses:"کسب‌وکارها",organizations:"سازمان‌ها",opportunities:"فرصت‌ها",events:"رویدادها"},
   },
+  "fa-AF": dariNavigatorCopy,
   ps: {
     structuredMode: "جوړښتي عامه لټون", modelMode: "د ماډل په مرسته لټون", fallbackNotice: "ماډل نشته؛ عامه لټون وکارول شو", language: "پښتو", title: "د افغان هب هوښیار لارښود", beta: "ازمایښتي نسخه", description: "خلک، فرصتونه او خپل راتلونکی ګام ومومئ.",
     placeholder: "نن څه ترلاسه کول غواړئ؟", search: "لټون", guide: "نه پوهېږئ له کومه پیل وکړئ؟", guideDescription: "څو لنډې پوښتنې ځواب کړئ او خپله لاره ومومئ.",
@@ -36,3 +38,8 @@ export const guidedGoals = ["Meet people", "Find opportunities", "Grow my work o
 export const guidedTopics = ["technology", "arts", "education", "business", "community"];
 
 export const navigatorLocaleReview = { en: "source", fa: "awaiting-native-review", ps: "awaiting-native-review" } as const;
+export type NavigatorLanguage = "en" | "fa" | "fa-AF" | "ps";
+export const guidedGoals = ["Meet people", "Find opportunities", "Grow my work or business", "Connect with organizations", "Explore events", "I'm still exploring"];
+export const guidedTopics = ["technology", "arts", "education", "business", "community"];
+
+export const navigatorLocaleReview = { en: "source", "fa-AF": "awaiting-native-review", fa: "awaiting-native-review", ps: "awaiting-native-review" } as const;

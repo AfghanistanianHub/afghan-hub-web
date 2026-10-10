@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import ts from 'typescript';
 
 const paths={'./navigator-copy':'src/lib/assistant/navigator-copy.ts','./public-discovery':'src/lib/assistant/public-discovery.ts','./intents':'src/lib/assistant/intents.ts','./conversation':'src/lib/assistant/conversation.ts','./query':'src/lib/assistant/query.ts','./discovery-location':'src/lib/assistant/discovery-location.ts'};
+const paths={'./navigator-copy-dari':'src/lib/assistant/navigator-copy-dari.ts','./navigator-copy':'src/lib/assistant/navigator-copy.ts','./public-discovery':'src/lib/assistant/public-discovery.ts','./intents':'src/lib/assistant/intents.ts','./conversation':'src/lib/assistant/conversation.ts','./query':'src/lib/assistant/query.ts','./discovery-location':'src/lib/assistant/discovery-location.ts'};
 function load(file) {
   const exports={};vm.runInNewContext(ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports,Set,require(name){assert.ok(paths[name],name);return load(paths[name]);}});return exports;
 }
@@ -32,4 +33,11 @@ test('Persian and Pashto have complete draft resources and inclusive creative te
  assert.equal(navigatorCopy.fa.prompts[3],'هنرمندان و فعالان خلاق');
  const planner=load('src/lib/assistant/public-discovery.ts');
  assert.deepEqual(Array.from(planner.planPublicDiscovery(navigatorCopy.fa.prompts[1]).kinds),['organizations']);
+test('Dari has a complete distinct draft resource and inclusive creative terminology',()=>{
+ const {navigatorCopy,navigatorLocaleReview}=load('src/lib/assistant/navigator-copy.ts');
+ for(const language of ['fa-AF','fa','ps']){assert.deepEqual(Object.keys(navigatorCopy[language]).sort(),Object.keys(navigatorCopy.en).sort());assert.equal(navigatorCopy[language].goals.length,6);assert.equal(navigatorCopy[language].topics.length,5);assert.equal(navigatorLocaleReview[language],'awaiting-native-review');}
+ assert.notEqual(navigatorCopy['fa-AF'].error,navigatorCopy.fa.error);assert.notEqual(navigatorCopy['fa-AF'].topics[0],navigatorCopy.fa.topics[0]);
+ for(const lang of ['fa','fa-AF'])assert.equal(navigatorCopy[lang].prompts[3],'هنرمندان و فعالان خلاق');
+ const planner=load('src/lib/assistant/public-discovery.ts');
+ assert.deepEqual(Array.from(planner.planPublicDiscovery(navigatorCopy['fa-AF'].prompts[1]).kinds),['organizations']);
 });

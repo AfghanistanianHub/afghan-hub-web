@@ -101,6 +101,12 @@ export function NotificationBell({ currentUserId, notifications, unreadCount, un
       });
 
     return subscribeMemberChannel(supabase, channel);
+      })
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
   }, [currentUserId, router]);
 
   useEffect(() => {

@@ -47,6 +47,12 @@ test("assistant interface uses shared canonical language choices and retains RTL
   assert.match(languages, /فارسی \/ Persian/);
   assert.match(component, /memberNavigatorLocales.map/);
   assert.match(languages, /پښتو \/ Pashto/);
+test("assistant interface exposes English, Dari, Persian and Pashto", () => {
+  assert.match(localeResources, /English/);
+  assert.match(localeResources, /دری/);
+  assert.match(localeResources, /فارسی/);
+  assert.match(component, /memberNavigatorLocales.map/);
+  assert.match(localeResources, /پښتو/);
 });
 
 test("assistant UI only calls the read-only assistant endpoint", () => {

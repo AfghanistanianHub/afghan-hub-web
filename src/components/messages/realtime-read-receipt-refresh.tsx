@@ -38,6 +38,8 @@ export function RealtimeReadReceiptRefresh({
           router.refresh();
         }
       });
+      })
+      .subscribe();
 
     return subscribeMemberChannel(supabase, channel);
   }, [conversationId, router]);
