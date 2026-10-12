@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Accept old clients at the boundary; only canonical locales reach the planner.
+// Accept old fa-AF clients at the boundary; only canonical locales reach the planner.
 export const navigatorLanguageSchema = z.enum(["en", "fa", "fa-AF", "ps"])
   .transform(value => value === "fa-AF" ? "fa" as const : value);
 
@@ -9,7 +9,6 @@ export const discoveryPlanSchema = z.object({ kinds: z.array(kind).min(1).max(4)
 export const discoveryRequestSchema = z.object({
   query: z.string().trim().min(2).max(120),
   language: navigatorLanguageSchema.default("en"),
-  language: z.enum(["en", "fa", "fa-AF", "ps"]).default("en"),
   filters: z.object({ goal: z.string().trim().max(80).optional(), topic: z.string().trim().max(80).optional(), location: z.string().trim().max(60).optional() }).strict().optional(),
   context: discoveryPlanSchema.optional(),
   clarification: z.string().trim().min(2).max(180).optional(),
