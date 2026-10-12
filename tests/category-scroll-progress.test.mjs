@@ -12,7 +12,7 @@ test("five categories preserve order, start horizontally, and finish evenly spac
     assert.ok(initial.every(item => item.y === 0 && item.opacity === 0));
     assert.ok(final.every(item => item.x === 32 && item.opacity === 1 && item.textX === 0));
     final.forEach((item, i) => assert.equal(item.y, 104 + 80 * i));
-    initial.forEach((item, i) => assert.ok(item.x >= 0 && item.x + 64 <= width));
+    initial.forEach(item => assert.ok(item.x >= 0 && item.x + 64 <= width));
   }
 });
 
@@ -48,3 +48,4 @@ test("pause and reverse are deterministic; later icons stay in their original ro
   assert.ok(categoryLineScale(0) > 0);
   for (let p = 0; p < 1; p += 0.01) assert.ok(categoryLineScale(p) <= categoryLineScale(p + 0.01));
 });
+
