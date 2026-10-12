@@ -202,6 +202,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
       x:n.querySelector('[data-category-icon]').getBoundingClientRect().x,
       y:n.querySelector('[data-category-icon]').getBoundingClientRect().y,
       opacity:Number(getComputedStyle(n).opacity),transform:getComputedStyle(n).transform,
+      pointer:getComputedStyle(n).pointerEvents,
       height:n.getBoundingClientRect().height
     })),height:document.querySelector('[data-category-section]').offsetHeight,
     overflow:document.documentElement.scrollWidth>innerWidth
@@ -217,6 +218,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     assert.ok(state.height<800,"Natural flow replaces the long sticky runway");
     assert.ok(state.rows.every(row=>Math.abs(row.x-state.rows[0].x)<1),"Always vertically aligned");
     state.rows.forEach((row,i)=> {
+      assert.equal(row.pointer,row.opacity===0 ? "none" : "auto","Invisible rows cannot receive pointer input");
       if(i) {assert.ok(row.y>=state.rows[i-1].y+state.rows[i-1].height-12);assert.ok(row.opacity<=state.rows[i-1].opacity);}
     });
     if(revealStates.has(offset)) assert.deepEqual(state,revealStates.get(offset),"Scroll up reverses the reveal");
@@ -237,10 +239,11 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   assert.ok(await page.evaluate("document.querySelector('[data-category=events]').matches(':focus-visible')"));
   assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category=events]')).opacity"),"1");
   assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category=events]')).outlineStyle"),"solid");
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category=events]')).pointerEvents"),"auto","Focus restores hidden-row input");
   await page.evaluate("document.activeElement.blur()");
   console.log("AFGHAN_HUB_CATEGORY_REVEAL_VERIFIED vertical layout/sequential/down/up/pause/no overlap/no sticky/keyboard");
   await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
-  await waitFor(()=>page.evaluate("matchMedia('(prefers-reduced-motion: reduce)').matches && [...document.querySelectorAll('[data-category]')].every(n=>getComputedStyle(n).opacity==='1' && getComputedStyle(n).transform==='none')"),"static reduced-motion category list");
+  await waitFor(()=>page.evaluate("matchMedia('(prefers-reduced-motion: reduce)').matches && [...document.querySelectorAll('[data-category]')].every(n=>getComputedStyle(n).opacity==='1' && getComputedStyle(n).transform==='none' && getComputedStyle(n).pointerEvents==='auto')"),"static reduced-motion category list");
   assert.equal(await page.evaluate("document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length"),0);
   await page.send("Emulation.setEmulatedMedia",{features:[]});
   // Public guided discovery is exercised against the isolated published-listing fixture.

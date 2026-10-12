@@ -35,6 +35,7 @@ export function ScrollCategoryIntroduction() {
       let total = 0;
       rows.forEach((row, index) => {
         const state = categoryRevealFrame(window.scrollY, stageTop + offsets[index], viewportHeight);
+        row.dataset.revealVisible = String(state.opacity > 0);
         row.style.setProperty("--reveal-opacity", String(state.opacity));
         row.style.setProperty("--reveal-y", `${state.y}px`);
         total += state.opacity;
