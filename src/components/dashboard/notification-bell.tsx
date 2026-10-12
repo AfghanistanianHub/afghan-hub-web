@@ -54,15 +54,24 @@ function getActorName(actor: NotificationSummary["actor"]) {
 function getNotificationMessage(notification: NotificationSummary) {
   const actorName = getActorName(notification.actor);
 
-  if (notification.type === "connection_request") return `${actorName} sent you a connection request.`;
-  if (notification.type === "connection_accepted") return `${actorName} accepted your connection request.`;
-  if (notification.type === "new_message") return `${actorName} sent you a new message.`;
+  if (notification.type === "connection_request")
+    return `${actorName} sent you a connection request.`;
+  if (notification.type === "connection_accepted")
+    return `${actorName} accepted your connection request.`;
+  if (notification.type === "new_message")
+    return `${actorName} sent you a new message.`;
   if (notification.type === "content_approved") {
-    return `Your ${notification.contentType ?? "submission"} “${notification.contentTitle ?? "Untitled"}” was approved.`;
+    return `Your ${notification.contentType ?? "submission"} “${
+      notification.contentTitle ?? "Untitled"
+    }” was approved.`;
   }
   if (notification.type === "content_rejected") {
-    const reason = notification.contentNote ? ` Reason: ${notification.contentNote}` : "";
-    return `Your ${notification.contentType ?? "submission"} “${notification.contentTitle ?? "Untitled"}” was not approved.${reason}`;
+    const reason = notification.contentNote
+      ? ` Reason: ${notification.contentNote}`
+      : "";
+    return `Your ${notification.contentType ?? "submission"} “${
+      notification.contentTitle ?? "Untitled"
+    }” was not approved.${reason}`;
   }
 
   return "You have a new notification.";
@@ -77,7 +86,51 @@ function formatNotificationTime(value: string) {
   }).format(new Date(value));
 }
 
-export function NotificationBell({ currentUserId, notifications, unreadCount, unavailable = false }: NotificationBellProps) {
+export function RealtimeReadReceiptRefresh({
+  conversationId,
+}: RealtimeReadReceiptRefreshProps) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`read-receipts:${conversationId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "conversation_members",
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        () => {
+          router.refresh();
+        },
+      )
+      .on("system", {}, (payload) => {
+        // A joined socket can precede PostgreSQL readiness. Refetch once the
+        // stream is ready, including after rejoining, to recover missed changes.
+        if (payload.extension === "postgres_changes" && payload.status === "ok") {
+          router.refresh();
+        }
+      });
+
+    return subscribeMemberChannel(supabase, channel);
+  }, [conversationId, router]);
+
+  return null;
+}
+
+type RealtimeReadReceiptRefreshProps = {
+  conversationId: string;
+};
+
+export function NotificationBell({
+  currentUserId,
+  notifications,
+  unreadCount,
+  unavailable = false,
+}: NotificationBellProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -90,8 +143,26 @@ export function NotificationBell({ currentUserId, notifications, unreadCount, un
     const refreshNotifications = () => router.refresh();
     const channel = supabase
       .channel(`notifications:${currentUserId}`)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `recipient_id=eq.${currentUserId}` }, refreshNotifications)
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "notifications", filter: `recipient_id=eq.${currentUserId}` }, refreshNotifications)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `recipient_id=eq.${currentUserId}`,
+        },
+        refreshNotifications,
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "notifications",
+          filter: `recipient_id=eq.${currentUserId}`,
+        },
+        refreshNotifications,
+      )
       .on("system", {}, (payload) => {
         // A joined socket can precede PostgreSQL readiness. Refetch once the
         // stream is ready, including after rejoining, to recover missed changes.
@@ -101,20 +172,17 @@ export function NotificationBell({ currentUserId, notifications, unreadCount, un
       });
 
     return subscribeMemberChannel(supabase, channel);
-      })
-      .subscribe();
-
-    return () => {
-      void supabase.removeChannel(channel);
-    };
   }, [currentUserId, router]);
 
   useEffect(() => {
     if (!isOpen) return;
     panelRef.current?.focus();
+  }, [isOpen]);
 
+  useEffect(() => {
     function handlePointerDown(event: PointerEvent) {
-      if (event.target instanceof Node && !containerRef.current?.contains(event.target)) setIsOpen(false);
+      if (event.target instanceof Node && !containerRef.current?.contains(event.target))
+        setIsOpen(false);
     }
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -169,7 +237,9 @@ export function NotificationBell({ currentUserId, notifications, unreadCount, un
         >
           <div className="relative flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
             <div className="relative">
-              <p className="font-semibold tracking-tight text-foreground">Notifications</p>
+              <p className="font-semibold tracking-tight text-foreground">
+                Notifications
+              </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {unavailable
                   ? "Temporarily unavailable"
@@ -180,7 +250,9 @@ export function NotificationBell({ currentUserId, notifications, unreadCount, un
             </div>
             {!unavailable && unreadCount > 0 ? (
               <form action={markAllNotificationsRead}>
-                <NotificationSubmit className={`relative min-w-32 border border-primary/20 bg-secondary px-3 py-2 text-xs font-semibold text-primary hover:bg-primary/10 ${styles.control}`}>
+                <NotificationSubmit
+                  className={`relative min-w-32 border border-primary/20 bg-secondary px-3 py-2 text-xs font-semibold text-primary hover:bg-primary/10 ${styles.control}`}
+                >
                   Mark all read
                 </NotificationSubmit>
               </form>
@@ -192,7 +264,9 @@ export function NotificationBell({ currentUserId, notifications, unreadCount, un
               <span className="relative mx-auto flex size-12 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary">
                 <Bell aria-hidden="true" className="size-6" />
               </span>
-              <p className="mt-4 text-sm font-semibold text-foreground">Notifications are temporarily unavailable</p>
+              <p className="mt-4 text-sm font-semibold text-foreground">
+                Notifications are temporarily unavailable
+              </p>
               <p className="mx-auto mt-1 max-w-64 text-xs leading-5 text-muted-foreground">
                 Please close this panel and try again shortly.
               </p>
@@ -202,26 +276,54 @@ export function NotificationBell({ currentUserId, notifications, unreadCount, un
               {notifications.map((notification) => {
                 const actorName = getActorName(notification.actor);
                 const isUnread = !notification.readAt;
-                const isModerationNotification = notification.type === "content_approved" || notification.type === "content_rejected";
-                const ModerationIcon = notification.type === "content_approved" ? CircleCheck : CircleX;
+                const isModerationNotification =
+                  notification.type === "content_approved" ||
+                  notification.type === "content_rejected";
+                const ModerationIcon = notification.type === "content_approved"
+                  ? CircleCheck
+                  : CircleX;
 
                 return (
-                  <form key={notification.id} action={markNotificationRead} className="border-b border-border/80 last:border-b-0">
-                    <input type="hidden" name="notification_id" value={notification.id} />
+                  <form
+                    key={notification.id}
+                    action={markNotificationRead}
+                    className="border-b border-border/80 last:border-b-0"
+                  >
+                    <input
+                      type="hidden"
+                      name="notification_id"
+                      value={notification.id}
+                    />
                     <NotificationSubmit
                       preserveContent
-                      className={`relative group flex min-h-20 w-full gap-3 px-5 py-4 text-left transition-colors motion-reduce:transition-none active:bg-secondary hover:bg-primary/[0.035] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary ${isUnread ? "bg-primary/[0.045]" : ""}`}
+                      className={`relative group flex min-h-20 w-full gap-3 px-5 py-4 text-left transition-colors motion-reduce:transition-none active:bg-secondary hover:bg-primary/[0.035] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary ${
+                        isUnread ? "bg-primary/[0.045]" : ""
+                      }`}
                     >
                       {isModerationNotification ? (
-                        <span className={`flex size-10 shrink-0 items-center justify-center rounded-[var(--radius)] border ${notification.type === "content_approved" ? "border-primary/10 bg-primary/10 text-primary" : "border-destructive/10 bg-destructive/[0.06] text-destructive"}`}>
+                        <span
+                          className={`flex size-10 shrink-0 items-center justify-center rounded-[var(--radius)] border ${
+                            notification.type === "content_approved"
+                              ? "border-primary/10 bg-primary/10 text-primary"
+                              : "border-destructive/10 bg-destructive/[0.06] text-destructive"
+                          }`}
+                        >
                           <ModerationIcon aria-hidden="true" className="size-5" />
                         </span>
                       ) : notification.actor?.avatarUrl ? (
-                        <ExternalImage src={notification.actor.avatarUrl} alt="" width={40} height={40} className="size-10 shrink-0 rounded-[var(--radius)] border border-border/70 object-cover" />
+                        <ExternalImage
+                          src={notification.actor.avatarUrl}
+                          alt=""
+                          width={40}
+                          height={40}
+                          className="size-10 shrink-0 rounded-[var(--radius)] border border-border/70 object-cover"
+                        />
                       ) : (
                         <span className="flex size-10 shrink-0 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary">
                           {notification.actor ? (
-                            <span className="text-sm font-bold text-primary">{actorName.charAt(0).toUpperCase()}</span>
+                            <span className="text-sm font-bold text-primary">
+                              {actorName.charAt(0).toUpperCase()}
+                            </span>
                           ) : (
                             <UserRound aria-hidden="true" className="size-5" />
                           )}
@@ -229,11 +331,21 @@ export function NotificationBell({ currentUserId, notifications, unreadCount, un
                       )}
 
                       <span className="min-w-0 flex-1">
-                        <span className={`block text-sm leading-5 text-foreground ${isUnread ? "font-semibold" : ""}`}>{getNotificationMessage(notification)}</span>
-                        <span className="mt-1 block text-xs text-muted-foreground">{formatNotificationTime(notification.createdAt)}</span>
+                        <span
+                          className={`block text-sm leading-5 text-foreground ${
+                            isUnread ? "font-semibold" : ""
+                          }`}
+                        >
+                          {getNotificationMessage(notification)}
+                        </span>
+                        <span className="mt-1 block text-xs text-muted-foreground">
+                          {formatNotificationTime(notification.createdAt)}
+                        </span>
                       </span>
 
-                      {isUnread ? <span aria-label="Unread" className="mt-2 size-2 shrink-0 rounded-full bg-primary" /> : null}
+                      {isUnread ? (
+                        <span aria-label="Unread" className="mt-2 size-2 shrink-0 rounded-full bg-primary" />
+                      ) : null}
                     </NotificationSubmit>
                   </form>
                 );
@@ -244,7 +356,9 @@ export function NotificationBell({ currentUserId, notifications, unreadCount, un
               <span className="relative mx-auto flex size-12 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary">
                 <Bell aria-hidden="true" className="size-6" />
               </span>
-              <p className="mt-4 text-sm font-semibold text-foreground">No notifications yet</p>
+              <p className="mt-4 text-sm font-semibold text-foreground">
+                No notifications yet
+              </p>
               <p className="mx-auto mt-1 max-w-64 text-xs leading-5 text-muted-foreground">
                 New connections, messages, and moderation decisions will appear here.
               </p>

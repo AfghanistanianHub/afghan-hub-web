@@ -38,10 +38,9 @@ export function RealtimeReadReceiptRefresh({
           router.refresh();
         }
       });
-      })
-      .subscribe();
 
-    return subscribeMemberChannel(supabase, channel);
+    const cleanup = subscribeMemberChannel(supabase, channel);
+    return cleanup;
   }, [conversationId, router]);
 
   return null;
