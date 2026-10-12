@@ -176,6 +176,10 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     assert.equal(layout.targets.length, 5);
     assert.ok(layout.targets.every(target => target.clickable && target.height >= 44 && target.width >= 44));
     assert.equal(layout.covers,5,"Five category destinations in the introduction");
+    if (width < 900) {
+      assert.ok(await page.evaluate("[...document.querySelectorAll('[data-category-copy]')].every(n=>getComputedStyle(n).opacity==='1')"),"Mobile descriptions are immediately visible");
+      assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category-sticky]')).position"),"relative");
+    }
     await page.evaluate(axeSource);
     assert.deepEqual(await page.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>r.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})))"),[],`Homepage accessibility at ${width}`);
     await page.evaluate("scrollTo(0,0)");
@@ -191,7 +195,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   await delay(200);
   assert.ok(await page.evaluate("document.querySelector('[data-community-node=people]').matches(':focus-visible')"));
   assert.deepEqual(await page.evaluate("document.querySelector('[data-hero-region]').getBoundingClientRect().toJSON()"),bounds);
-  await page.evaluate("document.activeElement.blur();window.categoryIconNodes=[...document.querySelectorAll('[data-category-icon]')]");
+  await page.evaluate("document.activeElement.blur();window.categoryIconNodes=[...document.querySelectorAll('[data-category-icon]')];true");
   const categorySnapshot = `(() => ({
     icons:[...document.querySelectorAll('[data-category-icon]')].map((n,i)=>({
       same:n===window.categoryIconNodes[i],x:n.getBoundingClientRect().x,y:n.getBoundingClientRect().y,
@@ -223,7 +227,15 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     }
   }
   screenshots.push({name:"category_initial_1440.jpg",data:(await page.send("Page.captureScreenshot",{format:"jpeg",quality:85})).data});
-  console.log("AFGHAN_HUB_CATEGORY_SCROLL_VERIFIED down/up/pause/single nodes/final positions");
+  await page.evaluate("document.querySelector('[data-category=people]').focus()");
+  assert.ok(await page.evaluate("document.querySelector('[data-category=people]').matches(':focus-visible')"));
+  assert.ok(await page.evaluate("[...document.querySelectorAll('[data-category-copy]')].every(n=>getComputedStyle(n).opacity==='1')"),"Keyboard users see stable destinations");
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category-icon]')).outlineStyle"),"solid");
+  await page.evaluate("document.activeElement.blur()");
+  await page.evaluate("(() => {const s=document.querySelector('[data-category-section]');scrollTo(0,s.getBoundingClientRect().top+scrollY-80+1900);})()");
+  await delay(100);
+  assert.ok(await page.evaluate("document.querySelector('[data-category-sticky]').getBoundingClientRect().top<79"),"Sticky section releases after completion");
+  console.log("AFGHAN_HUB_CATEGORY_SCROLL_VERIFIED down/up/pause/single nodes/final positions/keyboard/release");
   await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
   await waitFor(()=>page.evaluate("matchMedia('(prefers-reduced-motion: reduce)').matches && document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length===0"),"network reduced-motion resting state");
   assert.equal(await page.evaluate("document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length"),0);
