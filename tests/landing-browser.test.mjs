@@ -176,10 +176,9 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     assert.equal(layout.targets.length, 5);
     assert.ok(layout.targets.every(target => target.clickable && target.height >= 44 && target.width >= 44));
     assert.equal(layout.covers,5,"Five category destinations in the introduction");
-    if (width < 900) {
-      assert.ok(await page.evaluate("[...document.querySelectorAll('[data-category-copy]')].every(n=>getComputedStyle(n).opacity==='1')"),"Mobile descriptions are immediately visible");
-      assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category-sticky]')).position"),"relative");
-    }
+    const vertical = await page.evaluate("[...document.querySelectorAll('[data-category-icon]')].map(n=>n.getBoundingClientRect().toJSON())");
+    assert.ok(vertical.every(icon=>Math.abs(icon.x-vertical[0].x)<1),"Icons always form a vertical column");
+    for(let i=1;i<5;i++) assert.ok(vertical[i].top>vertical[i-1].bottom,"Category icons never overlap");
     await page.evaluate(axeSource);
     assert.deepEqual(await page.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>r.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})))"),[],`Homepage accessibility at ${width}`);
     await page.evaluate("scrollTo(0,0)");
@@ -196,75 +195,53 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   assert.ok(await page.evaluate("document.querySelector('[data-community-node=people]').matches(':focus-visible')"));
   assert.deepEqual(await page.evaluate("document.querySelector('[data-hero-region]').getBoundingClientRect().toJSON()"),bounds);
   await page.evaluate("document.activeElement.blur();window.categoryIconNodes=[...document.querySelectorAll('[data-category-icon]')];true");
+  await waitFor(()=>page.evaluate("document.querySelector('[data-category-section]').dataset.reveal==='true'"),"category reveal hydration");
   const categorySnapshot = `(() => ({
-    icons:[...document.querySelectorAll('[data-category-icon]')].map((n,i)=>({
-      same:n===window.categoryIconNodes[i],x:n.getBoundingClientRect().x,y:n.getBoundingClientRect().y,
-      localX:n.getBoundingClientRect().x-n.closest("nav").getBoundingClientRect().x,
-      localY:n.getBoundingClientRect().y-n.closest("nav").getBoundingClientRect().y,
-      transform:getComputedStyle(n).transform,
-      pointer:getComputedStyle(n).pointerEvents,moving:n.dataset.moving,
-      category:n.closest('[data-category]').dataset.category,
-      target:document.elementFromPoint(n.getBoundingClientRect().x+32,n.getBoundingClientRect().y+32)?.closest('[data-category]')?.dataset.category ?? null,
-      opacity:Number(getComputedStyle(document.querySelectorAll('[data-category-copy]')[i]).opacity)
-    })),progress:document.querySelector('[data-category-section]').dataset.scrollProgress,
+    rows:[...document.querySelectorAll('[data-category]')].map((n,i)=>({
+      same:n.querySelector('[data-category-icon]')===window.categoryIconNodes[i],
+      x:n.querySelector('[data-category-icon]').getBoundingClientRect().x,
+      y:n.querySelector('[data-category-icon]').getBoundingClientRect().y,
+      opacity:Number(getComputedStyle(n).opacity),transform:getComputedStyle(n).transform,
+      height:n.getBoundingClientRect().height
+    })),height:document.querySelector('[data-category-section]').offsetHeight,
     overflow:document.documentElement.scrollWidth>innerWidth
   }))()`;
-  const categoryStates = new Map();
-  for (const progress of [0,.07,.1,.14,.22,.39,.56,.73,.92,1,.92,.73,.56,.39,.22,.14,.1,.07,0]) {
-    await page.evaluate(`(() => {const s=document.querySelector('[data-category-section]');const sticky=s.querySelector('[data-category-sticky]');scrollTo(0,s.getBoundingClientRect().top+scrollY-80+${progress}*(s.offsetHeight-sticky.offsetHeight));})()`);
+  const rowTop = await page.evaluate("(() => {const n=document.querySelector('[data-category]');return n.getBoundingClientRect().top+scrollY-Number.parseFloat(n.style.getPropertyValue('--reveal-y')||'0');})()");
+  const revealStates=new Map();
+  for(const offset of [-50,30,100,160,240,300,380,460,560,460,380,300,240,160,100,30,-50]) {
+    await page.evaluate(`scrollTo(0,${rowTop}-900+${offset})`);
     await delay(100);
-    const state = await page.evaluate(categorySnapshot);
-    assert.ok(state.icons.every(icon=>icon.same),"Keep the same five icon nodes");
+    const state=await page.evaluate(categorySnapshot);
+    assert.ok(state.rows.every(row=>row.same),"The same five icon nodes remain");
     assert.equal(state.overflow,false);
-    state.icons.forEach((icon,i)=> {
-      if(icon.moving==='true') assert.equal(icon.target,icon.category,"Moving icon owns its pointer target");
-      state.icons.forEach((other,j)=> {
-        if(i===j || icon.pointer==='none' || other.pointer==='none') return;
-        const crosses=icon.x<other.x+64 && icon.x+64>other.x && icon.y<other.y+64 && icon.y+64>other.y;
-        assert.equal(crosses,false,"No two enabled icon targets overlap");
-      });
-      const start=.04+i*.17;
-      const corner=start+.13*.55;
-      if(progress<=corner) assert.ok(Math.abs(icon.localY)<.01,"Horizontal leg never descends early");
-      else assert.ok(Math.abs(icon.localX-32)<.01,"Vertical leg stays in the left column");
+    assert.ok(state.height<800,"Natural flow replaces the long sticky runway");
+    assert.ok(state.rows.every(row=>Math.abs(row.x-state.rows[0].x)<1),"Always vertically aligned");
+    state.rows.forEach((row,i)=> {
+      if(i) {assert.ok(row.y>=state.rows[i-1].y+state.rows[i-1].height-12);assert.ok(row.opacity<=state.rows[i-1].opacity);}
     });
-    assert.ok(Math.abs(Number(state.progress)-progress)<.002);
-    if (categoryStates.has(progress)) assert.deepEqual(state.icons,categoryStates.get(progress),"Reverse scroll restores positions");
-    else categoryStates.set(progress,state.icons);
-    await delay(150);
-    assert.deepEqual((await page.evaluate(categorySnapshot)).icons,state.icons,"Pause must stop all movement");
-    if (progress===0) {
-      assert.ok(state.icons.every(icon=>icon.opacity===0));
-      assert.ok(state.icons.slice(1).every((icon,i)=>icon.x<state.icons[i].x),"Initial row starts with People at the right and travels right to left");
+    if(revealStates.has(offset)) assert.deepEqual(state,revealStates.get(offset),"Scroll up reverses the reveal");
+    else revealStates.set(offset,state);
+    await delay(100);
+    assert.deepEqual(await page.evaluate(categorySnapshot),state,"Pausing scroll pauses the reveal");
+    if(offset===-50) assert.ok(state.rows.every(row=>row.opacity===0));
+    if(offset===30) {
+      assert.ok(state.rows[0].opacity>0 && state.rows[0].opacity<1);
+      assert.ok(state.rows.slice(1).every(row=>row.opacity===0),"Only first row starts revealing");
     }
-    if (progress===1) {
-      assert.ok(state.icons.every(icon=>icon.opacity===1));
-      for(let i=1;i<5;i++) {
-        assert.ok(Math.abs(state.icons[i].x-state.icons[0].x)<1);
-        assert.ok(Math.abs(state.icons[i].y-state.icons[i-1].y-80)<1);
-      }
-      screenshots.push({name:"category_final_1440.jpg",data:(await page.send("Page.captureScreenshot",{format:"jpeg",quality:85})).data});
+    if(offset===560) {
+      assert.ok(state.rows.every(row=>row.opacity===1),"All five rows fully revealed");
+      screenshots.push({name:"category_vertical_reveal_1440.jpg",data:(await page.send("Page.captureScreenshot",{format:"jpeg",quality:85})).data});
     }
   }
-  screenshots.push({name:"category_initial_1440.jpg",data:(await page.send("Page.captureScreenshot",{format:"jpeg",quality:85})).data});
-  await page.evaluate("document.querySelector('[data-category=people]').focus()");
-  assert.ok(await page.evaluate("document.querySelector('[data-category=people]').matches(':focus-visible')"));
-  assert.ok(await page.evaluate("[...document.querySelectorAll('[data-category-copy]')].every(n=>getComputedStyle(n).opacity==='1')"),"Keyboard users see stable destinations");
-  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category-icon]')).outlineStyle"),"solid");
+  await page.evaluate("document.querySelector('[data-category=events]').focus()");
+  assert.ok(await page.evaluate("document.querySelector('[data-category=events]').matches(':focus-visible')"));
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category=events]')).opacity"),"1");
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category=events]')).outlineStyle"),"solid");
   await page.evaluate("document.activeElement.blur()");
-  await page.evaluate("(() => {const s=document.querySelector('[data-category-section]');scrollTo(0,s.getBoundingClientRect().top+scrollY-80+1900);})()");
-  await delay(100);
-  assert.ok(await page.evaluate("document.querySelector('[data-category-sticky]').getBoundingClientRect().top<79"),"Sticky section releases after completion");
-  console.log("AFGHAN_HUB_CATEGORY_SCROLL_VERIFIED down/up/pause/single nodes/final positions/keyboard/release");
-  await page.evaluate("(() => {const s=document.querySelector('[data-category-section]');const sticky=s.querySelector('[data-category-sticky]');scrollTo(0,s.getBoundingClientRect().top+scrollY-80+.1*(s.offsetHeight-sticky.offsetHeight));})()");
-  await delay(100);
+  console.log("AFGHAN_HUB_CATEGORY_REVEAL_VERIFIED vertical layout/sequential/down/up/pause/no overlap/no sticky/keyboard");
   await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
-  await waitFor(()=>page.evaluate("matchMedia('(prefers-reduced-motion: reduce)').matches && document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length===0"),"network reduced-motion resting state");
+  await waitFor(()=>page.evaluate("matchMedia('(prefers-reduced-motion: reduce)').matches && [...document.querySelectorAll('[data-category]')].every(n=>getComputedStyle(n).opacity==='1' && getComputedStyle(n).transform==='none')"),"static reduced-motion category list");
   assert.equal(await page.evaluate("document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length"),0);
-  await waitFor(()=>page.evaluate("getComputedStyle(document.querySelector('[data-category-sticky]')).position==='relative' && [...document.querySelectorAll('[data-category-copy]')].every(n=>getComputedStyle(n).opacity==='1') && [...document.querySelectorAll('[data-category-icon]')].every(n=>getComputedStyle(n).pointerEvents==='auto')"),"reduced-motion category layout and targets settle");
-  assert.ok(await page.evaluate("[...document.querySelectorAll('[data-category-copy]')].every(n=>getComputedStyle(n).opacity==='1')"),"Reduced motion exposes all descriptions");
-  assert.ok(await page.evaluate("[...document.querySelectorAll('[data-category-icon]')].every(n=>getComputedStyle(n).pointerEvents==='auto')"),"Reduced motion restores all icon hit targets");
-  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category-sticky]')).position"),"relative");
   await page.send("Emulation.setEmulatedMedia",{features:[]});
   // Public guided discovery is exercised against the isolated published-listing fixture.
   await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent.includes('Not sure where')).click()");
