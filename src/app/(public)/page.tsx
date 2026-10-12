@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CalendarDays, ChartNoAxesColumnIncreasing, Globe2, Search, Share2, UsersRound } from "lucide-react";
-import { communityAreas } from "@/components/public/community-areas";
-import { communityIcons, LivingNetwork } from "@/components/public/living-network";
+import { ScrollCategoryIntroduction } from "@/components/public/scroll-category-introduction";
+import { LivingNetwork } from "@/components/public/living-network";
 import { NavigatorJourneyLink } from "@/components/assistant/navigator-journey-link";
 import { HomepageNavigator } from "@/components/assistant/homepage-navigator";
-import { ListingDate } from "@/components/public/listing-card";
-import { publicHref, publicKinds, type PublicKind } from "@/lib/public-catalog";
-import { getPublicListings } from "@/lib/public-content";
 import styles from "./landing.module.css";
 
 const description = "Afghan Hub connects people, businesses, organizations, opportunities, and events — creating space for meaningful connections, collaboration, and shared progress.";
@@ -33,8 +30,6 @@ const paths = [
 ];
 
 export default async function PublicHome() {
-  const feeds = await Promise.all(publicKinds.map(kind => getPublicListings(kind, { limit: 2 })));
-  const byKind = Object.fromEntries(publicKinds.map((kind, index) => [kind, feeds[index]])) as Record<PublicKind, (typeof feeds)[number]>;
   return <main id="main-content" className={styles.page}>
     <section className={styles.hero} aria-labelledby="landing-title">
       <div className={styles.statement}>
@@ -53,20 +48,7 @@ export default async function PublicHome() {
       <ol className={styles.steps}>{steps.map(({ title, description, icon: Icon }) => <li key={title}><span className={styles.stepIcon}><Icon size={21} strokeWidth={1.6} aria-hidden="true" /></span><div><h3>{title}</h3><p>{description}</p></div></li>)}</ol>
     </section>
 
-    <section id="community" className={styles.explore} aria-labelledby="explore-heading">
-      <div className={styles.sectionIntro}><div><h2 id="explore-heading">Explore the community</h2><p>Discover people, businesses, organizations, opportunities, and events across Afghan communities.</p></div><Link href="/explore" className={styles.textLink}>View all <ArrowRight size={16} aria-hidden="true" /></Link></div>
-      <div className={styles.discovery}>{communityAreas.map(area => {
-        const Icon = communityIcons[area.key];
-        const feed = area.key === "people" ? null : byKind[area.key];
-        return <article key={area.key} className={styles.discoveryArea}>
-          <span className={`${styles.areaIcon} ${styles[area.key]}`}><Icon size={23} strokeWidth={1.5} aria-hidden="true" /></span>
-          <h3><Link href={area.href}>{area.label}</Link></h3>
-          <p>{area.description}</p>
-          {feed ? <ul>{feed.items.length ? feed.items.map(item => <li key={item.slug}><Link href={publicHref(area.key as PublicKind, item.slug)}>{item.title}<ArrowRight size={13} aria-hidden="true" /></Link><small>{item.date ? <ListingDate item={item} kind={area.key as PublicKind} /> : item.location}</small></li>) : <li className={styles.empty}>{feed.unavailable ? "Listings are temporarily unavailable." : "No public listings yet."}</li>}</ul> : <p className={styles.memberNote}>Sign in to discover member profiles and build connections.</p>}
-          <Link href={area.href} className={styles.textLink}>Explore {area.label.toLowerCase()} <ArrowRight size={14} aria-hidden="true" /></Link>
-        </article>;
-      })}</div>
-    </section>
+    <ScrollCategoryIntroduction />
 
     <section className={styles.paths} aria-labelledby="paths-heading"><div><p className={styles.eyebrow}>START WITH YOUR GOAL</p><h2 id="paths-heading">Your next step starts here.</h2><p>There’s more than one way into the network.<br />Let the Navigator help you find yours.</p></div><div className={styles.pathLinks}>{paths.map(path => <NavigatorJourneyLink key={path.title} query={path.query} title={path.title} />)}</div></section>
 
