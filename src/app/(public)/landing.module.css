@@ -69,6 +69,7 @@
 .final p { font-size:12px; line-height:1.5; margin-top:5px; max-width:560px; }
 .final .actions { flex-shrink:0; }
 .final[data-motion="true"] [data-home-reveal] { opacity:var(--final-opacity,1); transform:translate3d(0,var(--final-y,0px),0); }
+.final[data-motion="true"] .actions[data-home-reveal] { opacity:1; }
 .final:focus-within [data-home-reveal] { opacity:1; transform:none; }
 @keyframes reveal { from {opacity:0;transform:translateY(8px)} to {opacity:1;transform:translateY(0)} }
 @media(max-width:1120px) { .page { padding-inline:24px; } .statement h1 { font-size:50px; } .orientation { grid-template-columns:1fr; gap:20px; } .final { flex-wrap:wrap; } }

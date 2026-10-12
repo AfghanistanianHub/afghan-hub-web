@@ -32,7 +32,7 @@ export function HomepageMotion() {
       reveals.forEach((element, index) => {
         const value = clamp((height * .92 - finaleTop - index * 28) / 100);
         const eased = value * value * (3 - 2 * value);
-        element.style.setProperty("--final-opacity", String(.25 + .75 * eased));
+        element.style.setProperty("--final-opacity", String(.9 + .1 * eased));
         element.style.setProperty("--final-y", `${10 * (1 - eased)}px`);
       });
       finale?.setAttribute("data-motion", "true");
