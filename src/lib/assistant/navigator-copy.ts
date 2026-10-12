@@ -1,4 +1,3 @@
-export type { NavigatorLanguage } from "./navigator-language";
 import { dariNavigatorCopy } from "./navigator-copy-dari";
 
 export const navigatorCopy = {
@@ -34,10 +33,6 @@ export const navigatorCopy = {
     searching: "د عامه لېستونو لټون روان دی…", empty: "اړوند عامه پایله ونه موندل شوه.", error: "لټون اوس شتون نه لري. بیا هڅه وکړئ.", rate: "لارښود بوخت دی. یوه دقیقه صبر وکړئ او بیا هڅه وکړئ.", retry: "بیا هڅه", results: "ستاسو راتلونکي ګامونه", looking: "د موندلو لپاره", all: "ټولې علاقې", anywhere: "هر ځای", browse: "نور وګورئ", people: "د خلکو د موندلو لپاره ننوځئ", peopleNote: "د غړو پروفایلونه له ننوتلو وروسته په شبکه کې شته.", partial: "ځینې لېستونه اوس شتون نه لري. شته پایلې لاندې ښودل کېږي.", recovery: "پراخه موضوع یا بل ځای وازمویئ، یا لېستونه وګورئ.", reason: "ستاسو له علاقې سره تړاو لري", locationReason: "ستاسو له ځای سره تړاو لري یا له لرې شته", generalReason: "ستاسو په ټاکل شوې برخه کې عامه لېست", clearLocation: "په هر ځای کې لټون", privacy: "لټون څنګه کار کوي", disclosure: "هر ځواب د لټون ډول ښيي: جوړښتي یا د ماډل په مرسته. که ماډل فعال وي، ستاسو پوښتنه او مخکیني فلټرونه ماډل ته استول کېږي؛ د لېستونو معلومات نه استول کېږي. یوازې خپاره شوي عامه لېستونه لټوي. د غړو موندنه له ننوتلو وروسته په لارښود کې دوام لري. خبرې یوازې د دې پاڼې په ناسته کې پاتې کېږي؛ د لټون متن نه ثبتېږي. پایلې محدودې دي او ښايي ټول لېستونه ونه پوښي. منځپانګه په اصلي ژبه ښودل کېږي.", history: "د لټون تاریخ", step: "پوښتنه", types: {businesses:"کاروبارونه",organizations:"سازمانونه",opportunities:"فرصتونه",events:"غونډې"},
   },
 } as const;
-export const guidedGoals = ["Meet people", "Find opportunities", "Grow my work or business", "Connect with organizations", "Explore events", "I'm still exploring"];
-export const guidedTopics = ["technology", "arts", "education", "business", "community"];
-
-export const navigatorLocaleReview = { en: "source", fa: "awaiting-native-review", ps: "awaiting-native-review" } as const;
 export type NavigatorLanguage = "en" | "fa" | "fa-AF" | "ps";
 export const guidedGoals = ["Meet people", "Find opportunities", "Grow my work or business", "Connect with organizations", "Explore events", "I'm still exploring"];
 export const guidedTopics = ["technology", "arts", "education", "business", "community"];
