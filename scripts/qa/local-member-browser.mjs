@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import http from 'node:http';
 import net from 'node:net';
-import { execFileSync, spawn } from 'node:child_process';
+import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
@@ -286,6 +286,13 @@ try {
   assert.equal(code, 0, 'Local production build failed; logs withheld');
   launch(process.execPath, [nextCli, 'start', '--hostname', '127.0.0.1', '--port', '3100'], env);
   await until(async () => (await fetch(appUrl)).ok, 'local production server');
+  const compareUrl = requireLocalTarget('http://localhost:3102', 3102);
+  if (process.env.LOCAL_QA_COMPARE_DIR) {
+    const compareDir = resolve(process.env.LOCAL_QA_COMPARE_DIR);
+    assert.ok(existsSync(join(compareDir, '.next/BUILD_ID')), 'Comparison requires a prebuilt baseline checkout');
+    launch(process.execPath, [nextCli, 'start', compareDir, '--hostname', '127.0.0.1', '--port', '3102'], env);
+    await until(async () => (await fetch(compareUrl)).ok, 'baseline comparison server');
+  }
   profile = await fs.mkdtemp(join(tmpdir(), 'afghan-member-browser-'));
   const chrome = launch(chromePath, ['--headless=new', '--enable-automation', '--no-first-run', '--no-default-browser-check', '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'], process.env);
   const portFile = await until(async () => chrome.exitCode === null && await fs.readFile(join(profile, 'DevToolsActivePort'), 'utf8'), 'sandboxed Chrome');
@@ -395,6 +402,7 @@ try {
   await check('Realtime unread notification and notification navigation', async () => {
     await visit(pageB, '/dashboard');
     const before = await pageB.evaluate(`Number(document.querySelector('button[aria-controls][aria-haspopup=dialog][aria-label^="Notifications"]')?.getAttribute('aria-label')?.match(/([0-9]+) unread/)?.[1] ?? 0)`);
+    await until(() => { const other = pageB.telemetry.systems.filter(event => event.stream === 'other'); return other.length > 0 && other.at(-1).status === 'ok'; }, 'receiver notification PostgreSQL stream ready');
     await send(pageA, message('notification'));
     await until(() => pageB.evaluate(`Number(document.querySelector('button[aria-label^="Notifications"]')?.getAttribute('aria-label')?.match(/([0-9]+) unread/)?.[1] ?? 0)>${before}`), 'realtime unread badge');
     await click(pageB, 'button[aria-label^="Notifications"]');
@@ -498,24 +506,67 @@ try {
       });
     }
   }
+  await check('Directory filtered states preserve URLs, clear actions and calendar controls', async () => {
+    for (const area of ['businesses','organizations','opportunities','events']) {
+      await visit(pageA, `/${area}?q=No-matching-synthetic-listing`);
+      await until(()=>pageA.evaluate(`document.querySelector('main')?.innerText.includes('No ${area === 'events' ? 'matching events' : area + ' match these filters'}')`), 'filtered directory empty state');
+      assert.equal(await pageA.evaluate(`document.querySelector('main input[name=q]')?.value`), 'No-matching-synthetic-listing');
+      assert.ok(await pageA.evaluate(`!!document.querySelector('main a[href="/${area}"]')`));
+    }
+    await visit(pageA, '/events?view=calendar');
+    assert.ok(await pageA.evaluate(`!!document.querySelector('form input[name=view][value=calendar]')`));
+  });
+  await check('Member workspaces: category links, permitted inbox search and responsive identity', async () => {
+    await visit(pageA, '/submissions');
+    const nav = 'nav[aria-label="Submission categories"]';
+    assert.equal(await pageA.evaluate(`document.querySelectorAll('${nav} a').length`), 5);
+    await click(pageA, `${nav} a[href="/submissions?category=businesses"]`);
+    await until(() => pageA.evaluate(`location.search==='?category=businesses'`), 'business submissions category');
+    assert.ok(await pageA.evaluate(`document.querySelectorAll('main article').length>0`));
+    assert.equal(await pageA.evaluate(`[...document.querySelectorAll('main article')].every(item=>item.innerText.includes('Business'))`), true);
+    await visit(pageA, '/messages');
+    await until(() => pageA.evaluate(`!!document.querySelector('input[placeholder="Name or latest message"]')`), 'inbox search input');
+    await pageA.evaluate(`document.querySelector('input[placeholder="Name or latest message"]').focus()`);
+    await pageA.send('Input.insertText', {text:'No-matching-synthetic-conversation'});
+    await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
+    await visit(pageA, conversationPath);
+    assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-label="Conversation navigation"]')).display!=='none'`), true);
+    await pageA.send('Emulation.setDeviceMetricsOverride', { width:390, height:1000, deviceScaleFactor:1, mobile:true });
+    assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-label="Conversation navigation"]')).display`), 'none');
+    await click(pageA, 'a[aria-label="Back to messages"]'); await pathname(pageA, '/messages');
+    await visit(pageA, `/members/${b.id}`);
+    assert.equal(await pageA.evaluate(`!!document.querySelector('[data-hero-layer="architecture"]') || !!document.querySelector('main svg[data-illustration-kind]')`), false);
+    assert.equal(await pageA.evaluate(`document.documentElement.scrollWidth>innerWidth`), false);
+    await pageA.send('Emulation.setDeviceMetricsOverride', { width:1440, height:1000, deviceScaleFactor:1, mobile:false });
+  });
   if (process.env.LOCAL_QA_VISUAL === '1') {
     await check('Representative pages: desktop/mobile layout, global canvas and Navigator RTL', async () => {
       const visual = await page(pageA.browserContextId);
       const findings = [];
-      mkdirSync('reports/visual', {recursive:true});
-      for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/about','/profile','/dashboard','/network','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new','/not-a-real-page']) {
-        await visit(visual,route);
+      const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
+      mkdirSync(visualDir, {recursive:true});
+      for (const phase of process.env.LOCAL_QA_COMPARE_DIR ? ['before', 'after'] : [process.env.LOCAL_QA_VISUAL_PHASE ?? 'after']) {
+      for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/about','/profile','/dashboard','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new','/not-a-real-page']) {
+        if (phase === 'before' && process.env.LOCAL_QA_COMPARE_DIR) {
+          const navigation = await visual.send('Page.navigate', {url:compareUrl+route});
+          if(navigation.loaderId) await until(()=>visual.loadedDocuments.has(navigation.loaderId), 'baseline document loaded');
+          await until(()=>visual.evaluate(`location.origin===${JSON.stringify(compareUrl)} && document.readyState==='complete'`), 'baseline page');
+        } else await visit(visual,route);
         for (const width of [1440,390]) {
           await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
           const state = await visual.evaluate(`({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,canvas:!!document.querySelector('.global-network-background canvas'),rejectedArt:!!document.querySelector('[data-hero-layer="architecture"]'),heading:!!document.querySelector('main h1')})`);
           assert.equal(state.overflow,false,`Horizontal overflow: ${route} at ${width}`);
-          assert.equal(state.canvas,true); assert.equal(state.rejectedArt,false);
-          findings.push({requested:route===conversationPath?'/messages/[id]':route,width,...state,route:state.route.replace(/[0-9a-f-]{36}/g,'[id]')});
-          const label=route===conversationPath?'conversation':route==='/login?mode=join'?'signup':route.slice(1).replaceAll('/','-');
+          assert.equal(state.canvas,true); if (phase === 'after') assert.equal(state.rejectedArt,false);
+          if(phase === 'after' && width===390) assert.equal(await visual.evaluate(`(() => {const heading=document.querySelector('[data-member-page-header] h1');return !heading || heading.getBoundingClientRect().width>=200;})()`), true, 'Mobile title must have readable width');
+          await visual.send('Emulation.setPageScaleFactor', {pageScaleFactor:1});
+          findings.push({phase,requested:route===conversationPath?'/messages/[id]':route,width,...state,route:state.route.replace(/[0-9a-f-]{36}/g,'[id]')});
+          const label=route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replaceAll('/','-');
           const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
-          writeFileSync(`reports/visual/${label}-after-${width}.png`,Buffer.from(screenshot.data,'base64'));
+          writeFileSync(`${visualDir}/${label}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
         }
       }
+      }
+      const phase = 'after';
       await visit(visual,'/');
       for (const locale of ['fa','ps']) {
         await select(visual,'#ai-navigator select',locale);
@@ -524,12 +575,70 @@ try {
           await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
           await visual.evaluate(`document.querySelector('#ai-navigator').scrollIntoView({block:'center'})`);
           const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
-          writeFileSync(`reports/visual/navigator-${locale}-after-${width}.png`,Buffer.from(screenshot.data,'base64'));
+          writeFileSync(`${visualDir}/navigator-${locale}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
         }
       }
-      writeFileSync('reports/visual/layout-checks.json',JSON.stringify(findings,null,2)+'\n');
+      writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify(findings,null,2)+'\n');
     });
   }
+  await check('Directory and submission request failures remain visible without false empty counts', async () => {
+    // Sanitized stage evidence: docker exit codes, container states, route timings and
+    // HTTP/error names only. It is attached to any failure so the cause stays visible.
+    const evidence = { stages: [], probes: [], docker: [] };
+    const rest = 'supabase_rest_afghan-hub-local-journey';
+    const kong = 'supabase_kong_afghan-hub-local-journey';
+    const db = 'supabase_db_afghan-hub-local-journey';
+    const dockerExit = (args) => { const exit = spawnSync('docker', args, { stdio: 'ignore' }).status; evidence.docker.push({ command: args[0], target: args.at(-1) === rest || args.at(-1) === kong ? args.at(-1).replace('afghan-hub-local-journey', '<project>') : args[1], exit }); return exit; };
+    const containerState = (name) => { const r = spawnSync('docker', ['inspect', '-f', '{{.State.Status}}', name], { encoding: 'utf8' }); return r.status === 0 ? r.stdout.trim() : `inspect-exit-${r.status}`; };
+    const probe = async (phase) => {
+      const started = Date.now();
+      let entry;
+      try {
+        const response = await fetch(`${apiUrl}/rest/v1/businesses?select=id&limit=0`, { headers: { apikey: status.ANON_KEY, Authorization: `Bearer ${status.ANON_KEY}` }, signal: AbortSignal.timeout(5000) });
+        try { await response.arrayBuffer(); } catch {}
+        entry = { phase, http: response.status, ms: Date.now() - started };
+      } catch (error) {
+        entry = { phase, error: error.name, ms: Date.now() - started };
+      }
+      if (evidence.probes.length < 60) evidence.probes.push(entry);
+      return entry.http === 200;
+    };
+    try {
+      evidence.before = { rest: containerState(rest), kong: containerState(kong) };
+      assert.equal(dockerExit(['stop', rest]), 0, 'Could not stop the disposable REST service');
+      evidence.during = { rest: containerState(rest) };
+      await probe('during-outage');
+      for (const route of ['/businesses','/organizations','/opportunities','/events','/submissions']) {
+        const started = Date.now();
+        try {
+          await visit(pageA, route);
+        } catch (error) {
+          evidence.stages.push({ route, outcome: 'navigation-error', error: error.name, ms: Date.now() - started });
+          throw error;
+        }
+        evidence.stages.push({ route, outcome: 'loaded', ms: Date.now() - started });
+        assert.ok(await pageA.evaluate(`!!document.querySelector('main [role=alert]')`), `Load failure must be announced: ${route}`);
+        if(route==='/submissions') assert.equal(await pageA.evaluate(`document.querySelector('main')?.innerText.includes('No submissions yet')`), false);
+      }
+    } catch (error) {
+      error.evidence = evidence;
+      throw error;
+    } finally {
+      // Restore every service this check touched, even when an assertion above failed.
+      const started = dockerExit(['start', rest]);
+      // Kong resolves its PostgREST upstream when it starts; a restarted REST container
+      // can get a new address that the gateway keeps trying to reach.
+      const kongRestarted = dockerExit(['restart', kong]);
+      evidence.restore = { startExit: started, kongRestartExit: kongRestarted, rest: containerState(rest), kong: containerState(kong) };
+      if (started !== 0 || kongRestarted !== 0) throw new Error('Could not restore the disposable gateway services');
+      // PostgREST can sit in schema-cache backoff after a restart; ask the disposable
+      // database to reload it and retry the bounded readiness probe.
+      await until(async () => {
+        dockerExit(['exec', db, 'psql', '-U', 'postgres', '-d', 'postgres', '-c', "NOTIFY pgrst, 'reload schema';"]);
+        return probe('recovery');
+      }, 'local REST service restored', 90000);
+    }
+  });
   await check('Live conversation delivery and offline reconnect catch-up without reload', async () => {
     await visit(pageA, conversationPath);
     await visit(pageB, conversationPath);
@@ -584,7 +693,7 @@ try {
     await until(() => pageA.evaluate(`!!document.querySelector('[role=alert]')`), 'used confirmation feedback'); await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
   });
 } catch (error) {
-  results.push({ scenario, status: 'fail', diagnostic: { step, type: error.name, line: error.stack?.match(/local-member-browser\.mjs:(\d+)/)?.[1] } });
+  results.push({ scenario, status: 'fail', diagnostic: { step, type: error.name, line: error.stack?.match(/local-member-browser\.mjs:(\d+)/)?.[1], failureInjection: error.evidence } });
   const states = [];
   if (expectedListingPath) {
     try { results.at(-1).ownerFeedback = await pages[0].evaluate(`({route:location.pathname, cardCount:document.querySelectorAll('main article').length, expectedLink:!!document.querySelector(${JSON.stringify(`a[href="${expectedListingPath}"]`)}), expectedCard:document.querySelector(${JSON.stringify(`article:has(a[href="${expectedListingPath}"])`)})?.innerText.replace(/Synthetic[^\\n]*/g,'[synthetic title]'), unavailable:[...document.querySelectorAll('main [role=status]')].map(node=>node.textContent)})`); } catch { /* Sanitized optional diagnosis */ }
