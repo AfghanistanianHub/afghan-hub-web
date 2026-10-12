@@ -216,7 +216,10 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     else categoryStates.set(progress,state.icons);
     await delay(150);
     assert.deepEqual((await page.evaluate(categorySnapshot)).icons,state.icons,"Pause must stop all movement");
-    if (progress===0) assert.ok(state.icons.every(icon=>icon.opacity===0));
+    if (progress===0) {
+      assert.ok(state.icons.every(icon=>icon.opacity===0));
+      assert.ok(state.icons.slice(1).every((icon,i)=>icon.x<state.icons[i].x),"Initial row starts with People at the right and travels right to left");
+    }
     if (progress===1) {
       assert.ok(state.icons.every(icon=>icon.opacity===1));
       for(let i=1;i<5;i++) {

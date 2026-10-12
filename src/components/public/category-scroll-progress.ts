@@ -9,17 +9,24 @@ const mix = (from: number, to: number, t: number) => from + (to - from) * t;
 export function categoryFrame(progress: number, index: number, width: number) {
   const start = 0.04 + index * 0.17;
   const travel = clamp((progress - start) / 0.13);
-  const initialX = 32 + index * (Math.max(0, width - 96) / 4);
-  const finalY = 104 + index * 80;
+  const initialX = 32 + (4 - index) * (Math.max(0, width - 96) / 4);
+  const finalY = 144 + index * 80;
   let x = initialX;
   let y = 0;
-  if (index === 0) {
-    y = finalY * ease(travel);
-  } else if (travel < 0.25) {
-    x = mix(initialX, 128, ease(travel / 0.25));
+  // Rightmost first. Travel below the waiting horizontal row before moving
+  // left, then descend in the clear lane beside the revealed descriptions.
+  if (index === 4) {
+    if (travel < 0.2) x = mix(initialX, 128, ease(travel / 0.2));
+    else if (travel < 0.8) { x = 128; y = finalY * ease((travel - 0.2) / 0.6); }
+    else { x = mix(128, 32, ease((travel - 0.8) / 0.2)); y = finalY; }
+  } else if (travel < 0.2) {
+    y = 72 * ease(travel / 0.2);
+  } else if (travel < 0.5) {
+    x = mix(initialX, 128, ease((travel - 0.2) / 0.3));
+    y = 72;
   } else if (travel < 0.8) {
     x = 128;
-    y = finalY * ease((travel - 0.25) / 0.55);
+    y = mix(72, finalY, ease((travel - 0.5) / 0.3));
   } else {
     x = mix(128, 32, ease((travel - 0.8) / 0.2));
     y = finalY;

@@ -9,9 +9,10 @@ test("five categories preserve order, start horizontally, and finish evenly spac
   for (const width of [852, 900, 960]) {
     const initial = categoryOrder.map((_, i) => categoryFrame(0, i, width));
     const final = categoryOrder.map((_, i) => categoryFrame(1, i, width));
+    assert.ok(initial.slice(1).every((item, i) => item.x < initial[i].x), "People begins rightmost; subsequent icons follow from right to left");
     assert.ok(initial.every(item => item.y === 0 && item.opacity === 0));
     assert.ok(final.every(item => item.x === 32 && item.opacity === 1 && item.textX === 0));
-    final.forEach((item, i) => assert.equal(item.y, 104 + 80 * i));
+    final.forEach((item, i) => assert.equal(item.y, 144 + 80 * i));
     initial.forEach(item => assert.ok(item.x >= 0 && item.x + 64 <= width));
   }
 });
@@ -26,9 +27,9 @@ test("travel never intersects pending icons, settled icons, or visible copy", ()
         assert.ok(frame.x >= 0 && frame.x + 64 <= width);
         frames.forEach((other, j) => {
           if (i !== j) assert.equal(overlap(icon, { ...other, w: 64, h: 64 }), false, `icons ${i}/${j} at ${progress}`);
-          if (other.opacity > 0) assert.equal(overlap(icon, { x: 232 + other.textX, y: 104 + j * 80, w: width - 248, h: 64 }), false, `copy ${j} at ${progress}`);
+          if (other.opacity > 0) assert.equal(overlap(icon, { x: 232 + other.textX, y: 144 + j * 80, w: width - 248, h: 64 }), false, `copy ${j} at ${progress}`);
         });
-        if (frame.opacity > 0) { assert.equal(frame.x, 32); assert.equal(frame.y, 104 + i * 80); }
+        if (frame.opacity > 0) { assert.equal(frame.x, 32); assert.equal(frame.y, 144 + i * 80); }
       });
     }
   }

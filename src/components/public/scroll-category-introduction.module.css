@@ -5,19 +5,19 @@
 .viewAll:hover { color:var(--primary); }
 .stage { position:relative; height:528px; width:100%; max-width:960px; margin-inline:auto; }
 .category { position:absolute; inset:0; pointer-events:none; }
-.icon { position:absolute; top:0; left:0; display:block; width:64px; height:64px; pointer-events:auto; transform:translate3d(var(--icon-x, calc(32px + var(--index) * (100cqw - 96px) / 4)),var(--icon-y,0px),0); will-change:transform; border-radius:50%; }
+.icon { position:absolute; top:0; left:0; display:block; width:64px; height:64px; pointer-events:auto; transform:translate3d(var(--icon-x, calc(32px + (4 - var(--index)) * (100cqw - 96px) / 4)),var(--icon-y,0px),0); will-change:transform; border-radius:50%; }
 .stage { container-type:inline-size; }
 .icon img { width:100%; height:100%; display:block; }
-.copy { position:absolute; top:calc(104px + var(--index) * 80px); left:232px; right:16px; min-height:64px; display:flex; justify-content:center; flex-direction:column; opacity:var(--copy-opacity,0); transform:translate3d(var(--copy-x,12px),0,0); pointer-events:none; }
+.copy { position:absolute; top:calc(144px + var(--index) * 80px); left:232px; right:16px; min-height:64px; display:flex; justify-content:center; flex-direction:column; opacity:var(--copy-opacity,0); transform:translate3d(var(--copy-x,12px),0,0); pointer-events:none; }
 .title { font:26px/1.2 Georgia,'Times New Roman',serif; letter-spacing:-.4px; color:#19152b; }
 .description { font-size:13px; line-height:1.5; margin-top:5px; color:#615b6e; }
-.line { position:absolute; left:8px; top:136px; width:1px; height:320px; background:#4565c5; transform-origin:top; transform:scaleY(var(--line-scale,.025)); }
+.line { position:absolute; left:8px; top:176px; width:1px; height:320px; background:#4565c5; transform-origin:top; transform:scaleY(var(--line-scale,.025)); }
 .category:hover .title { color:var(--primary); }
 .category:focus-visible { outline:none !important; }
 .category:focus-visible .icon { outline:2px solid var(--primary); outline-offset:6px; }
 /* Keyboard navigation exposes stable, visible targets while focus is in the nav.
    The scroll runway remains unchanged, avoiding focus-induced layout shifts. */
-.stage:has(.category:focus-visible) .icon { transform:translate3d(32px,calc(104px + var(--index) * 80px),0); }
+.stage:has(.category:focus-visible) .icon { transform:translate3d(32px,calc(144px + var(--index) * 80px),0); }
 .stage:has(.category:focus-visible) .copy { opacity:1; transform:none; pointer-events:auto; }
 .stage:has(.category:focus-visible) .line { transform:scaleY(1); }
 .copy[style*="--copy-opacity: 1;"] { pointer-events:auto; }
