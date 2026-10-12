@@ -20,8 +20,7 @@ export function ScrollCategoryIntroduction() {
     const rows = Array.from(stage.querySelectorAll<HTMLElement>("[data-category]"));
     const line = stage.querySelector<HTMLElement>("[data-category-line]");
     let frame: number | null = null;
-    let tops: number[] = [];
-    let viewportHeight = window.innerHeight;
+    let offsets: number[] = [];
     let inView = true;
 
     const render = () => {
@@ -30,9 +29,12 @@ export function ScrollCategoryIntroduction() {
         section.dataset.reveal = "false";
         return;
       }
+      // One batched geometry read catches upstream Navigator/font layout changes.
+      const stageTop = stage.getBoundingClientRect().top + window.scrollY;
+      const viewportHeight = window.innerHeight;
       let total = 0;
       rows.forEach((row, index) => {
-        const state = categoryRevealFrame(window.scrollY, tops[index], viewportHeight);
+        const state = categoryRevealFrame(window.scrollY, stageTop + offsets[index], viewportHeight);
         row.style.setProperty("--reveal-opacity", String(state.opacity));
         row.style.setProperty("--reveal-y", `${state.y}px`);
         total += state.opacity;
@@ -45,15 +47,14 @@ export function ScrollCategoryIntroduction() {
       if (frame === null && inView && !reducedMotion.matches) frame = requestAnimationFrame(render);
     };
     const measure = () => {
-      viewportHeight = window.innerHeight;
-      const stageTop = stage.getBoundingClientRect().top + window.scrollY;
       // offsetTop is layout geometry, independent of the reveal transforms.
-      tops = rows.map(row => stageTop + row.offsetTop);
+      offsets = rows.map(row => row.offsetTop);
       if (frame !== null) cancelAnimationFrame(frame);
       render();
     };
     const resizeObserver = new ResizeObserver(measure);
     resizeObserver.observe(stage);
+    if (section.parentElement) resizeObserver.observe(section.parentElement);
     const visibilityObserver = new IntersectionObserver(([entry]) => {
       inView = entry.isIntersecting;
       if (inView) measure();
