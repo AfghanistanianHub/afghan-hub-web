@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { categoryFrame, categoryLineScale, categoryOrder } from "../src/components/public/category-scroll-progress.ts";
+import { categoryFrame, categoryInteractionFrame, categoryLineScale, categoryOrder } from "../src/components/public/category-scroll-progress.ts";
 
 const overlap = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 
@@ -68,4 +68,21 @@ test("movement is strictly horizontal first and vertical second, continuous at t
       assert.ok(state.y===0 || state.x===32,"No diagonal or intermediate-lane movement");
     }
   }
+});
+
+test("crossings have exactly one pointer target without changing the L-shaped geometry", () => {
+  for (const width of [852, 900, 960]) {
+    for(let sample=0;sample<=2000;sample++) {
+      const progress=sample/2000;
+      const state=categoryInteractionFrame(progress,width);
+      assert.deepEqual(state.frames,categoryOrder.map((_,i)=>categoryFrame(progress,i,width)));
+      if(state.movingIndex>=0) assert.equal(state.interactive[state.movingIndex],true);
+      state.frames.forEach((a,i)=>state.frames.forEach((b,j)=> {
+        if(i!==j && state.interactive[i] && state.interactive[j])
+          assert.equal(overlap({...a,w:64,h:64},{...b,w:64,h:64}),false,`ambiguous targets ${i}/${j} at ${progress}`);
+      }));
+    }
+  }
+  assert.ok(categoryInteractionFrame(0,960).interactive.every(Boolean));
+  assert.ok(categoryInteractionFrame(1,960).interactive.every(Boolean));
 });

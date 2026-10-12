@@ -202,18 +202,27 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
       localX:n.getBoundingClientRect().x-n.closest("nav").getBoundingClientRect().x,
       localY:n.getBoundingClientRect().y-n.closest("nav").getBoundingClientRect().y,
       transform:getComputedStyle(n).transform,
+      pointer:getComputedStyle(n).pointerEvents,moving:n.dataset.moving,
+      category:n.closest('[data-category]').dataset.category,
+      target:document.elementFromPoint(n.getBoundingClientRect().x+32,n.getBoundingClientRect().y+32)?.closest('[data-category]')?.dataset.category ?? null,
       opacity:Number(getComputedStyle(document.querySelectorAll('[data-category-copy]')[i]).opacity)
     })),progress:document.querySelector('[data-category-section]').dataset.scrollProgress,
     overflow:document.documentElement.scrollWidth>innerWidth
   }))()`;
   const categoryStates = new Map();
-  for (const progress of [0,.1,.22,.39,.56,.73,.92,1,.92,.73,.56,.39,.22,.1,0]) {
+  for (const progress of [0,.07,.1,.14,.22,.39,.56,.73,.92,1,.92,.73,.56,.39,.22,.14,.1,.07,0]) {
     await page.evaluate(`(() => {const s=document.querySelector('[data-category-section]');const sticky=s.querySelector('[data-category-sticky]');scrollTo(0,s.getBoundingClientRect().top+scrollY-80+${progress}*(s.offsetHeight-sticky.offsetHeight));})()`);
     await delay(100);
     const state = await page.evaluate(categorySnapshot);
     assert.ok(state.icons.every(icon=>icon.same),"Keep the same five icon nodes");
     assert.equal(state.overflow,false);
     state.icons.forEach((icon,i)=> {
+      if(icon.moving==='true') assert.equal(icon.target,icon.category,"Moving icon owns its pointer target");
+      state.icons.forEach((other,j)=> {
+        if(i===j || icon.pointer==='none' || other.pointer==='none') return;
+        const crosses=icon.x<other.x+64 && icon.x+64>other.x && icon.y<other.y+64 && icon.y+64>other.y;
+        assert.equal(crosses,false,"No two enabled icon targets overlap");
+      });
       const start=.04+i*.17;
       const corner=start+.13*.55;
       if(progress<=corner) assert.ok(Math.abs(icon.localY)<.01,"Horizontal leg never descends early");
@@ -247,10 +256,13 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   await delay(100);
   assert.ok(await page.evaluate("document.querySelector('[data-category-sticky]').getBoundingClientRect().top<79"),"Sticky section releases after completion");
   console.log("AFGHAN_HUB_CATEGORY_SCROLL_VERIFIED down/up/pause/single nodes/final positions/keyboard/release");
+  await page.evaluate("(() => {const s=document.querySelector('[data-category-section]');const sticky=s.querySelector('[data-category-sticky]');scrollTo(0,s.getBoundingClientRect().top+scrollY-80+.1*(s.offsetHeight-sticky.offsetHeight));})()");
+  await delay(100);
   await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
   await waitFor(()=>page.evaluate("matchMedia('(prefers-reduced-motion: reduce)').matches && document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length===0"),"network reduced-motion resting state");
   assert.equal(await page.evaluate("document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length"),0);
   assert.ok(await page.evaluate("[...document.querySelectorAll('[data-category-copy]')].every(n=>getComputedStyle(n).opacity==='1')"),"Reduced motion exposes all descriptions");
+  assert.ok(await page.evaluate("[...document.querySelectorAll('[data-category-icon]')].every(n=>getComputedStyle(n).pointerEvents==='auto')"),"Reduced motion restores all icon hit targets");
   assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category-sticky]')).position"),"relative");
   await page.send("Emulation.setEmulatedMedia",{features:[]});
   // Public guided discovery is exercised against the isolated published-listing fixture.

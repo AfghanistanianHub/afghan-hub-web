@@ -26,3 +26,19 @@ export function categoryFrame(progress: number, index: number, width: number) {
 export function categoryLineScale(progress: number) {
   return mix(0.025, 1, clamp((progress - 0.04) / 0.845));
 }
+
+// The requested shared-row/shared-column path intentionally crosses stationary
+// icons. Keep one pointer target at a crossing without moving or duplicating them.
+export function categoryInteractionFrame(progress: number, width: number) {
+  const frames = categoryOrder.map((_, index) => categoryFrame(progress, index, width));
+  const movingIndex = categoryOrder.findIndex((_, index) => {
+    const start = 0.04 + index * 0.17;
+    return progress > start && progress < start + 0.13;
+  });
+  const moving = frames[movingIndex];
+  const interactive = frames.map((frame, index) => !moving || index === movingIndex || !(
+    frame.x < moving.x + 64 && frame.x + 64 > moving.x &&
+    frame.y < moving.y + 64 && frame.y + 64 > moving.y
+  ));
+  return { frames, movingIndex, interactive };
+}

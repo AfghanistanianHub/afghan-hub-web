@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, type CSSProperties } from "react";
 import { communityAreas } from "./community-areas";
-import { categoryFrame, categoryLineScale, categoryOrder } from "./category-scroll-progress";
+import { categoryInteractionFrame, categoryLineScale, categoryOrder } from "./category-scroll-progress";
 import styles from "./scroll-category-introduction.module.css";
 
 const areas = categoryOrder.map(key => communityAreas.find(area => area.key === key)!);
@@ -30,9 +30,12 @@ export function ScrollCategoryIntroduction() {
       frame = null;
       if (staticLayout.matches) return;
       const progress = Math.min(1, Math.max(0, (window.scrollY - top) / runway));
-      // One geometry read on resize; scroll frames write transforms only.
+      const interaction = categoryInteractionFrame(progress, width);
+      // One geometry read on resize; no scroll-time layout reads.
       icons.forEach((icon, index) => {
-        const state = categoryFrame(progress, index, width);
+        const state = interaction.frames[index];
+        icon.dataset.moving = String(index === interaction.movingIndex);
+        icon.dataset.interactive = String(interaction.interactive[index]);
         icon.style.setProperty("--icon-x", `${state.x}px`);
         icon.style.setProperty("--icon-y", `${state.y}px`);
         copy[index].style.setProperty("--copy-opacity", `${state.opacity}`);
