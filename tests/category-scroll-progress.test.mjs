@@ -17,7 +17,7 @@ test("five categories preserve order, start horizontally, and finish evenly spac
   }
 });
 
-test("travel never intersects pending icons, settled icons, or visible copy", () => {
+test("L-shaped travel stays in bounds and never intersects visible descriptions", () => {
   for (const width of [852, 900, 960]) {
     for (let sample = 0; sample <= 2000; sample++) {
       const progress = sample / 2000;
@@ -26,7 +26,6 @@ test("travel never intersects pending icons, settled icons, or visible copy", ()
         const icon = { ...frame, w: 64, h: 64 };
         assert.ok(frame.x >= 0 && frame.x + 64 <= width);
         frames.forEach((other, j) => {
-          if (i !== j) assert.equal(overlap(icon, { ...other, w: 64, h: 64 }), false, `icons ${i}/${j} at ${progress}`);
           if (other.opacity > 0) assert.equal(overlap(icon, { x: 232 + other.textX, y: 144 + j * 80, w: width - 248, h: 64 }), false, `copy ${j} at ${progress}`);
         });
         if (frame.opacity > 0) { assert.equal(frame.x, 32); assert.equal(frame.y, 144 + i * 80); }
@@ -50,3 +49,23 @@ test("pause and reverse are deterministic; later icons stay in their original ro
   for (let p = 0; p < 1; p += 0.01) assert.ok(categoryLineScale(p) <= categoryLineScale(p + 0.01));
 });
 
+
+test("movement is strictly horizontal first and vertical second, continuous at the corner", () => {
+  for (let index = 0; index < 5; index++) {
+    const start = 0.04 + index * 0.17;
+    const corner = start + 0.13 * 0.55;
+    const horizontal = categoryFrame(start + 0.13 * 0.25, index, 960);
+    const vertical = categoryFrame(start + 0.13 * 0.75, index, 960);
+    assert.equal(horizontal.y, 0);
+    assert.equal(vertical.x, 32);
+    assert.ok(vertical.y > 0 && vertical.y < 144 + index * 80);
+    const before = categoryFrame(corner - 1e-7, index, 960);
+    const after = categoryFrame(corner + 1e-7, index, 960);
+    assert.ok(Math.abs(before.x - after.x) < 1e-6);
+    assert.ok(Math.abs(before.y - after.y) < 1e-6);
+    for(let step = 0; step < 100; step++) {
+      const state=categoryFrame(start+step/100*0.13,index,960);
+      assert.ok(state.y===0 || state.x===32,"No diagonal or intermediate-lane movement");
+    }
+  }
+});

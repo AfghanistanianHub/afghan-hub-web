@@ -199,6 +199,8 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   const categorySnapshot = `(() => ({
     icons:[...document.querySelectorAll('[data-category-icon]')].map((n,i)=>({
       same:n===window.categoryIconNodes[i],x:n.getBoundingClientRect().x,y:n.getBoundingClientRect().y,
+      localX:n.getBoundingClientRect().x-n.closest("nav").getBoundingClientRect().x,
+      localY:n.getBoundingClientRect().y-n.closest("nav").getBoundingClientRect().y,
       transform:getComputedStyle(n).transform,
       opacity:Number(getComputedStyle(document.querySelectorAll('[data-category-copy]')[i]).opacity)
     })),progress:document.querySelector('[data-category-section]').dataset.scrollProgress,
@@ -211,6 +213,12 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     const state = await page.evaluate(categorySnapshot);
     assert.ok(state.icons.every(icon=>icon.same),"Keep the same five icon nodes");
     assert.equal(state.overflow,false);
+    state.icons.forEach((icon,i)=> {
+      const start=.04+i*.17;
+      const corner=start+.13*.55;
+      if(progress<=corner) assert.ok(Math.abs(icon.localY)<.01,"Horizontal leg never descends early");
+      else assert.ok(Math.abs(icon.localX-32)<.01,"Vertical leg stays in the left column");
+    });
     assert.ok(Math.abs(Number(state.progress)-progress)<.002);
     if (categoryStates.has(progress)) assert.deepEqual(state.icons,categoryStates.get(progress),"Reverse scroll restores positions");
     else categoryStates.set(progress,state.icons);
