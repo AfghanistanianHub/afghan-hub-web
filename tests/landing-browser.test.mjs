@@ -242,8 +242,27 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category=events]')).pointerEvents"),"auto","Focus restores hidden-row input");
   await page.evaluate("document.activeElement.blur()");
   console.log("AFGHAN_HUB_CATEGORY_REVEAL_VERIFIED vertical layout/sequential/down/up/pause/no overlap/no sticky/keyboard");
+  const motionSnapshot = "({steps:[...document.querySelectorAll('[data-home-step]')].map(n=>Number(n.style.getPropertyValue('--step-progress'))),final:[...document.querySelectorAll('[data-home-reveal]')].map(n=>({opacity:getComputedStyle(n).opacity,transform:getComputedStyle(n).transform}))})";
+  const motionTop = await page.evaluate("document.getElementById('how-it-works').getBoundingClientRect().top+scrollY");
+  const motionStates = new Map();
+  for (const offset of [0,80,160,240,320,240,160,80,0]) {
+    await page.evaluate(`scrollTo(0,${motionTop}-880+${offset})`);
+    await new Promise(resolve=>setTimeout(resolve,100));
+    const state = await page.evaluate(motionSnapshot);
+    assert.ok(state.steps.every((value,index)=>index===0 || value<=state.steps[index-1]),"Step progression stays ordered");
+    if(motionStates.has(offset)) assert.deepEqual(state.steps,motionStates.get(offset),"Step movement reverses with scroll");
+    else motionStates.set(offset,state.steps);
+    await new Promise(resolve=>setTimeout(resolve,50));
+    assert.deepEqual((await page.evaluate(motionSnapshot)).steps,state.steps,"Paused scroll freezes steps");
+  }
+  assert.deepEqual(motionStates.get(320),[1,1,1,1]);
+  await page.evaluate("document.querySelector('[data-home-finale]').scrollIntoView({block:'center'})");
+  await waitFor(()=>page.evaluate("[...document.querySelectorAll('[data-home-reveal]')].every(n=>getComputedStyle(n).opacity==='1')"),"Final invitation fully reveals");
+  assert.ok(await page.evaluate("document.documentElement.scrollWidth<=innerWidth+1"),"Homepage motion introduces no overflow");
+  console.log("AFGHAN_HUB_HOME_MOTION_VERIFIED steps/sequential/down/up/pause/finale/no overflow");
   await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
   await waitFor(()=>page.evaluate("matchMedia('(prefers-reduced-motion: reduce)').matches && [...document.querySelectorAll('[data-category]')].every(n=>getComputedStyle(n).opacity==='1' && getComputedStyle(n).transform==='none' && getComputedStyle(n).pointerEvents==='auto')"),"static reduced-motion category list");
+  await waitFor(()=>page.evaluate("!document.getElementById('how-it-works').hasAttribute('data-motion') && [...document.querySelectorAll('[data-home-reveal]')].every(n=>getComputedStyle(n).opacity==='1' && getComputedStyle(n).transform==='none')"),"Static reduced-motion homepage enhancements");
   assert.equal(await page.evaluate("document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length"),0);
   await page.send("Emulation.setEmulatedMedia",{features:[]});
   // Public guided discovery is exercised against the isolated published-listing fixture.

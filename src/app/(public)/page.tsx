@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CalendarDays, ChartNoAxesColumnIncreasing, Globe2, Search, Share2, UsersRound } from "lucide-react";
+import { HomepageMotion } from "@/components/public/homepage-motion";
 import { ScrollCategoryIntroduction } from "@/components/public/scroll-category-introduction";
 import { LivingNetwork } from "@/components/public/living-network";
 import { NavigatorJourneyLink } from "@/components/assistant/navigator-journey-link";
@@ -31,6 +32,7 @@ const paths = [
 
 export default async function PublicHome() {
   return <main id="main-content" className={styles.page}>
+    <HomepageMotion />
     <section className={styles.hero} aria-labelledby="landing-title">
       <div className={styles.statement}>
         <p className={styles.eyebrow}>A MORE CONNECTED AFGHAN FUTURE</p>
@@ -45,7 +47,7 @@ export default async function PublicHome() {
 
     <section id="how-it-works" className={styles.orientation} aria-labelledby="how-heading">
       <div><h2 id="how-heading">How Afghan Hub works</h2><p>A simple path to meaningful connections.</p></div>
-      <ol className={styles.steps}>{steps.map(({ title, description, icon: Icon }) => <li key={title}><span className={styles.stepIcon}><Icon size={21} strokeWidth={1.6} aria-hidden="true" /></span><div><h3>{title}</h3><p>{description}</p></div></li>)}</ol>
+      <ol className={styles.steps}>{steps.map(({ title, description, icon: Icon }) => <li key={title} data-home-step><span className={styles.stepIcon}><Icon size={21} strokeWidth={1.6} aria-hidden="true" /></span><div><h3>{title}</h3><p>{description}</p></div></li>)}</ol>
     </section>
 
     <ScrollCategoryIntroduction />
@@ -54,6 +56,6 @@ export default async function PublicHome() {
 
     <section className={styles.value} aria-labelledby="value-heading"><div><h2 id="value-heading">A stronger, more connected<br />Afghan community</h2><p>A shared space to make community work visible, exchange knowledge, and build relationships that open new possibilities.</p></div><div className={styles.valuePoints}><div><UsersRound size={24} strokeWidth={1.5} aria-hidden="true" /><h3>Greater visibility</h3><p>Give your work a place to be discovered.</p></div><div><Share2 size={24} strokeWidth={1.5} aria-hidden="true" /><h3>Stronger connections</h3><p>Find common ground and move forward together.</p></div><div><Globe2 size={24} strokeWidth={1.5} aria-hidden="true" /><h3>More possibilities</h3><p>Share opportunities and collaborate across communities.</p></div></div></section>
 
-    <section className={styles.final} aria-labelledby="join-heading"><div><h2 id="join-heading">Be part of what&apos;s next.</h2><p>Join Afghan Hub and help build a more connected, supportive, and vibrant community.</p></div><div className={styles.actions}><Link href="/login?mode=join" className={styles.primary}>Get started <ArrowRight size={17} aria-hidden="true" /></Link><Link href="/explore" className={styles.secondary}>Explore the platform <ArrowRight size={17} aria-hidden="true" /></Link></div></section>
+    <section className={styles.final} data-home-finale aria-labelledby="join-heading"><div><h2 data-home-reveal id="join-heading">Be part of what&apos;s next.</h2><p data-home-reveal>Join Afghan Hub and help build a more connected, supportive, and vibrant community.</p></div><div className={styles.actions} data-home-reveal><Link href="/login?mode=join" className={styles.primary}>Get started <ArrowRight size={17} aria-hidden="true" /></Link><Link href="/explore" className={styles.secondary}>Explore the platform <ArrowRight size={17} aria-hidden="true" /></Link></div></section>
   </main>;
 }
