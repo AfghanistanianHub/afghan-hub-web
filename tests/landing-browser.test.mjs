@@ -261,6 +261,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
   await waitFor(()=>page.evaluate("matchMedia('(prefers-reduced-motion: reduce)').matches && document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length===0"),"network reduced-motion resting state");
   assert.equal(await page.evaluate("document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length"),0);
+  await waitFor(()=>page.evaluate("getComputedStyle(document.querySelector('[data-category-sticky]')).position==='relative' && [...document.querySelectorAll('[data-category-copy]')].every(n=>getComputedStyle(n).opacity==='1') && [...document.querySelectorAll('[data-category-icon]')].every(n=>getComputedStyle(n).pointerEvents==='auto')"),"reduced-motion category layout and targets settle");
   assert.ok(await page.evaluate("[...document.querySelectorAll('[data-category-copy]')].every(n=>getComputedStyle(n).opacity==='1')"),"Reduced motion exposes all descriptions");
   assert.ok(await page.evaluate("[...document.querySelectorAll('[data-category-icon]')].every(n=>getComputedStyle(n).pointerEvents==='auto')"),"Reduced motion restores all icon hit targets");
   assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category-sticky]')).position"),"relative");
