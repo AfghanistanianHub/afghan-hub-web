@@ -56,7 +56,7 @@ try {
         await page.evaluate(factor=>new Promise((resolve,reject)=>{
           chrome.settingsPrivate.setDefaultZoom(factor,()=>{
             if(chrome.runtime.lastError) reject(Error(chrome.runtime.lastError.message));
-            else chrome.settingsPrivate.getDefaultZoom(value=>value===factor?resolve():reject(Error(`Unexpected zoom ${value}`)));
+            else chrome.settingsPrivate.getDefaultZoom(value=>Math.abs(value-factor)<1e-6?resolve():reject(Error(`Unexpected zoom ${value}`)));
           });
         }),factor);
         await page.goto(origin);await page.locator('[data-language-entry]').waitFor();await page.evaluate(()=>document.fonts.ready);
