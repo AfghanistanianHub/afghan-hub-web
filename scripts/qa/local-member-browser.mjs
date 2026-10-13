@@ -187,7 +187,7 @@ async function pathname(page, path) {
   await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), 'expected route');
 }
 async function fill(page, selector, value) {
-  const fieldSelector = selector.startsWith('form') ? selector : `form ${selector}`;
+  const fieldSelector = (selector.startsWith('form') || selector.startsWith('dialog')) ? selector : `form ${selector}`;
   await until(() => page.evaluate(`!!document.querySelector(${JSON.stringify(fieldSelector)})`), 'form field');
   await page.evaluate(`(() => { const field=document.querySelector(${JSON.stringify(fieldSelector)}); field.focus(); Object.getOwnPropertyDescriptor(field instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,'value').set.call(field,${JSON.stringify(value)}); field.dispatchEvent(new Event('input',{bubbles:true})); return true; })()`);
 }
@@ -388,6 +388,9 @@ try {
       assert.equal(row.onboarding_completed, true); assert.equal(row.last_name, label);
     }
   });
+  await visit(pageB,'/submissions');
+  assert.ok(await pageB.evaluate(`document.querySelector('main')?.innerText.includes('No submissions yet')`),'Empty owner submissions must have truthful counts');
+  await captureState(pageB,'submissions-empty');
   await check('Member Navigator exposes the same three languages and RTL without changing profile languages', async () => {
     await openMemberNavigator(pageA);
     await until(() => pageA.evaluate(`document.querySelectorAll('dialog[open] button[aria-pressed]').length===3`), 'member language choices');
@@ -502,6 +505,7 @@ try {
         assert.equal(rejected.status,table === 'opportunities' ? 'closed' : 'suspended'); assert.equal(rejected.moderation_note,reason); assert.equal(rejected.moderated_by,reviewer.id);
         await visit(pageA,'/submissions');
         await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes(${JSON.stringify(reason)})`), 'owner rejection feedback');
+        if(role==='admin' && table==='opportunities') await captureState(pageA,'submissions-owner-note');
         await visit(pageB,`/${table}/${row.slug}`);
         assert.equal(await pageB.evaluate(`document.querySelector('main')?.innerText.includes(${JSON.stringify(title)})`),false);
         // Reset this captured synthetic row to draft solely to exercise approval separately.
@@ -547,6 +551,19 @@ try {
         assert.ok(result.data.results.every(row=>row.href.startsWith('/members/')||row.href.startsWith('/events/')||row.href.startsWith('/opportunities/')));
       }
     }
+    await visit(pageA,'/network');
+    await openMemberNavigator(pageA);
+    for(const [index,query,language] of [[1,'I’m an artist looking for collaborators.','en'],[2,'من هنرمند هستم و دنبال همکار می‌گردم','fa'],[3,'زه هنرمند یم او همکار ملګري غواړم','ps']]) {
+      await click(pageA,`dialog[open] button[aria-pressed]:nth-child(${index})`);
+      await until(()=>pageA.evaluate(`document.querySelector('dialog[open]')?.getAttribute('lang')===${JSON.stringify(language)}`),'member Navigator selected language');
+      await fill(pageA,'dialog[open] input',query);
+      await click(pageA,'dialog[open] form button[type=submit]');
+      await until(()=>pageA.evaluate(`(() => {const turn=[...document.querySelectorAll('dialog[open] article')].at(-1);return turn?.innerText.includes(${JSON.stringify(query)}) && !!turn.querySelector('a[href="/members/${b.id}"]') && document.querySelector('dialog[open] form button[type=submit]')?.disabled===false;})()`),'grounded current artist result in Navigator UI');
+      if(language!=='en') assert.equal(await pageA.evaluate(`document.querySelector('dialog[open]')?.getAttribute('dir')`),'rtl');
+      await captureState(pageA,`navigator-member-${language}-results`);
+    }
+    await click(pageA,'dialog[open] button[aria-pressed]:first-child');
+    await click(pageA,'dialog[open] button[aria-label="Close Community Navigator"]');
     assert.deepEqual(await data(admin.from('profiles').select('id,languages').in('id',[a.id,b.id]).order('id')),languagesBefore);
   });
   await check('Directory filtered states preserve URLs, clear actions and calendar controls', async () => {
@@ -667,6 +684,7 @@ try {
         if(route==='/submissions') assert.equal(await pageA.evaluate(`document.querySelector('main')?.innerText.includes('No submissions yet')`), false);
       }
     } catch (error) {
+      evidence.failedStep = step;
       error.evidence = evidence;
       throw error;
     } finally {

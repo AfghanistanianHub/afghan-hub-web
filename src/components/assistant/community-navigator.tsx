@@ -171,7 +171,7 @@ export function CommunityNavigator() {
             </div>)}
             {turn.relatedUnavailable ? <p className={styles.scope}>{labels.partial}</p> : null}
             {!turn.groups.some(group=>group.results.length) ? <>{!turn.browseOnly ? <p className={styles.description}>{strings.recovery}</p> : null}{recoveryLinks(turn.context)}</> : null}
-            {index===turns.length-1 ? <div className={styles.followups} aria-label={labels.follow}><button type="button" disabled={pending} onClick={() => void runSearch(turn.context?.entityType==="event"?labels.people:labels.events)}>{turn.context?.entityType==="event"?labels.people:labels.events}</button>{turn.context?.city ? <button type="button" disabled={pending} onClick={() => void runSearch(labels.anywhere)}>{labels.anywhere}</button> : null}</div> : null}
+            {index===turns.length-1 ? <div className={styles.followups} aria-label={labels.follow}><button type="button" disabled={pending} onClick={() => void runSearch(turn.context?.entityType==="opportunity"?labels.organizations:turn.context?.entityType==="event"?labels.people:labels.events)}>{turn.context?.entityType==="opportunity"?labels.organizations:turn.context?.entityType==="event"?labels.people:labels.events}</button>{turn.context?.city ? <button type="button" disabled={pending} onClick={() => void runSearch(labels.anywhere)}>{labels.anywhere}</button> : null}</div> : null}
           </>}
         </article>)}
         <div ref={bottomRef} />

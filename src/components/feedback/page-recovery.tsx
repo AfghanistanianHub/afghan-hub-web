@@ -4,6 +4,10 @@ import { useTransition } from "react";
 
 export type RecoveryProps = { reset: () => void };
 
+export function WorkspaceRecovery() {
+  return <PageRecovery reset={() => window.location.reload()} />;
+}
+
 export function PageRecovery({ reset }: RecoveryProps) {
   const [pending, startTransition] = useTransition();
 

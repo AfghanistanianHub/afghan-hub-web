@@ -12,6 +12,14 @@ export class PlannerUnavailable extends Error {
 export async function discover(input: unknown, tool: DiscoveryTool, signal: AbortSignal, planner?: DiscoveryPlanner): Promise<PublicDiscoveryResponse> {
   const request = discoveryRequestSchema.parse(input);
   let plan = planPublicDiscovery(request.query, request.filters, request.context);
+  // Continue a previously asked location question even when the planner is
+  // unavailable on this turn. Guided answers still have precedence, and an
+  // explicit new goal must not be swallowed by a stale question.
+  if (!request.filters && request.context && request.clarification &&
+      /city|where|location|کجا|شهر|چېرته|ځای/iu.test(request.clarification) &&
+      !/\b(?:actually|instead|need|find|show|only|events?|jobs?)\b|در واقع|دنبال|نشان بده|په حقیقت|غواړم/iu.test(request.query)) {
+    plan = planPublicDiscovery(`Only ${request.query.slice(0, 60)}`, {}, request.context);
+  }
   let engine: PublicDiscoveryResponse["engine"] = "structured-search";
   let fallback: PublicDiscoveryResponse["fallback"] = "disabled";
   let understanding = "";

@@ -193,3 +193,13 @@ test('realistic multilingual public conversations return catalogue records and e
     assert.ok(h.calls.every(call=>call.kind!=='profiles'));
   }
 });
+
+test('location-question answers preserve prior topic when no model is available', async () => {
+  for (const [language,clarification,query] of [['en','Which city?','North Vancouver'],['fa','در کدام شهر؟','شمال ونکوور'],['ps','چېرته؟','شمالي ونکوور']]) {
+    const h=harness({rows:{events:[{...listing('art-gathering'),location:'North Vancouver, Canada'}]}});
+    const context={kinds:['events'],people:false,topic:'arts',location:'Vancouver',thisMonth:false};
+    const response=await h.POST(request({query,language,clarification,context}));assert.equal(response.status,200);
+    const data=await response.json();assert.equal(data.plan.topic,'arts');assert.equal(data.plan.location,'North Vancouver');assert.deepEqual(data.plan.kinds,['events']);assert.equal(data.results[0].href,'/explore/events/art-gathering');
+    const changed=await(await h.POST(request({query:'Actually, I need a job instead.',language,clarification,context}))).json();assert.equal(changed.plan.topic,'job');assert.equal(changed.plan.location,'');assert.deepEqual(changed.plan.kinds,['opportunities']);
+  }
+});
