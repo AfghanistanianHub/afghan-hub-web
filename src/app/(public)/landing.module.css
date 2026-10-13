@@ -79,3 +79,8 @@
 @media(prefers-reduced-motion:reduce) { .statement { animation:none; } .primary:hover { transform:none; } }
 @media(prefers-reduced-motion:reduce) { .pathLinks a::after,.pathLinks a svg { transition:none; } .pathLinks a:hover svg,.pathLinks a:focus-visible svg { transform:none; } .final[data-motion="true"] [data-home-reveal] { opacity:1; transform:none; } }
 @media(max-width:600px) { .orientation[data-motion="true"] .steps li::before { display:none; } }
+
+.pathLinks a::before { content:''; position:absolute; left:0; bottom:-3px; width:5px; height:5px; border-radius:50%; background:#4565c5; opacity:0; pointer-events:none; transition:left 500ms cubic-bezier(.22,1,.36,1),opacity 150ms; }
+.pathLinks a:hover::before,.pathLinks a:focus-visible::before { left:calc(100% - 5px); opacity:1; }
+.valuePoints [data-home-benefit][data-motion="true"] svg { transform:scale(var(--benefit-scale,1)); transform-origin:center; }
+@media(prefers-reduced-motion:reduce) { .pathLinks a::before { transition:none; } .valuePoints [data-home-benefit][data-motion="true"] svg { transform:none; } }
