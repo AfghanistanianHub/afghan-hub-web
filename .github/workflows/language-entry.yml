@@ -1,0 +1,38 @@
+name: Language entry browser verification
+on:
+  pull_request:
+    branches: [main, feat/member-page-workspaces]
+    paths: ['src/**', 'tests/**', 'scripts/qa/language-entry-browser.mjs', '.github/workflows/language-entry.yml', 'public/fonts/**']
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Temporary pinned browser tooling
+        run: |
+          npm install --prefix "$RUNNER_TEMP/language-browser" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+          node "$RUNNER_TEMP/language-browser/node_modules/playwright/cli.js" install ffmpeg
+      - name: Loopback-only browser journeys and video evidence
+        env:
+          AH_PLAYWRIGHT_MODULE: ${{ runner.temp }}/language-browser/node_modules/playwright
+          AH_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/qa/language-entry-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: language-entry-${{ github.event.pull_request.head.sha }}
+          path: reports/language-entry/
+          if-no-files-found: warn
+          retention-days: 14

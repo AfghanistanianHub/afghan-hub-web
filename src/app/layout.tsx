@@ -1,3 +1,7 @@
+import localFont from "next/font/local";
+import { getLocale } from "@/lib/i18n/server";
+import { languageDirection } from "@/lib/i18n/locale";
+import { LocaleProvider } from "@/components/i18n/locale-provider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -5,6 +9,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GlobalNetworkBackground } from "@/components/visual/global-network-background";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
+
+const arabic = localFont({ src: "../../public/fonts/noto-sans-arabic-regular.ttf", variable: "--font-arabic", display: "swap", preload: true });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,20 +54,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      lang={locale}
+      dir={languageDirection(locale)}
+      className={`${geistSans.variable} ${geistMono.variable} ${arabic.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <GlobalNetworkBackground />
         <div className="app-content flex min-h-full flex-1 flex-col">
-          {children}
+          <LocaleProvider locale={locale}>{children}</LocaleProvider>
         </div>
         <SpeedInsights />
       </body>

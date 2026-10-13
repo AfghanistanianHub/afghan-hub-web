@@ -7,7 +7,7 @@ const layoutSource = fs.readFileSync(
   "utf8",
 );
 const homeSource = fs.readFileSync(
-  new URL("../src/app/(public)/page.tsx", import.meta.url),
+  new URL("../src/app/(public)/[locale]/page.tsx", import.meta.url),
   "utf8",
 );
 const detailSource = fs.readFileSync(

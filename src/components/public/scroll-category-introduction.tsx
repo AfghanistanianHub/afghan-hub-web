@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMessages } from "@/components/i18n/locale-provider";
 import { useEffect, useRef } from "react";
 import { communityAreas } from "./community-areas";
 import { categoryRevealFrame, categoryOrder } from "./category-scroll-progress";
@@ -9,6 +10,7 @@ import styles from "./scroll-category-introduction.module.css";
 const areas = categoryOrder.map(key => communityAreas.find(area => area.key === key)!);
 
 export function ScrollCategoryIntroduction() {
+  const t = useMessages();
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLElement>(null);
 
@@ -77,21 +79,21 @@ export function ScrollCategoryIntroduction() {
 
   return <section ref={sectionRef} id="community" className={styles.section} aria-labelledby="explore-heading" data-category-section>
     <div className={styles.heading}>
-      <h2 id="explore-heading">Explore the community</h2>
-      <Link href="/explore" className={styles.viewAll}>View all <span aria-hidden="true">↗</span></Link>
+      <h2 id="explore-heading">{t("Explore the community")}</h2>
+      <Link href="/explore" className={styles.viewAll}>{t("View all")} <span aria-hidden="true">↗</span></Link>
     </div>
-    <nav ref={stageRef} className={styles.stage} aria-label="Explore Afghan Hub categories">
+    <nav ref={stageRef} className={styles.stage} aria-label={t("Explore Afghan Hub categories")}>
       <span className={styles.line} data-category-line aria-hidden="true" />
       {areas.map(area => <Link key={area.key} href={area.href} prefetch={false} className={styles.category}
-        data-category={area.key} aria-label={area.label} aria-describedby={`category-${area.key}-description`}>
+        data-category={area.key} aria-label={t(area.label)} aria-describedby={`category-${area.key}-description`}>
         <span className={styles.icon} data-category-icon>
           {/* Supplied SVG artwork remains unchanged, including colored outlines. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={`/category-icons/${area.key}.svg`} width={64} height={64} alt="" draggable={false} />
         </span>
         <span className={styles.copy} data-category-copy>
-          <span className={styles.title}>{area.label}</span>
-          <span id={`category-${area.key}-description`} className={styles.description}>{area.description}</span>
+          <span className={styles.title}>{t(area.label)}</span>
+          <span id={`category-${area.key}-description`} className={styles.description}>{t(area.description)}</span>
         </span>
       </Link>)}
     </nav>

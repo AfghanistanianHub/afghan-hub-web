@@ -16,6 +16,8 @@ export const navigatorLanguagePreferenceKey = "afghan-hub-navigator-language";
 
 export function readNavigatorLanguagePreference(): NavigatorLanguage {
   try {
+    const siteLanguage = typeof document !== "undefined" ? document.cookie.split("; ").find(item => item.startsWith("afghan-hub-language="))?.split("=")[1] : undefined;
+    if (siteLanguage === "en" || siteLanguage === "fa" || siteLanguage === "ps") return siteLanguage;
     const saved = localStorage.getItem(navigatorLanguagePreferenceKey);
     const language = normalizeNavigatorLanguage(saved);
     if (saved === "fa-AF") localStorage.setItem(navigatorLanguagePreferenceKey, language);

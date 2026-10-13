@@ -2,7 +2,8 @@
 
 import styles from "@/components/network/network-surfaces.module.css";
 
-import { useEffect, useState } from "react";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Dialog } from "@base-ui/react/dialog";
@@ -90,6 +91,7 @@ export function MobileNavigation({
           </div>
 
           <div className="px-5 pt-5">
+            <Suspense><LanguageSwitcher /></Suspense>
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Workspace</p>
           </div>
 
