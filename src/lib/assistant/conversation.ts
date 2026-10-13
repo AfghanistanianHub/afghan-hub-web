@@ -17,17 +17,17 @@ const topicAlias = (value: string) => /^(?:arts?|artists?|هنر|هنرمند|ه
 export function resolveNavigatorContext(query: string, previous?: NavigatorContext): NavigatorContext {
   const input = clean(query).slice(0, 120);
   const inferred = inferAssistantIntent(input);
-  const newGoal = /\b(?:actually|instead|rather)\b|در واقع|به جای|پر ځای|په حقیقت/u.test(input);
+  const newGoal = /\b(?:actually|instead|rather)\b|در واقع|به جای|پر ځای|په حقیقت/iu.test(input);
   if (newGoal) previous = undefined;
   // These are discovery goals, not search terms. Never search the entire
   // sentence ("I'm new ... want to meet") as an AND query against the catalogue.
   const artistGoal = /\b(?:artist|artists|creative|creatives)\b.*\b(?:collaborat|connect|looking)|هنرمند.*(?:همکار|همکاری)|هنرمند.*(?:همکار|ملګري)/iu.test(input);
   const socialGoal = /\b(?:meet people|meet new people)\b|(?:آشنا|آشنایی|اشنا).*افراد|افراد.*(?:آشنا|آشنایی|اشنا)|خل[کو].*(?:اشنا|وپېژنم|پېژند)/iu.test(input);
-  const jobGoal = /\b(?:need|looking for|find)\b.*\bjobs?\b|(?:شغل|وظیفه|دنده).*(?:می‌خواهم|میخواهم|غواړم|پیدا)|(?:دنبال|نیاز).*شغل/u.test(input);
+  const jobGoal = /\b(?:need|looking for|find)\b.*\bjobs?\b|(?:شغل|وظیفه|دنده).*(?:می‌خواهم|میخواهم|غواړم|پیدا)|(?:دنبال|نیاز).*شغل/iu.test(input);
   if (artistGoal || socialGoal || jobGoal) {
     const place = input.match(/\b(?:in|near|to)\s+(North Vancouver|Vancouver)\b/iu)?.[1]
       ?? input.match(/(?:در|په)\s+((?:شمال|شمالي)\s+ونکوور|ونکوور)/u)?.[1];
-    return { topic: jobGoal ? "job" : artistGoal ? "arts" : "", city: place, entityType: jobGoal ? "opportunity" : "profile" };
+    return { topic: jobGoal ? "job" : artistGoal ? "arts" : "", city: place ?? (!jobGoal && previous?.entityType === "profile" ? previous.city : undefined), entityType: jobGoal ? "opportunity" : "profile", memberSignal: jobGoal ? undefined : inferred.memberSignal };
   }
   if (previous && topicAlias(input) !== input) return { ...previous, topic: topicAlias(input) };
   const explicitCategoryOnly =

@@ -185,6 +185,7 @@ test('realistic multilingual public conversations return catalogue records and e
       assert.ok(result.understanding, 'structured results must explain their scope');
       assert.ok(result.results.every(row=>row.href.startsWith('/explore/')));
       if(index===0) assert.equal(context.people,true);
+      if(index===1) assert.equal(context.location,'Vancouver','Artist follow-up retains the current location');
       if(index===2 || index===3) assert.equal(context.location,'North Vancouver');
       if(index===3) {assert.equal(context.topic,'arts');assert.ok(result.results.some(row=>row.href==='/explore/events/art-gathering'));}
       if(index===4) assert.equal(context.location,'');

@@ -68,7 +68,8 @@ test('realistic three-language discovery chains preserve refinements and replace
   ]) {
     let context = resolve(exchange[0]);
     assert.equal(context.entityType, 'profile', exchange[0]); assert.equal(context.topic, '', exchange[0]);
-    context = resolve(exchange[1], context); assert.equal(context.topic, 'arts', exchange[1]);
+    const initialCity=context.city;
+    context = resolve(exchange[1], context); assert.equal(context.topic, 'arts', exchange[1]); assert.equal(context.city,initialCity,'Artist refinement retains the current location');
     context = resolve(exchange[2], context); assert.equal(context.topic, 'arts'); assert.ok(context.city);
     context = resolve(exchange[3], context); assert.equal(context.entityType, 'event'); assert.equal(context.topic, 'arts'); assert.ok(context.city);
     context = resolve(exchange[4], context); assert.equal(context.city, undefined); assert.equal(context.topic, 'arts');

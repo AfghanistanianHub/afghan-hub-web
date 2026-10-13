@@ -22,9 +22,10 @@ export function planPublicDiscovery(query: string, filters: DiscoveryFilters = {
   if (previous && eventFollowup) query = query.replace(/^are there any\s+/iu, " ").trim();
   const newGoal = /\bactually\b|در واقع|په حقیقت/iu.test(original) || replacement && /\b(?:need|looking for)\b|می‌خواهم|میخواهم|غواړم/iu.test(original);
   const shortTopic = !!previous && !inferAssistantIntent(query).entityType && original.split(/\s+/u).length <= 3;
-  const refinement = !newGoal && ((!!previous && !!(shortTopic || topicalFollowup || locationFollowup || replacement || eventFollowup)) || /^(?:only|just|anywhere|all locations|فقط|تنها|یوازې|هر جا|همه جا|هر ځای)(?:\s|$)|(?:\b(?:too|also|as well)\b|(?:^|\s)هم(?:\s|$))/iu.test(query));
+  const artistRefinement = !!previous?.people && /\b(?:artists?|creatives?)\b|هنرمند/iu.test(query);
+  const refinement = !newGoal && ((!!previous && !!(artistRefinement || shortTopic || topicalFollowup || locationFollowup || replacement || eventFollowup)) || /^(?:only|just|anywhere|all locations|فقط|تنها|یوازې|هر جا|همه جا|هر ځای)(?:\s|$)|(?:\b(?:too|also|as well)\b|(?:^|\s)هم(?:\s|$))/iu.test(query));
   const previousEntity = previous?.kinds.length === 1 ? ({businesses:"business",organizations:"organization",opportunities:"opportunity",events:"event"} as const)[previous.kinds[0]] : undefined;
-  const context = resolveNavigatorContext(query.replace(/^(only|just|فقط|تنها|یوازې)\s+(?:in|near|at|در|په)\s+/iu, "$1 "), refinement && previous ? { topic: previous.topic, city: previous.location || undefined, entityType: previousEntity } : undefined);  const goal = filters.goal ?? query;
+  const context = resolveNavigatorContext(query.replace(/^(only|just|فقط|تنها|یوازې)\s+(?:in|near|at|در|په)\s+/iu, "$1 "), refinement && previous ? { topic: previous.topic, city: previous.location || undefined, entityType: artistRefinement ? "profile" : previousEntity } : undefined);  const goal = filters.goal ?? query;
   const inferred = inferAssistantIntent(goal);
   const explicit = discoveryKinds.filter(kind => inferAssistantIntent(kind).entityType &&
     new RegExp(`\\b${kind}\\b`, "i").test(goal));

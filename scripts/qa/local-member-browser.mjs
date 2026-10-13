@@ -27,6 +27,7 @@ assert.ok(chromePath, 'Sandboxed Chrome must be installed');
 const sourceRevision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const sourceTree = execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { encoding: 'utf8' }).trim();
 assert.equal(execFileSync('git', ['status', '--porcelain', '--untracked-files=no', '--', 'src', 'tests', 'scripts', 'supabase', '.github', 'public', 'package.json', 'package-lock.json'], {encoding:'utf8'}).trim(), '', 'Acceptance requires a clean tracked source tree');
+const reviewImages = [];
 const users = [], pages = [], children = [], results = [], listings = [];
 const reconnectEvidence = [];
 // A real receiver-only network boundary avoids Chrome's localhost exemptions.
@@ -108,6 +109,10 @@ async function captureState(page, label) {
     await page.send('Emulation.setPageScaleFactor',{pageScaleFactor:1});
     const screenshot=await page.send('Page.captureScreenshot',{format:'png'});
     writeFileSync(`${visualDir}/${label}-${width}.png`,Buffer.from(screenshot.data,'base64'));
+    if ((width===390 && ['navigator-member-fa-results','navigator-member-ps-results','opportunities-filtered-results','opportunities-empty','businesses-outage'].includes(label)) || (width===1440 && ['submissions-owner-note','businesses-recovered'].includes(label))) {
+      const jpg=await page.send('Page.captureScreenshot',{format:'jpeg',quality:65});
+      const file=`${visualDir}/${label}-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));reviewImages.push({label,width,file});
+    }
   }
   await page.send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
 }
@@ -189,6 +194,11 @@ async function pathname(page, path) {
 async function fill(page, selector, value) {
   const fieldSelector = (selector.startsWith('form') || selector.startsWith('dialog')) ? selector : `form ${selector}`;
   await until(() => page.evaluate(`!!document.querySelector(${JSON.stringify(fieldSelector)})`), 'form field');
+  await page.evaluate(`(() => { const field=document.querySelector(${JSON.stringify(fieldSelector)}); field.focus(); Object.getOwnPropertyDescriptor(field instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,'value').set.call(field,${JSON.stringify(value)}); field.dispatchEvent(new Event('input',{bubbles:true})); return true; })()`);
+}
+async function typeNavigatorQuery(page, value) {
+  const fieldSelector='dialog[open] input';
+  await until(()=>page.evaluate(`!!document.querySelector(${JSON.stringify(fieldSelector)})`),'Navigator input');
   await page.evaluate(`document.querySelector(${JSON.stringify(fieldSelector)}).focus()`);
   const modifiers = await page.evaluate(`/Mac/.test(navigator.platform) ? 4 : 2`);
   await page.send('Input.dispatchKeyEvent',{type:'keyDown',key:'a',code:'KeyA',windowsVirtualKeyCode:65,modifiers});
@@ -411,7 +421,7 @@ try {
     for(const [index,query,language] of [[1,'I’m an artist looking for collaborators.','en'],[2,'من هنرمند هستم و دنبال همکار می‌گردم','fa'],[3,'زه هنرمند یم او همکار ملګري غواړم','ps']]) {
       await click(pageA,`dialog[open] button[aria-pressed]:nth-child(${index})`);
       await until(()=>pageA.evaluate(`document.querySelector('dialog[open]')?.getAttribute('lang')===${JSON.stringify(language)}`),'member Navigator selected language');
-      await fill(pageA,'dialog[open] input',query);
+      await typeNavigatorQuery(pageA,query);
       await until(()=>pageA.evaluate(`document.querySelector('dialog[open] input')?.value===${JSON.stringify(query)} && document.querySelector('dialog[open] form button[type=submit]')?.disabled===false`),'controlled Navigator input ready');
       await click(pageA,'dialog[open] form button[type=submit]');
       await until(()=>pageA.evaluate(`(() => {const turn=[...document.querySelectorAll('dialog[open] article')].at(-1);return turn?.innerText.includes(${JSON.stringify(query)}) && !!turn.querySelector('a[href="/members/${b.id}"]') && turn.getAttribute('aria-busy')==='false';})()`),'grounded current artist result in Navigator UI');
@@ -568,7 +578,9 @@ try {
     const job=listings.filter(row=>row.table==='opportunities').at(-1);
     assert.ok(artEvent && job);
     await data(admin.from('events').update({summary:'Art collaboration gathering',city:'North Vancouver'}).eq('id',artEvent.id));
-    await data(admin.from('opportunities').update({summary:'Job employment hiring',city:'North Vancouver'}).eq('id',job.id));
+    await data(admin.from('opportunities').update({type:'job',summary:'Job employment hiring',city:'North Vancouver'}).eq('id',job.id));
+    const localArtist=await member('artist-vancouver');
+    await data(admin.from('profiles').update({first_name:'Synthetic',last_name:'Artist Vancouver',profession:'Artist',city:'Vancouver',is_public:true,onboarding_completed:true}).eq('id',localArtist.id));
     const languagesBefore=await data(admin.from('profiles').select('id,languages').in('id',[a.id,b.id]).order('id'));
     for(const [language,queries] of [
       ['en',['I’m new in Vancouver and want to meet people.','I’m an artist looking for collaborators.','Only North Vancouver.','Show me events too.','Anywhere.','Actually, I need a job instead.']],
@@ -581,7 +593,8 @@ try {
         assert.equal(result.status,200); context=result.data.context;
         const expected=['profile','profile','profile','event','event','opportunity'][index];
         assert.equal(context.entityType,expected);
-        if(index===1||index===2) assert.ok(result.data.results.some(row=>row.entityId===b.id && row.href===`/members/${b.id}`));
+        if(index===1) {assert.equal(context.city,'Vancouver');assert.ok(result.data.results.some(row=>row.entityId===localArtist.id && row.href===`/members/${localArtist.id}`));}
+        if(index===2) assert.ok(result.data.results.some(row=>row.entityId===b.id && row.href===`/members/${b.id}`));
         if(index===2||index===3) assert.equal(context.city,'North Vancouver');
         if(index===3||index===4) assert.ok(result.data.results.some(row=>row.entityId===artEvent.id && row.href.startsWith('/events/')));
         if(index===5) { assert.equal(context.topic,'job');assert.equal(context.city,undefined);assert.ok(result.data.results.some(row=>row.entityId===job.id && row.href.startsWith('/opportunities/'))); }
@@ -645,6 +658,7 @@ try {
           await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
           const state = await visual.evaluate(`({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,canvas:!!document.querySelector('.global-network-background canvas'),rejectedArt:!!document.querySelector('[data-hero-layer="architecture"]'),heading:!!document.querySelector('main h1')})`);
           assert.equal(state.overflow,false,`Horizontal overflow: ${route} at ${width}`);
+          if(['/businesses','/organizations','/opportunities','/events','/submissions','/network','/messages',conversationPath,`/members/${b.id}`].includes(route)) assert.equal(state.route,new URL(route,appUrl).pathname,'Member screenshot must depict its requested route');
           if (['/businesses','/organizations','/opportunities','/events','/submissions','/network','/messages',conversationPath,`/members/${b.id}`].includes(route)) assert.equal(state.heading,true,`Member page requires h1: ${route}`);
           assert.equal(state.canvas,true); if (phase === 'after') assert.equal(state.rejectedArt,false);
           if(phase === 'after' && width===390) assert.equal(await visual.evaluate(`(() => {const heading=document.querySelector('[data-member-page-header] h1');return !heading || heading.getBoundingClientRect().width>=200;})()`), true, 'Mobile title must have readable width');
@@ -653,6 +667,10 @@ try {
           const label=route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replaceAll('/','-');
           const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
           writeFileSync(`${visualDir}/${label}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
+          if(phase==='after' && ['businesses','organizations','opportunities','events','submissions','network','member','messages','conversation'].includes(label)) {
+            const jpg=await visual.send('Page.captureScreenshot',{format:'jpeg',quality:65});
+            const file=`${visualDir}/${label}-after-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));reviewImages.push({label,width,file});
+          }
         }
       }
       }
@@ -832,4 +850,8 @@ try {
   mkdirSync('reports', { recursive: true });
   writeFileSync('reports/local-member-browser.json', JSON.stringify({ sourceRevision, sourceTree, environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery is verified only with disposable local Mailpit; external SMTP/deliverability and cross-device confirmation remain untested', 'Organization deletion UI is absent; native-language review and multi-tab read receipts remain pending', 'Admin team role mutations are not tested; no production, hosted test target or model provider calls'] }, null, 2) + '\n');
   console.log(`${results.filter(r => r.status === 'pass').length} passed; ${results.filter(r => r.status === 'fail').length} failed`);
+  // Only complete successful disposable runs emit review images; never auth
+  // state, provider payloads or hosted-account screenshots. These bytes let
+  // reviewers view evidence without relaxing Preview deployment protection.
+  if(results.length>0 && results.every(row=>row.status==='pass')) for(const item of reviewImages) console.log('QA_REVIEW_IMAGE '+JSON.stringify({sourceRevision,sourceTree,label:item.label,width:item.width,data:readFileSync(item.file).toString('base64')}));
 }
