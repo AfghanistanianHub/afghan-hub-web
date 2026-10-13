@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useLocale } from "@/components/i18n/locale-provider";
+import { useNavigatorLocale } from "@/components/i18n/locale-provider";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type ReactNode } from "react";
 import { ArrowRight, ArrowUp, Compass, Search, Sparkles, X } from "lucide-react";
 import { navigatorCopy, guidedGoals, guidedTopics, type NavigatorLanguage } from "@/lib/assistant/navigator-copy";
 import {
   navigatorLocales as locales,
   saveNavigatorLanguagePreference,
+  readNavigatorLanguagePreference,
+  subscribeNavigatorLanguagePreference,
 } from "@/lib/assistant/navigator-language";
 import type { DiscoveryFilters } from "@/lib/assistant/public-discovery";
 import { guidedSearch, nextGuidedQuestion, understandGuidedGoal } from "@/lib/assistant/guided-discovery";
@@ -49,10 +51,11 @@ function GuideHeight({ children }: { children: ReactNode }) {
 }
 
 export function HomepageNavigator() {
-  const siteLocale = useLocale();
+  const siteLocale = useNavigatorLocale();
+  const savedLanguage = useSyncExternalStore(subscribeNavigatorLanguagePreference, readNavigatorLanguagePreference, () => siteLocale);
   const params = useSearchParams();
   const [selectedLanguage, setLanguage] = useState<NavigatorLanguage | null>(null);
-  const language = selectedLanguage ?? siteLocale;
+  const language = selectedLanguage ?? savedLanguage;
   const t = navigatorCopy[language];
   const [query, setQuery] = useState("");
   const [turns, setTurns] = useState<Turn[]>([]);

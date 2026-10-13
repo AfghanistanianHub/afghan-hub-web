@@ -15,15 +15,19 @@ export function normalizeNavigatorLanguage(value: unknown): NavigatorLanguage {
 export const navigatorLanguagePreferenceKey = "afghan-hub-navigator-language";
 
 export function readNavigatorLanguagePreference(): NavigatorLanguage {
+  let preferred: NavigatorLanguage | null = null;
+  if (typeof document !== "undefined") {
+    const cookie = document.cookie.split("; ").find(item => item.startsWith("afghan-hub-navigator-language="))?.split("=")[1];
+    if (cookie === "en" || cookie === "fa" || cookie === "fa-AF" || cookie === "ps") preferred = normalizeNavigatorLanguage(cookie);
+    else if (["en", "fa", "ps"].includes(document.documentElement?.lang)) preferred = normalizeNavigatorLanguage(document.documentElement.lang);
+  }
   try {
-    const siteLanguage = typeof document !== "undefined" ? document.cookie.split("; ").find(item => item.startsWith("afghan-hub-language="))?.split("=")[1] : undefined;
-    if (siteLanguage === "en" || siteLanguage === "fa" || siteLanguage === "ps") return siteLanguage;
     const saved = localStorage.getItem(navigatorLanguagePreferenceKey);
     const language = normalizeNavigatorLanguage(saved);
     if (saved === "fa-AF") localStorage.setItem(navigatorLanguagePreferenceKey, language);
-    return language;
+    return preferred ?? language;
   } catch {
-    return "en";
+    return preferred ?? "en";
   }
 }
 
@@ -42,6 +46,7 @@ export function serverNavigatorLanguagePreference(): NavigatorLanguage {
 
 export function saveNavigatorLanguagePreference(value: unknown): NavigatorLanguage {
   const language = normalizeNavigatorLanguage(value);
+  if (typeof document !== "undefined") document.cookie = `${navigatorLanguagePreferenceKey}=${language}; Path=/; Max-Age=31536000; SameSite=Lax${window.location.protocol === "https:" ? "; Secure" : ""}`;
   try {
     localStorage.setItem(navigatorLanguagePreferenceKey, language);
   } catch {

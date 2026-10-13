@@ -1,7 +1,7 @@
 name: Isolated local member journeys
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feat/member-page-workspaces]
     paths:
       - 'src/**'
       - 'tests/**'

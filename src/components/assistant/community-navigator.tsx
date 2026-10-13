@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useLocale } from "@/components/i18n/locale-provider";
+import { useNavigatorLocale } from "@/components/i18n/locale-provider";
 import { type FormEvent, type KeyboardEvent as ReactKeyboardEvent, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ArrowUpRight, Compass, Search, Sparkles, X } from "lucide-react";
 import { trackAssistantEvent } from "@/lib/assistant/analytics";
@@ -22,7 +22,7 @@ type Turn = { understanding?: string; clarification?: string; id: number; query:
 type Payload = { understanding?: string; clarification?: string; browseOnly?: boolean; context: NavigatorContext; groups: Group[]; results: Result[]; intent: string; entityType: Result["entityType"] | null; relatedUnavailable?: boolean };
 
 export function CommunityNavigator() {
-  const siteLocale = useLocale();
+  const siteLocale = useNavigatorLocale();
   const [open, setOpen] = useState(false);
   const savedLanguage = useSyncExternalStore(subscribeNavigatorLanguagePreference, readNavigatorLanguagePreference, () => siteLocale);
   const [selectedLanguage, setLanguage] = useState<Language | null>(null);

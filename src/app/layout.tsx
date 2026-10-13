@@ -1,4 +1,6 @@
 import localFont from "next/font/local";
+import { cookies } from "next/headers";
+import { parseLocale } from "@/lib/i18n/locale";
 import { getLocale } from "@/lib/i18n/server";
 import { languageDirection } from "@/lib/i18n/locale";
 import { LocaleProvider } from "@/components/i18n/locale-provider";
@@ -60,6 +62,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  const navigatorLocale = parseLocale((await cookies()).get("afghan-hub-navigator-language")?.value) ?? locale;
   return (
     <html
       lang={locale}
@@ -69,7 +72,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         <GlobalNetworkBackground />
         <div className="app-content flex min-h-full flex-1 flex-col">
-          <LocaleProvider locale={locale}>{children}</LocaleProvider>
+          <LocaleProvider locale={locale} navigatorLocale={navigatorLocale}>{children}</LocaleProvider>
         </div>
         <SpeedInsights />
       </body>

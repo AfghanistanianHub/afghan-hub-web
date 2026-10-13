@@ -56,6 +56,13 @@ try {
       assert.equal(await page.locator('html').getAttribute('lang'),locale);
       assert.equal(await page.locator('html').getAttribute('dir'),locale==='en'?'ltr':'rtl');
       assert.equal(await page.locator('#ai-navigator').getAttribute('lang'),locale);
+      await page.locator('#ai-navigator select').selectOption(locale==='ps'?'fa':'ps');
+      await page.reload();
+      assert.equal(await page.locator('#ai-navigator').getAttribute('lang'),locale==='ps'?'fa':'ps');
+      // A site switch synchronizes the separate Navigator preference again.
+      await page.goto(`${origin}/language/select?locale=${locale}`);
+      await page.waitForURL(`${origin}/${locale}`);
+      assert.equal(await page.locator('#ai-navigator').getAttribute('lang'),locale);
       assert.ok((await ctx.cookies()).some(cookie=>cookie.name==='afghan-hub-language'&&cookie.value===locale));
       await page.goto(origin);await page.waitForURL(`${origin}/${locale}`);assert.equal(await page.locator('[data-language-entry]').count(),0);
       await page.reload();assert.equal(await page.locator('html').getAttribute('lang'),locale);

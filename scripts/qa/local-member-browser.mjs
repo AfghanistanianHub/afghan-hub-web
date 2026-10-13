@@ -346,10 +346,10 @@ try {
       await until(() => pageA.evaluate(`/Seccomp-BPF sandbox\\s+Yes/.test(document.body?.innerText ?? '')`), 'renderer sandbox');
     }
   });
-  await check('Navigator exposes three languages and migrates legacy Persian preference with RTL', async () => {
-    await visit(pageA, '/');
+  await check('Navigator initializes from the localized homepage and migrates legacy Persian storage', async () => {
+    await visit(pageA, '/fa');
     await pageA.evaluate(`localStorage.setItem('afghan-hub-navigator-language','fa-AF')`);
-    await visit(pageA, '/');
+    await visit(pageA, '/fa');
     await until(() => pageA.evaluate(`document.querySelector('#ai-navigator select')?.value==='fa' && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`), 'legacy preference hydrated');
     assert.deepEqual(await pageA.evaluate(`[...document.querySelectorAll('#ai-navigator select option')].map(node=>node.value)`), ['en','fa','ps']);
     assert.equal(await pageA.evaluate(`localStorage.getItem('afghan-hub-navigator-language')`), 'fa');
@@ -403,6 +403,19 @@ try {
       const row = await data(admin.from('profiles').select('onboarding_completed,first_name,last_name').eq('id', user.id).single());
       assert.equal(row.onboarding_completed, true); assert.equal(row.last_name, label);
     }
+  });
+  await check('Authenticated site language switching preserves member destination and profile languages', async () => {
+    const before = await data(admin.from('profiles').select('languages').eq('id',a.id).single());
+    for (const locale of ['fa','ps','en']) {
+      await visit(pageA,'/network?q=Alpha#main-content');
+      await click(pageA,'.interface-language-switcher summary');
+      await click(pageA,`.interface-language-switcher a[lang="${locale}"]`);
+      await until(() => pageA.evaluate(`location.pathname==='/network' && new URLSearchParams(location.search).get('q')==='Alpha' && new URLSearchParams(location.search).get('lang')==='${locale}' && location.hash==='#main-content' && document.documentElement.lang==='${locale}'`),'authenticated equivalent locale route');
+      assert.equal(await pageA.evaluate(`!!document.querySelector('[data-language-entry]')`),false);
+      const after = await data(admin.from('profiles').select('languages').eq('id',a.id).single());
+      assert.deepEqual(after.languages,before.languages);
+    }
+    await visit(pageA,'/dashboard');
   });
   await visit(pageB,'/submissions');
   assert.ok(await pageB.evaluate(`document.querySelector('main')?.innerText.includes('No submissions yet')`),'Empty owner submissions must have truthful counts');
@@ -727,7 +740,7 @@ try {
       }
       }
       const phase = 'after';
-      await visit(visual,'/');
+      await visit(visual,'/en');
       for (const locale of ['fa','ps']) {
         await select(visual,'#ai-navigator select',locale);
         await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`),'visual Navigator RTL');
