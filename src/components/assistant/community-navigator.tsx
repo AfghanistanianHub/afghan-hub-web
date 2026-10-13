@@ -16,8 +16,8 @@ type Result = {
   country: string | null; href: string; rank: number; matchedTopics?: string[];
 };
 type Group = { memberSignal: NavigatorContext["memberSignal"] | null; results: Result[] };
-type Turn = { id: number; query: string; status: "pending" | "ready" | "failed"; context?: NavigatorContext; groups: Group[]; relatedUnavailable?: boolean; scopeLimited?: boolean; browseOnly?: boolean };
-type Payload = { browseOnly?: boolean; context: NavigatorContext; groups: Group[]; results: Result[]; intent: string; entityType: Result["entityType"] | null; relatedUnavailable?: boolean };
+type Turn = { understanding?: string; clarification?: string; id: number; query: string; status: "pending" | "ready" | "failed"; context?: NavigatorContext; groups: Group[]; relatedUnavailable?: boolean; scopeLimited?: boolean; browseOnly?: boolean };
+type Payload = { understanding?: string; clarification?: string; browseOnly?: boolean; context: NavigatorContext; groups: Group[]; results: Result[]; intent: string; entityType: Result["entityType"] | null; relatedUnavailable?: boolean };
 
 export function CommunityNavigator() {
   const [open, setOpen] = useState(false);
@@ -102,12 +102,12 @@ export function CommunityNavigator() {
     setTurns(current => [...current.slice(-9), {id, query: normalized, status: "pending", context: resolveNavigatorContext(normalized, previousContext), groups: []}]);
     let scopeLimited = false;
     try {
-      const response = await fetch("/api/assistant/search", { method: "POST", headers: {"content-type":"application/json"}, signal: controller.signal, body: JSON.stringify({query: normalized, limit: 8, context: previousContext}) });
+      const response = await fetch("/api/assistant/search", { method: "POST", headers: {"content-type":"application/json"}, signal: controller.signal, body: JSON.stringify({query: normalized, language, limit: 8, context: previousContext}) });
       if (!response.ok) { scopeLimited = response.status === 422; throw new Error("Search unavailable"); }
       const data = await response.json() as Payload;
       if (controller.signal.aborted || id !== sequence.current) return;
       contextRef.current = data.context;
-      setTurns(current => current.map(turn => turn.id === id ? {...turn, status: "ready", context: data.context, groups: data.groups, relatedUnavailable: data.relatedUnavailable, browseOnly: data.browseOnly} : turn));
+      setTurns(current => current.map(turn => turn.id === id ? {...turn, status: "ready", context: data.context, groups: data.groups, relatedUnavailable: data.relatedUnavailable, browseOnly: data.browseOnly, understanding: data.understanding, clarification: data.clarification} : turn));
       trackAssistantEvent({event:"assistant_search",language,intent:data.intent,entityType:data.entityType,resultCount:data.results.length,hadResults:data.results.length>0});
     } catch {
       if ((!controller.signal.aborted || controller.signal.reason === "timeout") && id === sequence.current) setTurns(current => current.map(turn => turn.id === id ? {...turn,status:"failed",scopeLimited} : turn));
@@ -163,6 +163,7 @@ export function CommunityNavigator() {
           <p className={styles.label}>{labels.title}</p>
           {turn.status === "pending" ? <div className={styles.pending}><span className={styles.progress} aria-hidden="true" />{strings.searching}</div> : turn.status === "failed" ? <div role="status"><p className={styles.summary}>{turn.scopeLimited ? strings.scopeError : strings.error}</p><div className={styles.followups}>{!turn.scopeLimited ? <button type="button" disabled={pending} onClick={() => void runSearch(turn.query, turn.context)}>{labels.retry}</button> : null}</div>{recoveryLinks(turn.context)}</div> : <>
             <p className={styles.summary}>{turn.browseOnly ? strings.recovery : turn.groups.some(group=>group.results.length) ? labels.matches : strings.empty}</p>
+            {turn.clarification ? <p className={styles.description}>{turn.clarification}</p> : turn.understanding ? <p className={styles.description} dir="auto">{turn.understanding}</p> : null}
             <div className={styles.context}>{turn.context?.topic ? <span>{turn.context.topic}</span> : null}{turn.context?.city ? <span>{turn.context.city}</span> : null}</div>
             {turn.groups.map((group,groupIndex) => <div key={groupIndex} className={styles.group}>
               {group.memberSignal ? <><h4>{group.memberSignal==="open_to_mentoring"?labels.mentors:labels.mentees}</h4><p className={styles.scope}>{labels.preference}</p>{!group.results.length ? <p className={styles.description}>{strings.empty}</p> : null}</> : null}

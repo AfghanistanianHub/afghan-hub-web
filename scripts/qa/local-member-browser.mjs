@@ -24,6 +24,9 @@ const mailUrl = requireLocalTarget('http://127.0.0.1:55324', 55324);
 const admin = createClient(apiUrl, status.SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
 const chromePath = ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/opt/google/chrome/chrome', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].find(existsSync);
 assert.ok(chromePath, 'Sandboxed Chrome must be installed');
+const sourceRevision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+const sourceTree = execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { encoding: 'utf8' }).trim();
+assert.equal(execFileSync('git', ['status', '--porcelain', '--untracked-files=no', '--', 'src', 'tests', 'scripts', 'supabase', '.github', 'public', 'package.json', 'package-lock.json'], {encoding:'utf8'}).trim(), '', 'Acceptance requires a clean tracked source tree');
 const users = [], pages = [], children = [], results = [], listings = [];
 const reconnectEvidence = [];
 // A real receiver-only network boundary avoids Chrome's localhost exemptions.
@@ -96,6 +99,17 @@ async function check(name, fn) {
   await fn();
   results.push({ scenario: name, status: 'pass' });
   console.log(`PASS ${name}`);
+}
+async function captureState(page, label) {
+  if(process.env.LOCAL_QA_VISUAL!=='1') return;
+  const visualDir=process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual'; mkdirSync(visualDir,{recursive:true});
+  for(const width of [1440,390]) {
+    await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
+    await page.send('Emulation.setPageScaleFactor',{pageScaleFactor:1});
+    const screenshot=await page.send('Page.captureScreenshot',{format:'png'});
+    writeFileSync(`${visualDir}/${label}-${width}.png`,Buffer.from(screenshot.data,'base64'));
+  }
+  await page.send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
 }
 function launch(command, args, env) {
   const child = spawn(command, args, { env, stdio: ['ignore', 'pipe', 'pipe'] });
@@ -506,12 +520,42 @@ try {
       });
     }
   }
+  await check('Navigator three-language conversations retrieve permitted records and reset a new goal', async () => {
+    await data(admin.from('profiles').update({profession:'Artist',city:'North Vancouver',is_public:true}).eq('id',b.id));
+    await data(admin.from('profiles').update({is_public:true}).eq('id',a.id));
+    const artEvent=listings.filter(row=>row.table==='events').at(-1);
+    const job=listings.filter(row=>row.table==='opportunities').at(-1);
+    assert.ok(artEvent && job);
+    await data(admin.from('events').update({summary:'Art collaboration gathering',city:'North Vancouver'}).eq('id',artEvent.id));
+    await data(admin.from('opportunities').update({summary:'Job employment hiring',city:'North Vancouver'}).eq('id',job.id));
+    const languagesBefore=await data(admin.from('profiles').select('id,languages').in('id',[a.id,b.id]).order('id'));
+    for(const [language,queries] of [
+      ['en',['I’m new in Vancouver and want to meet people.','I’m an artist looking for collaborators.','Only North Vancouver.','Show me events too.','Anywhere.','Actually, I need a job instead.']],
+      ['fa',['من در ونکوور تازه هستم و می‌خواهم با افراد آشنا شوم','من هنرمند هستم و دنبال همکار می‌گردم','فقط شمال ونکوور','رویدادها را هم نشان بده','هر جا','در واقع دنبال شغل هستم']],
+      ['ps',['زه په ونکوور کې نوی یم او غواړم خلک وپېژنم','زه هنرمند یم او همکار ملګري غواړم','یوازې شمالي ونکوور','غونډې هم را وښیه','هر ځای','په حقیقت کې دنده غواړم']],
+    ]) {
+      let context;
+      for(let index=0;index<queries.length;index++) {
+        const result=await pageA.evaluate(`(async()=>{const r=await fetch('/api/assistant/search',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(${JSON.stringify({query:queries[index],language,context})})});return {status:r.status,data:await r.json()};})()`);
+        assert.equal(result.status,200); context=result.data.context;
+        const expected=['profile','profile','profile','event','event','opportunity'][index];
+        assert.equal(context.entityType,expected);
+        if(index===1||index===2) assert.ok(result.data.results.some(row=>row.entityId===b.id && row.href===`/members/${b.id}`));
+        if(index===2||index===3) assert.equal(context.city,'North Vancouver');
+        if(index===3||index===4) assert.ok(result.data.results.some(row=>row.entityId===artEvent.id && row.href.startsWith('/events/')));
+        if(index===5) { assert.equal(context.topic,'job');assert.equal(context.city,undefined);assert.ok(result.data.results.some(row=>row.entityId===job.id && row.href.startsWith('/opportunities/'))); }
+        assert.ok(result.data.results.every(row=>row.href.startsWith('/members/')||row.href.startsWith('/events/')||row.href.startsWith('/opportunities/')));
+      }
+    }
+    assert.deepEqual(await data(admin.from('profiles').select('id,languages').in('id',[a.id,b.id]).order('id')),languagesBefore);
+  });
   await check('Directory filtered states preserve URLs, clear actions and calendar controls', async () => {
     for (const area of ['businesses','organizations','opportunities','events']) {
       await visit(pageA, `/${area}?q=No-matching-synthetic-listing`);
       await until(()=>pageA.evaluate(`document.querySelector('main')?.innerText.includes('No ${area === 'events' ? 'matching events' : area + ' match these filters'}')`), 'filtered directory empty state');
       assert.equal(await pageA.evaluate(`document.querySelector('main input[name=q]')?.value`), 'No-matching-synthetic-listing');
       assert.ok(await pageA.evaluate(`!!document.querySelector('main a[href="/${area}"]')`));
+      await captureState(pageA,`${area}-filtered-empty`);
     }
     await visit(pageA, '/events?view=calendar');
     assert.ok(await pageA.evaluate(`!!document.querySelector('form input[name=view][value=calendar]')`));
@@ -556,6 +600,7 @@ try {
           await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
           const state = await visual.evaluate(`({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,canvas:!!document.querySelector('.global-network-background canvas'),rejectedArt:!!document.querySelector('[data-hero-layer="architecture"]'),heading:!!document.querySelector('main h1')})`);
           assert.equal(state.overflow,false,`Horizontal overflow: ${route} at ${width}`);
+          if (['/businesses','/organizations','/opportunities','/events','/submissions','/network','/messages',conversationPath,`/members/${b.id}`].includes(route)) assert.equal(state.heading,true,`Member page requires h1: ${route}`);
           assert.equal(state.canvas,true); if (phase === 'after') assert.equal(state.rejectedArt,false);
           if(phase === 'after' && width===390) assert.equal(await visual.evaluate(`(() => {const heading=document.querySelector('[data-member-page-header] h1');return !heading || heading.getBoundingClientRect().width>=200;})()`), true, 'Mobile title must have readable width');
           await visual.send('Emulation.setPageScaleFactor', {pageScaleFactor:1});
@@ -578,7 +623,7 @@ try {
           writeFileSync(`${visualDir}/navigator-${locale}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
         }
       }
-      writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify(findings,null,2)+'\n');
+      writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, findings},null,2)+'\n');
     });
   }
   await check('Directory and submission request failures remain visible without false empty counts', async () => {
@@ -618,6 +663,7 @@ try {
         }
         evidence.stages.push({ route, outcome: 'loaded', ms: Date.now() - started });
         assert.ok(await pageA.evaluate(`!!document.querySelector('main [role=alert]')`), `Load failure must be announced: ${route}`);
+        await captureState(pageA,`${route.slice(1)}-outage`);
         if(route==='/submissions') assert.equal(await pageA.evaluate(`document.querySelector('main')?.innerText.includes('No submissions yet')`), false);
       }
     } catch (error) {
@@ -637,6 +683,14 @@ try {
         dockerExit(['exec', db, 'psql', '-U', 'postgres', '-d', 'postgres', '-c', "NOTIFY pgrst, 'reload schema';"]);
         return probe('recovery');
       }, 'local REST service restored', 90000);
+    }
+  });
+  await check('Directory and submissions recover with accessible populated content', async () => {
+    for(const route of ['/businesses','/organizations','/opportunities','/events','/submissions']) {
+      await visit(pageA,route);
+      assert.equal(await pageA.evaluate(`!!document.querySelector('main [role=alert]')`),false,`Recovery must clear outage: ${route}`);
+      assert.ok(await pageA.evaluate(`document.querySelector('main')?.innerText.includes('Synthetic')`),`Recovery must show fixtures: ${route}`);
+      await captureState(pageA,`${route.slice(1)}-recovered`);
     }
   });
   await check('Live conversation delivery and offline reconnect catch-up without reload', async () => {
@@ -724,6 +778,6 @@ try {
     results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'pass' });
   } catch { results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'fail' }); process.exitCode = 1; }
   mkdirSync('reports', { recursive: true });
-  writeFileSync('reports/local-member-browser.json', JSON.stringify({ environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery is verified only with disposable local Mailpit; external SMTP/deliverability and cross-device confirmation remain untested', 'Organization deletion UI is absent; native-language review and multi-tab read receipts remain pending', 'Admin team role mutations are not tested; no production, hosted test target or model provider calls'] }, null, 2) + '\n');
+  writeFileSync('reports/local-member-browser.json', JSON.stringify({ sourceRevision, sourceTree, environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery is verified only with disposable local Mailpit; external SMTP/deliverability and cross-device confirmation remain untested', 'Organization deletion UI is absent; native-language review and multi-tab read receipts remain pending', 'Admin team role mutations are not tested; no production, hosted test target or model provider calls'] }, null, 2) + '\n');
   console.log(`${results.filter(r => r.status === 'pass').length} passed; ${results.filter(r => r.status === 'fail').length} failed`);
 }

@@ -167,3 +167,29 @@ test('all-location follow-ups in Persian retain the current search', () => {
     assert.deepEqual(Array.from(plan.kinds),['events'],query);
   }
 });
+
+test('realistic multilingual public conversations return catalogue records and explain their permitted scope', async () => {
+  for (const [language, exchange] of [
+    ['en', ['I’m new in Vancouver and want to meet people.', 'I’m an artist looking for collaborators.', 'Only North Vancouver.', 'Show me events too.', 'Anywhere.', 'Actually, I need a job instead.']],
+    ['fa', ['من در ونکوور تازه هستم و می‌خواهم با افراد آشنا شوم', 'من هنرمند هستم و دنبال همکار می‌گردم', 'فقط شمال ونکوور', 'رویدادها را هم نشان بده', 'هر جا', 'در واقع دنبال شغل هستم']],
+    ['ps', ['زه په ونکوور کې نوی یم او غواړم خلک وپېژنم', 'زه هنرمند یم او همکار ملګري غواړم', 'یوازې شمالي ونکوور', 'غونډې هم را وښیه', 'هر ځای', 'په حقیقت کې دنده غواړم']],
+  ]) {
+    const h = harness({ rows: {
+      events: [{...listing('art-gathering', 'Art collaboration gathering'), location: 'North Vancouver, Canada'}],
+      opportunities: [{...listing('job-opening', 'Job opening'), description:'Hiring for employment', summary:'Employment', category:'Employment', location:'Vancouver, Canada'}],
+    }});
+    let context;
+    for (let index=0;index<exchange.length;index++) {
+      const response = await h.POST(request({query:exchange[index],language,context}));
+      assert.equal(response.status,200,exchange[index]); const result = await response.json(); context = result.plan;
+      assert.ok(result.understanding, 'structured results must explain their scope');
+      assert.ok(result.results.every(row=>row.href.startsWith('/explore/')));
+      if(index===0) assert.equal(context.people,true);
+      if(index===2 || index===3) assert.equal(context.location,'North Vancouver');
+      if(index===3) {assert.equal(context.topic,'arts');assert.ok(result.results.some(row=>row.href==='/explore/events/art-gathering'));}
+      if(index===4) assert.equal(context.location,'');
+      if(index===5) { assert.equal(context.topic,'job'); assert.deepEqual(context.kinds,['opportunities']);assert.equal(context.location,'');assert.equal(context.people,false);assert.equal(result.results[0]?.href,'/explore/opportunities/job-opening'); }
+    }
+    assert.ok(h.calls.every(call=>call.kind!=='profiles'));
+  }
+});

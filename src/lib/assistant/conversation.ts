@@ -10,12 +10,26 @@ export type NavigatorContext = {
 };
 
 const clean = (value: string) => value.replace(/[“”"'«»؟?،,!.:;؛()[\]{}]/g, " ").replace(/\s+/g, " ").trim();
+const topicAlias = (value: string) => /^(?:arts?|artists?|هنر|هنرمند|هنرمندان)$/iu.test(value) ? "arts" : /^(?:tech|technology|تکنالوژی|فناوری|ټکنالوژي)$/iu.test(value) ? "technology" : value;
 
 // Explicit refinements only: the context carries search filters, never facts
 // about members, inferred preferences, or a generated conversation transcript.
 export function resolveNavigatorContext(query: string, previous?: NavigatorContext): NavigatorContext {
   const input = clean(query).slice(0, 120);
   const inferred = inferAssistantIntent(input);
+  const newGoal = /\b(?:actually|instead|rather)\b|در واقع|به جای|پر ځای|په حقیقت/u.test(input);
+  if (newGoal) previous = undefined;
+  // These are discovery goals, not search terms. Never search the entire
+  // sentence ("I'm new ... want to meet") as an AND query against the catalogue.
+  const artistGoal = /\b(?:artist|artists|creative|creatives)\b.*\b(?:collaborat|connect|looking)|هنرمند.*(?:همکار|همکاری)|هنرمند.*(?:همکار|ملګري)/iu.test(input);
+  const socialGoal = /\b(?:meet people|meet new people)\b|(?:آشنا|آشنایی|اشنا).*افراد|افراد.*(?:آشنا|آشنایی|اشنا)|خل[کو].*(?:اشنا|وپېژنم|پېژند)/iu.test(input);
+  const jobGoal = /\b(?:need|looking for|find)\b.*\bjobs?\b|(?:شغل|وظیفه|دنده).*(?:می‌خواهم|میخواهم|غواړم|پیدا)|(?:دنبال|نیاز).*شغل/u.test(input);
+  if (artistGoal || socialGoal || jobGoal) {
+    const place = input.match(/\b(?:in|near|to)\s+(North Vancouver|Vancouver)\b/iu)?.[1]
+      ?? input.match(/(?:در|په)\s+((?:شمال|شمالي)\s+ونکوور|ونکوور)/u)?.[1];
+    return { topic: jobGoal ? "job" : artistGoal ? "arts" : "", city: place, entityType: jobGoal ? "opportunity" : "profile" };
+  }
+  if (previous && topicAlias(input) !== input) return { ...previous, topic: topicAlias(input) };
   const explicitCategoryOnly =
     /^(?:only|just|فقط|تنها|یوازې)\s+(?:events?|opportunities|organizations|businesses|people|mentors?|mentees?|رویدادها|فرصت‌ها|سازمان‌ها|کسب‌وکارها|افراد|منتورها|مربیان|غونډې|فرصتونه|سازمانونه|کاروبارونه|خلک|لارښودان)\s*$/iu.test(input);
 
@@ -42,6 +56,11 @@ export function resolveNavigatorContext(query: string, previous?: NavigatorConte
     /^(?:show(?: me)?|find|را وښیه|نشان بده)?\s*(?:events?|opportunities|organizations|businesses|people|mentors?|رویدادها|فرصت‌ها|سازمان‌ها|غونډې|خلک)\s*$/iu.test(stripped);
   if (previous && additive && inferred.entityType && (categoryOnly || terms.length === 0)) {
     return { topic: previous.topic, city: previous.city, entityType: inferred.entityType, memberSignal: inferred.memberSignal };
+  }
+  // A short answer to a topic question refines the current goal. Explicit new
+  // goals/categories still take the independent-request path below.
+  if (previous && !inferred.entityType && !newGoal && input.split(/\s+/u).length <= 3) {
+    return { ...previous, topic: topicAlias(extractAssistantSearchTerms(input, { allowEmpty: true })) };
   }
 
   // Recognize explicit location wording without maintaining a guessed city list.

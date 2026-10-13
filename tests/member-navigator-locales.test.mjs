@@ -46,7 +46,7 @@ function loadDari(file) {
   return exports;
 }
 
-test('member Navigator distinguishes Dari resources from Persian while exposing three locales', () => {
+test('member Navigator retains complete Persian and Pashto copy', () => {
   const helper = loadDari('src/lib/assistant/member-navigator-copy.ts');
   const copy = helper.memberNavigatorCopy;
   const dialogue = helper.memberNavigatorDialogue;

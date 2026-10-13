@@ -7,6 +7,7 @@ import { isSameOriginRequest } from "@/lib/http/request-origin";
 import { createClient } from "@/lib/supabase/server";
 
 const requestSchema = z.object({
+  language: z.enum(["en", "fa", "fa-AF", "ps"]).transform(value => value === "fa-AF" ? "fa" : value).default("en"),
   query: z.string().trim().min(2).max(120),
   entityType: z
     .enum(["profile", "business", "organization", "opportunity", "event"])
@@ -53,13 +54,17 @@ export async function POST(request: Request) {
 
   try {
     const context = resolveNavigatorContext(parsed.data.query, parsed.data.context);
+    if (context.city && /^(?:شمال ونکوور|ونکوور شمالی|شمالي ونکوور|نارت ونکوور)$/u.test(context.city)) context.city = "North Vancouver";
+    else if (context.city === "ونکوور") context.city = "Vancouver";
     const entityType = parsed.data.entityType ?? context.entityType;
     const memberSignal = entityType === "profile" ? context.memberSignal : undefined;
     const resolved = { ...context, entityType, memberSignal };
+    const language = parsed.data.language;
+    const clarification = language === "fa" ? "به چه موضوع یا مهارتی علاقه دارید؟" : language === "ps" ? "کومه موضوع یا مهارت مو خوښېږي؟" : "Which topic or skill interests you?";
     const query = navigatorSearchQuery(resolved);
     const intent = entityType ? ({profile:"find_people",business:"find_businesses",organization:"find_organizations",opportunity:"find_opportunities",event:"find_events"} as const)[entityType] : "general";
     if (!query && entityType) {
-      return NextResponse.json({ query: parsed.data.query, intent, entityType, memberSignal: null, context: resolved, groups: [], results: [], browseOnly: true, mode: "read-only" });
+      return NextResponse.json({ query: parsed.data.query, intent, entityType, memberSignal: null, context: resolved, groups: [], results: [], clarification, browseOnly: true, mode: "read-only" });
     }
     const limit = parsed.data.limit ?? 8;
     const showPeers = !!memberSignal && !!context.topic && limit >= 3;
@@ -76,6 +81,8 @@ export async function POST(request: Request) {
     const primaryIds = new Set(primary.value.map(result => result.entityId));
     const related = peers.status === "fulfilled" ? peers.value.filter(result => !primaryIds.has(result.entityId)).slice(0, limit - primary.value.length) : [];
     const results = [...primary.value, ...related].slice(0, limit);
+    const scope = [context.topic, context.city].filter(Boolean).join(" · ");
+    const understanding = (language === "fa" ? `${results.length} نتیجه از فهرست مجاز افغان هاب` : language === "ps" ? `${results.length} پایلې د افغان هب له اجازه لرونکي لېست څخه` : `${results.length} matches from your permitted Afghan Hub catalogue`) + (scope ? `: ${scope}` : "");
     const groups = [
       { memberSignal: memberSignal ?? null, results: primary.value },
       ...(related.length ? [{ memberSignal: null, results: related }] : []),
@@ -90,6 +97,7 @@ export async function POST(request: Request) {
       groups,
       relatedUnavailable: peers.status === "rejected",
       results,
+      understanding,
       mode: "read-only",
     });
   } catch (error) {

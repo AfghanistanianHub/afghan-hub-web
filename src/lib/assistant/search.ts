@@ -263,7 +263,11 @@ export async function searchAssistantCatalog(
     city?: string;
   } = {},
 ): Promise<AssistantSearchResult[]> {
-  const normalizedQuery = extractAssistantSearchTerms(query);
+  let normalizedQuery = extractAssistantSearchTerms(query);
+  // Explicit canonical topics expand to catalogue terms, not fabricated
+  // recommendations. The same authenticated RPC/RLS and city filter apply.
+  if (!options.memberSignal && /^arts(?:\s|$)/iu.test(normalizedQuery)) normalizedQuery = "art OR artist OR creative OR film OR music OR design";
+  if (!options.memberSignal && /^job(?:\s|$)/iu.test(normalizedQuery)) normalizedQuery = "job OR employment OR hiring";
 
   if (normalizedQuery.length < 2) {
     return [];

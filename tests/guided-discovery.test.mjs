@@ -29,31 +29,31 @@ test('skips keep broad filters and guided queries remain bounded', async () => {
   assert.deepEqual(Object.keys(guide.guidedSearch({ goal: 'Explore events', topic: '', location: '', step: 2, history: [] }).filters), ['goal', 'topic', 'location']);
 });test('Persian and Pashto have complete draft resources and inclusive creative terminology', () => {
   const { navigatorCopy, navigatorLocaleReview } = load('src/lib/assistant/navigator-copy.ts');
+  assert.deepEqual(Object.keys(navigatorCopy).sort(), ['en', 'fa', 'ps']);
   for (const language of ['fa', 'ps']) {
     assert.deepEqual(Object.keys(navigatorCopy[language]).sort(), Object.keys(navigatorCopy.en).sort());
     assert.equal(navigatorCopy[language].goals.length, 6);
     assert.equal(navigatorCopy[language].topics.length, 5);
     assert.equal(navigatorLocaleReview[language], 'awaiting-native-review');
   }
-  assert.deepEqual(Object.keys(navigatorCopy).sort(), ['en', 'fa', 'fa-AF', 'ps']);
+  assert.deepEqual(Object.keys(navigatorCopy).sort(), ['en', 'fa', 'ps']);
   assert.equal(navigatorCopy.fa.prompts[3], 'هنرمندان و فعالان خلاق');
   const planner = load('src/lib/assistant/public-discovery.ts');
   assert.deepEqual(Array.from(planner.planPublicDiscovery(navigatorCopy.fa.prompts[1]).kinds), ['organizations']);
 });
 
-test('Dari resource is distinct and remains reachable through navigator-copy for legacy entries', () => {
+test('canonical public resources contain exactly English, Persian and Pashto', () => {
   const { navigatorCopy, navigatorLocaleReview } = load('src/lib/assistant/navigator-copy.ts');
-  for (const language of ['fa-AF', 'fa', 'ps']) {
+  assert.deepEqual(Object.keys(navigatorCopy).sort(), ['en', 'fa', 'ps']);
+  for (const language of ['fa', 'ps']) {
     assert.deepEqual(Object.keys(navigatorCopy[language]).sort(), Object.keys(navigatorCopy.en).sort());
     assert.equal(navigatorCopy[language].goals.length, 6);
     assert.equal(navigatorCopy[language].topics.length, 5);
     assert.equal(navigatorLocaleReview[language], 'awaiting-native-review');
   }
-  assert.notEqual(navigatorCopy['fa-AF'].error, navigatorCopy.fa.error);
-  assert.notEqual(navigatorCopy['fa-AF'].topics[0], navigatorCopy.fa.topics[0]);
-  for (const lang of ['fa', 'fa-AF']) assert.equal(navigatorCopy[lang].prompts[3], 'هنرمندان و فعالان خلاق');
+  for (const lang of ['fa']) assert.equal(navigatorCopy[lang].prompts[3], 'هنرمندان و فعالان خلاق');
   const planner = load('src/lib/assistant/public-discovery.ts');
-  assert.deepEqual(Array.from(planner.planPublicDiscovery(navigatorCopy['fa-AF'].prompts[1]).kinds), ['organizations']);
+  assert.deepEqual(Array.from(planner.planPublicDiscovery(navigatorCopy.fa.prompts[1]).kinds), ['organizations']);
 });
 
 

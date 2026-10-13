@@ -140,6 +140,7 @@ export default async function ConversationPage({ params, searchParams }: Convers
           )}
 
           <div className="relative min-w-0 flex-1">
+            <h1>
             {otherMemberId ? (
               <Link
                 href={`/members/${otherMemberId}`}
@@ -150,6 +151,8 @@ export default async function ConversationPage({ params, searchParams }: Convers
             ) : (
               <p className="line-clamp-2 break-words font-semibold leading-5 text-foreground">{memberName}</p>
             )}
+
+            </h1>
 
             <p className="mt-0.5 line-clamp-2 break-words text-sm leading-5 text-muted-foreground">
               {otherMember?.headline || "Afghan Hub member"}
@@ -191,7 +194,7 @@ export default async function ConversationPage({ params, searchParams }: Convers
                 <span className="relative mx-auto flex size-14 items-center justify-center rounded-full bg-secondary text-primary">
                   <MessageSquare aria-hidden="true" className="size-7" />
                 </span>
-                <h1 className="relative mt-5 text-lg font-semibold text-foreground">Start your conversation</h1>
+                <h2 className="relative mt-5 text-lg font-semibold text-foreground">Start your conversation</h2>
                 <p className="relative mt-2 break-words text-sm leading-6 text-muted-foreground">Send a message to {memberName}.</p>
               </div>
             </div>
