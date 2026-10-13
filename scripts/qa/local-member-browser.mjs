@@ -755,6 +755,9 @@ try {
     await until(()=>pageA.evaluate(`location.pathname==='/submissions' && !document.querySelector('main [role=alert]') && document.querySelector('main')?.innerText.includes('Synthetic')`),'workspace Retry restores truthful submissions');
     for(const route of ['/businesses','/organizations','/opportunities','/events','/submissions']) {
       await visit(pageA,route);
+      results.recoveryStates ??= [];
+      results.recoveryStates.push(await pageA.evaluate(`({requested:${JSON.stringify(route)},route:location.pathname,heading:document.querySelector('main h1')?.textContent,alert:document.querySelector('main [role=alert]')?.textContent?.slice(0,180)})`));
+      await until(()=>pageA.evaluate(`location.pathname===${JSON.stringify(route)} && !document.querySelector('main [role=alert]') && document.querySelector('main')?.innerText.includes('Synthetic')`),`Recovered document finished rendering: ${route}`);
       assert.equal(await pageA.evaluate(`!!document.querySelector('main [role=alert]')`),false,`Recovery must clear outage: ${route}`);
       assert.ok(await pageA.evaluate(`document.querySelector('main')?.innerText.includes('Synthetic')`),`Recovery must show fixtures: ${route}`);
       await captureState(pageA,`${route.slice(1)}-recovered`);
@@ -853,5 +856,6 @@ try {
   // Only complete successful disposable runs emit review images; never auth
   // state, provider payloads or hosted-account screenshots. These bytes let
   // reviewers view evidence without relaxing Preview deployment protection.
-  if(results.length>0 && results.every(row=>row.status==='pass')) for(const item of reviewImages) console.log('QA_REVIEW_IMAGE '+JSON.stringify({sourceRevision,sourceTree,label:item.label,width:item.width,data:readFileSync(item.file).toString('base64')}));
+  console.log('QA_SANITIZED_SUMMARY '+JSON.stringify({sourceRevision,sourceTree,results:results.map(row=>({scenario:row.scenario,status:row.status,diagnostic:row.diagnostic,navigator:row.navigator,browserStates:row.browserStates?.map(state=>state.dom)})),recoveryStates:results.recoveryStates??[]}));
+  for(const item of reviewImages) console.log('QA_REVIEW_IMAGE '+JSON.stringify({sourceRevision,sourceTree,acceptanceFailed:results.some(row=>row.status==='fail'),label:item.label,width:item.width,data:readFileSync(item.file).toString('base64')}));
 }
