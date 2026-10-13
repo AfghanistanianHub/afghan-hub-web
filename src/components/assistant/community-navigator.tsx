@@ -161,7 +161,7 @@ export function CommunityNavigator() {
       <p role="status" aria-live="polite" className="sr-only">{pending ? strings.searching : turns.at(-1)?.status === "ready" ? `${labels.matches}: ${turns.at(-1)?.groups.reduce((count,group)=>count+group.results.length,0)}` : ""}</p>
       <div className={styles.conversation} aria-label={labels.title}>
         {!turns.length ? <div className={styles.welcome}><p className={styles.description}>{labels.grounded}</p><div className={styles.prompts}>{prompts[language].map((prompt,index) => <button type="button" key={prompt} onClick={() => void runSearch(prompt)}><span>{String(index + 1).padStart(2,"0")}</span>{prompt}<ArrowUpRight size={14} aria-hidden="true" /></button>)}</div></div> : null}
-        {turns.map((turn,index) => <article key={turn.id} className={styles.turn}>
+        {turns.map((turn,index) => <article key={turn.id} className={styles.turn} aria-busy={turn.status === "pending"}>
           <div className={styles.user}><p className={styles.label}>{labels.you}</p><p>{turn.query}</p></div>
           <p className={styles.label}>{labels.title}</p>
           {turn.status === "pending" ? <div className={styles.pending}><span className={styles.progress} aria-hidden="true" />{strings.searching}</div> : turn.status === "failed" ? <div role="status"><p className={styles.summary}>{turn.scopeLimited ? strings.scopeError : strings.error}</p><div className={styles.followups}>{!turn.scopeLimited ? <button type="button" disabled={pending} onClick={() => void runSearch(turn.query, turn.context)}>{labels.retry}</button> : null}</div>{recoveryLinks(turn.context)}</div> : <>

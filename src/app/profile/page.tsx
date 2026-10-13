@@ -49,7 +49,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
   return (
     <main className="min-h-screen bg-background px-4 py-8 text-foreground md:px-8 md:py-10">
       <div className="mx-auto w-full max-w-6xl">
-        <Link href="/dashboard" className={`${styles.control} inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}>
+        <Link href="/dashboard" prefetch={false} className={`${styles.control} inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}>
           <ArrowLeft aria-hidden="true" className="size-4" />
           Back to dashboard
         </Link>

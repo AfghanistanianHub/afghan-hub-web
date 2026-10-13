@@ -265,7 +265,7 @@ async function onboard(page, name) {
   await fill(page, '[name=last_name]', name);
   await fill(page, '[name=city]', 'Vancouver');
   await click(page, 'form:has([name=first_name]) button[type=submit]');
-  await pathname(page, '/dashboard');
+  await until(()=>page.evaluate(`location.pathname==='/dashboard' && document.readyState==='complete' && !!document.querySelector('button[aria-haspopup="dialog"]')`),'onboarding dashboard and Navigator ready');
 }
 async function deliveredConfirmation(email) {
   const summary = await until(async () => {
@@ -414,7 +414,9 @@ try {
       await fill(pageA,'dialog[open] input',query);
       await until(()=>pageA.evaluate(`document.querySelector('dialog[open] input')?.value===${JSON.stringify(query)} && document.querySelector('dialog[open] form button[type=submit]')?.disabled===false`),'controlled Navigator input ready');
       await click(pageA,'dialog[open] form button[type=submit]');
-      await until(()=>pageA.evaluate(`(() => {const turn=[...document.querySelectorAll('dialog[open] article')].at(-1);return turn?.innerText.includes(${JSON.stringify(query)}) && !!turn.querySelector('a[href="/members/${b.id}"]') && document.querySelector('dialog[open] form button[type=submit]')?.disabled===false;})()`),'grounded current artist result in Navigator UI');
+      await until(()=>pageA.evaluate(`(() => {const turn=[...document.querySelectorAll('dialog[open] article')].at(-1);return turn?.innerText.includes(${JSON.stringify(query)}) && !!turn.querySelector('a[href="/members/${b.id}"]') && turn.getAttribute('aria-busy')==='false';})()`),'grounded current artist result in Navigator UI');
+      assert.equal(await pageA.evaluate(`document.querySelector('dialog[open] input')?.value`),'','Successful search clears the composer');
+      assert.equal(await pageA.evaluate(`document.querySelector('dialog[open] form button[type=submit]')?.disabled`),true,'Empty composer must remain disabled');
       if(language!=='en') assert.equal(await pageA.evaluate(`document.querySelector('dialog[open]')?.getAttribute('dir')`),'rtl');
       await captureState(pageA,`navigator-member-${language}-results`);
     }

@@ -9,6 +9,7 @@ const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.Modu
 
 function harness({ missing = false, updateError = null, insertError = null, mentorshipUpdateError = null, signedIn = true } = {}) {
   const calls = [];
+  const invalidations = [];
   const user = { id: "trusted-member", email: "member@example.test" };
   const client = {
     auth: { getUser: async () => ({ data: { user: signedIn ? user : null }, error: null }) },
@@ -40,13 +41,14 @@ function harness({ missing = false, updateError = null, insertError = null, ment
   };
   const exports = {};
   const imports = (name) => {
-    if (name === "next/navigation") return { redirect: (url) => { throw new Error(url); } };
+    if (name === "next/navigation") return { redirect: (url) => { if(url==="/dashboard") assert.deepEqual(invalidations,["/dashboard","/profile"]); throw new Error(url); } };
+    if (name === "next/cache") return { revalidatePath: path => invalidations.push(path) };
     if (name === "@/lib/supabase/server") return { createClient: async () => client };
     if (name === "@/lib/validation") return { isValidHttpUrl: (value) => /^https?:\/\//.test(value) };
     throw new Error("Unexpected import " + name);
   };
   new Function("require", "exports", compiled)(imports, exports);
-  return { save: exports.saveProfile, calls };
+  return { save: exports.saveProfile, calls, invalidations };
 }
 
 function form() {
@@ -64,6 +66,7 @@ test("existing profile saves with column-restricted UPDATE permissions and trust
   assert.equal(h.calls[0].payload.first_name, "Test");
   assert.equal(h.calls[0].payload.display_name, "Test Member");
   assert.equal(h.calls[0].payload.onboarding_completed, true);
+  assert.deepEqual(h.invalidations,["/dashboard","/profile"]);
 });
 
 test("missing own profile inserts with authenticated identity after zero-row update", async () => {
@@ -83,6 +86,7 @@ test("failed update never falls back to insert or exposes database details", asy
   const h = harness({ updateError: { message: "sensitive detail" } });
   await assert.rejects(h.save(form()), /We%20could%20not%20save%20your%20profile/);
   assert.equal(h.calls.length, 1);
+  assert.deepEqual(h.invalidations,[]);
 });
 
 test("failed or concurrently conflicting insert does not report success", async () => {
