@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { ArrowRight, ArrowUp, Compass, Search, Sparkles, X } from "lucide-react";
 import { navigatorCopy, guidedGoals, guidedTopics, type NavigatorLanguage } from "@/lib/assistant/navigator-copy";
 import type { DiscoveryFilters } from "@/lib/assistant/public-discovery";
@@ -16,7 +16,34 @@ type Turn = { id: number; query: string; filters?: DiscoveryFilters; data?: Publ
 type GuideSnapshot = { step: 0 | 1 | 2; goal: string; topic: string; location: string };
 type Guide = GuideSnapshot & { history: GuideSnapshot[] };
 const initialGuide: Guide = { step: 0, goal: "", topic: "", location: "", history: [] };
+
 const locales = [{ value: "en", label: "English" }, { value: "fa-AF", label: "دری" }, { value: "fa", label: "فارسی" }, { value: "ps", label: "پښتو" }] as const;
+
+function GuideHeight({ children }: { children: ReactNode }) {
+  const container = useRef<HTMLDivElement>(null);
+  const content = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const outer = container.current;
+    const inner = content.current;
+    if (!outer || !inner) return;
+    let previousHeight: number | null = null;
+    let previousWidth: number | null = null;
+    let animation: Animation | null = null;
+    const observer = new ResizeObserver(() => {
+      const { height, width } = inner.getBoundingClientRect();
+      animation?.cancel();
+      outer.style.height = `${height}px`;
+      if (previousHeight !== null && previousWidth === width && previousHeight !== height && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        animation = outer.animate([{ height: `${previousHeight}px` }, { height: `${height}px` }], { duration: 180, easing: "ease-out" });
+      }
+      previousHeight = height;
+      previousWidth = width;
+    });
+    observer.observe(inner);
+    return () => { observer.disconnect(); animation?.cancel(); };
+  }, []);
+  return <div ref={container} className={styles.guideHeight}><div ref={content}>{children}</div></div>;
+}
 
 export function HomepageNavigator() {
   const params = useSearchParams();
@@ -109,12 +136,27 @@ export function HomepageNavigator() {
     setGuide({ ...previous, history: guide.history.slice(0, -1) });
     setCustom(previous.step === 0 ? previous.goal : previous.topic);
   }
+  function editAnswer(step: GuideSnapshot["step"]) {
+    if (!guide) return;
+    if (step === guide.step) { document.getElementById("navigator-guide-input")?.focus(); return; }
+    const historyIndex = guide.history.findIndex(snapshot => snapshot.step === step);
+    const previous = historyIndex >= 0 ? guide.history[historyIndex] : { ...guide, step };
+    setGuide({ ...previous, step, history: historyIndex >= 0 ? guide.history.slice(0, historyIndex) : [] });
+    setCustom(step === 0 ? previous.goal : previous.topic);
+  }
   function guideSubmit(event: FormEvent) {
     event.preventDefault();
     if (!guide) return;
     if (guide.step === 2) finish();
     else choose(custom.trim());
   }
+  const goalIndex = guide ? guidedGoals.indexOf(guide.goal) : -1;
+  const topicIndex = guide ? guidedTopics.indexOf(guide.topic) : -1;
+  const selectedAnswers = guide ? [
+    ...(guide.step > 0 && guide.goal ? [{ step: 0 as const, label: goalIndex >= 0 ? t.goals[goalIndex] : guide.goal }] : []),
+    ...(guide.step > 1 && guide.topic ? [{ step: 1 as const, label: topicIndex >= 0 ? t.topics[topicIndex] : guide.topic }] : []),
+    ...(guide.step === 2 && guide.location.trim() ? [{ step: 2 as const, label: guide.location }] : []),
+  ] : [];
   const directSubmit = (event: FormEvent) => { event.preventDefault(); void search(query); };
   const examples = t.prompts;
   const kinds = latest?.data?.plan.kinds ?? ["businesses", "organizations", "opportunities", "events"] as const;
@@ -129,10 +171,13 @@ export function HomepageNavigator() {
 
     {guide && <div className={styles.guide}>
       <div className={styles.guideHeading}><span>{t.step} {guide.history.length + 1} / {guide.history.length + (guide.step === 0 ? 3 : guide.step === 1 && !guide.location ? 2 : 1)}</span><button type="button" aria-label={t.close} onClick={() => { setGuide(null); input.current?.focus(); }}><X size={18} aria-hidden="true" /></button></div>
+      {selectedAnswers.length > 0 && <ol className={styles.journey} aria-label={t.looking} data-guide-journey>{selectedAnswers.map(answer => <li key={answer.step}><button type="button" onClick={() => editAnswer(answer.step)} aria-label={`${t.back}: ${answer.label}`}><bdi>{answer.label}</bdi></button></li>)}</ol>}
+      <GuideHeight><div key={guide.step} className={styles.question}>
       <h3 ref={heading} tabIndex={-1}>{guide.step === 0 ? t.goalsTitle : guide.step === 1 ? t.topicsTitle : guide.goal === "Explore events" ? t.eventLocationTitle : t.locationTitle}</h3>
       {guide.step < 2 && <div className={styles.choices}>{(guide.step === 0 ? t.goals : t.topics).map((label, index) => <button type="button" key={label} onClick={() => choose(guide.step === 0 ? guidedGoals[index] : guidedTopics[index])}>{label}<ArrowRight size={15} aria-hidden="true" /></button>)}</div>}
       <form onSubmit={guideSubmit} className={styles.guideForm}><label htmlFor="navigator-guide-input">{guide.step === 2 ? t.location : t.custom}</label><div><input id="navigator-guide-input" dir="auto" value={guide.step === 2 ? guide.location : custom} maxLength={guide.step === 2 ? 60 : 80} onChange={event => guide.step === 2 ? setGuide({ ...guide, location: event.target.value }) : setCustom(event.target.value)} /><button type="submit" disabled={guide.step < 2 && custom.trim().length < 2}>{guide.step === 2 ? t.find : t.next}</button></div></form>
       <div className={styles.guideActions}>{guide.step > 0 && <button type="button" onClick={back}>{t.back}</button>}<button type="button" onClick={() => guide.step === 2 ? finish() : choose("")}>{t.skip}</button></div>
+      </div></GuideHeight>
     </div>}
 
     <p className={styles.status} role="status" aria-live="polite">{notice}</p>
