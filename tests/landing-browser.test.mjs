@@ -265,6 +265,20 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   await waitFor(()=>page.evaluate("!document.getElementById('how-it-works').hasAttribute('data-motion') && [...document.querySelectorAll('[data-home-reveal]')].every(n=>getComputedStyle(n).opacity==='1' && getComputedStyle(n).transform==='none')"),"Static reduced-motion homepage enhancements");
   assert.equal(await page.evaluate("document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length"),0);
   await page.send("Emulation.setEmulatedMedia",{features:[]});
+  // Editable, localized answer trail preserves guided discovery behavior.
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent.includes('Not sure where')).click()");
+  await waitFor(()=>page.evaluate("document.querySelector('#ai-navigator h3')?.textContent.includes('What brings')"),"trail guide start");
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent==='Meet people').click()");
+  await waitFor(()=>page.evaluate("document.querySelector('[data-guide-journey] bdi')?.textContent==='Meet people'"),"goal appears in trail");
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent==='Technology').click()");
+  await waitFor(()=>page.evaluate("document.querySelectorAll('[data-guide-journey] button').length===2"),"topic appears in trail");
+  await page.evaluate("document.querySelectorAll('[data-guide-journey] button')[1].click()");
+  await waitFor(()=>page.evaluate("document.querySelector('#ai-navigator h3')?.textContent.includes('Which area') && document.querySelectorAll('[data-guide-journey] button').length===1"),"edit topic returns to its question");
+  await page.evaluate("document.querySelector('[data-guide-journey] button').click()");
+  await waitFor(()=>page.evaluate("document.querySelector('#ai-navigator h3')?.textContent.includes('What brings') && !document.querySelector('[data-guide-journey]')"),"edit goal resets trail");
+  assert.ok(await page.evaluate("document.documentElement.scrollWidth<=innerWidth+1"),"Trail does not overflow");
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.getAttribute('aria-label')==='Close guided discovery').click()");
+  console.log("AFGHAN_HUB_GUIDE_TRAIL_VERIFIED selected answers/edit goal/edit topic/focus/no overflow");
   // Public guided discovery is exercised against the isolated published-listing fixture.
   await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent.includes('Not sure where')).click()");
   await waitFor(()=>page.evaluate("document.querySelector('#ai-navigator h3')?.textContent.includes('What brings')"),"guided start");
