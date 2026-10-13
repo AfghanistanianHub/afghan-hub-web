@@ -44,6 +44,40 @@ try {
     });
     await ctx.close();
   }
+  // Change Chrome's actual default page zoom through its privileged Settings page.
+  // CSS zoom, device scaling and a narrower emulated viewport do not prove this behavior.
+  for(const factor of [2,4]){
+    const zoom=await chromium.launchPersistentContext('',{executablePath:chrome,chromiumSandbox:true,headless:true,viewport:{width:1280,height:900}});
+    try {
+      await zoom.route('**/*',route=>{const host=new URL(route.request().url()).hostname;return ['localhost','127.0.0.1'].includes(host)?route.continue():route.abort();});
+      const page=zoom.pages()[0] || await zoom.newPage();
+      await check(`native-browser-zoom-${factor*100}`,async()=>{
+        await page.goto('chrome://settings/appearance');
+        await page.evaluate(factor=>new Promise((resolve,reject)=>{
+          chrome.settingsPrivate.setDefaultZoom(factor,()=>{
+            if(chrome.runtime.lastError) reject(Error(chrome.runtime.lastError.message));
+            else chrome.settingsPrivate.getDefaultZoom(value=>value===factor?resolve():reject(Error(`Unexpected zoom ${value}`)));
+          });
+        }),factor);
+        await page.goto(origin);await page.locator('[data-language-entry]').waitFor();await page.evaluate(()=>document.fonts.ready);
+        const metrics=await page.evaluate(()=>({width:innerWidth,dpr:devicePixelRatio,scrollWidth:document.documentElement.scrollWidth}));
+        assert.ok(Math.abs(metrics.width-1280/factor)<=2,`Native zoom did not change layout viewport: ${JSON.stringify(metrics)}`);
+        assert.ok(Math.abs(metrics.dpr-factor)<.02,`Native zoom did not change pixel ratio: ${JSON.stringify(metrics)}`);
+        assert.ok(metrics.scrollWidth<=metrics.width,'Horizontal overflow at native zoom');
+        for(const locale of ['en','fa','ps']){
+          await page.keyboard.press('Tab');
+          assert.equal(await page.evaluate(()=>document.activeElement.dataset.locale),locale);
+          const box=await page.locator(`[data-locale=${locale}]`).boundingBox();
+          assert.ok(box && box.x>=0 && box.x+box.width<=metrics.width && box.y>=0 && box.y<900/factor,`${locale} focus is clipped at ${factor*100}%`);
+          await page.screenshot({path:`${output}/zoom-${factor*100}-focus-${locale}.png`});
+        }
+        await page.keyboard.press('Enter');await page.waitForURL(`${origin}/ps`);
+        assert.equal(await page.locator('html').getAttribute('lang'),'ps');
+        assert.ok((await zoom.cookies()).some(cookie=>cookie.name==='afghan-hub-language'&&cookie.value==='ps'));
+        results.push({name:`native-zoom-metrics-${factor*100}`,status:'passed',metrics});
+      });
+    } finally {await zoom.close();}
+  }
   for(const locale of ['en','fa','ps']){
     const ctx=await context();const page=await ctx.newPage();const errors=[];const transitionAborts=[];
     page.on('pageerror',error=>{
