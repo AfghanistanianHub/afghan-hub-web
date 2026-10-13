@@ -8,6 +8,8 @@ The entrance uses the existing small brand mark and three stable script-specific
 
 `/` is an independent entry page without public navigation/footer. An explicit, year-long, SameSite=Lax preference cookie redirects subsequent root visits to `/en`, `/fa` or `/ps`. Cookie writes occur only at `/language/select`, a GET endpoint used by accessible ordinary links. Direct locale homepages resolve from the URL without a first-visit redirect or automatic preference write. Direct non-home paths remain intact.
 
+Native cross-document transition opt-in is emitted in the document head only for the root and exact locale homepage URLs. Internal member, auth, legal and catalogue routes do not opt in; their ordinary navigation remains intact.
+
 The existing proxy matcher is unchanged. The proxy removes inbound locale headers and supplies a server-only locale hint for the three exact homepage paths or a valid `?lang=` on UI routes. It does not rewrite any path. APIs, auth callbacks and framework internals do not receive query-based locale hints. Cookie preference is not an authorization input. Supabase session handling and server action guards remain intact.
 
 The shared switcher keeps the current path, duplicate query values and fragment, replacing `lang` for existing internal routes or changing the homepage path. Its native no-JS link retains server-visible path and query; JavaScript adds the current fragment. Auth callback/API/internal handler targets and external redirects are rejected. Browser storage failure does not affect cookie persistence. If cookies themselves are disabled, the current explicit locale URL remains usable but subsequent root visits cannot remember a preference.

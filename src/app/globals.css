@@ -228,7 +228,6 @@ html[dir="rtl"] .public-shell h1,html[dir="rtl"] .public-shell h2,html[dir="rtl"
 .interface-language-switcher nav { position:absolute; inset-inline-end:0; top:100%; z-index:50; padding:8px; min-width:130px; background:#fafbf9; border:1px solid #dcd7e1; border-radius:12px; }
 .interface-language-switcher nav a { display:flex; align-items:center; min-height:44px; padding:8px; }
 .interface-language-switcher [aria-current] { text-decoration:underline; text-underline-offset:5px; }
-@view-transition { navigation:auto; }
 ::view-transition-old(language-surface) { animation:language-exit 450ms ease-out both; }
 ::view-transition-new(language-surface) { animation:language-reveal 450ms ease-out both; }
 @keyframes language-exit { to { opacity:0; transform:scale(1.06); } }

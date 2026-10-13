@@ -34,6 +34,7 @@ try {
       assert.equal(await page.locator('html').getAttribute('dir'),'ltr');
       assert.equal(await page.locator('[data-locale=fa]').getAttribute('dir'),'rtl');
       assert.equal(await page.locator('header,footer').count(),0);
+      assert.ok(await page.locator('head style').allTextContents().then(text=>text.some(value=>value.includes('@view-transition'))));
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
       await page.screenshot({path:`${output}/entry-${width}.png`});
     });
@@ -102,7 +103,9 @@ try {
   }
   const storage=await context();await storage.addInitScript(()=>{Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Storage disabled','SecurityError');}});});const p=await storage.newPage();
   await check('unavailable-browser-storage',async()=>{await p.goto(origin);await p.locator('[data-locale=ps]').click();await p.waitForURL(`${origin}/ps`);await p.goto(origin);await p.waitForURL(`${origin}/ps`);});
-  for(const path of ['/explore?type=events','/about','/login','/login?mode=join','/forgot-password','/update-password','/auth/callback?flow=signup','/auth/callback?flow=recovery','/en','/fa','/ps'])await check(`bypass-${path}`,async()=>{await p.goto(origin+path);assert.equal(await p.locator('[data-language-entry]').count(),0);});
+  for(const path of ['/explore?type=events','/about','/login','/login?mode=join','/forgot-password','/update-password','/auth/callback?flow=signup','/auth/callback?flow=recovery','/en','/fa','/ps'])await check(`bypass-${path}`,async()=>{await p.goto(origin+path);assert.equal(await p.locator('[data-language-entry]').count(),0);
+    if(!/^\/(en|fa|ps)$/.test(new URL(p.url()).pathname))assert.equal(await p.locator('head style').allTextContents().then(text=>text.some(value=>value.includes('@view-transition'))),false);
+  });
   for(const path of ['/robots.txt','/sitemap.xml'])await check(`machine-route-${path}`,async()=>{const response=await fetch(origin+path);assert.equal(response.status,200);assert.ok(!(await response.text()).includes('data-language-entry'));});
   await storage.close();
 } catch(error){results.push({name:'browser-suite',status:'failed',error:String(error)});throw error;}

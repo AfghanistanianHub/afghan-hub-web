@@ -1,5 +1,5 @@
 import localFont from "next/font/local";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { parseLocale } from "@/lib/i18n/locale";
 import { getLocale } from "@/lib/i18n/server";
 import { languageDirection } from "@/lib/i18n/locale";
@@ -62,6 +62,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  const entryTransition = (await headers()).get("x-afghan-hub-entry-transition") === "true";
   const navigatorLocale = parseLocale((await cookies()).get("afghan-hub-navigator-language")?.value) ?? locale;
   return (
     <html
@@ -69,6 +70,7 @@ export default async function RootLayout({
       dir={languageDirection(locale)}
       className={`${geistSans.variable} ${geistMono.variable} ${arabic.variable} h-full antialiased`}
     >
+      <head>{entryTransition ? <style>{"@view-transition { navigation: auto; }"}</style> : null}</head>
       <body className="min-h-full flex flex-col">
         <GlobalNetworkBackground />
         <div className="app-content flex min-h-full flex-1 flex-col">

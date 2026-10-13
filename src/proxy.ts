@@ -7,7 +7,9 @@ export async function proxy(request: NextRequest) {
   // Locale hints only: no catch-all locale redirects, and no auth/API interception.
   const pathname = request.nextUrl.pathname;
   request.headers.delete("x-afghan-hub-locale");
+  request.headers.delete("x-afghan-hub-entry-transition");
   const homeLocale = /^\/(en|fa|ps)\/?$/.exec(pathname)?.[1];
+  if (pathname === "/" || homeLocale) request.headers.set("x-afghan-hub-entry-transition", "true");
   if (homeLocale || (!/^\/(api|auth|language|_next)(\/|$)/.test(pathname) && parseLocale(request.nextUrl.searchParams.get("lang")))) {
     request.headers.set("x-afghan-hub-locale", homeLocale ?? parseLocale(request.nextUrl.searchParams.get("lang"))!);
   }
