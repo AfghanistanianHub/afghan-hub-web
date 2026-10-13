@@ -129,6 +129,7 @@ async function page(existingContext, proxied = false) {
   const connection = new DevTools();
   await connection.connect(`ws://127.0.0.1:${browser.port}/devtools/page/${targetId}`);
   connection.browserContextId = browserContextId;
+  connection.targetId = targetId;
   connection.loadedDocuments = new Set();
   connection.activeSockets = new Set();
   connection.activeRefreshes = new Set();
@@ -473,6 +474,52 @@ try {
     const rows = await data(admin.from('notifications').select('id').eq('recipient_id', b.id).eq('conversation_id', conversationId)); assert.ok(rows.length);
     await click(pageB, `form:has(input[name=notification_id][value="${rows[0].id}"]) button[type=submit]`); await pathname(pageB, conversationPath);
     await until(() => pageB.evaluate(`document.body.innerText.includes(${JSON.stringify(message('notification'))})`), 'notification conversation');
+  });
+  await check('Background conversation stays unread and both sender tabs receive the real read receipt', async () => {
+    const senderTab = await page(pageA.browserContextId);
+    const receiverCover = await page(pageB.browserContextId);
+    try {
+      await visit(pageA, conversationPath);
+      await visit(senderTab, conversationPath);
+      await visit(pageB, conversationPath);
+      await pageB.send('Page.bringToFront');
+      await until(() => pageB.evaluate(`document.visibilityState==='visible' && document.hasFocus()`), 'receiver conversation focused');
+      const membership = () => data(admin.from('conversation_members').select('last_read_at').eq('conversation_id',conversationId).eq('profile_id',b.id).single());
+      const previousMessage = await data(admin.from('messages').select('created_at').eq('conversation_id',conversationId).eq('body',message('notification')).single());
+      await until(async () => new Date((await membership()).last_read_at).getTime() >= new Date(previousMessage.created_at).getTime(), 'previous displayed message acknowledged');
+      await receiverCover.send('Page.bringToFront');
+      await pageA.send('Page.bringToFront');
+      await until(() => pageB.evaluate(`document.visibilityState!=='visible' || !document.hasFocus()`), 'receiver conversation actually backgrounded');
+      const baseline = (await membership()).last_read_at;
+      const text = message('multi-tab-receipt');
+      await send(pageA,text);
+      for (const tab of [pageB,senderTab]) {
+        await until(() => tab.evaluate(`document.querySelector('main')?.innerText.includes(${JSON.stringify(text)})`), 'new message arrives without tab navigation');
+      }
+      // Wait for refresh requests to settle, rather than asserting before the
+      // background receiver has rendered the newly delivered message.
+      await until(() => pageB.activeRefreshes.size===0 && Date.now()-pageB.lastRefreshActivity>1000, 'background receiver refresh settled');
+      assert.equal((await membership()).last_read_at,baseline,'A background conversation must not advance its read watermark');
+      const seenExpression = `(() => {const body=[...document.querySelectorAll('main p')].find(node=>node.textContent===${JSON.stringify(text)});return !!body?.parentElement?.querySelector('span')?.textContent.includes('Seen');})()`;
+      for (const tab of [pageA,senderTab]) assert.equal(await tab.evaluate(seenExpression),false,'Unread new message must not display Seen');
+      const refreshBefore = [pageA,senderTab].map(tab=>tab.telemetry.refreshRequests);
+      await pageB.send('Page.bringToFront');
+      await until(() => pageB.evaluate(`document.visibilityState==='visible' && document.hasFocus()`), 'receiver conversation foregrounded');
+      const sent = await data(admin.from('messages').select('created_at').eq('conversation_id',conversationId).eq('body',text).single());
+      await until(async () => new Date((await membership()).last_read_at).getTime() >= new Date(sent.created_at).getTime(), 'foreground receiver acknowledges delivered message');
+      for (const [index,tab] of [pageA,senderTab].entries()) {
+        await until(() => tab.evaluate(seenExpression), 'Seen receipt appears in each sender tab without reload');
+        assert.ok(tab.telemetry.refreshRequests>refreshBefore[index],'Each sender tab must refresh from the receipt update');
+        assert.equal(await tab.evaluate('location.pathname'),conversationPath);
+      }
+    } finally {
+      for (const tab of [senderTab,receiverCover]) {
+        await browser.send('Target.closeTarget',{targetId:tab.targetId});
+        tab.close();
+        pages.splice(pages.indexOf(tab),1);
+      }
+      await pageA.send('Page.bringToFront');
+    }
   });
   for (const [table, titleField, ownerField] of [['organizations','name','owner_id'],['opportunities','title','author_id'],['events','title','creator_id']]) {
     await check(`${table}: owner create/edit, draft privacy and foreign edit boundary through browser`, async () => {
