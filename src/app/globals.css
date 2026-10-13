@@ -237,3 +237,8 @@ html[dir="rtl"] .public-shell h1,html[dir="rtl"] .public-shell h2,html[dir="rtl"
 html[dir="rtl"] .public-shell h1 { line-height:1.45; }
 html[dir="rtl"] .public-shell h2,html[dir="rtl"] .public-shell h3 { line-height:1.55; }
 html[dir="rtl"] .public-shell .interface-language-switcher { font-family:var(--font-arabic),sans-serif; }
+
+/* The entry owns its sparse network; keep the approved global canvas on all other pages. */
+body:has([data-language-entry]) { background:#fafbf9; }
+body:has([data-language-entry]) .global-network-background { display:none; }
+.app-content main[data-language-entry] { background-color:#fafbf9 !important; }

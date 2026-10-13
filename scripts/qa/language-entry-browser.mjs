@@ -60,7 +60,8 @@ try {
       await page.goto(origin);await page.waitForURL(`${origin}/${locale}`);assert.equal(await page.locator('[data-language-entry]').count(),0);
       await page.reload();assert.equal(await page.locator('html').getAttribute('lang'),locale);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-      await page.screenshot({path:`${output}/homepage-${locale}-1440.png`,fullPage:true});
+      await page.evaluate(()=>document.fonts.ready);await delay(700);
+      await page.screenshot({path:`${output}/homepage-${locale}-1440.png`});
       assert.equal(await page.locator('link[rel=canonical]').getAttribute('href'),`https://app.apnbc.ca/${locale}`);
       assert.equal(await page.locator('link[hreflang=fa]').count(),1);assert.deepEqual(errors,[]);
       if(transitionAborts.length)results.push({name:`native-transition-cancel-${locale}`,status:'passed',fallback:'real destination and persistence verified after browser-native cancellation',count:transitionAborts.length});
@@ -68,7 +69,8 @@ try {
     for(const width of [320,390,768])await check(`homepage-${locale}-${width}`,async()=>{
       await page.setViewportSize({width,height:900});await page.reload();await page.evaluate(()=>document.fonts.ready);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${locale} overflow at ${width}`);
-      if(width===390)await page.screenshot({path:`${output}/homepage-${locale}-390.png`,fullPage:true});
+      if(width===390){await delay(700);await page.screenshot({path:`${output}/homepage-${locale}-390.png`});
+        await page.locator('#community').scrollIntoViewIfNeeded();await delay(700);await page.screenshot({path:`${output}/categories-${locale}-390.png`});}
     });
     await ctx.close();
   }
