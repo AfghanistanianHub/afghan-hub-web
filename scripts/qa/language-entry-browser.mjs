@@ -67,9 +67,17 @@ try {
         for(const locale of ['en','fa','ps']){
           await page.keyboard.press('Tab');
           assert.equal(await page.evaluate(()=>document.activeElement.dataset.locale),locale);
-          const box=await page.locator(`[data-locale=${locale}]`).boundingBox();
-          assert.ok(box && box.x>=0 && box.x+box.width<=metrics.width && box.y>=0 && box.y<900/factor,`${locale} focus is clipped at ${factor*100}%`);
-          await page.screenshot({path:`${output}/zoom-${factor*100}-focus-${locale}.png`});
+          const visible=await page.locator(`[data-locale=${locale}]`).evaluate(node=>{
+            const label=node.lastElementChild;const rect=label.getBoundingClientRect();
+            return {left:rect.left,right:rect.right,top:rect.top,bottom:rect.bottom,height:innerHeight,hit:node.contains(document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2))};
+          });
+          assert.ok(visible.left>=0 && visible.right<=metrics.width && visible.top>=0 && visible.bottom<=visible.height && visible.hit,`${locale} focused label is clipped or covered: ${JSON.stringify(visible)}`);
+          // Playwright's viewport crop temporarily overrides device metrics and can
+          // miscapture native zoom plus scroll. Capture the compositor directly.
+          const cdp=await zoom.newCDPSession(page);
+          const capture=await cdp.send('Page.captureScreenshot',{format:'png',fromSurface:true,captureBeyondViewport:false});
+          await writeFile(`${output}/zoom-${factor*100}-focus-${locale}.png`,Buffer.from(capture.data,'base64'));
+          await cdp.detach();
         }
         await page.keyboard.press('Enter');await page.waitForURL(`${origin}/ps`);
         assert.equal(await page.locator('html').getAttribute('lang'),'ps');
