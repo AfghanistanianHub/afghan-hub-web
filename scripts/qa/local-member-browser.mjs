@@ -189,7 +189,12 @@ async function pathname(page, path) {
 async function fill(page, selector, value) {
   const fieldSelector = (selector.startsWith('form') || selector.startsWith('dialog')) ? selector : `form ${selector}`;
   await until(() => page.evaluate(`!!document.querySelector(${JSON.stringify(fieldSelector)})`), 'form field');
-  await page.evaluate(`(() => { const field=document.querySelector(${JSON.stringify(fieldSelector)}); field.focus(); Object.getOwnPropertyDescriptor(field instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,'value').set.call(field,${JSON.stringify(value)}); field.dispatchEvent(new Event('input',{bubbles:true})); return true; })()`);
+  await page.evaluate(`document.querySelector(${JSON.stringify(fieldSelector)}).focus()`);
+  const modifiers = await page.evaluate(`/Mac/.test(navigator.platform) ? 4 : 2`);
+  await page.send('Input.dispatchKeyEvent',{type:'keyDown',key:'a',code:'KeyA',windowsVirtualKeyCode:65,modifiers});
+  await page.send('Input.dispatchKeyEvent',{type:'keyUp',key:'a',code:'KeyA',windowsVirtualKeyCode:65,modifiers});
+  await page.send('Input.insertText',{text:value});
+  await until(()=>page.evaluate(`document.querySelector(${JSON.stringify(fieldSelector)})?.value===${JSON.stringify(value)}`),'native input value');
 }
 async function actionable(page, selector) {
   // Prefer an element that is laid out, visible and not covered, so a real mouse
@@ -399,11 +404,41 @@ try {
     await click(pageA, 'dialog[open] button[aria-pressed]:first-child');
     await click(pageA, 'dialog[open] button[aria-label="Close Community Navigator"]');
   });
+  await check('Visible Navigator results and persisted language use real keyboard input', async () => {
+    await data(admin.from('profiles').update({profession:'Artist',is_public:true}).eq('id',b.id));
+    await visit(pageA,'/network');
+    await openMemberNavigator(pageA);
+    for(const [index,query,language] of [[1,'I’m an artist looking for collaborators.','en'],[2,'من هنرمند هستم و دنبال همکار می‌گردم','fa'],[3,'زه هنرمند یم او همکار ملګري غواړم','ps']]) {
+      await click(pageA,`dialog[open] button[aria-pressed]:nth-child(${index})`);
+      await until(()=>pageA.evaluate(`document.querySelector('dialog[open]')?.getAttribute('lang')===${JSON.stringify(language)}`),'member Navigator selected language');
+      await fill(pageA,'dialog[open] input',query);
+      await until(()=>pageA.evaluate(`document.querySelector('dialog[open] input')?.value===${JSON.stringify(query)} && document.querySelector('dialog[open] form button[type=submit]')?.disabled===false`),'controlled Navigator input ready');
+      await click(pageA,'dialog[open] form button[type=submit]');
+      await until(()=>pageA.evaluate(`(() => {const turn=[...document.querySelectorAll('dialog[open] article')].at(-1);return turn?.innerText.includes(${JSON.stringify(query)}) && !!turn.querySelector('a[href="/members/${b.id}"]') && document.querySelector('dialog[open] form button[type=submit]')?.disabled===false;})()`),'grounded current artist result in Navigator UI');
+      if(language!=='en') assert.equal(await pageA.evaluate(`document.querySelector('dialog[open]')?.getAttribute('dir')`),'rtl');
+      await captureState(pageA,`navigator-member-${language}-results`);
+    }
+    await click(pageA,'dialog[open] button[aria-label="لارښود بند کړئ"]');
+    await visit(pageA,'/network');
+    await openMemberNavigator(pageA);
+    assert.equal(await pageA.evaluate(`document.querySelector('dialog[open]')?.getAttribute('lang')`),'ps','Member language preference must survive reload');
+    assert.equal(await pageA.evaluate(`localStorage.getItem('afghan-hub-navigator-language')`),'ps');
+    await click(pageA,'dialog[open] button[aria-pressed]:first-child');
+    await click(pageA,'dialog[open] button[aria-label="Close Community Navigator"]');
+  });
   await check('Cookie sessions survive reload and remain separate', async () => {
     for (const [page, label] of [[pageA, 'MemberA'], [pageB, 'MemberB']]) {
       await visit(page, '/profile'); await page.send('Page.reload');
       await until(() => page.evaluate(`location.pathname==='/profile' && document.readyState==='complete' && document.querySelector('[name=last_name]')?.value===${JSON.stringify(label)}`), 'persisted own-profile identity');
       await visit(page, '/dashboard'); await pathname(page, '/dashboard');
+    }
+  });
+  await check('Unpopulated member directories expose truthful empty states', async () => {
+    for(const area of ['businesses','organizations','opportunities','events']) {
+      await visit(pageA,`/${area}`);
+      assert.ok(await pageA.evaluate(`document.querySelector('main')?.innerText.includes('No ${area} yet')`),`Empty ${area} must be explicit`);
+      assert.equal(await pageA.evaluate(`!!document.querySelector('main [role=alert]')`),false);
+      await captureState(pageA,`${area}-empty`);
     }
   });
   await check('Two-account connection request and acceptance through real forms', async () => {
@@ -551,23 +586,14 @@ try {
         assert.ok(result.data.results.every(row=>row.href.startsWith('/members/')||row.href.startsWith('/events/')||row.href.startsWith('/opportunities/')));
       }
     }
-    await visit(pageA,'/network');
-    await openMemberNavigator(pageA);
-    for(const [index,query,language] of [[1,'I’m an artist looking for collaborators.','en'],[2,'من هنرمند هستم و دنبال همکار می‌گردم','fa'],[3,'زه هنرمند یم او همکار ملګري غواړم','ps']]) {
-      await click(pageA,`dialog[open] button[aria-pressed]:nth-child(${index})`);
-      await until(()=>pageA.evaluate(`document.querySelector('dialog[open]')?.getAttribute('lang')===${JSON.stringify(language)}`),'member Navigator selected language');
-      await fill(pageA,'dialog[open] input',query);
-      await click(pageA,'dialog[open] form button[type=submit]');
-      await until(()=>pageA.evaluate(`(() => {const turn=[...document.querySelectorAll('dialog[open] article')].at(-1);return turn?.innerText.includes(${JSON.stringify(query)}) && !!turn.querySelector('a[href="/members/${b.id}"]') && document.querySelector('dialog[open] form button[type=submit]')?.disabled===false;})()`),'grounded current artist result in Navigator UI');
-      if(language!=='en') assert.equal(await pageA.evaluate(`document.querySelector('dialog[open]')?.getAttribute('dir')`),'rtl');
-      await captureState(pageA,`navigator-member-${language}-results`);
-    }
-    await click(pageA,'dialog[open] button[aria-pressed]:first-child');
-    await click(pageA,'dialog[open] button[aria-label="Close Community Navigator"]');
     assert.deepEqual(await data(admin.from('profiles').select('id,languages').in('id',[a.id,b.id]).order('id')),languagesBefore);
   });
   await check('Directory filtered states preserve URLs, clear actions and calendar controls', async () => {
     for (const area of ['businesses','organizations','opportunities','events']) {
+      await visit(pageA,`/${area}?q=admin`);
+      assert.equal(await pageA.evaluate(`document.querySelector('main input[name=q]')?.value`),'admin');
+      assert.equal(await pageA.evaluate(`document.querySelectorAll('main a[href^="/${area}/browser-"]').length`),1,'Positive filter must show one permitted fixture');
+      await captureState(pageA,`${area}-filtered-results`);
       await visit(pageA, `/${area}?q=No-matching-synthetic-listing`);
       await until(()=>pageA.evaluate(`document.querySelector('main')?.innerText.includes('No ${area === 'events' ? 'matching events' : area + ' match these filters'}')`), 'filtered directory empty state');
       assert.equal(await pageA.evaluate(`document.querySelector('main input[name=q]')?.value`), 'No-matching-synthetic-listing');
@@ -704,6 +730,9 @@ try {
     }
   });
   await check('Directory and submissions recover with accessible populated content', async () => {
+    assert.equal(await pageA.evaluate('location.pathname'),'/submissions');
+    await click(pageA,'main button[type=button]');
+    await until(()=>pageA.evaluate(`location.pathname==='/submissions' && !document.querySelector('main [role=alert]') && document.querySelector('main')?.innerText.includes('Synthetic')`),'workspace Retry restores truthful submissions');
     for(const route of ['/businesses','/organizations','/opportunities','/events','/submissions']) {
       await visit(pageA,route);
       assert.equal(await pageA.evaluate(`!!document.querySelector('main [role=alert]')`),false,`Recovery must clear outage: ${route}`);
@@ -767,6 +796,9 @@ try {
 } catch (error) {
   results.push({ scenario, status: 'fail', diagnostic: { step, type: error.name, line: error.stack?.match(/local-member-browser\.mjs:(\d+)/)?.[1], failureInjection: error.evidence } });
   const states = [];
+  if(pages[0]) {
+    try {results.at(-1).navigator=await pages[0].evaluate(`(() => {const d=document.querySelector('dialog[open]');const t=[...document.querySelectorAll('dialog[open] article')].at(-1);return {open:!!d,language:d?.getAttribute('lang'),inputLength:d?.querySelector('input')?.value.length,submitEnabled:d?.querySelector('button[type=submit]')?.disabled===false,turns:d?.querySelectorAll('article').length,latestText:t?.innerText.slice(0,600),links:[...t?.querySelectorAll('a')??[]].map(a=>a.getAttribute('href')),runtimeErrors:${JSON.stringify(pages[0].exceptions)}};})()`);await captureState(pages[0],'failed-scenario');}catch{}
+  }
   if (expectedListingPath) {
     try { results.at(-1).ownerFeedback = await pages[0].evaluate(`({route:location.pathname, cardCount:document.querySelectorAll('main article').length, expectedLink:!!document.querySelector(${JSON.stringify(`a[href="${expectedListingPath}"]`)}), expectedCard:document.querySelector(${JSON.stringify(`article:has(a[href="${expectedListingPath}"])`)})?.innerText.replace(/Synthetic[^\\n]*/g,'[synthetic title]'), unavailable:[...document.querySelectorAll('main [role=status]')].map(node=>node.textContent)})`); } catch { /* Sanitized optional diagnosis */ }
   }
