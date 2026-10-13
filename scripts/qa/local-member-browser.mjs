@@ -692,8 +692,12 @@ try {
     assert.equal(await pageA.evaluate(`[...document.querySelectorAll('main article')].every(item=>item.innerText.includes('Business'))`), true);
     await visit(pageA, '/messages');
     await until(() => pageA.evaluate(`!!document.querySelector('input[placeholder="Name or latest message"]')`), 'inbox search input');
-    await pageA.evaluate(`document.querySelector('input[placeholder="Name or latest message"]').focus()`);
+    // Native typing must target the foreground tab; programmatic focus in a
+    // background document can leave the input empty without exercising filtering.
+    await click(pageA, 'input[placeholder="Name or latest message"]');
+    await until(() => pageA.evaluate(`document.visibilityState==='visible' && document.hasFocus() && document.activeElement?.getAttribute('placeholder')==='Name or latest message'`), 'foreground inbox input');
     await pageA.send('Input.insertText', {text:'No-matching-synthetic-conversation'});
+    await until(() => pageA.evaluate(`document.querySelector('input[placeholder="Name or latest message"]')?.value==='No-matching-synthetic-conversation'`), 'native inbox query entered');
     await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
     await visit(pageA, conversationPath);
     assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-label="Conversation navigation"]')).display!=='none'`), true);
