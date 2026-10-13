@@ -57,8 +57,7 @@ export function RealtimeMessageRefresh({
         if (payload.extension === "postgres_changes" && payload.status === "ok") {
           router.refresh();
         }
-      })
-      .subscribe();
+      });
 
     return subscribeMemberChannel(supabase, channel);
   }, [conversationId, currentUserId, router]);
