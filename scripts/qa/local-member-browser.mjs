@@ -496,10 +496,14 @@ try {
       for (const tab of [pageB,senderTab]) {
         await until(() => tab.evaluate(`document.querySelector('main')?.innerText.includes(${JSON.stringify(text)})`), 'new message arrives without tab navigation');
       }
-      // Wait for refresh requests to settle, rather than asserting before the
-      // background receiver has rendered the newly delivered message.
-      await until(() => pageB.activeRefreshes.size===0 && Date.now()-pageB.lastRefreshActivity>1000, 'background receiver refresh settled');
-      assert.equal((await membership()).last_read_at,baseline,'A background conversation must not advance its read watermark');
+      // The message is already rendered above. Background streaming requests
+      // need not finish, so observe the actual read boundary over time rather
+      // than requiring unrelated RSC traffic to become globally idle.
+      for (let observation=0; observation<3; observation++) {
+        await delay(500);
+        assert.ok(await pageB.evaluate(`document.visibilityState!=='visible' || !document.hasFocus()`),'Receiver must stay backgrounded throughout the unread check');
+        assert.equal((await membership()).last_read_at,baseline,'A background conversation must not advance its read watermark');
+      }
       const seenExpression = `(() => {const body=[...document.querySelectorAll('main p')].find(node=>node.textContent===${JSON.stringify(text)});return !!body?.parentElement?.querySelector('span')?.textContent.includes('Seen');})()`;
       for (const tab of [pageA,senderTab]) assert.equal(await tab.evaluate(seenExpression),false,'Unread new message must not display Seen');
       const refreshBefore = [pageA,senderTab].map(tab=>tab.telemetry.refreshRequests);
