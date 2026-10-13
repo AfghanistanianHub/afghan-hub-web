@@ -51,13 +51,11 @@ test("search empty state offers visual goal navigation instead of a dead end", (
 test("public landing exposes all five community areas and discovery paths", () => {
   assert.match(publicHome, /One network/);
   assert.match(publicHome, /Many ways to/);
-  assert.match(publicHome, /communityAreas/);
-  for (const kind of ["opportunities", "events", "businesses", "organizations"]) {
-    assert.match(publicHome, new RegExp(kind));
-  }
-  assert.match(publicHome, /publicHref\(area.key as PublicKind, item.slug\)/);
-  assert.match(publicHome, /communityAreas.map/);
+  assert.match(publicHome, /<ScrollCategoryIntroduction \/>/);
+  const introduction = fs.readFileSync(new URL("../src/components/public/scroll-category-introduction.tsx", import.meta.url), "utf8");
+  assert.match(introduction, /communityAreas/);
+  assert.match(introduction, /href=\{area.href\}/);
+  assert.match(introduction, /category-icons/);
   assert.match(publicHome, /\/login\?mode=join/);
-  assert.match(publicHome, /getPublicListings/);
   assert.doesNotMatch(goalPaths, /label: "Settle"/);
 });

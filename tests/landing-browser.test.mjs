@@ -88,7 +88,7 @@ const layoutExpression = `(() => {
     const r = link.getBoundingClientRect(); const hit = document.elementFromPoint((r.left+r.right)/2,(r.top+r.bottom)/2);
     return {href:link.getAttribute('href'),height:r.height,width:r.width,clickable:!!hit && (hit === link || link.contains(hit))};
   });
-  return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,targets,covers:document.querySelectorAll('main article').length,people:group.querySelectorAll('[data-constellation-person]').length};
+  return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,targets,covers:document.querySelectorAll('[data-category]').length,people:group.querySelectorAll('[data-constellation-person]').length};
 })()`;
 
 test("geometric landing responsive layout, hero wayfinding and accessibility in sandboxed Chrome", {
@@ -175,7 +175,10 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     assert.ok(layout.scrollWidth <= width + 1, `Horizontal overflow at ${width}`);
     assert.equal(layout.targets.length, 5);
     assert.ok(layout.targets.every(target => target.clickable && target.height >= 44 && target.width >= 44));
-    assert.equal(layout.covers,5,"Five real discovery modules without fabricated members");
+    assert.equal(layout.covers,5,"Five category destinations in the introduction");
+    const vertical = await page.evaluate("[...document.querySelectorAll('[data-category-icon]')].map(n=>n.getBoundingClientRect().toJSON())");
+    assert.ok(vertical.every(icon=>Math.abs(icon.x-vertical[0].x)<1),"Icons always form a vertical column");
+    for(let i=1;i<5;i++) assert.ok(vertical[i].top>vertical[i-1].bottom,"Category icons never overlap");
     await page.evaluate(axeSource);
     assert.deepEqual(await page.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>r.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})))"),[],`Homepage accessibility at ${width}`);
     await page.evaluate("scrollTo(0,0)");
@@ -191,10 +194,91 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   await delay(200);
   assert.ok(await page.evaluate("document.querySelector('[data-community-node=people]').matches(':focus-visible')"));
   assert.deepEqual(await page.evaluate("document.querySelector('[data-hero-region]').getBoundingClientRect().toJSON()"),bounds);
+  await page.evaluate("document.activeElement.blur();window.categoryIconNodes=[...document.querySelectorAll('[data-category-icon]')];true");
+  await waitFor(()=>page.evaluate("document.querySelector('[data-category-section]').dataset.reveal==='true'"),"category reveal hydration");
+  const categorySnapshot = `(() => ({
+    rows:[...document.querySelectorAll('[data-category]')].map((n,i)=>({
+      same:n.querySelector('[data-category-icon]')===window.categoryIconNodes[i],
+      x:n.querySelector('[data-category-icon]').getBoundingClientRect().x,
+      y:n.querySelector('[data-category-icon]').getBoundingClientRect().y,
+      opacity:Number(getComputedStyle(n).opacity),transform:getComputedStyle(n).transform,
+      pointer:getComputedStyle(n).pointerEvents,
+      height:n.getBoundingClientRect().height
+    })),height:document.querySelector('[data-category-section]').offsetHeight,
+    overflow:document.documentElement.scrollWidth>innerWidth
+  }))()`;
+  const rowTop = await page.evaluate("(() => {const n=document.querySelector('[data-category]');return n.getBoundingClientRect().top+scrollY-Number.parseFloat(n.style.getPropertyValue('--reveal-y')||'0');})()");
+  const revealStates=new Map();
+  for(const offset of [-50,30,100,160,240,300,380,460,560,460,380,300,240,160,100,30,-50]) {
+    await page.evaluate(`scrollTo(0,${rowTop}-900+${offset})`);
+    await delay(100);
+    const state=await page.evaluate(categorySnapshot);
+    assert.ok(state.rows.every(row=>row.same),"The same five icon nodes remain");
+    assert.equal(state.overflow,false);
+    assert.ok(state.height<800,"Natural flow replaces the long sticky runway");
+    assert.ok(state.rows.every(row=>Math.abs(row.x-state.rows[0].x)<1),"Always vertically aligned");
+    state.rows.forEach((row,i)=> {
+      assert.equal(row.pointer,row.opacity===0 ? "none" : "auto","Invisible rows cannot receive pointer input");
+      if(i) {assert.ok(row.y>=state.rows[i-1].y+state.rows[i-1].height-12);assert.ok(row.opacity<=state.rows[i-1].opacity);}
+    });
+    if(revealStates.has(offset)) assert.deepEqual(state,revealStates.get(offset),"Scroll up reverses the reveal");
+    else revealStates.set(offset,state);
+    await delay(100);
+    assert.deepEqual(await page.evaluate(categorySnapshot),state,"Pausing scroll pauses the reveal");
+    if(offset===-50) assert.ok(state.rows.every(row=>row.opacity===0));
+    if(offset===30) {
+      assert.ok(state.rows[0].opacity>0 && state.rows[0].opacity<1);
+      assert.ok(state.rows.slice(1).every(row=>row.opacity===0),"Only first row starts revealing");
+    }
+    if(offset===560) {
+      assert.ok(state.rows.every(row=>row.opacity===1),"All five rows fully revealed");
+      screenshots.push({name:"category_vertical_reveal_1440.jpg",data:(await page.send("Page.captureScreenshot",{format:"jpeg",quality:85})).data});
+    }
+  }
+  await page.evaluate("document.querySelector('[data-category=events]').focus()");
+  assert.ok(await page.evaluate("document.querySelector('[data-category=events]').matches(':focus-visible')"));
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category=events]')).opacity"),"1");
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category=events]')).outlineStyle"),"solid");
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[data-category=events]')).pointerEvents"),"auto","Focus restores hidden-row input");
+  await page.evaluate("document.activeElement.blur()");
+  console.log("AFGHAN_HUB_CATEGORY_REVEAL_VERIFIED vertical layout/sequential/down/up/pause/no overlap/no sticky/keyboard");
+  const motionSnapshot = "({steps:[...document.querySelectorAll('[data-home-step]')].map(n=>Number(n.style.getPropertyValue('--step-progress'))),final:[...document.querySelectorAll('[data-home-reveal]')].map(n=>({opacity:getComputedStyle(n).opacity,transform:getComputedStyle(n).transform}))})";
+  const motionTop = await page.evaluate("document.getElementById('how-it-works').getBoundingClientRect().top+scrollY");
+  const motionStates = new Map();
+  for (const offset of [0,80,160,240,320,240,160,80,0]) {
+    await page.evaluate(`scrollTo(0,${motionTop}-880+${offset})`);
+    await new Promise(resolve=>setTimeout(resolve,100));
+    const state = await page.evaluate(motionSnapshot);
+    assert.ok(state.steps.every((value,index)=>index===0 || value<=state.steps[index-1]),"Step progression stays ordered");
+    if(motionStates.has(offset)) assert.deepEqual(state.steps,motionStates.get(offset),"Step movement reverses with scroll");
+    else motionStates.set(offset,state.steps);
+    await new Promise(resolve=>setTimeout(resolve,50));
+    assert.deepEqual((await page.evaluate(motionSnapshot)).steps,state.steps,"Paused scroll freezes steps");
+  }
+  assert.deepEqual(motionStates.get(320),[1,1,1,1]);
+  await page.evaluate("document.querySelector('[data-home-finale]').scrollIntoView({block:'center'})");
+  await waitFor(()=>page.evaluate("[...document.querySelectorAll('[data-home-reveal]')].every(n=>getComputedStyle(n).opacity==='1')"),"Final invitation fully reveals");
+  assert.ok(await page.evaluate("document.documentElement.scrollWidth<=innerWidth+1"),"Homepage motion introduces no overflow");
+  console.log("AFGHAN_HUB_HOME_MOTION_VERIFIED steps/sequential/down/up/pause/finale/no overflow");
   await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
-  await waitFor(()=>page.evaluate("matchMedia('(prefers-reduced-motion: reduce)').matches && document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length===0"),"network reduced-motion resting state");
+  await waitFor(()=>page.evaluate("matchMedia('(prefers-reduced-motion: reduce)').matches && [...document.querySelectorAll('[data-category]')].every(n=>getComputedStyle(n).opacity==='1' && getComputedStyle(n).transform==='none' && getComputedStyle(n).pointerEvents==='auto')"),"static reduced-motion category list");
+  await waitFor(()=>page.evaluate("!document.getElementById('how-it-works').hasAttribute('data-motion') && [...document.querySelectorAll('[data-home-reveal]')].every(n=>getComputedStyle(n).opacity==='1' && getComputedStyle(n).transform==='none')"),"Static reduced-motion homepage enhancements");
   assert.equal(await page.evaluate("document.querySelector('[data-hero-region]').getAnimations({subtree:true}).filter(a=>a.playState==='running').length"),0);
   await page.send("Emulation.setEmulatedMedia",{features:[]});
+  // Editable, localized answer trail preserves guided discovery behavior.
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent.includes('Not sure where')).click()");
+  await waitFor(()=>page.evaluate("document.querySelector('#ai-navigator h3')?.textContent.includes('What brings')"),"trail guide start");
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent==='Meet people').click()");
+  await waitFor(()=>page.evaluate("document.querySelector('[data-guide-journey] bdi')?.textContent==='Meet people'"),"goal appears in trail");
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent==='Technology').click()");
+  await waitFor(()=>page.evaluate("document.querySelectorAll('[data-guide-journey] button').length===2"),"topic appears in trail");
+  await page.evaluate("document.querySelectorAll('[data-guide-journey] button')[1].click()");
+  await waitFor(()=>page.evaluate("document.querySelector('#ai-navigator h3')?.textContent.includes('Which area') && document.querySelectorAll('[data-guide-journey] button').length===1"),"edit topic returns to its question");
+  await page.evaluate("document.querySelector('[data-guide-journey] button').click()");
+  await waitFor(()=>page.evaluate("document.querySelector('#ai-navigator h3')?.textContent.includes('What brings') && !document.querySelector('[data-guide-journey]')"),"edit goal resets trail");
+  assert.ok(await page.evaluate("document.documentElement.scrollWidth<=innerWidth+1"),"Trail does not overflow");
+  await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.getAttribute('aria-label')==='Close guided discovery').click()");
+  console.log("AFGHAN_HUB_GUIDE_TRAIL_VERIFIED selected answers/edit goal/edit topic/focus/no overflow");
   // Public guided discovery is exercised against the isolated published-listing fixture.
   await page.evaluate("[...document.querySelectorAll('#ai-navigator button')].find(b=>b.textContent.includes('Not sure where')).click()");
   await waitFor(()=>page.evaluate("document.querySelector('#ai-navigator h3')?.textContent.includes('What brings')"),"guided start");
@@ -428,8 +512,10 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
       for(const type of ['keyDown','keyUp'])await page.send('Input.dispatchKeyEvent',{type,key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
       assert.ok(await page.evaluate("document.querySelector('dialog').contains(document.activeElement)"),'Native dialog contains keyboard focus');
     }
-    for(const option of ['دری','پښتو']) {
+    assert.deepEqual(await page.evaluate("[...document.querySelectorAll('dialog button')].map(b=>b.textContent).filter(label=>['English','فارسی / Persian','پښتو / Pashto','دری'].includes(label))"),['English','فارسی / Persian','پښتو / Pashto'],'Navigator exposes exactly the consolidated languages');
+    for(const [option, language] of [['فارسی / Persian','fa'],['پښتو / Pashto','ps']]) {
       await page.evaluate(`[...document.querySelectorAll('dialog button')].find(b=>b.textContent===${JSON.stringify(option)}).click()`);
+      assert.equal(await page.evaluate("document.querySelector('dialog').lang"),language);
       assert.equal(await page.evaluate("document.querySelector('dialog').dir"),'rtl');
       assert.ok(await page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'RTL drawer fits');
     }
