@@ -116,3 +116,12 @@ test("footer localizes platform navigation, Navigator label and rights notice", 
   assert.match(publicFooter, /"تمام حقوق محفوظ است\."/);
   assert.match(publicFooter, /"ټول حقونه خوندي دي\."/);
 });
+
+test("homepage primary and final CTAs mirror arrow direction for RTL", () => {
+  for (const filename of ["localized-homepage-hero", "localized-homepage-final"]) {
+    const source = readFileSync(new URL(`../src/components/public/${filename}.tsx`, import.meta.url), "utf8");
+    assert.match(source, /ArrowLeft, ArrowRight/);
+    assert.match(source, /language === "en" \? ArrowRight : ArrowLeft/);
+    assert.match(source, /<Arrow size=\{17\}/);
+  }
+});
