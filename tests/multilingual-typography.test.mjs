@@ -108,3 +108,11 @@ test("mobile navigation actions and accessibility names use localized labels", (
   assert.match(publicNavigation, /<summary aria-label=\{copy\.navigation\}>/);
   assert.match(publicNavigation, /aria-label=\{language === "en" \?/);
 });
+
+test("footer localizes platform navigation, Navigator label and rights notice", () => {
+  assert.match(publicFooter, /aria-label=\{language === "en" \? "Platform"/);
+  assert.match(publicFooter, /"راهنمای هوشمند"/);
+  assert.match(publicFooter, /"ځیرک لارښود"/);
+  assert.match(publicFooter, /"تمام حقوق محفوظ است\."/);
+  assert.match(publicFooter, /"ټول حقونه خوندي دي\."/);
+});
