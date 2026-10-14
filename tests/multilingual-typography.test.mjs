@@ -224,3 +224,13 @@ test("public layout does not stretch short pages into an empty gap before footer
   assert.ok(!layout.includes("[&>main]:flex-1"));
   assert.ok(layout.includes("<LocalizedPublicFooter />"));
 });
+
+test("Persian hero headline overrides serif and italic emphasis explicitly", () => {
+  const css = readFileSync(new URL("../src/app/(public)/landing.module.css", import.meta.url), "utf8");
+  const hero = readFileSync(new URL("../src/components/public/localized-homepage-hero.tsx", import.meta.url), "utf8");
+  assert.ok(hero.includes("data-hero-headline"));
+  assert.ok(css.includes('.hero[lang="fa"] .statement h1[data-hero-headline]'));
+  assert.ok(css.includes('font-family:"Estedad","Vazirmatn",sans-serif;'));
+  assert.ok(css.includes('.hero[lang="fa"] .statement h1[data-hero-headline] em'));
+  assert.ok(css.includes("font-style:normal;"));
+});
