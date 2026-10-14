@@ -16,7 +16,7 @@ export function PublicNavigation() {
   const pathname = usePathname();
   const params = useSearchParams();
   const menu = useRef<HTMLDetailsElement>(null);
-  const active = (key: string) => pathname === "/explore" && params.get("type") === key;
+  const active = (key: (typeof communityAreas)[number]["key"]) => pathname === "/explore" && params.get("type") === key;
   const close = () => { if (menu.current) menu.current.open = false; };
   const languageSelector = <label className={styles.languageControl}><span className="sr-only">{copy.language}</span><select aria-label={copy.language} value={language} onChange={event => saveSiteLanguagePreference(event.target.value)}><option value="en" lang="en">English</option><option value="fa" lang="fa">فارسی</option><option value="ps" lang="ps">پښتو</option></select></label>;
   const links = communityAreas.map(area => <Link key={area.key} href={area.href} onClick={close} aria-current={active(area.key) ? "page" : undefined}>{copy[area.key]}</Link>);
