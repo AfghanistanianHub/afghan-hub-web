@@ -1,6 +1,9 @@
 name: PR501 isolated authenticated acceptance
 
 on:
+  push:
+    branches:
+      - integration/multilingual-qa-2026
   pull_request:
     paths:
       - "src/**"
