@@ -42,4 +42,7 @@
 .languageControl option[lang="fa"],.languageControl option[lang="ps"] { font-family:var(--font-fa-body); }
 .footer:dir(rtl) nav { align-items:flex-start; text-align:start; }
 .footer:dir(rtl) h2 { font-family:var(--font-fa-heading); line-height:1.6; }
+.footer[lang="ps"] h2 { font-family:var(--font-fa-body); }
+.header:dir(rtl) .account { direction:rtl; }
+@media(max-width:960px) { .header:dir(rtl) .account { margin-left:0; margin-right:auto; } }
 @media(max-width:480px) { .languageControl select { max-width:80px; } }
