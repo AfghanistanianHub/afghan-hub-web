@@ -221,12 +221,26 @@
 }
 
 
-/* Afghan Hub multilingual typography: scoped to language, preserving Geist for English. */
-:root { --font-fa-body: "Vazirmatn", sans-serif; --font-fa-heading: "Estedad", "Vazirmatn", sans-serif; }
-:where([lang="fa"],[lang="fa-IR"],[lang="fa-AF"],[lang="prs"]) { font-family:var(--font-fa-body); }
-:where([lang="fa"],[lang="fa-IR"],[lang="fa-AF"],[lang="prs"]) :where(h1,h2,h3,h4,h5,h6) { font-family:var(--font-fa-heading); line-height:1.5; }
-:where([lang="ps"],[lang="ps-AF"]) { font-family:var(--font-fa-body); }
-:where([lang="ps"],[lang="ps-AF"]) :where(h1,h2,h3,h4,h5,h6) { font-family:var(--font-fa-body); line-height:1.5; }
-:where([lang="fa"],[lang="fa-IR"],[lang="fa-AF"],[lang="prs"],[lang="ps"],[lang="ps-AF"]) :where(p,li,button,input,textarea,select) { font-family:var(--font-fa-body); }
-:where([dir="rtl"]) { text-align:start; }
-:where([dir="rtl"]) :where(input[type="email"],input[type="url"],input[type="password"]) { direction:ltr; }
+/* Language-aware typography. :lang() also matches descendants inheriting an ancestor language. */
+:root {
+  --font-fa-body: "Vazirmatn", sans-serif;
+  --font-fa-heading: "Estedad", "Vazirmatn", sans-serif;
+}
+:where(:lang(fa), :lang(prs), :lang(ps)) {
+  --font-sans: var(--font-fa-body);
+  font-family: var(--font-fa-body);
+}
+:where(:lang(fa), :lang(prs)) :where(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-fa-heading);
+  line-height: 1.5;
+}
+:where(:lang(ps)) :where(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-fa-body);
+  line-height: 1.5;
+}
+/* Explicit utility classes for components whose locale is local rather than document-wide. */
+.font-afghan-body { font-family: var(--font-fa-body); }
+.font-afghan-heading { font-family: var(--font-fa-heading); }
+:where([dir="rtl"]) :where(input[type="email"], input[type="url"], input[type="password"]) {
+  direction: ltr;
+}
