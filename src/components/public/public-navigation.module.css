@@ -41,6 +41,9 @@
 .languageControl select:focus-visible { outline:2px solid var(--primary); outline-offset:3px; }
 .languageControl option[lang="fa"],.languageControl option[lang="ps"] { font-family:var(--font-fa-body); }
 .footer:dir(rtl) nav { align-items:flex-start; text-align:start; }
+.footer:dir(rtl) nav a { text-align:start; }
+.header:dir(rtl) .bar { direction:rtl; }
+.header:dir(rtl) .mobile nav { text-align:start; }
 .footer:dir(rtl) h2 { font-family:var(--font-fa-heading); line-height:1.6; }
 .footer[lang="ps"] h2 { font-family:var(--font-fa-body); }
 .header:dir(rtl) .account { direction:rtl; }
