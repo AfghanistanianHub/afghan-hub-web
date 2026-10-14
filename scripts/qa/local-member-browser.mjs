@@ -404,9 +404,15 @@ try {
       assert.equal(row.onboarding_completed, true); assert.equal(row.last_name, label);
     }
   });
-  await visit(pageB,'/submissions');
-  assert.ok(await pageB.evaluate(`document.querySelector('main')?.innerText.includes('No submissions yet')`),'Empty owner submissions must have truthful counts');
-  await captureState(pageB,'submissions-empty');
+  await check('Empty owner submissions finish rendering with truthful zero counts', async () => {
+    await visit(pageB,'/submissions');
+    await pathname(pageB,'/submissions');
+    await until(() => pageB.evaluate(`document.querySelector('main h2')?.textContent==='No submissions yet'`), 'empty submissions streamed content');
+    assert.equal(await pageB.evaluate(`document.querySelectorAll('main article').length`), 0);
+    assert.equal(await pageB.evaluate(`!!document.querySelector('main [role=alert]')`), false);
+    assert.deepEqual(await pageB.evaluate(`[...document.querySelectorAll('nav[aria-label="Submission categories"] span')].map(node=>node.textContent)`), ['0','0','0','0','0']);
+    await captureState(pageB,'submissions-empty');
+  });
   await check('Member Navigator exposes the same three languages and RTL without changing profile languages', async () => {
     await openMemberNavigator(pageA);
     await until(() => pageA.evaluate(`document.querySelectorAll('dialog[open] button[aria-pressed]').length===3`), 'member language choices');
@@ -578,6 +584,82 @@ try {
       assert.equal(await reviewerPage.evaluate(`!!document.querySelector('a[href="/moderation/team"]')`), role === 'admin');
       await visit(reviewerPage, '/moderation/team'); await pathname(reviewerPage, role === 'admin' ? '/moderation/team' : '/moderation');
     });
+    if (role === 'admin') {
+      const target = await member('role-target');
+      const targetPage = await page();
+      await login(targetPage, target.email); await onboard(targetPage, 'RoleTarget');
+      const client = createClient(apiUrl, status.ANON_KEY, {auth:{persistSession:false,autoRefreshToken:false}});
+      await data(client.auth.signInWithPassword({email:target.email,password}));
+      const tokenBefore = (await data(client.auth.getSession())).session.access_token;
+      const selector = `form:has(input[name=profile_id][value="${target.id}"])`;
+      let actionTemplate;
+      await check('Admin role form promotes and demotes a synthetic member with existing-session authorization', async () => {
+        for (const requestedRole of ['moderator','admin','member']) {
+          await visit(reviewerPage, '/moderation/team');
+          await until(() => reviewerPage.evaluate(`!!document.querySelector(${JSON.stringify(selector)})`), 'synthetic role form');
+          if (!actionTemplate) {
+            actionTemplate = await reviewerPage.evaluate(`fetch('/moderation/team').then(response=>response.text()).then(html=>{
+              const doc=new DOMParser().parseFromString(html,'text/html');
+              return doc.querySelector(${JSON.stringify(selector)})?.outerHTML;
+            })`);
+            assert.ok(actionTemplate?.includes('$ACTION_'), 'Real server-rendered form must expose its native action fields');
+          }
+          await select(reviewerPage, `${selector} select[name=role]`, requestedRole);
+          await click(reviewerPage, `${selector} button[type=submit]`);
+          await until(() => reviewerPage.evaluate(`location.pathname==='/moderation/team' && location.search==='?saved=1' && document.querySelector('main [role=status]')?.textContent.includes('Member role updated.')`), 'role save feedback');
+          assert.equal((await data(admin.from('profiles').select('role').eq('id',target.id).single())).role, requestedRole);
+          assert.equal((await data(client.auth.getSession())).session.access_token, tokenBefore, 'Authorization must change without replacing the access token');
+          assert.equal((await data(client.rpc('get_my_access_context')))[0].role, requestedRole);
+          assert.equal(await data(client.rpc('is_admin')), requestedRole==='admin');
+          await visit(targetPage, '/moderation/team');
+          await pathname(targetPage, requestedRole==='admin' ? '/moderation/team' : requestedRole==='moderator' ? '/moderation' : '/');
+          await captureState(reviewerPage, `role-change-${requestedRole}`);
+        }
+      });
+      await check('Demoted member cannot replay role changes through database RPC or real server action', async () => {
+        const refused = await client.rpc('set_profile_role',{target_profile_id:b.id,target_role:'admin'});
+        assert.ok(refused.error, 'Demoted session must be denied by database');
+        await visit(targetPage, '/dashboard');
+        await targetPage.evaluate(`(() => {
+          const doc=new DOMParser().parseFromString(${JSON.stringify(actionTemplate)},'text/html');
+          const form=document.importNode(doc.querySelector('form'),true);
+          form.action='/moderation/team'; form.method='post';
+          form.querySelector('[name=profile_id]').value=${JSON.stringify(b.id)};
+          form.querySelector('[name=role]').value='admin';
+          document.body.append(form); form.submit();
+        })()`);
+        await pathname(targetPage, '/');
+        assert.equal((await data(admin.from('profiles').select('role').eq('id',b.id).single())).role, 'member');
+        await data(client.auth.refreshSession());
+        assert.equal((await data(client.rpc('get_my_access_context')))[0].role, 'member');
+        await data(client.auth.signOut({scope:'local'}));
+        assert.ok((await client.rpc('set_profile_role',{target_profile_id:b.id,target_role:'admin'})).error);
+      });
+      for (const persona of ['moderator','anonymous']) {
+        await check(`${persona}: real role action and RPC refuse promotion with unchanged database state`, async () => {
+          const deniedPage = await page();
+          const deniedClient = createClient(apiUrl,status.ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+          if (persona==='moderator') {
+            const fixture = await member('role-denied-moderator');
+            assert.ok(users.includes(fixture.id)); assert.match(fixture.id,/^[0-9a-f-]{36}$/);
+            execFileSync('docker',['exec','supabase_db_afghan-hub-local-journey','psql','-U','postgres','-d','postgres','-v','ON_ERROR_STOP=1','-c',`BEGIN; SELECT set_config('request.jwt.claim.role','service_role',true); UPDATE public.profiles SET role='moderator',onboarding_completed=true WHERE id='${fixture.id}'; COMMIT;`],{stdio:'ignore'});
+            await login(deniedPage,fixture.email); await pathname(deniedPage,'/dashboard');
+            await data(deniedClient.auth.signInWithPassword({email:fixture.email,password}));
+          } else await visit(deniedPage,'/login');
+          const before=(await data(admin.from('profiles').select('role').eq('id',b.id).single())).role;
+          assert.ok((await deniedClient.rpc('set_profile_role',{target_profile_id:b.id,target_role:'admin'})).error);
+          await deniedPage.evaluate(`(() => {
+            const doc=new DOMParser().parseFromString(${JSON.stringify(actionTemplate)},'text/html');
+            const form=document.importNode(doc.querySelector('form'),true); form.action='/moderation/team'; form.method='post';
+            form.querySelector('[name=profile_id]').value=${JSON.stringify(b.id)}; form.querySelector('[name=role]').value='admin';
+            document.body.append(form); form.submit();
+          })()`);
+          await pathname(deniedPage,persona==='anonymous' ? '/login' : '/');
+          assert.equal((await data(admin.from('profiles').select('role').eq('id',b.id).single())).role,before);
+          await data(deniedClient.auth.signOut({scope:'local'}));
+        });
+      }
+    }
     for (const [table, , ownerField, payload] of [
       ['organizations','organization','owner_id',{name:`Synthetic ${stamp} ${role} organization`}],
       ['opportunities','opportunity','author_id',{title:`Synthetic ${stamp} ${role} opportunity`,description:'Disposable moderation fixture',type:'volunteer'}],
@@ -903,7 +985,7 @@ try {
     results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'pass' });
   } catch { results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'fail' }); process.exitCode = 1; }
   mkdirSync('reports', { recursive: true });
-  writeFileSync('reports/local-member-browser.json', JSON.stringify({ sourceRevision, sourceTree, environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery is verified only with disposable local Mailpit; external SMTP/deliverability and cross-device confirmation remain untested', 'Organization deletion UI is absent; native-language review remains pending', ...(results.some(result=>result.scenario==='Background conversation stays unread and both sender tabs receive the real read receipt' && result.status==='pass') ? [] : ['Multi-tab read receipts have not passed in this run']), 'Admin team role mutations are not tested; no production, hosted test target or model provider calls'] }, null, 2) + '\n');
+  writeFileSync('reports/local-member-browser.json', JSON.stringify({ sourceRevision, sourceTree, environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery is verified only with disposable local Mailpit; external SMTP/deliverability and cross-device confirmation remain untested', 'Organization deletion UI is absent; native-language review remains pending', ...(results.some(result=>result.scenario==='Background conversation stays unread and both sender tabs receive the real read receipt' && result.status==='pass') ? [] : ['Multi-tab read receipts have not passed in this run']), ...(results.some(row=>row.scenario==='Admin role form promotes and demotes a synthetic member with existing-session authorization' && row.status==='pass') ? [] : ['Admin team role mutations have not passed in this run']), 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
   console.log(`${results.filter(r => r.status === 'pass').length} passed; ${results.filter(r => r.status === 'fail').length} failed`);
   // Only complete successful disposable runs emit review images; never auth
   // state, provider payloads or hosted-account screenshots. These bytes let
