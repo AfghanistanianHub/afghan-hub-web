@@ -43,5 +43,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
       - name: Run multilingual source contracts
         run: npm run test:typography
+      - name: Verify TypeScript types
+        run: npx tsc --noEmit
+      - name: Lint the integration candidate
+        run: npm run lint
