@@ -153,3 +153,38 @@
 .paths:dir(rtl) .pathLinks a:focus-visible::before {
   right:calc(100% - 5px);
 }
+
+/* Explicitly override the original Georgia shorthand for the Persian hero.
+   This hook is intentionally higher-specificity than .statement h1. */
+.hero[lang="fa"] .statement h1[data-hero-headline] {
+  font-family:"Estedad","Vazirmatn",sans-serif;
+  font-weight:600;
+  font-style:normal;
+  letter-spacing:normal;
+  line-height:1.45;
+  font-synthesis:none;
+}
+.hero[lang="fa"] .statement h1[data-hero-headline] em {
+  font-family:inherit;
+  font-style:normal;
+  font-weight:700;
+}
+.hero[lang="ps"] .statement h1[data-hero-headline] {
+  font-family:"Vazirmatn",sans-serif;
+  font-weight:600;
+  font-style:normal;
+  letter-spacing:normal;
+  line-height:1.5;
+  font-synthesis:none;
+}
+.hero[lang="ps"] .statement h1[data-hero-headline] em {
+  font-family:inherit;
+  font-style:normal;
+  font-weight:700;
+}
+@media(max-width:600px) {
+  .hero[lang="fa"] .statement h1[data-hero-headline],
+  .hero[lang="ps"] .statement h1[data-hero-headline] {
+    font-size:clamp(34px,8.5vw,48px);
+  }
+}
