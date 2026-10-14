@@ -7,8 +7,8 @@ export const navigatorLocales = [
 export type NavigatorLanguage = (typeof navigatorLocales)[number]["value"];
 
 export function normalizeNavigatorLanguage(value: unknown): NavigatorLanguage {
-  if (value === "fa-AF" || value === "fa") return "fa";
-  return value === "ps" ? "ps" : "en";
+  if (value === "fa-AF" || value === "fa" || value === "prs" || value === "fa-IR") return "fa";
+  return value === "ps" || value === "ps-AF" ? "ps" : "en";
 }
 
 // Navigator-only preference: never read or mutate a member's profile languages.
