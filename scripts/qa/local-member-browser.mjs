@@ -544,7 +544,7 @@ try {
       const row = await listingRow(table, titleField, title); listings.push({table, id:row.id}); assert.equal(row[ownerField], a.id); assert.equal(row.status, 'draft');
       const path = `/${table}/${row.slug}`; await pathname(pageA, path);
       await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes(${JSON.stringify(title)})`), 'owner draft detail');
-      const unavailableHeading = table === 'organizations' ? 'Organization not found' : 'This page isn’t available.';
+      const unavailableHeading = table === 'businesses' ? 'Business not found' : table === 'organizations' ? 'Organization not found' : 'This page isn’t available.';
       await visit(pageB, path);
       await until(() => pageB.evaluate(`document.querySelector('main h1')?.textContent.trim()===${JSON.stringify(unavailableHeading)} && !document.querySelector('main')?.innerText.includes(${JSON.stringify(title)})`), 'foreign draft hidden');
       await visit(pageB, `${path}/edit`);
