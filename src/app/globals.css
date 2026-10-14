@@ -238,6 +238,7 @@ html[dir="rtl"] .public-shell h1,html[dir="rtl"] .public-shell h2,html[dir="rtl"
 @keyframes language-reveal { from { opacity:0; transform:scale(.985); } }
 @media(prefers-reduced-motion:reduce) { ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*) { animation-duration:1ms !important; } }
 html[dir="rtl"] .public-shell h1 { line-height:1.45; }
+html[dir="rtl"] .public-shell h1 em { font-style:normal; }
 html[dir="rtl"] .public-shell h2,html[dir="rtl"] .public-shell h3 { line-height:1.55; }
 html[dir="rtl"] .public-shell .interface-language-switcher { font-family:var(--font-arabic),sans-serif; }
 

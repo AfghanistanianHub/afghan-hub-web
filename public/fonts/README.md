@@ -1,6 +1,6 @@
 # Interface typography
 
-Persian and Pashto use **Estedad**, a screen-oriented Arabic–Latin sans-serif by Amin Abedi / Fontamin. The bundled variable font supplies real weights 100–900; interface body text uses regular and the language entrance uses medium (500). English retains Geist.
+Persian and Pashto use **Estedad**, a screen-oriented Arabic–Latin sans-serif by Amin Abedi / Fontamin. The bundled variable font supplies real weights 100–900; interface body text uses regular and the language entrance uses medium (500). Homepage emphasis remains upright in Persian/Pashto rather than synthesizing an unavailable italic face. English retains Geist and its approved emphasis treatment.
 
 - Source: `google/fonts`, `ofl/estedad/Estedad[wght].ttf`, version 8.5.
 - Immutable source Git blob: `7aaa00f285a28300a26c915cc502f425e9820d2a`.
