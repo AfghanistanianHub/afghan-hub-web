@@ -1,4 +1,4 @@
-import { normalizeSiteLanguage, saveSiteLanguagePreference, siteLanguagePreferenceKey } from "@/lib/i18n/site-language";
+import { normalizeSiteLanguage, readSiteLanguagePreference, saveSiteLanguagePreference, siteLanguagePreferenceKey } from "@/lib/i18n/site-language";
 
 export const navigatorLocales = [
   { value: "en", label: "English" },
@@ -22,7 +22,7 @@ export function readNavigatorLanguagePreference(): NavigatorLanguage {
     if (saved === "fa-AF") localStorage.setItem(navigatorLanguagePreferenceKey, language);
     return language;
   } catch {
-    return "en";
+    return readSiteLanguagePreference();
   }
 }
 
