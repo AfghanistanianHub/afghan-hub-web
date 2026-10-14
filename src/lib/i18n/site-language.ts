@@ -41,10 +41,16 @@ export function saveSiteLanguagePreference(value: unknown): SiteLanguage {
 
 export function subscribeSiteLanguagePreference(onChange: () => void): () => void {
   if (typeof window === "undefined") return () => {};
-  window.addEventListener("storage", onChange);
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === siteLanguagePreferenceKey || event.key === null) {
+      volatileLanguage = null;
+      onChange();
+    }
+  };
+  window.addEventListener("storage", onStorage);
   window.addEventListener(siteLanguageChangeEvent, onChange);
   return () => {
-    window.removeEventListener("storage", onChange);
+    window.removeEventListener("storage", onStorage);
     window.removeEventListener(siteLanguageChangeEvent, onChange);
   };
 }
