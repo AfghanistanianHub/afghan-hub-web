@@ -94,3 +94,10 @@ test("homepage sections share the site language without dropping interactive str
     assert.match(source, /dir=\{language === "en" \? "ltr" : "rtl"\}/);
   }
 });
+
+test("language updates propagate between browser tabs and Pashto uses its intended typeface", () => {
+  const categoryCss = readFileSync(new URL("../src/components/public/scroll-category-introduction.module.css", import.meta.url), "utf8");
+  assert.match(sitePreferences, /volatileLanguage = null;\s*onChange\(\)/);
+  assert.match(sitePreferences, /event\.key === siteLanguagePreferenceKey/);
+  assert.match(categoryCss, /\.section\[lang="ps"\] \.title/);
+});
