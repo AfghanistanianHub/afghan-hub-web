@@ -12,7 +12,7 @@ import { GlobalNetworkBackground } from "@/components/visual/global-network-back
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
-const arabic = localFont({ src: "../../public/fonts/noto-sans-arabic-regular.ttf", variable: "--font-arabic", display: "swap", preload: true });
+const arabic = localFont({ src: "../../public/fonts/estedad-variable.woff2", weight: "100 900", style: "normal", variable: "--font-arabic", display: "swap", preload: true });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

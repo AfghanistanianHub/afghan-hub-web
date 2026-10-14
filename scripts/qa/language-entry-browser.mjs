@@ -26,6 +26,16 @@ try {
     await ctx.route('**/*',route=>{const host=new URL(route.request().url()).hostname; return ['localhost','127.0.0.1'].includes(host)?route.continue():route.abort();});
     return ctx;
   }
+  async function actualFonts(page,selector) {
+    const cdp=await page.context().newCDPSession(page);
+    try {
+      await cdp.send('DOM.enable');await cdp.send('CSS.enable');
+      const {root}=await cdp.send('DOM.getDocument');
+      const {nodeId}=await cdp.send('DOM.querySelector',{nodeId:root.nodeId,selector});
+      assert.ok(nodeId,`Missing font target ${selector}`);
+      return (await cdp.send('CSS.getPlatformFontsForNode',{nodeId})).fonts.filter(font=>font.glyphCount>0);
+    } finally {await cdp.detach();}
+  }
   for(const width of [320,390,768,1440]){
     const ctx=await context({viewport:{width,height:900}});const page=await ctx.newPage();
     await check(`first-root-${width}`,async()=>{
@@ -41,6 +51,24 @@ try {
     await check(`keyboard-focus-${width}`,async()=>{
       for(const locale of ['en','fa','ps']){await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.dataset.locale),locale);}
       await page.screenshot({path:`${output}/focus-${width}.png`});
+    });
+    if(width===1440)await check('persian-pashto-actual-font-and-glyph-coverage',async()=>{
+      for(const locale of ['fa','ps']){
+        const fonts=await actualFonts(page,`[data-locale=${locale}] span:last-child`);
+        assert.ok(fonts.length && fonts.every(font=>font.isCustomFont && /Estedad/.test(font.familyName)),`${locale} label fell back: ${JSON.stringify(fonts)}`);
+      }
+      await page.evaluate(()=>{
+        const probe=document.createElement('span');probe.id='qa-script-glyphs';probe.lang='ps';probe.dir='rtl';
+        probe.textContent='ټ ځ څ ډ ړ ږ ښ ڼ ۍ ې پ چ ژ ک گ ۀ ی ۰۱۲۳۴۵۶۷۸۹';
+        probe.style.cssText='position:fixed;bottom:0;left:0;font-size:24px;font-weight:500';
+        probe.style.fontFamily=getComputedStyle(document.querySelector('[data-locale=ps]')).fontFamily;
+        document.body.append(probe);
+      });
+      try {
+        const fonts=await actualFonts(page,'#qa-script-glyphs');
+        assert.ok(fonts.length && fonts.every(font=>font.isCustomFont && /Estedad/.test(font.familyName)),`Pashto glyph probe fell back: ${JSON.stringify(fonts)}`);
+        console.log(`FONT actual Pashto glyphs ${JSON.stringify(fonts)}`);
+      } finally {await page.evaluate(()=>document.querySelector('#qa-script-glyphs').remove());}
     });
     await ctx.close();
   }
@@ -111,6 +139,10 @@ try {
       await page.reload();assert.equal(await page.locator('html').getAttribute('lang'),locale);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
       await page.evaluate(()=>document.fonts.ready);await delay(700);
+      if(locale!=='en') {
+        const fonts=await actualFonts(page,'#landing-title');
+        assert.ok(fonts.length && fonts.every(font=>font.isCustomFont && /Estedad/.test(font.familyName)),`${locale} homepage heading fell back: ${JSON.stringify(fonts)}`);
+      }
       await page.screenshot({path:`${output}/homepage-${locale}-1440.png`});
       assert.equal(await page.locator('link[rel=canonical]').getAttribute('href'),`https://app.apnbc.ca/${locale}`);
       assert.equal(await page.locator('link[hreflang=fa]').count(),1);assert.deepEqual(errors,[]);

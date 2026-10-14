@@ -9,7 +9,7 @@
 .node { position:relative; width:clamp(170px,19vw,240px); min-height:210px; display:flex; align-items:center; justify-content:center; text-decoration:none; outline:none; -webkit-tap-highlight-color:transparent; border-radius:50%; }
 .node:nth-child(2) { margin-top:-130px; }.node:nth-child(3) { margin-top:100px; }
 .label { position:relative; font-size:clamp(38px,4.6vw,62px); font-weight:400; line-height:1.8; letter-spacing:-.035em; transition:transform 180ms,color 180ms; animation:arrive 450ms cubic-bezier(.2,.7,.2,1) both; animation-delay:var(--arrival); }
-.node[dir=rtl] .label { font-family:var(--font-arabic),sans-serif; font-size:clamp(40px,4.8vw,66px); letter-spacing:0; }
+.node[dir=rtl] .label { font-family:var(--font-arabic),sans-serif; font-size:clamp(40px,4.8vw,66px); font-weight:500; line-height:1.45; letter-spacing:0; }
 .halo { position:absolute; width:100%; aspect-ratio:1; border:1px solid #637f9c; border-radius:50%; opacity:0; transform:scale(.92); transition:opacity 180ms,transform 280ms; }
 .dot { position:absolute; width:5px; height:5px; background:#728ca6; border-radius:50%; top:calc(50% - 60px); opacity:.65; transition:transform 180ms; }
 .node:hover .halo,.node:focus-visible .halo { opacity:.8; transform:scale(1); }

@@ -14,7 +14,7 @@ The existing proxy matcher is unchanged. The proxy removes inbound locale header
 
 The shared switcher keeps the current path, duplicate query values and fragment, replacing `lang` for existing internal routes or changing the homepage path. Its native no-JS link retains server-visible path and query; JavaScript adds the current fragment. Auth callback/API/internal handler targets and external redirects are rejected. Browser storage failure does not affect cookie persistence. If cookies themselves are disabled, the current explicit locale URL remains usable but subsequent root visits cannot remember a preference.
 
-Locale context renders on the server, including `<html lang dir>`. The chooser deliberately resets its own direction to LTR and applies lang/dir per label. The locally hosted Noto Sans Arabic font supports Persian/Pashto; original English fonts and the approved homepage composition/motion remain. Navigator initializes from a server-resolved interface preference. Site selection synchronizes site and Navigator cookies; a subsequent Navigator-only choice persists in a separate cookie without changing the site or profile languages. Legacy browser storage is normalized even when a cookie preference takes priority. `fa-AF` remains normalized to `fa`; member profile languages and user-authored text are not modified.
+Locale context renders on the server, including `<html lang dir>`. The chooser deliberately resets its own direction to LTR and applies lang/dir per label. The locally hosted variable Estedad font supports Persian/Pashto with real body/display weights; see public/fonts/README.md for provenance, licensing and glyph verification; original English fonts and the approved homepage composition/motion remain. Navigator initializes from a server-resolved interface preference. Site selection synchronizes site and Navigator cookies; a subsequent Navigator-only choice persists in a separate cookie without changing the site or profile languages. Legacy browser storage is normalized even when a cookie preference takes priority. `fa-AF` remains normalized to `fa`; member profile languages and user-authored text are not modified.
 
 ## Coverage and remaining work
 
@@ -37,6 +37,10 @@ This PR localizes the **public homepage entry experience**, not the whole websit
 
 ## Verification and reproducibility
 
+The current verification and exact-commit Preview links are maintained in [PR #495](https://github.com/AfghanistanianHub/afghan-hub-web/pull/495). The initial entrance was fully verified at `833cb17bbde0ad2a3b90dbbc605d6c7b161925ab`: Node 22/24 CI, 43 public browser report entries including native 200%/400% zoom, and two complete independent passes of 40 browser + 14 API/RLS checks. The typography follow-up uses the same suites. Persian/Pashto wording remains draft.
+
+The older run narratives below are retained failure history; they do not describe the current acceptance status. The previous native-zoom limitation was resolved by the complete 833cb17 browser run. Hosted HTTP access also succeeded for nine public/machine routes; hosted browser visual smoke remains separately blocked by Vercel browser sign-in.
+
 - `node --test tests/*.test.mjs`
 - `npm run lint`
 - `npx tsc --noEmit`
@@ -52,6 +56,6 @@ Both disposable authenticated API/RLS runs passed 14/14 at ec93f31. The first fu
 
 Native browser cross-document cancellation is recorded as a progressive fallback only when the actual destination, locale and persistence assertions still pass. Every other page error remains a failure. The first public run (38459580640) failed because its error collector treated this expected cancellation during rapid navigation as a product failure; that history is retained.
 
-Unverified limits: native-language wording review; hosted signed-in visual smoke; external SMTP/cross-device confirmation; admin team mutations; actual native browser zoom on the chooser (narrow viewport reflow and homepage text-resize checks passed). Remaining untranslated page bodies are listed above.
+Unverified limits: native-language wording review; hosted signed-in visual smoke; external SMTP/cross-device confirmation; admin team mutations. Native browser zoom at 200%/400%, narrow viewport reflow and homepage text-resize checks passed. Remaining untranslated page bodies are listed above.
 
 Release gate: do not publish this entrance until the three actual home destinations pass browser/layout verification and draft translations have appropriate review. No paid model calls, secrets, production data/configuration changes, merges or Production deployment are part of this work.
