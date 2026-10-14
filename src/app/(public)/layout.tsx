@@ -7,7 +7,7 @@ import { LocalizedSkipLink } from "@/components/public/localized-skip-link";
 export const dynamic = "force-dynamic";
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
-  return <div className="public-shell flex min-h-screen flex-col font-sans [&>main]:flex-1">
+  return <div className="public-shell flex min-h-screen flex-col font-sans">
     <LocalizedSkipLink />
     <Suspense><PublicNavigation /></Suspense>
     {children}
