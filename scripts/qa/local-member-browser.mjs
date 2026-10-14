@@ -771,7 +771,14 @@ try {
     await until(() => pageA.evaluate(`!!document.querySelector('input[placeholder="Name or latest message"]')`), 'inbox search input');
     await pageA.evaluate(`document.querySelector('input[placeholder="Name or latest message"]').focus()`);
     await pageA.send('Input.insertText', {text:'No-matching-synthetic-conversation'});
-    await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
+    try {
+      await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
+    } catch (error) {
+      // Only structural UI evidence: no message text, profile details, cookies or tokens.
+      const observed = await pageA.evaluate(`JSON.stringify({path:location.pathname,searchValue:document.querySelector('input[placeholder="Name or latest message"]')?.value??null,emptyHeading:[...document.querySelectorAll('main h2')].some(node=>node.textContent?.trim()==='No matching conversations'),hasInboxError:!!document.querySelector('main [role=alert]'),visibleConversationLinks:document.querySelectorAll('main a[href^="/messages/"]').length})`).catch(() => '{"unavailable":true}');
+      console.error('QA_INBOX_FILTER_UI ' + observed);
+      throw error;
+    }
     await visit(pageA, conversationPath);
     assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-label="Conversation navigation"]')).display!=='none'`), true);
     await pageA.send('Emulation.setDeviceMetricsOverride', { width:390, height:1000, deviceScaleFactor:1, mobile:true });
