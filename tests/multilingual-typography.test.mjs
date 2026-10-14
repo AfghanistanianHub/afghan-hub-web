@@ -209,3 +209,11 @@ test("hero network translates all five labels, descriptions and screen-reader na
   assert.ok(network.includes("lang={language}"));
   assert.ok(css.includes('.network[lang="ps"] .label'));
 });
+
+test("Persian and Pashto hero network nodes have responsive text constraints", () => {
+  const css = readFileSync(new URL("../src/components/public/living-network.module.css", import.meta.url), "utf8");
+  assert.ok(css.includes(".network:dir(rtl) .node { width:142px;"));
+  assert.ok(css.includes("text-wrap:balance;"));
+  assert.ok(css.includes("@media(min-width:601px) and (max-width:1120px)"));
+  assert.ok(css.includes(".network:dir(rtl) .node { width:auto; min-width:0;"));
+});
