@@ -1,0 +1,10 @@
+import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
+const dir='reports/visual';
+if (!existsSync(dir)) process.exit(0);
+const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const report=existsSync(`${dir}/layout-checks-after.json`)?JSON.parse(readFileSync(`${dir}/layout-checks-after.json`,'utf8')):null;
+const files=readdirSync(dir).filter(file=>file.endsWith('.jpg')).sort();
+const groups=[...new Set(files.map(file=>file.replace(/-(before|after)-(1440|768|390|320)\.jpg$/,'')))];
+const cards=groups.map(label=>`<section><h2>${escape(label)}</h2>${[1440,768,390,320].map(width=>`<h3>${width}px</h3><div class="pair">${['before','after'].map(phase=>{const file=`${label}-${phase}-${width}.jpg`;return files.includes(file)?`<figure><figcaption>${phase} · ${width}px · ${escape(phase==='before'?process.env.LOCAL_QA_COMPARE_SHA:report?.sourceRevision??'unknown')}</figcaption><a href="${file}"><img loading="lazy" src="${file}" alt="${escape(label)} ${phase} at ${width}px"></a></figure>`:'<p>Capture unavailable</p>';}).join('')}</div>`).join('')}</section>`).join('');
+writeFileSync(`${dir}/index.html`,`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Afghan Hub design review</title><style>body{font:16px/1.5 system-ui;margin:24px;color:#302b35;background:#f8f5ee}.pair{display:grid;grid-template-columns:1fr 1fr;gap:20px}figure{margin:0;min-width:0}img{width:100%;height:auto;border:1px solid #d9d2c6}figcaption{overflow-wrap:anywhere;font-size:12px}section{border-top:1px solid #d9d2c6;margin-top:32px}a{color:#624291}@media(max-width:600px){.pair{grid-template-columns:1fr}}</style><h1>Afghan Hub cross-page review</h1><p>Real disposable loopback accounts. 100% zoom, DPR 1. Each capture names its source revision. Missing captures are unverified.</p><p><a href="layout-checks-after.json">Layout findings</a></p>${cards}</html>`);
+console.log(`Gallery: ${files.length} images; ${groups.length} surfaces`);

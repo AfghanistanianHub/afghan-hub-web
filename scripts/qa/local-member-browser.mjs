@@ -104,14 +104,14 @@ async function check(name, fn) {
 async function captureState(page, label) {
   if(process.env.LOCAL_QA_VISUAL!=='1') return;
   const visualDir=process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual'; mkdirSync(visualDir,{recursive:true});
-  for(const width of [1440,390]) {
+  for(const width of [1440,768,390,320]) {
     await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
     await page.send('Emulation.setPageScaleFactor',{pageScaleFactor:1});
     const screenshot=await page.send('Page.captureScreenshot',{format:'png'});
     writeFileSync(`${visualDir}/${label}-${width}.png`,Buffer.from(screenshot.data,'base64'));
     if ((width===390 && ['navigator-member-fa-results','navigator-member-ps-results','opportunities-filtered-results','opportunities-empty','businesses-outage'].includes(label)) || (width===1440 && ['submissions-owner-note','businesses-recovered'].includes(label))) {
       const jpg=await page.send('Page.captureScreenshot',{format:'jpeg',quality:65});
-      const file=`${visualDir}/${label}-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));reviewImages.push({label,width,file});
+      const file=`${visualDir}/${label}-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));if(process.env.LOCAL_QA_DESIGN_REVIEW!=='1') reviewImages.push({label,width,file});
     }
   }
   await page.send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
@@ -699,29 +699,29 @@ try {
       const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
       mkdirSync(visualDir, {recursive:true});
       for (const phase of process.env.LOCAL_QA_COMPARE_DIR ? ['before', 'after'] : [process.env.LOCAL_QA_VISUAL_PHASE ?? 'after']) {
-      for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/about','/profile','/dashboard','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new','/not-a-real-page']) {
+      for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/','/about','/explore','/search','/saved','/settings','/profile','/dashboard','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new','/not-a-real-page']) {
         if (phase === 'before' && process.env.LOCAL_QA_COMPARE_DIR) {
           const navigation = await visual.send('Page.navigate', {url:compareUrl+route});
           if(navigation.loaderId) await until(()=>visual.loadedDocuments.has(navigation.loaderId), 'baseline document loaded');
           await until(()=>visual.evaluate(`location.origin===${JSON.stringify(compareUrl)} && document.readyState==='complete'`), 'baseline page');
         } else await visit(visual,route);
-        for (const width of [1440,390]) {
+        for (const width of [1440,768,390,320]) {
           await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
           const state = await visual.evaluate(`({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,canvas:!!document.querySelector('.global-network-background canvas'),rejectedArt:!!document.querySelector('[data-hero-layer="architecture"]'),heading:!!document.querySelector('main h1')})`);
-          assert.equal(state.overflow,false,`Horizontal overflow: ${route} at ${width}`);
-          if(['/businesses','/organizations','/opportunities','/events','/submissions','/network','/messages',conversationPath,`/members/${b.id}`].includes(route)) assert.equal(state.route,new URL(route,appUrl).pathname,'Member screenshot must depict its requested route');
+          if (phase === 'after') assert.equal(state.overflow,false,`Horizontal overflow: ${route} at ${width}`);
+          if(!['/login','/login?mode=join','/forgot-password','/update-password','/not-a-real-page'].includes(route)) assert.equal(state.route,new URL(route,appUrl).pathname,'Member screenshot must depict its requested route');
           if (['/businesses','/organizations','/opportunities','/events','/submissions','/network','/messages',conversationPath,`/members/${b.id}`].includes(route)) assert.equal(state.heading,true,`Member page requires h1: ${route}`);
           assert.equal(state.canvas,true); if (phase === 'after') assert.equal(state.rejectedArt,false);
           if(phase === 'after' && width===390) assert.equal(await visual.evaluate(`(() => {const heading=document.querySelector('[data-member-page-header] h1');return !heading || heading.getBoundingClientRect().width>=200;})()`), true, 'Mobile title must have readable width');
           if(phase==='after' && route==='/submissions' && width===390) assert.ok(await visual.evaluate(`document.querySelector('main article a[href]')?.getBoundingClientRect().width>=280`),'Submission title must retain readable mobile width beside its actions');
           await visual.send('Emulation.setPageScaleFactor', {pageScaleFactor:1});
-          findings.push({phase,requested:route===conversationPath?'/messages/[id]':route,width,...state,route:state.route.replace(/[0-9a-f-]{36}/g,'[id]')});
-          const label=route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replaceAll('/','-');
+          findings.push({sourceRevision:phase==='before'?process.env.LOCAL_QA_COMPARE_SHA:sourceRevision,phase,requested:route===conversationPath?'/messages/[id]':route,width,...state,route:state.route.replace(/[0-9a-f-]{36}/g,'[id]')});
+          const label=route==='/'?'homepage':route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replaceAll('/','-');
           const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
           writeFileSync(`${visualDir}/${label}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
-          if(phase==='after' && ['businesses','organizations','opportunities','events','submissions','network','member','messages','conversation'].includes(label)) {
+          if (process.env.LOCAL_QA_DESIGN_REVIEW==='1' || (phase==='after' && ['businesses','organizations','opportunities','events','submissions','network','member','messages','conversation'].includes(label))) {
             const jpg=await visual.send('Page.captureScreenshot',{format:'jpeg',quality:65});
-            const file=`${visualDir}/${label}-after-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));reviewImages.push({label,width,file});
+            const file=`${visualDir}/${label}-${phase}-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));if(process.env.LOCAL_QA_DESIGN_REVIEW!=='1') reviewImages.push({label,width,file});
           }
         }
       }
@@ -731,7 +731,7 @@ try {
       for (const locale of ['fa','ps']) {
         await select(visual,'#ai-navigator select',locale);
         await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`),'visual Navigator RTL');
-        for(const width of [1440,390]) {
+        for(const width of [1440,768,390,320]) {
           await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
           await visual.evaluate(`document.querySelector('#ai-navigator').scrollIntoView({block:'center'})`);
           const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
