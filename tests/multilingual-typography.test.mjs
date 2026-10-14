@@ -9,8 +9,10 @@ const preferences = readFileSync(new URL("../src/lib/assistant/navigator-languag
 const sitePreferences = readFileSync(new URL("../src/lib/i18n/site-language.ts", import.meta.url), "utf8");
 
 test("native-script font families are declared and language scoped", () => {
-  assert.match(css, /family=Estedad/);
-  assert.match(css, /family=Vazirmatn/);
+  const layout = readFileSync(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
+  assert.match(layout, /Estedad, Geist, Geist_Mono, Vazirmatn/);
+  assert.match(layout, /--font-estedad/);
+  assert.match(layout, /--font-vazirmatn/);
   assert.match(css, /:lang\(fa\)/);
   assert.match(css, /:lang\(prs\)/);
   assert.match(css, /:lang\(ps\)/);
