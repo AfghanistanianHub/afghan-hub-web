@@ -544,7 +544,7 @@ try {
       const row = await listingRow(table, titleField, title); listings.push({table, id:row.id}); assert.equal(row[ownerField], a.id); assert.equal(row.status, 'draft');
       const path = `/${table}/${row.slug}`; await pathname(pageA, path);
       await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes(${JSON.stringify(title)})`), 'owner draft detail');
-      const unavailableHeading = table === 'organizations' ? 'Organization not found' : 'This page isn’t available.';
+      const unavailableHeading = table === 'organizations' ? 'Organization not found' : table === 'businesses' ? 'Business not found' : 'This page isn’t available.';
       await visit(pageB, path);
       await until(() => pageB.evaluate(`document.querySelector('main h1')?.textContent.trim()===${JSON.stringify(unavailableHeading)} && !document.querySelector('main')?.innerText.includes(${JSON.stringify(title)})`), 'foreign draft hidden');
       await visit(pageB, `${path}/edit`);
@@ -1074,7 +1074,7 @@ try {
     try { results.at(-1).ownerFeedback = await pages[0].evaluate(`({route:location.pathname, cardCount:document.querySelectorAll('main article').length, expectedLink:!!document.querySelector(${JSON.stringify(`a[href="${expectedListingPath}"]`)}), expectedCard:document.querySelector(${JSON.stringify(`article:has(a[href="${expectedListingPath}"])`)})?.innerText.replace(/Synthetic[^\\n]*/g,'[synthetic title]'), unavailable:[...document.querySelectorAll('main [role=status]')].map(node=>node.textContent)})`); } catch { /* Sanitized optional diagnosis */ }
   }
   for (const page of pages) {
-    try { states.push({telemetry:page.telemetry,dom:await page.evaluate(`({ready:document.readyState,alert:!!document.querySelector('[role=alert]'),moderationForm:!!document.querySelector('[name=entity_id]'),unavailableListing:document.querySelector('main h1')?.textContent.includes('couldn’t load'),notFound:document.querySelector('main h1')?.textContent.includes('available'),route:location.pathname.replace(/browser-[^/]+/g,'[synthetic-slug]'),composer:!!document.querySelector('textarea[name=message]'),errorBoundary:document.body.innerText.includes('Something went wrong')})`)}); } catch { states.push({unavailable:true}); }
+    try { states.push({telemetry:page.telemetry,dom:await page.evaluate(`({ready:document.readyState,heading:document.querySelector('main h1')?.textContent?.trim().replace(/Synthetic[^\\n]*/g,'[synthetic title]'),alert:!!document.querySelector('[role=alert]'),moderationForm:!!document.querySelector('[name=entity_id]'),unavailableListing:document.querySelector('main h1')?.textContent.includes('couldn’t load'),notFound:document.querySelector('main h1')?.textContent.includes('available'),route:location.pathname.replace(/browser-[^/]+/g,'[synthetic-slug]'),composer:!!document.querySelector('textarea[name=message]'),errorBoundary:document.body.innerText.includes('Something went wrong')})`)}); } catch { states.push({unavailable:true}); }
   }
   results.at(-1).browserStates = states;
   if (fixtureB && conversationId) {
