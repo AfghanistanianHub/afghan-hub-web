@@ -27,7 +27,7 @@ test("Navigator provides its own language and direction boundary", () => {
 });
 
 test("regional language tags map to shared site languages", () => {
-  assert.match(preferences, /normalizeSiteLanguage/);
+  assert.match(sitePreferences, /normalizeSiteLanguage/);
   for (const code of ["fa-AF", "fa-IR", "prs", "ps-AF"]) {
     assert.ok(sitePreferences.includes(code), `missing regional language tag ${code}`);
   }
