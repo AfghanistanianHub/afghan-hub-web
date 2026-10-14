@@ -230,7 +230,18 @@ test("Persian hero headline overrides serif and italic emphasis explicitly", () 
   const hero = readFileSync(new URL("../src/components/public/localized-homepage-hero.tsx", import.meta.url), "utf8");
   assert.ok(hero.includes("data-hero-headline"));
   assert.ok(css.includes('.hero[lang="fa"] .statement h1[data-hero-headline]'));
-  assert.ok(css.includes('font-family:"Estedad","Vazirmatn",sans-serif;'));
+  assert.ok(css.includes("font-family:var(--font-fa-heading);"));
   assert.ok(css.includes('.hero[lang="fa"] .statement h1[data-hero-headline] em'));
   assert.ok(css.includes("font-style:normal;"));
+});
+
+test("Persian and Pashto fonts are bundled by Next.js instead of runtime Google CSS", () => {
+  const layout = readFileSync(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
+  const globals = readFileSync(new URL("../src/app/globals.css", import.meta.url), "utf8");
+  assert.ok(layout.includes("Estedad, Geist, Geist_Mono, Vazirmatn"));
+  assert.ok(layout.includes('variable: "--font-estedad"'));
+  assert.ok(layout.includes('variable: "--font-vazirmatn"'));
+  assert.ok(globals.includes("--font-fa-heading: var(--font-estedad)"));
+  assert.ok(globals.includes("--font-fa-body: var(--font-vazirmatn)"));
+  assert.ok(!globals.includes("fonts.googleapis.com/css2?family=Estedad"));
 });
