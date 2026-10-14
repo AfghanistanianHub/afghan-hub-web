@@ -80,3 +80,17 @@ test("animated category introduction uses localized content and RTL-safe geometr
   assert.match(categoryCss, /\.section:dir\(rtl\) \.line/);
   assert.match(categoryCss, /\.section:dir\(rtl\) \.category::before/);
 });
+
+test("homepage sections share the site language without dropping interactive structure", () => {
+  const page = readFileSync(new URL("../src/app/(public)/page.tsx", import.meta.url), "utf8");
+  for (const name of ["LocalizedHomepageHero", "LocalizedHomepageSteps", "LocalizedHomepagePaths", "LocalizedHomepageValue", "LocalizedHomepageFinal", "ScrollCategoryIntroduction"]) {
+    assert.ok(page.includes("<" + name), `missing homepage section ${name}`);
+  }
+  for (const filename of ["localized-homepage-hero", "localized-homepage-steps", "localized-homepage-paths", "localized-homepage-value", "localized-homepage-final"]) {
+    const source = readFileSync(new URL(`../src/components/public/${filename}.tsx`, import.meta.url), "utf8");
+    assert.match(source, /subscribeSiteLanguagePreference/);
+    assert.match(source, /readSiteLanguagePreference/);
+    assert.match(source, /lang=\{language\}/);
+    assert.match(source, /dir=\{language === "en" \? "ltr" : "rtl"\}/);
+  }
+});
