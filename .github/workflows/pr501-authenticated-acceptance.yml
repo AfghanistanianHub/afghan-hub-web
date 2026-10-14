@@ -1,0 +1,63 @@
+name: PR501 isolated authenticated acceptance
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "supabase/**"
+      - "scripts/qa/**"
+      - "tests/**"
+      - ".github/workflows/pr501-authenticated-acceptance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  journeys:
+    name: Independent acceptance ${{ matrix.pass }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        pass: [1, 2]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Prepare disposable local stack
+        run: node scripts/qa/prepare-local-journey.mjs
+      - name: Start isolated Supabase (never hosted)
+        run: |
+          if ! supabase --workdir "$LOCAL_QA_DIR" start --exclude studio,logflare,vector,edge-runtime > "$RUNNER_TEMP/local-stack-start.log" 2>&1; then
+            node scripts/qa/summarize-stack-error.mjs "$RUNNER_TEMP/local-stack-start.log"
+            exit 1
+          fi
+      - name: Verify API and RLS personas
+        run: node scripts/qa/local-member-journeys.mjs
+      - name: Verify full authenticated Chrome journeys
+        env:
+          LOCAL_QA_VISUAL: "1"
+        run: node scripts/qa/local-member-browser.mjs
+      - name: Upload sanitized acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr501-authenticated-pass-${{ matrix.pass }}
+          path: |
+            reports/local-member-browser.json
+            reports/visual/
+          if-no-files-found: ignore
+      - name: Destroy disposable Supabase stack
+        if: always()
+        run: |
+          if [ -n "${LOCAL_QA_DIR:-}" ] && [ -d "$LOCAL_QA_DIR" ]; then
+            supabase --workdir "$LOCAL_QA_DIR" stop --no-backup
+          fi
