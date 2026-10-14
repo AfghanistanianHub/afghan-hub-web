@@ -238,6 +238,14 @@
   font-family: var(--font-fa-body);
   line-height: 1.5;
 }
+/* Inline native-script islands (e.g. a Pashto label inside an English page)
+   must receive the correct face without changing the document language. */
+:is([lang="fa"], [lang="fa-AF"], [lang="fa-IR"], [lang="prs"], [lang="ps"], [lang="ps-AF"]) {
+  font-family: var(--font-fa-body);
+}
+:is([lang="fa"], [lang="fa-AF"], [lang="fa-IR"], [lang="prs"], [lang="ps"], [lang="ps-AF"]):not(input):not(textarea) {
+  unicode-bidi: isolate;
+}
 /* Explicit utility classes for components whose locale is local rather than document-wide. */
 .font-afghan-body { font-family: var(--font-fa-body); }
 .font-afghan-heading { font-family: var(--font-fa-heading); }
