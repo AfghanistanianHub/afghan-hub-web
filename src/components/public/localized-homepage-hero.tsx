@@ -44,7 +44,7 @@ export function LocalizedHomepageHero() {
   return <section className={styles.hero} aria-labelledby="landing-title" lang={language} dir={language === "en" ? "ltr" : "rtl"}>
     <div className={styles.statement}>
       <p className={styles.eyebrow}>{copy.eyebrow}</p>
-      <h1 id="landing-title">{copy.first}<br />{copy.second} <em>{copy.emphasis}</em></h1>
+      <h1 id="landing-title" data-hero-headline>{copy.first}<br />{copy.second} <em>{copy.emphasis}</em></h1>
       <p className={styles.intro}>{copy.description}</p>
       <div className={styles.actions}>
         <Link href="/login?mode=join" data-landing-cta="join" className={styles.primary}>{copy.join} <Arrow size={17} aria-hidden="true" /></Link>
