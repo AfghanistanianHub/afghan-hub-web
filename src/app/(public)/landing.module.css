@@ -157,7 +157,7 @@
 /* Explicitly override the original Georgia shorthand for the Persian hero.
    This hook is intentionally higher-specificity than .statement h1. */
 .hero[lang="fa"] .statement h1[data-hero-headline] {
-  font-family:"Estedad","Vazirmatn",sans-serif;
+  font-family:var(--font-fa-heading);
   font-weight:600;
   font-style:normal;
   letter-spacing:normal;
@@ -170,7 +170,7 @@
   font-weight:700;
 }
 .hero[lang="ps"] .statement h1[data-hero-headline] {
-  font-family:"Vazirmatn",sans-serif;
+  font-family:var(--font-fa-body);
   font-weight:600;
   font-style:normal;
   letter-spacing:normal;
