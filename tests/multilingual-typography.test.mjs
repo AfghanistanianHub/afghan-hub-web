@@ -26,11 +26,14 @@ test("Navigator provides its own language and direction boundary", () => {
   assert.match(navigatorCss, /\.identity h2/);
 });
 
-test("regional language tags map to shared site languages", () => {
+test("regional language tags are normalized by the canonical site language module", () => {
   assert.match(sitePreferences, /normalizeSiteLanguage/);
-  for (const code of ["fa-AF", "fa-IR", "prs", "ps-AF"]) {
-    assert.ok(sitePreferences.includes(code), `missing regional language tag ${code}`);
-  }
+  assert.match(sitePreferences, /replaceAll\("_", "-"\)/);
+  assert.match(sitePreferences, /toLowerCase\(\)/);
+  assert.match(sitePreferences, /locale\.startsWith\("fa-"\)/);
+  assert.match(sitePreferences, /locale\.startsWith\("prs-"\)/);
+  assert.match(sitePreferences, /locale\.startsWith\("ps-"\)/);
+  // Concrete language-tag behavior is covered in site-language-runtime.test.mjs.
 });
 
 test("language-specific selectors retain specificity and inline-script isolation", () => {
