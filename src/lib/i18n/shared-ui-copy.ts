@@ -4,6 +4,7 @@ import type { SiteLanguage } from "./site-language";
 export const sharedUiCopy = {
   en: {
     navigation: "Navigation",
+    skipToContent: "Skip to content",
     explore: "Explore",
     people: "People",
     businesses: "Businesses",
@@ -20,6 +21,7 @@ export const sharedUiCopy = {
   },
   fa: {
     navigation: "ناوبری",
+    skipToContent: "رفتن به محتوای اصلی",
     explore: "کاوش",
     people: "افراد",
     businesses: "کسب‌وکارها",
@@ -36,6 +38,7 @@ export const sharedUiCopy = {
   },
   ps: {
     navigation: "لارښود",
+    skipToContent: "اصلي منځپانګې ته تګ",
     explore: "پلټنه",
     people: "خلک",
     businesses: "سوداګرۍ",
