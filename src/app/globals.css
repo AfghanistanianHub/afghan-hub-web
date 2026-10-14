@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Estedad:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -218,3 +219,14 @@
 .app-content main {
   background-color: transparent !important;
 }
+
+
+/* Afghan Hub multilingual typography: scoped to language, preserving Geist for English. */
+:root { --font-fa-body: "Vazirmatn", sans-serif; --font-fa-heading: "Estedad", "Vazirmatn", sans-serif; }
+:where([lang="fa"],[lang="fa-IR"],[lang="fa-AF"],[lang="prs"]) { font-family:var(--font-fa-body); }
+:where([lang="fa"],[lang="fa-IR"],[lang="fa-AF"],[lang="prs"]) :where(h1,h2,h3,h4,h5,h6) { font-family:var(--font-fa-heading); line-height:1.5; }
+:where([lang="ps"],[lang="ps-AF"]) { font-family:var(--font-fa-body); }
+:where([lang="ps"],[lang="ps-AF"]) :where(h1,h2,h3,h4,h5,h6) { font-family:var(--font-fa-body); line-height:1.5; }
+:where([lang="fa"],[lang="fa-IR"],[lang="fa-AF"],[lang="prs"],[lang="ps"],[lang="ps-AF"]) :where(p,li,button,input,textarea,select) { font-family:var(--font-fa-body); }
+:where([dir="rtl"]) { text-align:start; }
+:where([dir="rtl"]) :where(input[type="email"],input[type="url"],input[type="password"]) { direction:ltr; }
