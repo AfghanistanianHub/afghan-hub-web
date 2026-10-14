@@ -30,3 +30,15 @@ test("regional language tags map to existing Navigator languages", () => {
     assert.ok(preferences.includes(code), `missing regional language tag ${code}`);
   }
 });
+
+test("language-specific selectors retain specificity and inline-script isolation", () => {
+  assert.match(css, /:is\(:lang\(fa\), :lang\(prs\), :lang\(ps\)\)/);
+  assert.match(css, /unicode-bidi:\s*isolate/);
+  assert.match(css, /\[lang="ps-AF"\]/);
+  assert.doesNotMatch(css, /:where\(:lang\(fa\), :lang\(prs\), :lang\(ps\)\)/);
+});
+
+test("Navigator form controls inherit native-language type", () => {
+  assert.match(navigatorCss, /:is\(input, select, button, textarea\)/);
+  assert.match(navigatorCss, /font-family:\s*var\(--font-fa-body\)/);
+});
