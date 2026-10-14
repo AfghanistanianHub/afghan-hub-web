@@ -172,3 +172,12 @@ test("accessible public skip link follows selected site language", () => {
     assert.ok(sharedCopy.includes("skipToContent:"));
   }
 });
+
+test("localized homepage uses native-script headings and mirrored step progress", () => {
+  const landingCss = readFileSync(new URL("../src/app/(public)/landing.module.css", import.meta.url), "utf8");
+  assert.ok(landingCss.includes(".hero:dir(rtl) .statement h1"));
+  assert.ok(landingCss.includes('.hero[lang="ps"] .statement h1'));
+  assert.ok(landingCss.includes(".orientation:dir(rtl) .steps h3"));
+  assert.ok(landingCss.includes("transform-origin:right;"));
+  assert.ok(landingCss.includes("right:21px;"));
+});
