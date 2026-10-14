@@ -15,7 +15,10 @@ export function normalizeSiteLanguage(value: unknown): SiteLanguage {
 export function readSiteLanguagePreference(): SiteLanguage {
   if (typeof window === "undefined") return "en";
   try {
-    return normalizeSiteLanguage(window.localStorage.getItem(siteLanguagePreferenceKey));
+    // Preserve language chosen in Navigator before site-wide preferences existed.
+    const selected = window.localStorage.getItem(siteLanguagePreferenceKey);
+    const legacy = window.localStorage.getItem("afghan-hub-navigator-language");
+    return normalizeSiteLanguage(selected ?? legacy);
   } catch {
     return "en";
   }
