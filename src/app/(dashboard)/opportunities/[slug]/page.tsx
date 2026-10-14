@@ -155,7 +155,7 @@ export default async function OpportunityPage({
                   {opportunity.type}
                 </span>
                 {!isExpired && opportunity.status === "published" ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-background/75 px-3 py-1.5 text-xs font-medium text-primary backdrop-blur">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-background px-3 py-1.5 text-xs font-medium text-primary">
                     <Sparkles aria-hidden="true" className="size-3" /> Active
                   </span>
                 ) : null}

@@ -105,13 +105,13 @@ async function captureState(page, label) {
   if(process.env.LOCAL_QA_VISUAL!=='1') return;
   const visualDir=process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual'; mkdirSync(visualDir,{recursive:true});
   for(const width of [1440,768,390,320]) {
-    await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
+    await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
     await page.send('Emulation.setPageScaleFactor',{pageScaleFactor:1});
     const screenshot=await page.send('Page.captureScreenshot',{format:'png'});
     writeFileSync(`${visualDir}/${label}-${width}.png`,Buffer.from(screenshot.data,'base64'));
-    if ((width===390 && ['navigator-member-fa-results','navigator-member-ps-results','opportunities-filtered-results','opportunities-empty','businesses-outage'].includes(label)) || (width===1440 && ['submissions-owner-note','businesses-recovered'].includes(label))) {
+    if (process.env.LOCAL_QA_DESIGN_REVIEW==='1' || (width===390 && ['navigator-member-fa-results','navigator-member-ps-results','opportunities-filtered-results','opportunities-empty','businesses-outage'].includes(label)) || (width===1440 && ['submissions-owner-note','businesses-recovered'].includes(label))) {
       const jpg=await page.send('Page.captureScreenshot',{format:'jpeg',quality:65});
-      const file=`${visualDir}/${label}-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));if(process.env.LOCAL_QA_DESIGN_REVIEW!=='1') reviewImages.push({label,width,file});
+      const file=`${visualDir}/${label}-after-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));if(process.env.LOCAL_QA_DESIGN_REVIEW!=='1') reviewImages.push({label,width,file});
     }
   }
   await page.send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
@@ -251,6 +251,7 @@ async function select(page, selector, value) {
 }
 async function eventStart(page) {
   await click(page, 'button[aria-label^="Select start date & time:"]');
+  await captureState(page, 'event-calendar-dialog');
   await click(page, '[role=dialog] .rdp-day:not([data-disabled=true]) .rdp-day_button:not([disabled])');
   await select(page, '#starts_at-hour', '11');
   await select(page, '#starts_at-minute', '30');
@@ -272,6 +273,7 @@ async function login(page, email, secret = password) {
 }
 async function onboard(page, name) {
   await pathname(page, '/profile');
+  await captureState(page, 'onboarding');
   await fill(page, '[name=first_name]', 'Synthetic');
   await fill(page, '[name=last_name]', name);
   await fill(page, '[name=city]', 'Vancouver');
@@ -575,8 +577,10 @@ try {
     const reviewerPage = await page(); await login(reviewerPage, reviewer.email); await pathname(reviewerPage, '/dashboard');
     await check(`${role}: moderation access respects admin-only team boundary`, async () => {
       await visit(reviewerPage, '/moderation'); await pathname(reviewerPage, '/moderation');
+      await captureState(reviewerPage, `${role}-moderation`);
       assert.equal(await reviewerPage.evaluate(`!!document.querySelector('a[href="/moderation/team"]')`), role === 'admin');
       await visit(reviewerPage, '/moderation/team'); await pathname(reviewerPage, role === 'admin' ? '/moderation/team' : '/moderation');
+      if (role === 'admin') await captureState(reviewerPage,'admin-team');
     });
     for (const [table, , ownerField, payload] of [
       ['organizations','organization','owner_id',{name:`Synthetic ${stamp} ${role} organization`}],
@@ -696,17 +700,26 @@ try {
     await check('Representative pages: desktop/mobile layout, global canvas and Navigator RTL', async () => {
       const visual = await page(pageA.browserContextId);
       const findings = [];
+      const reviewDetails = [];
+      for (const table of ['businesses','organizations','opportunities','events']) {
+        const fixture = listings.filter(row=>row.table===table).at(-1);
+        if (!fixture) continue;
+        const row = await data(admin.from(table).select('slug').eq('id',fixture.id).maybeSingle());
+        if (row) reviewDetails.push(`/${table}/${row.slug}`,`/${table}/${row.slug}/edit`,`/explore/${table}/${row.slug}`);
+      }
       const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
       mkdirSync(visualDir, {recursive:true});
       for (const phase of process.env.LOCAL_QA_COMPARE_DIR ? ['before', 'after'] : [process.env.LOCAL_QA_VISUAL_PHASE ?? 'after']) {
-      for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/','/about','/explore','/search','/saved','/settings','/profile','/dashboard','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new','/not-a-real-page']) {
+      for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/','/about','/explore','/search','/saved','/settings','/profile','/dashboard','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new',...reviewDetails,'/not-a-real-page']) {
         if (phase === 'before' && process.env.LOCAL_QA_COMPARE_DIR) {
           const navigation = await visual.send('Page.navigate', {url:compareUrl+route});
           if(navigation.loaderId) await until(()=>visual.loadedDocuments.has(navigation.loaderId), 'baseline document loaded');
           await until(()=>visual.evaluate(`location.origin===${JSON.stringify(compareUrl)} && document.readyState==='complete'`), 'baseline page');
         } else await visit(visual,route);
+        await visual.evaluate('document.fonts.ready.then(()=>true)');
+        if(route==='/') await select(visual,'#ai-navigator select','en');
         for (const width of [1440,768,390,320]) {
-          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
+          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
           const state = await visual.evaluate(`({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,canvas:!!document.querySelector('.global-network-background canvas'),rejectedArt:!!document.querySelector('[data-hero-layer="architecture"]'),heading:!!document.querySelector('main h1')})`);
           if (phase === 'after') assert.equal(state.overflow,false,`Horizontal overflow: ${route} at ${width}`);
           if(!['/login','/login?mode=join','/forgot-password','/update-password','/not-a-real-page'].includes(route)) assert.equal(state.route,new URL(route,appUrl).pathname,'Member screenshot must depict its requested route');
@@ -716,28 +729,77 @@ try {
           if(phase==='after' && route==='/submissions' && width===390) assert.ok(await visual.evaluate(`document.querySelector('main article a[href]')?.getBoundingClientRect().width>=280`),'Submission title must retain readable mobile width beside its actions');
           await visual.send('Emulation.setPageScaleFactor', {pageScaleFactor:1});
           findings.push({sourceRevision:phase==='before'?process.env.LOCAL_QA_COMPARE_SHA:sourceRevision,phase,requested:route===conversationPath?'/messages/[id]':route,width,...state,route:state.route.replace(/[0-9a-f-]{36}/g,'[id]')});
-          const label=route==='/'?'homepage':route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replaceAll('/','-');
-          const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
+          writeFileSync(`${visualDir}/layout-checks-after.json`,JSON.stringify({sourceRevision,sourceTree,zoom:100,findings},null,2)+'\n');
+          if (process.env.LOCAL_QA_DESIGN_REVIEW==='1' && [1440,320].includes(width)) {
+            if(process.env.LOCAL_QA_AXE_PATH) {
+              await visual.evaluate(readFileSync(process.env.LOCAL_QA_AXE_PATH,'utf8'));
+              const axe = await visual.evaluate(`axe.run(document.querySelector('main') ?? document.body,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>({violations:r.violations.map(v=>({id:v.id,impact:v.impact,description:v.description,targets:v.nodes.map(n=>n.target)})),incomplete:r.incomplete.map(v=>v.id)}))`);
+              findings.at(-1).accessibility=axe;
+            }
+            findings.at(-1).type = await visual.evaluate(`(() => {const h=document.querySelector('main h1');return h?{font:getComputedStyle(h).fontFamily,size:getComputedStyle(h).fontSize,lineHeight:getComputedStyle(h).lineHeight,width:h.getBoundingClientRect().width}:null;})()`);
+          }
+          writeFileSync(`${visualDir}/layout-checks-after.json`,JSON.stringify({sourceRevision,sourceTree,zoom:100,findings},null,2)+'\n');
+          const label=reviewDetails.includes(route)?route.startsWith('/explore/')?`public-${route.split('/')[2]}-detail`:`${route.split('/')[1]}-${route.endsWith('/edit')?'edit':'detail'}`:route==='/'?'homepage':route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replaceAll('/','-');
+          const metrics=await visual.send('Page.getLayoutMetrics');
+          const clip={x:0,y:0,width,height:Math.min(metrics.cssContentSize.height,16000),scale:1};
+          const screenshot=await visual.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true,clip});
           writeFileSync(`${visualDir}/${label}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
           if (process.env.LOCAL_QA_DESIGN_REVIEW==='1' || (phase==='after' && ['businesses','organizations','opportunities','events','submissions','network','member','messages','conversation'].includes(label))) {
-            const jpg=await visual.send('Page.captureScreenshot',{format:'jpeg',quality:65});
+            const jpg=await visual.send('Page.captureScreenshot',{format:'jpeg',quality:75,captureBeyondViewport:true,clip});
             const file=`${visualDir}/${label}-${phase}-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));if(process.env.LOCAL_QA_DESIGN_REVIEW!=='1') reviewImages.push({label,width,file});
           }
         }
       }
       }
-      const phase = 'after';
-      await visit(visual,'/');
-      for (const locale of ['fa','ps']) {
-        await select(visual,'#ai-navigator select',locale);
-        await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`),'visual Navigator RTL');
-        for(const width of [1440,768,390,320]) {
-          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
-          await visual.evaluate(`document.querySelector('#ai-navigator').scrollIntoView({block:'center'})`);
-          const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
-          writeFileSync(`${visualDir}/navigator-${locale}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
+      for (const phase of process.env.LOCAL_QA_COMPARE_DIR ? ['before','after'] : ['after']) {
+        if(phase==='before') {
+          const navigation=await visual.send('Page.navigate',{url:compareUrl+'/'});
+          if(navigation.loaderId) await until(()=>visual.loadedDocuments.has(navigation.loaderId),'baseline Navigator document');
+        } else await visit(visual,'/');
+        for (const locale of ['en','fa','ps']) {
+          await select(visual,'#ai-navigator select',locale);
+          await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')===${JSON.stringify(locale==='en'?'ltr':'rtl')}`),'visual Navigator language');
+          for(const width of [1440,768,390,320]) {
+            await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
+            await visual.evaluate(`document.querySelector('#ai-navigator').scrollIntoView({block:'center'})`);
+            const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
+            writeFileSync(`${visualDir}/navigator-${locale}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
+            const jpg=await visual.send('Page.captureScreenshot',{format:'jpeg',quality:75});
+            writeFileSync(`${visualDir}/navigator-${locale}-${phase}-${width}.jpg`,Buffer.from(jpg.data,'base64'));
+            if(phase==='after') {
+              assert.equal(await visual.evaluate(`document.documentElement.scrollWidth>innerWidth`),false);
+              const size=await visual.evaluate(`getComputedStyle(document.querySelector('#ai-navigator input')).fontSize`);
+              assert.ok(parseFloat(size)>=16,'Navigator field text must avoid mobile focus zoom');
+            }
+          }
         }
       }
+      await visit(visual,'/network');
+      await visual.send('Emulation.setDeviceMetricsOverride',{width:320,height:1000,deviceScaleFactor:1,mobile:true});
+      await openMemberNavigator(visual);
+      await check('Navigator keyboard focus stays inside the dialog and Escape restores its launcher',async()=> {
+        for(let index=0;index<20;index++) {
+          await visual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+          await visual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+          assert.equal(await visual.evaluate(`document.querySelector('dialog[open]').contains(document.activeElement)`),true);
+        }
+        await visual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+        await visual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+        await until(()=>visual.evaluate(`!document.querySelector('dialog[open]') && document.activeElement?.getAttribute('aria-haspopup')==='dialog'`),'Escape returns Navigator focus');
+      });
+      await visit(visual,'/network');
+      await click(visual,'button[aria-label^="Notifications"]');
+      await until(()=>visual.evaluate(`!!document.querySelector('[role=dialog][aria-label="Notifications"]')`),'notification panel open');
+      await captureState(visual,'notifications-dialog');
+      await visual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+      await visual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+      await check('Reduced-motion Navigator and global canvas stay usable at 320px',async()=> {
+        await visual.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+        await visit(visual,'/');
+        assert.equal(await visual.evaluate(`matchMedia('(prefers-reduced-motion: reduce)').matches`),true);
+        await captureState(visual,'homepage-reduced-motion');
+        await visual.send('Emulation.setEmulatedMedia',{features:[]});
+      });
       writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, findings},null,2)+'\n');
     });
   }

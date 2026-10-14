@@ -25,6 +25,16 @@ jobs:
         with:
           version: 2.117.0
       - run: npm ci
+      - name: Unit, type, lint and grant regression
+        run: |
+          npm run lint
+          npx tsc --noEmit
+          node --test tests/*.test.mjs
+          npm run security:migration-grants
+      - name: Install isolated accessibility checker
+        run: |
+          npm install --prefix "$RUNNER_TEMP/design-a11y" --ignore-scripts --no-audit --no-fund --package-lock=false axe-core@4.11.0
+          node -e "require('node:fs').appendFileSync(process.env.GITHUB_ENV, 'LOCAL_QA_AXE_PATH='+process.env.RUNNER_TEMP+'/design-a11y/node_modules/axe-core/axe.min.js\\n')"
       - run: node scripts/qa/prepare-local-journey.mjs
       - name: Start disposable loopback stack
         run: |

@@ -1,3 +1,4 @@
+import { AuthBrand } from "@/components/auth/auth-brand";
 import { SubmitButton } from "@/components/auth/submit-button";
 import Link from "next/link";
 import { requestPasswordReset } from "./actions";
@@ -15,10 +16,8 @@ export default async function ForgotPasswordPage({
   const { error, message } = await searchParams;
 
   return (
-    <main className="auth-page min-h-screen text-foreground">
-      <header className="auth-brand">
-        <Link href="/" className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Afghan Hub</Link>
-      </header>
+    <main id="main-content" className="auth-page min-h-screen text-foreground">
+      <AuthBrand />
 
       <section className="auth-form-region">
 

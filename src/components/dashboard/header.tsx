@@ -34,7 +34,7 @@ export function Header({
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
-    <header className="sticky top-0 z-20 flex h-20 items-center justify-between gap-2 border-b border-border/70 bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/90 sm:px-6 md:px-8 lg:px-10 xl:px-12">
+    <header className="sticky top-0 z-20 flex h-20 items-center justify-between gap-2 border-b border-border/70 bg-background px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <div className="flex min-w-0 items-center gap-2 sm:gap-3 md:flex-1">
         <MobileNavigation
           canModerate={canModerate}

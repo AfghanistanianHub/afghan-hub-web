@@ -392,7 +392,7 @@ export default async function SearchPage({
   return (
     <main className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <div className="mx-auto max-w-5xl">
-        <section className="relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
+        <section className="relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8 shadow-[var(--shadow-surface)] md:px-8 md:py-10">
           <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
           <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
           <div className="relative">
@@ -409,13 +409,13 @@ export default async function SearchPage({
           </div>
         </section>
 
-        <form action="/search" role="search" className="relative mt-8 grid gap-3 rounded-[var(--radius)] border border-border/80 bg-card/88 p-4 shadow-[0_1px_0_rgb(48_43_53/0.025)] backdrop-blur md:grid-cols-[14rem_minmax(0,1fr)_auto] md:items-end">
+        <form action="/search" role="search" className="relative mt-8 grid gap-3 rounded-[var(--radius)] border border-border/80 bg-card p-4 shadow-[0_1px_0_rgb(48_43_53/0.025)] md:grid-cols-[14rem_minmax(0,1fr)_auto] md:items-end">
           <label className="grid gap-2 text-sm font-medium text-foreground">
             What are you looking for?
             <select
               name="intent"
               defaultValue={intent ?? ""}
-              className="rounded-[var(--radius-control)] border border-border/80 bg-background/70 px-4 py-4 text-sm text-foreground outline-none transition hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
+              className="rounded-[var(--radius-control)] border border-border/80 bg-background px-4 py-4 text-sm text-foreground outline-none transition hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
             >
               <option value="">Anything in the community</option>
               {phaseOneSearchIntents.map((option) => (
@@ -434,7 +434,7 @@ export default async function SearchPage({
               defaultValue={query}
               placeholder={intent ? "Optional keyword…" : "Name, skill, organization, service, opportunity…"}
               aria-label="Search Afghan Hub"
-              className="w-full rounded-[var(--radius-control)] border border-border/80 bg-background/70 py-4 pl-12 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
+              className="w-full rounded-[var(--radius-control)] border border-border/80 bg-background py-4 pl-12 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
             />
           </label>
           <button
