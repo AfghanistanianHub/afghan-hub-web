@@ -32,3 +32,12 @@
 @media(max-width:1120px) and (min-width:961px) { .network { height:370px; } .node { width:114px; } .node.people { left:37%; } .node.organizations { right:4%; } }
 @media(max-width:600px) { .network { height:auto; display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:18px 0; padding:16px 0 26px; } .geometry { height:100%; opacity:.6; } .node { position:relative; inset:auto !important; width:auto; grid-column:span 2; min-height:126px; } .node.people { grid-column:3/5; } .node.businesses { grid-column:1/3; grid-row:2; } .node.organizations { grid-column:5/7; grid-row:2; } .node.opportunities { grid-column:2/4; grid-row:3; } .node.events { grid-column:4/6; grid-row:3; } .label { font-size:17px; } .description { font-size:11px; } }
 @media(prefers-reduced-motion:reduce) { .node,.geometry,.branch,.branch path,.icon,.label { animation:none; transition:none; } .node:hover .icon,.node:focus-visible .icon { transform:none; } }
+
+/* Preserve the fixed network geometry while typesetting native-script labels. */
+.network:dir(rtl) .label { font-family:var(--font-fa-heading),var(--font-fa-body),sans-serif; line-height:1.5; letter-spacing:normal; }
+.network[lang="ps"] .label { font-family:var(--font-fa-body),sans-serif; }
+.network:dir(rtl) .description { font-family:var(--font-fa-body),sans-serif; line-height:1.65; }
+@media(max-width:600px) {
+  .network:dir(rtl) .node { min-height:142px; }
+  .network:dir(rtl) .description { max-width:125px; }
+}
