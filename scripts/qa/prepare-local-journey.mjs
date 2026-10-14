@@ -9,6 +9,10 @@ config=config.replace('openai_api_key = "env(OPENAI_API_KEY)"','').replace(/(\[d
 config=config.replace(/(\[auth.email\][\s\S]*?enable_confirmations = )false/,'$1true');
 // Exact loopback callback for the disposable browser fixture only.
 config=config.replace('site_url = "http://127.0.0.1:3000"','site_url = "http://localhost:3100"').replace('additional_redirect_urls = ["https://127.0.0.1:3000"]','additional_redirect_urls = ["http://localhost:3100/auth/callback?next=/dashboard&flow=signup", "http://localhost:3100/auth/callback?next=/update-password"]');
+// Install reviewed templates only into this disposable stack. Hosted templates
+// are an operator-controlled setting and are never modified by this runner.
+config += '\n[auth.email.template.confirmation]\nsubject = "Confirm your Afghan Hub email"\ncontent_path = "./supabase/templates/confirmation.html"\n\n[auth.email.template.recovery]\nsubject = "Reset your Afghan Hub password"\ncontent_path = "./supabase/templates/recovery.html"\n';
+cpSync('supabase/templates',join(dir,'supabase/templates'),{recursive:true});
 writeFileSync(join(dir,'supabase/config.toml'),config);
 cpSync('supabase/migrations',join(dir,'supabase/migrations'),{recursive:true});
 if(process.env.GITHUB_ENV)appendFileSync(process.env.GITHUB_ENV,`LOCAL_QA_DIR=${dir}\n`);

@@ -290,10 +290,12 @@ async function deliveredConfirmation(email, type = 'signup', excludedIds = []) {
   const message = await response.json();
   assert.ok(message.To.some(to => to.Address === email));
   const links = [...message.HTML.matchAll(/href=["']([^"']+)["']/g)].map(match => match[1].replaceAll('&amp;', '&'));
-  const link = links.map(value => new URL(value)).find(url => url.origin === apiUrl && url.pathname === '/auth/v1/verify');
-  assert.ok(link, 'Email must contain the loopback Auth verification URL');
-  assert.equal(link.searchParams.get('type'), type);
-  assert.equal(link.searchParams.get('redirect_to'), type==='signup' ? `${appUrl}/auth/callback?next=/dashboard&flow=signup` : `${appUrl}/auth/callback?next=/update-password`);
+  const link = links.map(value => new URL(value)).find(url => url.origin === appUrl && url.pathname === '/auth/confirm');
+  assert.ok(link, 'Email must contain the loopback application confirmation URL');
+  assert.equal(link.searchParams.get('type'), type==='signup' ? 'email' : 'recovery');
+  assert.match(link.searchParams.get('token_hash'), /^[A-Za-z0-9_-]+$/);
+  assert.equal(link.searchParams.has('redirect_to'), false);
+  assert.equal(link.searchParams.has('next'), false);
   return link.href;
 }
 async function member(label) {
@@ -382,7 +384,7 @@ try {
       await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
     }
   });
-  await check('Real signup, local email delivery and PKCE callback establish the browser session', async () => {
+  await check('Real signup and delivered one-time email establish the browser session', async () => {
     await visit(pageA, '/login?mode=join');
     await fill(pageA, '[name=email]', a.email); await fill(pageA, '[name=password]', password);
     await click(pageA, '#join button[type=submit]');
@@ -943,7 +945,7 @@ try {
     await until(() => pageB.evaluate(`location.pathname===${JSON.stringify(conversationPath)} && document.body.innerText.includes(${JSON.stringify(message('offline'))})`), 'reconnect catch-up', 35000);
     await snapshot('caught-up');
   });
-  await check('Separate-context signup confirms the identity but PKCE session exchange fails closed without its verifier', async () => {
+  await check('Separate-context signup confirms identity and creates only the receiving browser session', async () => {
     const requester=await page(), receiver=await page();
     assert.notEqual(requester.browserContextId,receiver.browserContextId);
     const email=`browser-${stamp}-separate-signup@example.invalid`;
@@ -953,14 +955,21 @@ try {
     const registered=(await data(admin.auth.admin.listUsers())).users.find(user=>user.email===email);
     assert.ok(registered); users.push(registered.id); assert.ok(!registered.email_confirmed_at);
     const link=await deliveredConfirmation(email);
-    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
-    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'separate-context signup feedback');
+    const wrongType=new URL(link); wrongType.searchParams.set('type','recovery');
+    await receiver.send('Page.navigate',{url:wrongType.href}); await pathname(receiver,'/forgot-password');
+    await visit(receiver,'/update-password'); await pathname(receiver,'/login');
+    assert.ok(!(await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at,'Changing token type must not confirm the identity');
+    const attemptedRedirect=new URL(link); attemptedRedirect.searchParams.set('next','https://example.invalid');
+    await receiver.send('Page.navigate',{url:attemptedRedirect.href}); await pathname(receiver,'/profile');
     assert.ok((await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at);
-    await visit(receiver,'/dashboard'); await pathname(receiver,'/login');
-    await login(receiver,email); await pathname(receiver,'/profile'); await onboard(receiver,'SeparateSignup');
-    await captureState(receiver,'separate-signup-after-explicit-login');
+    await onboard(receiver,'SeparateSignup');
+    assert.equal((await data(admin.from('profiles').select('last_name').eq('id',registered.id).single())).last_name,'SeparateSignup');
+    await visit(receiver,'/dashboard'); await pathname(receiver,'/dashboard');
+    await visit(requester,'/dashboard'); await pathname(requester,'/login');
+    await captureState(receiver,'separate-signup-confirmed');
     await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
     await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
+    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'replayed cross-context signup refused');
     await visit(receiver,'/dashboard'); await pathname(receiver,'/login');
   });
   const recoveryAccount=await member('recovery');
@@ -991,7 +1000,7 @@ try {
     await click(recoveryPage,'button[aria-label="Sign out"]'); await pathname(recoveryPage,'/login');
   });
   await check('Missing, invalid and replayed reset links cannot establish signed-out password-change sessions', async () => {
-    for(const url of [`${appUrl}/auth/callback?next=/update-password`,`${appUrl}/auth/callback?next=/update-password&code=invalid-synthetic-code`,recoveryLink]) {
+    for(const url of [`${appUrl}/auth/confirm?type=recovery`,`${appUrl}/auth/confirm?type=recovery&token_hash=invalid-synthetic-token`,`${appUrl}/auth/callback?next=/update-password`,`${appUrl}/auth/callback?next=/update-password&code=invalid-synthetic-code`,recoveryLink]) {
       await recoveryPage.send('Page.navigate',{url}); await pathname(recoveryPage,'/forgot-password');
       await until(()=>recoveryPage.evaluate(`!!document.querySelector('[role=alert]')`),'invalid reset feedback');
       await visit(recoveryPage,'/update-password'); await pathname(recoveryPage,'/login');
@@ -1025,15 +1034,33 @@ try {
     await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:replacement})); await data(verifier.auth.signOut({scope:'local'}));
     newPassword=replacement;
   });
-  await check('Separate-context recovery refuses PKCE exchange without a verifier and cannot change the password', async () => {
+  await check('Separate-context recovery changes the password and replay cannot restore the signed-out session', async () => {
     const link=await requestRecovery(), receiver=await page();
     assert.notEqual(receiver.browserContextId,recoveryPage.browserContextId);
-    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/forgot-password');
-    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'separate reset feedback');
+    const head=await fetch(link,{method:'HEAD',redirect:'manual'}); assert.equal(head.status,405);
+    assert.match(head.headers.get('cache-control'),/no-store/);
+    const wrongType=new URL(link); wrongType.searchParams.set('type','email');
+    await receiver.send('Page.navigate',{url:wrongType.href}); await pathname(receiver,'/login');
     await visit(receiver,'/update-password'); await pathname(receiver,'/login');
+    const maliciousNext=new URL(link); maliciousNext.searchParams.set('next','https://example.invalid');
+    await receiver.send('Page.navigate',{url:maliciousNext.href}); await pathname(receiver,'/update-password');
+    assert.equal(await receiver.evaluate('location.origin'),appUrl);
+    await captureState(receiver,'separate-recovery-password-form');
+    const replacement=`QA-${randomUUID()}-dD4!`;
+    await fill(receiver,'[name=password]',replacement); await fill(receiver,'[name=passwordConfirmation]',replacement);
+    await click(receiver,'form button[type=submit]'); await pathname(receiver,'/login');
+    await until(()=>receiver.evaluate(`document.body.innerText.includes('Password updated successfully.')`),'cross-context password update');
     const verifier=createClient(apiUrl,status.ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
-    await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:newPassword})); await data(verifier.auth.signOut({scope:'local'}));
-    await captureState(receiver,'separate-recovery-refused');
+    assert.ok((await verifier.auth.signInWithPassword({email:recoveryAccount.email,password:newPassword})).error,'Prior password must fail after cross-context recovery');
+    await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:replacement})); await data(verifier.auth.signOut({scope:'local'}));
+    newPassword=replacement;
+    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/forgot-password');
+    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'replayed cross-context recovery refused');
+    await visit(receiver,'/update-password'); await pathname(receiver,'/login');
+    await visit(recoveryPage,'/dashboard'); await pathname(recoveryPage,'/login');
+    await login(receiver,recoveryAccount.email,replacement); await pathname(receiver,'/dashboard');
+    await captureState(receiver,'separate-recovery-completed');
+    await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
   });
   await check('Duplicate signup preserves one account and expired confirmation cannot create a session', async () => {
     const requester=await page(), email=`browser-${stamp}-duplicate-signup@example.invalid`;
@@ -1099,7 +1126,7 @@ try {
     results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'pass' });
   } catch { results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'fail' }); process.exitCode = 1; }
   mkdirSync('reports', { recursive: true });
-  writeFileSync('reports/local-member-browser.json', JSON.stringify({ sourceRevision, sourceTree, environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery uses disposable local Mailpit; external SMTP/deliverability is unverified. Separate-context signup requires explicit sign-in because its PKCE verifier stays with the requesting browser; separate-context recovery fails closed without its PKCE verifier and is not a successful cross-device recovery flow', 'Business and organization deletion UI is absent; native-language review remains pending', ...(results.some(result=>result.scenario==='Background conversation stays unread and both sender tabs receive the real read receipt' && result.status==='pass') ? [] : ['Multi-tab read receipts have not passed in this run']), ...(results.some(row=>row.scenario==='Admin role form promotes and demotes a synthetic member with existing-session authorization' && row.status==='pass') ? [] : ['Admin team role mutations have not passed in this run']), 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
+  writeFileSync('reports/local-member-browser.json', JSON.stringify({ sourceRevision, sourceTree, environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery uses disposable local Mailpit and reviewed token-hash templates; external SMTP/deliverability, physical-device compatibility and hosted template activation remain unverified', 'Business and organization deletion UI is absent; native-language review remains pending', ...(results.some(result=>result.scenario==='Background conversation stays unread and both sender tabs receive the real read receipt' && result.status==='pass') ? [] : ['Multi-tab read receipts have not passed in this run']), ...(results.some(row=>row.scenario==='Admin role form promotes and demotes a synthetic member with existing-session authorization' && row.status==='pass') ? [] : ['Admin team role mutations have not passed in this run']), 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
   console.log(`${results.filter(r => r.status === 'pass').length} passed; ${results.filter(r => r.status === 'fail').length} failed`);
   // Only complete successful disposable runs emit review images; never auth
   // state, provider payloads or hosted-account screenshots. These bytes let
