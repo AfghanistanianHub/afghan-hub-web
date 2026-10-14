@@ -181,3 +181,12 @@ test("localized homepage uses native-script headings and mirrored step progress"
   assert.ok(landingCss.includes("transform-origin:right;"));
   assert.ok(landingCss.includes("right:21px;"));
 });
+
+test("all localized homepage sections use native-script typography and RTL hover origins", () => {
+  const css = readFileSync(new URL("../src/app/(public)/landing.module.css", import.meta.url), "utf8");
+  for (const selector of [".paths:dir(rtl) h2", ".value:dir(rtl) h2", ".value:dir(rtl) h3", ".final:dir(rtl) h2", '.paths[lang="ps"] h2', '.final[lang="ps"] h2']) {
+    assert.ok(css.includes(selector), "missing localized type selector: " + selector);
+  }
+  assert.ok(css.includes(".paths:dir(rtl) .pathLinks a::after"));
+  assert.ok(css.includes("right:calc(100% - 5px);"));
+});
