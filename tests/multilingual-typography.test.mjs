@@ -198,3 +198,14 @@ test("localized mobile navigation maintains coarse-pointer touch targets", () =>
   assert.ok(css.includes(".languageControl select { min-height:44px; }"));
   assert.ok(css.includes(".header:dir(rtl) .mobile nav a { text-align:start; }"));
 });
+
+test("hero network translates all five labels, descriptions and screen-reader names", () => {
+  const network = readFileSync(new URL("../src/components/public/living-network.tsx", import.meta.url), "utf8");
+  const css = readFileSync(new URL("../src/components/public/living-network.module.css", import.meta.url), "utf8");
+  assert.ok(network.includes("getSharedUiCopy(language)"));
+  assert.ok(network.includes("aria-label={copy[area.key]}"));
+  assert.ok(network.includes("{copy[area.key]}"));
+  assert.ok(network.includes("descriptions[language]"));
+  assert.ok(network.includes("lang={language}"));
+  assert.ok(css.includes('.network[lang="ps"] .label'));
+});
