@@ -226,15 +226,15 @@
   --font-fa-body: "Vazirmatn", sans-serif;
   --font-fa-heading: "Estedad", "Vazirmatn", sans-serif;
 }
-:where(:lang(fa), :lang(prs), :lang(ps)) {
+:is(:lang(fa), :lang(prs), :lang(ps)) {
   --font-sans: var(--font-fa-body);
   font-family: var(--font-fa-body);
 }
-:where(:lang(fa), :lang(prs)) :where(h1, h2, h3, h4, h5, h6) {
+:is(:lang(fa), :lang(prs)) :is(h1, h2, h3, h4, h5, h6) {
   font-family: var(--font-fa-heading);
   line-height: 1.5;
 }
-:where(:lang(ps)) :where(h1, h2, h3, h4, h5, h6) {
+:lang(ps) :is(h1, h2, h3, h4, h5, h6) {
   font-family: var(--font-fa-body);
   line-height: 1.5;
 }
