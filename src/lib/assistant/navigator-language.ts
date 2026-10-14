@@ -1,4 +1,4 @@
-import { normalizeSiteLanguage, readSiteLanguagePreference, saveSiteLanguagePreference, siteLanguagePreferenceKey } from "@/lib/i18n/site-language";
+import { normalizeSiteLanguage, saveSiteLanguagePreference, siteLanguagePreferenceKey } from "@/lib/i18n/site-language";
 
 export const navigatorLocales = [
   { value: "en", label: "English" },
