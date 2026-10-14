@@ -186,8 +186,14 @@ async function page(existingContext, proxied = false) {
 async function visit(page, path) {
   assert.ok(path.startsWith('/') && !path.startsWith('//'));
   const navigation = await page.send('Page.navigate', { url: appUrl + path });
-  if (navigation.loaderId) await until(() => page.loadedDocuments.has(navigation.loaderId), 'requested document loaded');
-  await until(() => page.evaluate(`location.origin===${JSON.stringify(appUrl)} && document.readyState==='complete'`), 'local page');
+  assert.ok(!navigation.errorText, `Native navigation failed: ${navigation.errorText}`);
+  try {
+    if (navigation.loaderId) await until(() => page.loadedDocuments.has(navigation.loaderId), 'requested document loaded');
+    await until(() => page.evaluate(`location.origin===${JSON.stringify(appUrl)} && document.readyState==='complete'`), 'local page');
+  } catch (error) {
+    error.navigationState = await page.evaluate(`({requestedPath:${JSON.stringify(path.split('?')[0])},origin:location.origin,path:location.pathname,ready:document.readyState,visible:document.visibilityState,focused:document.hasFocus()})`).catch(()=>({unavailable:true}));
+    throw error;
+  }
 }
 async function pathname(page, path) {
   await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), 'expected route');
@@ -764,9 +770,13 @@ try {
     assert.equal(await pageA.evaluate(`[...document.querySelectorAll('main article')].every(item=>item.innerText.includes('Business'))`), true);
     await visit(pageA, '/messages');
     await until(() => pageA.evaluate(`!!document.querySelector('input[placeholder="Name or latest message"]')`), 'inbox search input');
-    await pageA.evaluate(`document.querySelector('input[placeholder="Name or latest message"]').focus()`);
+    const inboxInput='input[placeholder="Name or latest message"]';
+    await click(pageA,inboxInput);
+    await until(()=>pageA.evaluate(`document.hasFocus() && document.activeElement===document.querySelector(${JSON.stringify(inboxInput)})`),'inbox owns native keyboard focus');
     await pageA.send('Input.insertText', {text:'No-matching-synthetic-conversation'});
+    await until(()=>pageA.evaluate(`document.querySelector(${JSON.stringify(inboxInput)})?.value==='No-matching-synthetic-conversation'`),'native inbox search value');
     await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
+    assert.equal(await pageA.evaluate(`!!document.querySelector(${JSON.stringify(`main a[href="${conversationPath}"]`)})`),false,'Filtered inbox must hide the real conversation');
     await visit(pageA, conversationPath);
     assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-label="Conversation navigation"]')).display!=='none'`), true);
     await pageA.send('Emulation.setDeviceMetricsOverride', { width:390, height:1000, deviceScaleFactor:1, mobile:true });
@@ -829,6 +839,8 @@ try {
   await check('Directory and submission request failures remain visible without false empty counts', async () => {
     // Sanitized stage evidence: docker exit codes, container states, route timings and
     // HTTP/error names only. It is attached to any failure so the cause stays visible.
+    await pageA.send('Page.bringToFront');
+    await until(()=>pageA.evaluate(`document.visibilityState==='visible' && document.hasFocus()`),'outage browser is foregrounded');
     const evidence = { stages: [], probes: [], docker: [] };
     const rest = 'supabase_rest_afghan-hub-local-journey';
     const kong = 'supabase_kong_afghan-hub-local-journey';
@@ -868,6 +880,7 @@ try {
       }
     } catch (error) {
       evidence.failedStep = step;
+      if(error.navigationState)evidence.navigation=error.navigationState;
       error.evidence = evidence;
       throw error;
     } finally {
