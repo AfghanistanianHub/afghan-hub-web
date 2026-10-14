@@ -84,15 +84,15 @@
 @media(prefers-reduced-motion:reduce) { .question { animation:none; } }
 
 /* Native-language typography for Navigator; retain the editorial serif in English. */
-.navigator:where([lang="fa"], [lang="fa-AF"], [lang="prs"], [lang="ps"]) {
+.navigator:is([lang="fa"], [lang="fa-AF"], [lang="prs"], [lang="ps"]) {
   font-family:var(--font-fa-body);
 }
-.navigator:where([lang="fa"], [lang="fa-AF"], [lang="prs"]) :is(.identity h2, .guide h3, .turn h3) {
+.navigator:is([lang="fa"], [lang="fa-AF"], [lang="prs"]) :is(.identity h2, .guide h3, .turn h3) {
   font-family:var(--font-fa-heading);
   line-height:1.5;
   letter-spacing:normal;
 }
-.navigator:where([lang="ps"]) :is(.identity h2, .guide h3, .turn h3) {
+.navigator[lang="ps"] :is(.identity h2, .guide h3, .turn h3) {
   font-family:var(--font-fa-body);
   line-height:1.5;
   letter-spacing:normal;
