@@ -2,9 +2,11 @@
 
 ## Implementation
 
-`/auth/confirm` accepts a Supabase token hash for only `email` (signup confirmation) or `recovery`. The server calls `verifyOtp` using the request-scoped SSR client; its cookie adapter writes the authenticated session into the receiving browser. It does not copy sessions or require the browser that requested the email to provide a PKCE verifier.
+`/auth/confirm` accepts a Supabase token hash for only `signup` or `recovery`. The server calls `verifyOtp` using the request-scoped SSR client; its cookie adapter writes the authenticated session into the receiving browser. It does not copy sessions or require the browser that requested the email to provide a PKCE verifier.
 
-Verified flow type fixes the destination to `/dashboard` or `/update-password`. User-provided destinations are ignored. Missing, malformed, repeated, unsupported or invalid parameters fail with generic feedback. Tokens and provider errors are not logged or placed in redirect URLs. Redirects are private/no-store and set a no-referrer policy. HEAD returns 405 without verification, preventing HEAD link probes from consuming tokens. GET-based email scanners can still redeem a one-time link; external scanner and deliverability behavior remains unverified.
+The route deliberately uses explicit `signup` verification, rather than Supabase's generic `email` mode, which can also match recovery tokens. This keeps a changed flow parameter from consuming a token intended for the other flow.
+
+Verified flow type fixes the destination to `/dashboard` or `/update-password`. User-provided destinations are ignored. Missing, malformed, repeated, unsupported or invalid parameters fail with generic feedback. Application code does not log tokens or provider errors; redirect URLs contain neither. Redirects are private/no-store and set a no-referrer policy. HEAD returns 405 without verification, preventing HEAD link probes from consuming tokens. GET-based email scanners can still redeem a one-time link; external scanner and deliverability behavior remains unverified.
 
 The existing `/auth/callback` remains unchanged for previously issued PKCE links and other compatible existing callers. Existing links are not retroactively converted into cross-browser links.
 
@@ -29,4 +31,4 @@ The complete disposable acceptance suite reads links from real local Mailpit del
 
 The older 4ef04a8 results established safe refusal of cross-context PKCE exchanges; they do not verify this new implementation. New complete passes must be obtained at the final immutable revision. External delivery, real physical-device compatibility and hosted activation remain unverified until explicitly tested in an authorized service.
 
-References: https://supabase.com/docs/guides/auth/auth-email-templates and https://supabase.com/docs/guides/local-development/customizing-email-templates
+References: https://supabase.com/docs/guides/auth/auth-email-templates, https://supabase.com/docs/guides/local-development/customizing-email-templates and https://github.com/supabase/auth/blob/master/internal/api/verify.go

@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
   const isRecovery = type === "recovery";
 
   if (
-    (type === "email" || isRecovery) &&
+    (type === "signup" || isRecovery) &&
     params.getAll("type").length === 1 &&
     params.getAll("token_hash").length === 1 &&
     tokenHash &&
@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
   ) {
     try {
       const supabase = await createClient();
+      // Use explicit signup: the generic email mode also accepts recovery tokens.
       // Token verification creates the session in this browser's cookie store;
       // it does not need a PKCE verifier from the browser that sent the email.
       const { data, error } = await supabase.auth.verifyOtp({

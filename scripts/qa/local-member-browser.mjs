@@ -196,7 +196,7 @@ async function visit(page, path) {
   }
 }
 async function pathname(page, path) {
-  await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), 'expected route');
+  await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), `expected route ${path}`);
 }
 async function fill(page, selector, value) {
   const fieldSelector = (selector.startsWith('form') || selector.startsWith('dialog')) ? selector : `form ${selector}`;
@@ -298,7 +298,7 @@ async function deliveredConfirmation(email, type = 'signup', excludedIds = []) {
   const links = [...message.HTML.matchAll(/href=["']([^"']+)["']/g)].map(match => match[1].replaceAll('&amp;', '&'));
   const link = links.map(value => new URL(value)).find(url => url.origin === appUrl && url.pathname === '/auth/confirm');
   assert.ok(link, 'Email must contain the loopback application confirmation URL');
-  assert.equal(link.searchParams.get('type'), type==='signup' ? 'email' : 'recovery');
+  assert.equal(link.searchParams.get('type'), type==='signup' ? 'signup' : 'recovery');
   assert.match(link.searchParams.get('token_hash'), /^[A-Za-z0-9_-]+$/);
   assert.equal(link.searchParams.has('redirect_to'), false);
   assert.equal(link.searchParams.has('next'), false);
@@ -1052,7 +1052,7 @@ try {
     assert.notEqual(receiver.browserContextId,recoveryPage.browserContextId);
     const head=await fetch(link,{method:'HEAD',redirect:'manual'}); assert.equal(head.status,405);
     assert.match(head.headers.get('cache-control'),/no-store/);
-    const wrongType=new URL(link); wrongType.searchParams.set('type','email');
+    const wrongType=new URL(link); wrongType.searchParams.set('type','signup');
     await receiver.send('Page.navigate',{url:wrongType.href}); await pathname(receiver,'/login');
     await visit(receiver,'/update-password'); await pathname(receiver,'/login');
     const maliciousNext=new URL(link); maliciousNext.searchParams.set('next','https://example.invalid');
