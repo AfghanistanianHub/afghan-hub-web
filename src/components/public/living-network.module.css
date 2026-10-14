@@ -41,3 +41,18 @@
   .network:dir(rtl) .node { min-height:142px; }
   .network:dir(rtl) .description { max-width:125px; }
 }
+
+/* Longer Persian and Pashto words need breathing room at the five fixed nodes. */
+.network:dir(rtl) .node { width:142px; padding-inline:8px; }
+.network:dir(rtl) .label { max-width:100%; overflow-wrap:normal; word-break:normal; text-wrap:balance; }
+.network:dir(rtl) .description { max-width:132px; text-wrap:pretty; }
+@media(min-width:601px) and (max-width:1120px) {
+  .network:dir(rtl) .node { width:124px; }
+  .network:dir(rtl) .label { font-size:16px; }
+  .network:dir(rtl) .description { font-size:10px; }
+}
+@media(max-width:600px) {
+  .network:dir(rtl) .node { width:auto; min-width:0; padding-inline:4px; }
+  .network:dir(rtl) .label { font-size:clamp(14px,3.7vw,17px); }
+  .network:dir(rtl) .description { font-size:11px; max-width:140px; }
+}
