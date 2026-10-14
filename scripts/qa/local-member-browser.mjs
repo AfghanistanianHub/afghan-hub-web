@@ -183,11 +183,13 @@ async function page(existingContext, proxied = false) {
   await connection.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   return connection;
 }
-async function visit(page, path) {
+async function visit(page, path, timeout = 20000) {
   assert.ok(path.startsWith('/') && !path.startsWith('//'));
+  const deadline = Date.now() + timeout;
   const navigation = await page.send('Page.navigate', { url: appUrl + path });
-  if (navigation.loaderId) await until(() => page.loadedDocuments.has(navigation.loaderId), 'requested document loaded');
-  await until(() => page.evaluate(`location.origin===${JSON.stringify(appUrl)} && document.readyState==='complete'`), 'local page');
+  assert.ok(!navigation.errorText, 'Native document navigation must not report a transport error');
+  if (navigation.loaderId) await until(() => page.loadedDocuments.has(navigation.loaderId), 'requested document loaded', Math.max(1, deadline - Date.now()));
+  await until(() => page.evaluate(`location.origin===${JSON.stringify(appUrl)} && document.readyState==='complete'`), 'local page', Math.max(1, deadline - Date.now()));
 }
 async function pathname(page, path) {
   await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), 'expected route');
@@ -762,8 +764,11 @@ try {
     assert.equal(await pageA.evaluate(`[...document.querySelectorAll('main article')].every(item=>item.innerText.includes('Business'))`), true);
     await visit(pageA, '/messages');
     await until(() => pageA.evaluate(`!!document.querySelector('input[placeholder="Name or latest message"]')`), 'inbox search input');
+    await pageA.send('Page.bringToFront');
     await pageA.evaluate(`document.querySelector('input[placeholder="Name or latest message"]').focus()`);
+    await until(() => pageA.evaluate(`document.visibilityState==='visible' && document.hasFocus() && document.activeElement===document.querySelector('input[placeholder="Name or latest message"]')`), 'native inbox input focused');
     await pageA.send('Input.insertText', {text:'No-matching-synthetic-conversation'});
+    await until(() => pageA.evaluate(`document.querySelector('input[placeholder="Name or latest message"]')?.value==='No-matching-synthetic-conversation'`), 'native inbox query retained');
     await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
     await visit(pageA, conversationPath);
     assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-label="Conversation navigation"]')).display!=='none'`), true);
@@ -854,7 +859,11 @@ try {
       for (const route of ['/businesses','/organizations','/opportunities','/events','/submissions']) {
         const started = Date.now();
         try {
-          await visit(pageA, route);
+          // Middleware, access-context and workspace reads each have their own
+          // 10-second request deadline. Bound this whole outage navigation too;
+          // a 20-second document limit cannot cover those sequential phases.
+          await visit(pageA, route, 40000);
+          assert.equal(await pageA.evaluate('location.pathname'), route, 'Outage must retain the requested workspace');
         } catch (error) {
           evidence.stages.push({ route, outcome: 'navigation-error', error: error.name, ms: Date.now() - started });
           throw error;
@@ -882,6 +891,9 @@ try {
         dockerExit(['exec', db, 'psql', '-U', 'postgres', '-d', 'postgres', '-c', "NOTIFY pgrst, 'reload schema';"]);
         return probe('recovery');
       }, 'local REST service restored', 90000);
+      // Successful teardown must not relabel an earlier navigation failure as
+      // a failed health probe. Preserve the actual failing stage in the report.
+      if (evidence.failedStep) step = evidence.failedStep;
     }
   });
   await check('Directory and submissions recover with accessible populated content', async () => {
