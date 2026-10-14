@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight, Globe2, Share2, UsersRound } from "lucide-react";
 import { HomepageMotion } from "@/components/public/homepage-motion";
 import { ScrollCategoryIntroduction } from "@/components/public/scroll-category-introduction";
 import { LocalizedHomepageHero } from "@/components/public/localized-homepage-hero";
 import { LocalizedHomepageSteps } from "@/components/public/localized-homepage-steps";
 import { LocalizedHomepagePaths } from "@/components/public/localized-homepage-paths";
+import { LocalizedHomepageValue } from "@/components/public/localized-homepage-value";
+import { LocalizedHomepageFinal } from "@/components/public/localized-homepage-final";
 import { HomepageNavigator } from "@/components/assistant/homepage-navigator";
 import styles from "./landing.module.css";
 
@@ -32,8 +32,8 @@ export default async function PublicHome() {
 
     <LocalizedHomepagePaths />
 
-    <section className={styles.value} aria-labelledby="value-heading"><div><h2 id="value-heading">A stronger, more connected<br />Afghan community</h2><p>A shared space to make community work visible, exchange knowledge, and build relationships that open new possibilities.</p></div><div className={styles.valuePoints}><div data-home-benefit><UsersRound size={24} strokeWidth={1.5} aria-hidden="true" /><h3>Greater visibility</h3><p>Give your work a place to be discovered.</p></div><div data-home-benefit><Share2 size={24} strokeWidth={1.5} aria-hidden="true" /><h3>Stronger connections</h3><p>Find common ground and move forward together.</p></div><div data-home-benefit><Globe2 size={24} strokeWidth={1.5} aria-hidden="true" /><h3>More possibilities</h3><p>Share opportunities and collaborate across communities.</p></div></div></section>
+    <LocalizedHomepageValue />
 
-    <section className={styles.final} data-home-finale aria-labelledby="join-heading"><div><h2 data-home-reveal id="join-heading">Be part of what&apos;s next.</h2><p data-home-reveal>Join Afghan Hub and help build a more connected, supportive, and vibrant community.</p></div><div className={styles.actions} data-home-reveal><Link href="/login?mode=join" className={styles.primary}>Get started <ArrowRight size={17} aria-hidden="true" /></Link><Link href="/explore" className={styles.secondary}>Explore the platform <ArrowRight size={17} aria-hidden="true" /></Link></div></section>
+    <LocalizedHomepageFinal />
   </main>;
 }
