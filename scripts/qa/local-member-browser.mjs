@@ -764,8 +764,7 @@ try {
     assert.equal(await pageA.evaluate(`[...document.querySelectorAll('main article')].every(item=>item.innerText.includes('Business'))`), true);
     await visit(pageA, '/messages');
     await until(() => pageA.evaluate(`!!document.querySelector('input[placeholder="Name or latest message"]')`), 'inbox search input');
-    await pageA.send('Page.bringToFront');
-    await pageA.evaluate(`document.querySelector('input[placeholder="Name or latest message"]').focus()`);
+    await click(pageA, 'input[placeholder="Name or latest message"]');
     await until(() => pageA.evaluate(`document.visibilityState==='visible' && document.hasFocus() && document.activeElement===document.querySelector('input[placeholder="Name or latest message"]')`), 'native inbox input focused');
     await pageA.send('Input.insertText', {text:'No-matching-synthetic-conversation'});
     await until(() => pageA.evaluate(`document.querySelector('input[placeholder="Name or latest message"]')?.value==='No-matching-synthetic-conversation'`), 'native inbox query retained');
