@@ -278,12 +278,12 @@ async function onboard(page, name) {
   await click(page, 'form:has([name=first_name]) button[type=submit]');
   await until(()=>page.evaluate(`location.pathname==='/dashboard' && document.readyState==='complete' && !!document.querySelector('button[aria-haspopup="dialog"]')`),'onboarding dashboard and Navigator ready');
 }
-async function deliveredConfirmation(email) {
+async function deliveredConfirmation(email, type = 'signup', excludedIds = []) {
   const summary = await until(async () => {
     const response = await fetch(`${mailUrl}/api/v1/messages`, {redirect:'error'});
     assert.ok(response.ok);
     const inbox = await response.json();
-    return inbox.messages.find(message => message.To?.some(to => to.Address === email));
+    return inbox.messages.find(message => !excludedIds.includes(message.ID) && message.To?.some(to => to.Address === email) && (type==='signup' ? !/reset/i.test(message.Subject) : /reset/i.test(message.Subject)));
   }, 'local confirmation email delivered');
   const response = await fetch(`${mailUrl}/api/v1/message/${encodeURIComponent(summary.ID)}`, {redirect:'error'});
   assert.ok(response.ok);
@@ -292,8 +292,8 @@ async function deliveredConfirmation(email) {
   const links = [...message.HTML.matchAll(/href=["']([^"']+)["']/g)].map(match => match[1].replaceAll('&amp;', '&'));
   const link = links.map(value => new URL(value)).find(url => url.origin === apiUrl && url.pathname === '/auth/v1/verify');
   assert.ok(link, 'Email must contain the loopback Auth verification URL');
-  assert.equal(link.searchParams.get('type'), 'signup');
-  assert.equal(link.searchParams.get('redirect_to'), `${appUrl}/auth/callback?next=/dashboard&flow=signup`);
+  assert.equal(link.searchParams.get('type'), type);
+  assert.equal(link.searchParams.get('redirect_to'), type==='signup' ? `${appUrl}/auth/callback?next=/dashboard&flow=signup` : `${appUrl}/auth/callback?next=/update-password`);
   return link.href;
 }
 async function member(label) {
@@ -531,10 +531,11 @@ try {
       await pageA.send('Page.bringToFront');
     }
   });
-  for (const [table, titleField, ownerField] of [['organizations','name','owner_id'],['opportunities','title','author_id'],['events','title','creator_id']]) {
+  for (const [table, titleField, ownerField] of [['businesses','name','owner_id'],['organizations','name','owner_id'],['opportunities','title','author_id'],['events','title','creator_id']]) {
     await check(`${table}: owner create/edit, draft privacy and foreign edit boundary through browser`, async () => {
       const title = `Synthetic ${stamp} ${table}`; await visit(pageA, `/${table}/new`); await fill(pageA, `[name=${titleField}]`, title);
-      if (table === 'organizations') await fill(pageA, '[name=short_description]', 'Synthetic organization summary');
+      if (table === 'businesses') { await fill(pageA, '[name=category]', 'Professional services'); await fill(pageA, '[name=short_description]', 'Synthetic business summary'); }
+      else if (table === 'organizations') await fill(pageA, '[name=short_description]', 'Synthetic organization summary');
       else {
         await fill(pageA, '[name=summary]', 'Synthetic listing summary'); await fill(pageA, '[name=description]', 'Synthetic listing description for isolated browser verification.');
         if (table === 'opportunities') await select(pageA, '[name=type]', 'volunteer'); else await eventStart(pageA);
@@ -551,8 +552,8 @@ try {
       await visit(pageA, `${path}/edit`); const edited = `${title} edited`; await fill(pageA, `[name=${titleField}]`, edited); await click(pageA, `form:has([name=${titleField}]) button[type=submit]`); await pathname(pageA, path);
       const saved = await listingRow(table, titleField, edited); assert.equal(saved.id, row.id); assert.equal(saved.status, 'draft');
       await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes(${JSON.stringify(edited)})`), 'edited listing detail');
-      // Organizations have no delete UI; API deletion is covered separately.
-      if (table !== 'organizations') {
+      // Business/organization deletion needs a product decision; no UI is invented.
+      if (['opportunities','events'].includes(table)) {
         const deleteButton = `form:has(input[name=slug][value="${row.slug}"]) button[type=submit]`; let dialogs = 0;
         const handler = event => { const packet = JSON.parse(event.data); if (packet.method === 'Page.javascriptDialogOpening') { dialogs++; void pageA.send('Page.handleJavaScriptDialog', {accept: dialogs > 1}); } };
         pageA.socket.addEventListener('message', handler);
@@ -942,6 +943,119 @@ try {
     await until(() => pageB.evaluate(`location.pathname===${JSON.stringify(conversationPath)} && document.body.innerText.includes(${JSON.stringify(message('offline'))})`), 'reconnect catch-up', 35000);
     await snapshot('caught-up');
   });
+  await check('Separate-context signup confirms the identity but PKCE session exchange fails closed without its verifier', async () => {
+    const requester=await page(), receiver=await page();
+    assert.notEqual(requester.browserContextId,receiver.browserContextId);
+    const email=`browser-${stamp}-separate-signup@example.invalid`;
+    await visit(requester,'/login?mode=join'); await fill(requester,'[name=email]',email); await fill(requester,'[name=password]',password);
+    await click(requester,'#join button[type=submit]');
+    await until(()=>requester.evaluate(`document.body.innerText.includes('Account created.')`),'separate signup notice');
+    const registered=(await data(admin.auth.admin.listUsers())).users.find(user=>user.email===email);
+    assert.ok(registered); users.push(registered.id); assert.ok(!registered.email_confirmed_at);
+    const link=await deliveredConfirmation(email);
+    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
+    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'separate-context signup feedback');
+    assert.ok((await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at);
+    await visit(receiver,'/dashboard'); await pathname(receiver,'/login');
+    await login(receiver,email); await pathname(receiver,'/profile'); await onboard(receiver,'SeparateSignup');
+    await captureState(receiver,'separate-signup-after-explicit-login');
+    await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
+    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
+    await visit(receiver,'/dashboard'); await pathname(receiver,'/login');
+  });
+  const recoveryAccount=await member('recovery');
+  const recoveryPage=await page();
+  let recoveryLink;
+  let newPassword=`QA-${randomUUID()}-bB2!`;
+  async function requestRecovery() {
+    const inbox=await (await fetch(`${mailUrl}/api/v1/messages`,{redirect:'error'})).json();
+    const previousIds=inbox.messages.map(message=>message.ID);
+    await visit(recoveryPage,'/forgot-password'); await fill(recoveryPage,'[name=email]',recoveryAccount.email);
+    await click(recoveryPage,'form button[type=submit]');
+    await until(()=>recoveryPage.evaluate(`location.pathname==='/forgot-password' && document.querySelector('[role=status]')?.textContent.includes('If an account exists')`),'reset request notice');
+    return deliveredConfirmation(recoveryAccount.email,'recovery',previousIds);
+  }
+  await check('Real password recovery validates matching passwords, signs out and accepts only the new password', async () => {
+    recoveryLink=await requestRecovery();
+    await recoveryPage.send('Page.navigate',{url:recoveryLink}); await pathname(recoveryPage,'/update-password');
+    await fill(recoveryPage,'[name=password]',newPassword); await fill(recoveryPage,'[name=passwordConfirmation]',password);
+    await click(recoveryPage,'form button[type=submit]');
+    await until(()=>recoveryPage.evaluate(`document.querySelector('[role=alert]')?.textContent.includes('Passwords do not match')`),'mismatched password refusal');
+    await fill(recoveryPage,'[name=password]',newPassword); await fill(recoveryPage,'[name=passwordConfirmation]',newPassword);
+    await click(recoveryPage,'form button[type=submit]'); await pathname(recoveryPage,'/login');
+    await until(()=>recoveryPage.evaluate(`document.body.innerText.includes('Password updated successfully.')`),'password update confirmation');
+    const verifier=createClient(apiUrl,status.ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+    assert.ok((await verifier.auth.signInWithPassword({email:recoveryAccount.email,password})).error,'Old password must fail');
+    await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:newPassword})); await data(verifier.auth.signOut({scope:'local'}));
+    await login(recoveryPage,recoveryAccount.email,newPassword); await pathname(recoveryPage,'/profile'); await onboard(recoveryPage,'Recovery');
+    await click(recoveryPage,'button[aria-label="Sign out"]'); await pathname(recoveryPage,'/login');
+  });
+  await check('Missing, invalid and replayed reset links cannot establish signed-out password-change sessions', async () => {
+    for(const url of [`${appUrl}/auth/callback?next=/update-password`,`${appUrl}/auth/callback?next=/update-password&code=invalid-synthetic-code`,recoveryLink]) {
+      await recoveryPage.send('Page.navigate',{url}); await pathname(recoveryPage,'/forgot-password');
+      await until(()=>recoveryPage.evaluate(`!!document.querySelector('[role=alert]')`),'invalid reset feedback');
+      await visit(recoveryPage,'/update-password'); await pathname(recoveryPage,'/login');
+      await visit(recoveryPage,'/dashboard'); await pathname(recoveryPage,'/login');
+    }
+  });
+  await check('Expired reset email is refused and leaves the existing password and anonymous boundary intact', async () => {
+    const expiredLink=await requestRecovery();
+    assert.ok(users.includes(recoveryAccount.id)); assert.match(recoveryAccount.id,/^[0-9a-f-]{36}$/);
+    execFileSync('docker',['exec','supabase_db_afghan-hub-local-journey','psql','-U','postgres','-d','postgres','-v','ON_ERROR_STOP=1','-c',`UPDATE auth.users SET recovery_sent_at=now()-interval '2 hours' WHERE id='${recoveryAccount.id}';`],{stdio:'ignore'});
+    await recoveryPage.send('Page.navigate',{url:expiredLink}); await pathname(recoveryPage,'/forgot-password');
+    await until(()=>recoveryPage.evaluate(`!!document.querySelector('[role=alert]')`),'expired reset feedback');
+    await visit(recoveryPage,'/update-password'); await pathname(recoveryPage,'/login');
+    const verifier=createClient(apiUrl,status.ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+    await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:newPassword})); await data(verifier.auth.signOut({scope:'local'}));
+    await captureState(recoveryPage,'expired-reset-refused');
+  });
+  await check('A newer reset request invalidates the older email and completes with the current link', async () => {
+    const older=await requestRecovery(); await delay(1100);
+    const newer=await requestRecovery(); assert.notEqual(newer,older);
+    await recoveryPage.send('Page.navigate',{url:older}); await pathname(recoveryPage,'/forgot-password');
+    await until(()=>recoveryPage.evaluate(`!!document.querySelector('[role=alert]')`),'superseded reset feedback');
+    await visit(recoveryPage,'/update-password'); await pathname(recoveryPage,'/login');
+    await recoveryPage.send('Page.navigate',{url:newer}); await pathname(recoveryPage,'/update-password');
+    const replacement=`QA-${randomUUID()}-cC3!`;
+    await fill(recoveryPage,'[name=password]',replacement); await fill(recoveryPage,'[name=passwordConfirmation]',replacement);
+    await click(recoveryPage,'form button[type=submit]'); await pathname(recoveryPage,'/login');
+    await until(()=>recoveryPage.evaluate(`document.body.innerText.includes('Password updated successfully.')`),'newest reset changes password');
+    const verifier=createClient(apiUrl,status.ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+    assert.ok((await verifier.auth.signInWithPassword({email:recoveryAccount.email,password:newPassword})).error);
+    await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:replacement})); await data(verifier.auth.signOut({scope:'local'}));
+    newPassword=replacement;
+  });
+  await check('Separate-context recovery refuses PKCE exchange without a verifier and cannot change the password', async () => {
+    const link=await requestRecovery(), receiver=await page();
+    assert.notEqual(receiver.browserContextId,recoveryPage.browserContextId);
+    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/forgot-password');
+    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'separate reset feedback');
+    await visit(receiver,'/update-password'); await pathname(receiver,'/login');
+    const verifier=createClient(apiUrl,status.ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+    await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:newPassword})); await data(verifier.auth.signOut({scope:'local'}));
+    await captureState(receiver,'separate-recovery-refused');
+  });
+  await check('Duplicate signup preserves one account and expired confirmation cannot create a session', async () => {
+    const requester=await page(), email=`browser-${stamp}-duplicate-signup@example.invalid`;
+    await visit(requester,'/login?mode=join'); await fill(requester,'[name=email]',email); await fill(requester,'[name=password]',password);
+    await click(requester,'#join button[type=submit]');
+    await until(()=>requester.evaluate(`document.body.innerText.includes('Account created.')`),'first duplicate signup notice');
+    const row=(await data(admin.auth.admin.listUsers())).users.find(user=>user.email===email); assert.ok(row); users.push(row.id);
+    const oldInbox=await (await fetch(`${mailUrl}/api/v1/messages`,{redirect:'error'})).json();
+    await delay(1100); // Disposable Auth max_frequency is one second; do not conflate resend throttling with identity duplication.
+    await visit(requester,'/login?mode=join'); await fill(requester,'[name=email]',email); await fill(requester,'[name=password]',password);
+    await click(requester,'#join button[type=submit]');
+    await until(()=>requester.evaluate(`document.body.innerText.includes('Account created.')`),'duplicate signup notice');
+    const duplicates=(await data(admin.auth.admin.listUsers())).users.filter(user=>user.email===email);
+    assert.equal(duplicates.length,1); assert.equal(duplicates[0].id,row.id);
+    const link=await deliveredConfirmation(email,'signup',oldInbox.messages.map(message=>message.ID));
+    assert.ok(users.includes(row.id)); assert.match(row.id,/^[0-9a-f-]{36}$/);
+    execFileSync('docker',['exec','supabase_db_afghan-hub-local-journey','psql','-U','postgres','-d','postgres','-v','ON_ERROR_STOP=1','-c',`UPDATE auth.users SET confirmation_sent_at=now()-interval '2 hours' WHERE id='${row.id}';`],{stdio:'ignore'});
+    await requester.send('Page.navigate',{url:link}); await pathname(requester,'/login');
+    await until(()=>requester.evaluate(`!!document.querySelector('[role=alert]')`),'expired signup feedback');
+    assert.ok(!(await data(admin.auth.admin.getUserById(row.id))).user.email_confirmed_at);
+    await visit(requester,'/dashboard'); await pathname(requester,'/login');
+  });
   await check('Sign-out clears browser access while the other account remains signed in', async () => {
     await click(pageA, 'button[aria-label="Sign out"]'); await pathname(pageA, '/login');
     await visit(pageA, '/dashboard'); await pathname(pageA, '/login'); await visit(pageB, '/dashboard'); await pathname(pageB, '/dashboard');
@@ -985,7 +1099,7 @@ try {
     results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'pass' });
   } catch { results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'fail' }); process.exitCode = 1; }
   mkdirSync('reports', { recursive: true });
-  writeFileSync('reports/local-member-browser.json', JSON.stringify({ sourceRevision, sourceTree, environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery is verified only with disposable local Mailpit; external SMTP/deliverability and cross-device confirmation remain untested', 'Organization deletion UI is absent; native-language review remains pending', ...(results.some(result=>result.scenario==='Background conversation stays unread and both sender tabs receive the real read receipt' && result.status==='pass') ? [] : ['Multi-tab read receipts have not passed in this run']), ...(results.some(row=>row.scenario==='Admin role form promotes and demotes a synthetic member with existing-session authorization' && row.status==='pass') ? [] : ['Admin team role mutations have not passed in this run']), 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
+  writeFileSync('reports/local-member-browser.json', JSON.stringify({ sourceRevision, sourceTree, environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery uses disposable local Mailpit; external SMTP/deliverability is unverified. Separate-context signup requires explicit sign-in because its PKCE verifier stays with the requesting browser; separate-context recovery fails closed without its PKCE verifier and is not a successful cross-device recovery flow', 'Business and organization deletion UI is absent; native-language review remains pending', ...(results.some(result=>result.scenario==='Background conversation stays unread and both sender tabs receive the real read receipt' && result.status==='pass') ? [] : ['Multi-tab read receipts have not passed in this run']), ...(results.some(row=>row.scenario==='Admin role form promotes and demotes a synthetic member with existing-session authorization' && row.status==='pass') ? [] : ['Admin team role mutations have not passed in this run']), 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
   console.log(`${results.filter(r => r.status === 'pass').length} passed; ${results.filter(r => r.status === 'fail').length} failed`);
   // Only complete successful disposable runs emit review images; never auth
   // state, provider payloads or hosted-account screenshots. These bytes let
