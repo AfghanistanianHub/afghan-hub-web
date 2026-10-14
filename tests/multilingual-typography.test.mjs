@@ -150,3 +150,10 @@ test("site language subscription observes legacy Navigator key changes", () => {
   assert.ok(sitePreferences.includes('event.key === "afghan-hub-navigator-language"'));
   assert.match(sitePreferences, /volatileLanguage = null;\s*onChange\(\)/);
 });
+
+test("public RTL navigation aligns menu and footer links to logical start", () => {
+  const shellCss = readFileSync(new URL("../src/components/public/public-navigation.module.css", import.meta.url), "utf8");
+  assert.ok(shellCss.includes(".header:dir(rtl) .bar { direction:rtl; }"));
+  assert.ok(shellCss.includes(".header:dir(rtl) .mobile nav { text-align:start; }"));
+  assert.ok(shellCss.includes(".footer:dir(rtl) nav a { text-align:start; }"));
+});
