@@ -157,3 +157,15 @@ test("public RTL navigation aligns menu and footer links to logical start", () =
   assert.ok(shellCss.includes(".header:dir(rtl) .mobile nav { text-align:start; }"));
   assert.ok(shellCss.includes(".footer:dir(rtl) nav a { text-align:start; }"));
 });
+
+test("accessible public skip link follows selected site language", () => {
+  const layout = readFileSync(new URL("../src/app/(public)/layout.tsx", import.meta.url), "utf8");
+  const skip = readFileSync(new URL("../src/components/public/localized-skip-link.tsx", import.meta.url), "utf8");
+  assert.ok(layout.includes("<LocalizedSkipLink />"));
+  assert.ok(skip.includes('href="#main-content"'));
+  assert.ok(skip.includes("subscribeSiteLanguagePreference"));
+  assert.ok(skip.includes("getSharedUiCopy(language).skipToContent"));
+  for (const locale of ["en", "fa", "ps"]) {
+    assert.ok(sharedCopy.includes("skipToContent:"));
+  }
+});
