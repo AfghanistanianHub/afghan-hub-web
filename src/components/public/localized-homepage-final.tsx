@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { readSiteLanguagePreference, subscribeSiteLanguagePreference, type SiteLanguage } from "@/lib/i18n/site-language";
 import styles from "@/app/(public)/landing.module.css";
 
@@ -15,11 +15,12 @@ const copy = {
 export function LocalizedHomepageFinal() {
   const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
   const t = copy[language];
+  const Arrow = language === "en" ? ArrowRight : ArrowLeft;
   return <section className={styles.final} data-home-finale aria-labelledby="join-heading" lang={language} dir={language === "en" ? "ltr" : "rtl"}>
     <div><h2 data-home-reveal id="join-heading">{t.title}</h2><p data-home-reveal>{t.description}</p></div>
     <div className={styles.actions} data-home-reveal>
-      <Link href="/login?mode=join" className={styles.primary}>{t.join} <ArrowRight size={17} aria-hidden="true" /></Link>
-      <Link href="/explore" className={styles.secondary}>{t.explore} <ArrowRight size={17} aria-hidden="true" /></Link>
+      <Link href="/login?mode=join" className={styles.primary}>{t.join} <Arrow size={17} aria-hidden="true" /></Link>
+      <Link href="/explore" className={styles.secondary}>{t.explore} <Arrow size={17} aria-hidden="true" /></Link>
     </div>
   </section>;
 }
