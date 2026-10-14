@@ -217,3 +217,10 @@ test("Persian and Pashto hero network nodes have responsive text constraints", (
   assert.ok(css.includes("@media(min-width:601px) and (max-width:1120px)"));
   assert.ok(css.includes(".network:dir(rtl) .node { width:auto; min-width:0;"));
 });
+
+test("public layout does not stretch short pages into an empty gap before footer", () => {
+  const layout = readFileSync(new URL("../src/app/(public)/layout.tsx", import.meta.url), "utf8");
+  assert.ok(layout.includes("public-shell flex min-h-screen flex-col font-sans"));
+  assert.ok(!layout.includes("[&>main]:flex-1"));
+  assert.ok(layout.includes("<LocalizedPublicFooter />"));
+});
