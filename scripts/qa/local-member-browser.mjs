@@ -405,6 +405,7 @@ try {
     }
   });
   await visit(pageB,'/submissions');
+  await until(()=>pageB.evaluate(`location.pathname==='/submissions' && document.querySelector('main')?.innerText.includes('No submissions yet')`),'empty owner submissions rendered');
   assert.ok(await pageB.evaluate(`document.querySelector('main')?.innerText.includes('No submissions yet')`),'Empty owner submissions must have truthful counts');
   await captureState(pageB,'submissions-empty');
   await check('Member Navigator exposes the same three languages and RTL without changing profile languages', async () => {
