@@ -104,8 +104,8 @@ async function check(name, fn) {
 async function captureState(page, label) {
   if(process.env.LOCAL_QA_VISUAL!=='1') return;
   const visualDir=process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual'; mkdirSync(visualDir,{recursive:true});
-  for(const width of [1440,390]) {
-    await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
+  for(const width of [1440,768,390,320]) {
+    await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
     await page.send('Emulation.setPageScaleFactor',{pageScaleFactor:1});
     const screenshot=await page.send('Page.captureScreenshot',{format:'png'});
     writeFileSync(`${visualDir}/${label}-${width}.png`,Buffer.from(screenshot.data,'base64'));
@@ -319,7 +319,9 @@ try {
   const compareUrl = requireLocalTarget('http://localhost:3102', 3102);
   if (process.env.LOCAL_QA_COMPARE_DIR) {
     const compareDir = resolve(process.env.LOCAL_QA_COMPARE_DIR);
-    assert.ok(existsSync(join(compareDir, '.next/BUILD_ID')), 'Comparison requires a prebuilt baseline checkout');
+    assert.equal(execFileSync('git',['-C',compareDir,'rev-parse','HEAD'],{encoding:'utf8'}).trim(), 'dad64a27c09aebb32651149b5e33f8bf2534703f', 'Visual baseline must be pinned');
+    const baselineBuild=launch(process.execPath,[nextCli,'build',compareDir],env);
+    assert.equal(await new Promise((resolve,reject)=>{baselineBuild.once('exit',resolve);baselineBuild.once('error',reject);}),0,'Baseline production build failed');
     launch(process.execPath, [nextCli, 'start', compareDir, '--hostname', '127.0.0.1', '--port', '3102'], env);
     await until(async () => (await fetch(compareUrl)).ok, 'baseline comparison server');
   }
@@ -776,29 +778,50 @@ try {
   });
   if (process.env.LOCAL_QA_VISUAL === '1') {
     await check('Representative pages: desktop/mobile layout, global canvas and Navigator RTL', async () => {
-      const visual = await page(pageA.browserContextId);
+      const memberVisual = await page(pageA.browserContextId);
+      const designReviewer=await member('design-reviewer');
+      execFileSync('docker',['exec','supabase_db_afghan-hub-local-journey','psql','-U','postgres','-d','postgres','-v','ON_ERROR_STOP=1','-c',`BEGIN; SELECT set_config('request.jwt.claim.role','service_role',true); UPDATE public.profiles SET role='admin',onboarding_completed=true WHERE id='${designReviewer.id}'; COMMIT;`],{stdio:'ignore'});
+      const adminVisual=await page(); await login(adminVisual,designReviewer.email); await pathname(adminVisual,'/dashboard');
+      const detailRoutes=[];
+      for(const table of ['businesses','organizations','opportunities','events']) {
+        const fixture=listings.filter(row=>row.table===table).at(-1);
+        assert.ok(fixture,`Missing visual fixture: ${table}`);
+        const row=await data(admin.from(table).select('slug,status').eq('id',fixture.id).single());
+        assert.equal(row.status,'published','Public detail evidence requires a published synthetic fixture');
+        detailRoutes.push(`/${table}/${row.slug}`,`/${table}/${row.slug}/edit`,`/explore/${table}/${row.slug}`);
+      }
+      let visual=memberVisual;
       const findings = [];
       const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
       mkdirSync(visualDir, {recursive:true});
       for (const phase of process.env.LOCAL_QA_COMPARE_DIR ? ['before', 'after'] : [process.env.LOCAL_QA_VISUAL_PHASE ?? 'after']) {
-      for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/about','/profile','/dashboard','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new','/not-a-real-page']) {
+      for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/','/about','/explore','/profile','/dashboard','/search','/saved','/settings','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new','/moderation','/moderation/team',...detailRoutes,'/not-a-real-page']) {
+        visual=route.startsWith('/moderation')?adminVisual:memberVisual;
         if (phase === 'before' && process.env.LOCAL_QA_COMPARE_DIR) {
           const navigation = await visual.send('Page.navigate', {url:compareUrl+route});
           if(navigation.loaderId) await until(()=>visual.loadedDocuments.has(navigation.loaderId), 'baseline document loaded');
           await until(()=>visual.evaluate(`location.origin===${JSON.stringify(compareUrl)} && document.readyState==='complete'`), 'baseline page');
         } else await visit(visual,route);
-        for (const width of [1440,390]) {
-          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
+        for (const width of [1440,768,390,320]) {
+          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
           const state = await visual.evaluate(`({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,canvas:!!document.querySelector('.global-network-background canvas'),rejectedArt:!!document.querySelector('[data-hero-layer="architecture"]'),heading:!!document.querySelector('main h1')})`);
-          assert.equal(state.overflow,false,`Horizontal overflow: ${route} at ${width}`);
+          if(phase==='after') assert.equal(state.overflow,false,`Horizontal overflow: ${route} at ${width}`);
+          await visual.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+          assert.equal(await visual.evaluate(`matchMedia('(prefers-reduced-motion: reduce)').matches`),true);
+          await visual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+          await visual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+          const keyboard=await visual.evaluate(`(() => {const el=document.activeElement;const css=getComputedStyle(el);return {tag:el.tagName,visible:!!el.getClientRects().length,focusVisible:el.matches(':focus-visible'),outlineWidth:css.outlineWidth};})()`);
+          assert.equal(keyboard.visible,true,'Tab target must be visible');
+          state.keyboard=keyboard; state.reducedMotion=true;
+          await visual.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]});
           if(['/businesses','/organizations','/opportunities','/events','/submissions','/network','/messages',conversationPath,`/members/${b.id}`].includes(route)) assert.equal(state.route,new URL(route,appUrl).pathname,'Member screenshot must depict its requested route');
           if (['/businesses','/organizations','/opportunities','/events','/submissions','/network','/messages',conversationPath,`/members/${b.id}`].includes(route)) assert.equal(state.heading,true,`Member page requires h1: ${route}`);
           assert.equal(state.canvas,true); if (phase === 'after') assert.equal(state.rejectedArt,false);
           if(phase === 'after' && width===390) assert.equal(await visual.evaluate(`(() => {const heading=document.querySelector('[data-member-page-header] h1');return !heading || heading.getBoundingClientRect().width>=200;})()`), true, 'Mobile title must have readable width');
           if(phase==='after' && route==='/submissions' && width===390) assert.ok(await visual.evaluate(`document.querySelector('main article a[href]')?.getBoundingClientRect().width>=280`),'Submission title must retain readable mobile width beside its actions');
           await visual.send('Emulation.setPageScaleFactor', {pageScaleFactor:1});
-          findings.push({phase,requested:route===conversationPath?'/messages/[id]':route,width,...state,route:state.route.replace(/[0-9a-f-]{36}/g,'[id]')});
-          const label=route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replaceAll('/','-');
+          findings.push({sourceRevision:phase==='before'?'dad64a27c09aebb32651149b5e33f8bf2534703f':sourceRevision,phase,requested:route===conversationPath?'/messages/[id]':route.replace(/browser-[^/]+/g,'[fixture]'),width,...state,route:state.route.replace(/[0-9a-f-]{36}/g,'[id]').replace(/browser-[^/]+/g,'[fixture]')});
+          const label=route==='/'?'homepage':route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replace(/browser-[^/]+/g,'fixture').replaceAll('/','-');
           const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
           writeFileSync(`${visualDir}/${label}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
           if(phase==='after' && ['businesses','organizations','opportunities','events','submissions','network','member','messages','conversation'].includes(label)) {
@@ -809,18 +832,19 @@ try {
       }
       }
       const phase = 'after';
+      visual=memberVisual;
       await visit(visual,'/');
       for (const locale of ['fa','ps']) {
         await select(visual,'#ai-navigator select',locale);
         await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`),'visual Navigator RTL');
-        for(const width of [1440,390]) {
-          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
+        for(const width of [1440,768,390,320]) {
+          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
           await visual.evaluate(`document.querySelector('#ai-navigator').scrollIntoView({block:'center'})`);
           const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
           writeFileSync(`${visualDir}/navigator-${locale}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
         }
       }
-      writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, findings},null,2)+'\n');
+      writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, viewportWidths:[1440,768,390,320], findings},null,2)+'\n');
     });
   }
   await check('Directory and submission request failures remain visible without false empty counts', async () => {

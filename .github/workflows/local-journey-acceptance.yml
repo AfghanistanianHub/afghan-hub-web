@@ -1,7 +1,7 @@
 name: Isolated local member journeys
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feat/member-page-workspaces]
     paths:
       - 'src/**'
       - 'tests/**'
@@ -47,10 +47,20 @@ jobs:
           fi
       - name: Run real authenticated API and RLS journeys
         run: node scripts/qa/local-member-journeys.mjs
+      - name: Prepare pinned visual baseline for design review
+        if: startsWith(github.head_ref, 'design/cross-page-consistency-')
+        run: |
+          git fetch origin dad64a27c09aebb32651149b5e33f8bf2534703f
+          git worktree add /tmp/afghan-design-baseline dad64a27c09aebb32651149b5e33f8bf2534703f
+          ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/afghan-design-baseline/node_modules
+          echo "LOCAL_QA_COMPARE_DIR=/tmp/afghan-design-baseline" >> "$GITHUB_ENV"
       - name: Complete sandboxed browser journeys and desktop/mobile evidence
         env:
           LOCAL_QA_VISUAL: "1"
         run: node scripts/qa/local-member-browser.mjs
+      - name: Build source-tagged review gallery
+        if: always()
+        run: node scripts/qa/design-gallery.mjs
       - name: Upload sanitized scenario results
         if: always()
         uses: actions/upload-artifact@v4

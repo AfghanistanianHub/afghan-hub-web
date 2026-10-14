@@ -392,15 +392,13 @@ export default async function SearchPage({
   return (
     <main className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <div className="mx-auto max-w-5xl">
-        <section className="relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
-          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
+        <section className="relative overflow-hidden workspace-surface px-5 py-6 md:px-6 md:py-8">
           <div className="relative">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
               <Sparkles aria-hidden="true" className="size-3.5" />
               Discover Afghan Hub
             </div>
-            <h1 className="mt-5 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">
+            <h1 className="mt-5 workspace-heading">
               Search with purpose.
             </h1>
             <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">
@@ -409,7 +407,7 @@ export default async function SearchPage({
           </div>
         </section>
 
-        <form action="/search" role="search" className="relative mt-8 grid gap-3 rounded-[var(--radius)] border border-border/80 bg-card/88 p-4 shadow-[0_1px_0_rgb(48_43_53/0.025)] backdrop-blur md:grid-cols-[14rem_minmax(0,1fr)_auto] md:items-end">
+        <form action="/search" role="search" className="relative mt-8 grid gap-3 rounded-[var(--radius)] border border-border/80 bg-card p-4 shadow-[0_1px_0_rgb(48_43_53/0.025)] md:grid-cols-[14rem_minmax(0,1fr)_auto] md:items-end">
           <label className="grid gap-2 text-sm font-medium text-foreground">
             What are you looking for?
             <select
@@ -530,7 +528,6 @@ export default async function SearchPage({
               </div>
             ) : (
               <div className="relative mt-5 flex min-h-64 flex-col items-center justify-center overflow-hidden rounded-[var(--radius)] border border-dashed border-border/80 bg-card/70 px-6 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]">
-                <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/[0.05] blur-3xl" />
                 <Search className="size-10 text-muted-foreground/60" />
                 <h2 className="mt-4 text-lg font-bold text-foreground">
                   No results found

@@ -252,3 +252,9 @@
 :where([dir="rtl"]) :where(input[type="email"], input[type="url"], input[type="password"]) {
   direction: ltr;
 }
+
+/* Workspace headings share directory rhythm; homepage headings remain independent. */
+@layer utilities {
+  .workspace-heading { font-size:1.875rem; font-weight:500; line-height:1.2; letter-spacing:-0.025em; color:var(--foreground); }
+  .workspace-surface { border:1px solid var(--border); border-radius:var(--radius); background:var(--card); box-shadow:var(--shadow-surface); }
+}
