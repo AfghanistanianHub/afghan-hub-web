@@ -5,7 +5,7 @@ import { HomepageMotion } from "@/components/public/homepage-motion";
 import { ScrollCategoryIntroduction } from "@/components/public/scroll-category-introduction";
 import { LocalizedHomepageHero } from "@/components/public/localized-homepage-hero";
 import { LocalizedHomepageSteps } from "@/components/public/localized-homepage-steps";
-import { NavigatorJourneyLink } from "@/components/assistant/navigator-journey-link";
+import { LocalizedHomepagePaths } from "@/components/public/localized-homepage-paths";
 import { HomepageNavigator } from "@/components/assistant/homepage-navigator";
 import styles from "./landing.module.css";
 
@@ -17,14 +17,7 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: "Afghan Hub — One network. Many ways to belong.", description, images: ["/opengraph-image"] },
 };
 
-const paths = [
-  { title: "Find my community", query: "Meet people" },
-  { title: "Grow my business", query: "Grow my work or business" },
-  { title: "Discover opportunities", query: "Find opportunities" },
-  { title: "Connect with organizations", query: "Connect with organizations" },
-  { title: "Explore arts and culture", query: "Artists & Creatives" },
-  { title: "Attend or host events", query: "Explore events" },
-];
+
 
 export default async function PublicHome() {
   return <main id="main-content" className={styles.page}>
@@ -37,7 +30,7 @@ export default async function PublicHome() {
 
     <ScrollCategoryIntroduction />
 
-    <section className={styles.paths} aria-labelledby="paths-heading"><div><p className={styles.eyebrow}>START WITH YOUR GOAL</p><h2 id="paths-heading">Your next step starts here.</h2><p>There’s more than one way into the network.<br />Let the Navigator help you find yours.</p></div><div className={styles.pathLinks}>{paths.map(path => <NavigatorJourneyLink key={path.title} query={path.query} title={path.title} />)}</div></section>
+    <LocalizedHomepagePaths />
 
     <section className={styles.value} aria-labelledby="value-heading"><div><h2 id="value-heading">A stronger, more connected<br />Afghan community</h2><p>A shared space to make community work visible, exchange knowledge, and build relationships that open new possibilities.</p></div><div className={styles.valuePoints}><div data-home-benefit><UsersRound size={24} strokeWidth={1.5} aria-hidden="true" /><h3>Greater visibility</h3><p>Give your work a place to be discovered.</p></div><div data-home-benefit><Share2 size={24} strokeWidth={1.5} aria-hidden="true" /><h3>Stronger connections</h3><p>Find common ground and move forward together.</p></div><div data-home-benefit><Globe2 size={24} strokeWidth={1.5} aria-hidden="true" /><h3>More possibilities</h3><p>Share opportunities and collaborate across communities.</p></div></div></section>
 
