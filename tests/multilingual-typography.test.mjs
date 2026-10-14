@@ -145,3 +145,8 @@ test("Navigator reads the shared site language snapshot as its single source of 
   assert.match(preferences, /return readSiteLanguagePreference\(\)/);
   assert.doesNotMatch(preferences, /const saved = localStorage\.getItem\(siteLanguagePreferenceKey\)/);
 });
+
+test("site language subscription observes legacy Navigator key changes", () => {
+  assert.ok(sitePreferences.includes('event.key === "afghan-hub-navigator-language"'));
+  assert.match(sitePreferences, /volatileLanguage = null;\s*onChange\(\)/);
+});
