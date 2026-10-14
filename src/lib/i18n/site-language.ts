@@ -8,8 +8,10 @@ let volatileLanguage: SiteLanguage | null = null;
 export type SiteLanguage = (typeof siteLocales)[number];
 
 export function normalizeSiteLanguage(value: unknown): SiteLanguage {
-  if (value === "fa" || value === "fa-AF" || value === "fa-IR" || value === "prs") return "fa";
-  if (value === "ps" || value === "ps-AF") return "ps";
+  if (typeof value !== "string") return "en";
+  const locale = value.trim().replaceAll("_", "-").toLowerCase();
+  if (locale === "fa" || locale.startsWith("fa-") || locale === "prs" || locale.startsWith("prs-")) return "fa";
+  if (locale === "ps" || locale.startsWith("ps-")) return "ps";
   return "en";
 }
 
