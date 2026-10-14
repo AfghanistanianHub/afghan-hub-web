@@ -49,3 +49,13 @@
 .header:dir(rtl) .account { direction:rtl; }
 @media(max-width:960px) { .header:dir(rtl) .account { margin-left:0; margin-right:auto; } }
 @media(max-width:480px) { .languageControl select { max-width:80px; } }
+
+/* Maintain comfortable touch targets and readable language controls on phones. */
+@media (pointer:coarse) {
+  .footer nav a { min-height:44px; }
+  .languageControl select { min-height:44px; }
+}
+@media(max-width:480px) {
+  .languageControl select { max-width:88px; font-size:12px; }
+  .header:dir(rtl) .mobile nav a { text-align:start; }
+}
