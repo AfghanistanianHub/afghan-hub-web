@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { LivingNetwork } from "@/components/public/living-network";
 import { readSiteLanguagePreference, subscribeSiteLanguagePreference, type SiteLanguage } from "@/lib/i18n/site-language";
 import styles from "@/app/(public)/landing.module.css";
@@ -40,14 +40,15 @@ const heroCopy = {
 export function LocalizedHomepageHero() {
   const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
   const copy = heroCopy[language];
+  const Arrow = language === "en" ? ArrowRight : ArrowLeft;
   return <section className={styles.hero} aria-labelledby="landing-title" lang={language} dir={language === "en" ? "ltr" : "rtl"}>
     <div className={styles.statement}>
       <p className={styles.eyebrow}>{copy.eyebrow}</p>
       <h1 id="landing-title">{copy.first}<br />{copy.second} <em>{copy.emphasis}</em></h1>
       <p className={styles.intro}>{copy.description}</p>
       <div className={styles.actions}>
-        <Link href="/login?mode=join" data-landing-cta="join" className={styles.primary}>{copy.join} <ArrowRight size={17} aria-hidden="true" /></Link>
-        <Link href="/explore" data-landing-cta="explore" className={styles.secondary}>{copy.explore} <ArrowRight size={17} aria-hidden="true" /></Link>
+        <Link href="/login?mode=join" data-landing-cta="join" className={styles.primary}>{copy.join} <Arrow size={17} aria-hidden="true" /></Link>
+        <Link href="/explore" data-landing-cta="explore" className={styles.secondary}>{copy.explore} <Arrow size={17} aria-hidden="true" /></Link>
       </div>
     </div>
     <LivingNetwork />
