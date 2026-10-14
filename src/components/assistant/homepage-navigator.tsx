@@ -1,16 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useNavigatorLocale } from "@/components/i18n/locale-provider";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type ReactNode } from "react";
 import { ArrowRight, ArrowUp, Compass, Search, Sparkles, X } from "lucide-react";
 import { navigatorCopy, guidedGoals, guidedTopics, type NavigatorLanguage } from "@/lib/assistant/navigator-copy";
 import {
   navigatorLocales as locales,
-  readNavigatorLanguagePreference,
   saveNavigatorLanguagePreference,
+  readNavigatorLanguagePreference,
   subscribeNavigatorLanguagePreference,
-  serverNavigatorLanguagePreference,
 } from "@/lib/assistant/navigator-language";
 import type { DiscoveryFilters } from "@/lib/assistant/public-discovery";
 import { guidedSearch, nextGuidedQuestion, understandGuidedGoal } from "@/lib/assistant/guided-discovery";
@@ -51,8 +51,9 @@ function GuideHeight({ children }: { children: ReactNode }) {
 }
 
 export function HomepageNavigator() {
+  const siteLocale = useNavigatorLocale();
+  const savedLanguage = useSyncExternalStore(subscribeNavigatorLanguagePreference, readNavigatorLanguagePreference, () => siteLocale);
   const params = useSearchParams();
-  const savedLanguage = useSyncExternalStore(subscribeNavigatorLanguagePreference, readNavigatorLanguagePreference, serverNavigatorLanguagePreference);
   const [selectedLanguage, setLanguage] = useState<NavigatorLanguage | null>(null);
   const language = selectedLanguage ?? savedLanguage;
   const t = navigatorCopy[language];
@@ -174,7 +175,7 @@ export function HomepageNavigator() {
       <form className={styles.search} onSubmit={directSubmit}><Search size={19} aria-hidden="true" /><input ref={input} value={query} onChange={event => setQuery(event.target.value)} aria-label={t.placeholder} placeholder={t.placeholder} dir="auto" minLength={2} maxLength={120} required /><button type="submit" aria-label={pending ? t.searching : t.search} disabled={pending || query.trim().length < 2}><ArrowUp size={19} aria-hidden="true" /></button></form>
     </div>
     <div className={styles.entries}><button type="button" className={styles.guideEntry} disabled={pending} onClick={startGuide}><Compass size={24} strokeWidth={1.5} aria-hidden="true" /><span><strong>{t.guide}</strong><small>{t.guideDescription}</small></span></button><div className={styles.examples}>{examples.map(example => <button key={example} type="button" disabled={pending} onClick={() => { setQuery(example); input.current?.focus(); }}>{example}</button>)}</div></div>
-    <div className={styles.utility}><label>{t.language}<select aria-label="Navigator language" value={language} onChange={event => { setLanguage(saveNavigatorLanguagePreference(event.target.value)); }}>{locales.map(locale => <option key={locale.value} value={locale.value}>{locale.label}</option>)}</select></label><details><summary>{t.privacy}</summary><p>{t.disclosure}</p></details>{(turns.length > 0 || guide) && <button type="button" onClick={restart}>{t.restart}</button>}</div>
+    <div className={styles.utility}><label>{t.language}<select aria-label={t.language} value={language} onChange={event => { setLanguage(saveNavigatorLanguagePreference(event.target.value)); }}>{locales.map(locale => <option key={locale.value} value={locale.value}>{locale.label}</option>)}</select></label><details><summary>{t.privacy}</summary><p>{t.disclosure}</p></details>{(turns.length > 0 || guide) && <button type="button" onClick={restart}>{t.restart}</button>}</div>
 
     {guide && <div className={styles.guide}>
       <div className={styles.guideHeading}><span>{t.step} {guide.history.length + 1} / {guide.history.length + (guide.step === 0 ? 3 : guide.step === 1 && !guide.location ? 2 : 1)}</span><button type="button" aria-label={t.close} onClick={() => { setGuide(null); input.current?.focus(); }}><X size={18} aria-hidden="true" /></button></div>

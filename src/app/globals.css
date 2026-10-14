@@ -218,3 +218,31 @@
 .app-content main {
   background-color: transparent !important;
 }
+
+/* Shared interface locale styles; listing bodies keep their author-defined direction. */
+[lang="fa"], [lang="ps"] { font-family:var(--font-arabic),var(--font-geist-sans),sans-serif; }
+html[lang="fa"] body, html[lang="ps"] body { font-family:var(--font-arabic),var(--font-geist-sans),sans-serif; }
+html[lang="fa"] .public-shell, html[lang="ps"] .public-shell { font-family:var(--font-arabic),sans-serif; }
+html[dir="rtl"] .public-shell h1,html[dir="rtl"] .public-shell h2,html[dir="rtl"] .public-shell h3 { font-family:var(--font-arabic),sans-serif; letter-spacing:0; }
+.interface-language-switcher { position:relative; font-size:12px; }
+.interface-language-switcher summary { cursor:pointer; min-height:44px; padding:10px; display:flex; align-items:center; border-radius:24px; border:1px solid #dcd7e1; }
+.interface-language-switcher summary:focus-visible,.interface-language-switcher a:focus-visible { outline:2px solid #624291; outline-offset:3px; }
+.interface-language-switcher nav { position:absolute; inset-inline-end:0; top:100%; z-index:50; padding:8px; min-width:130px; background:#fafbf9; border:1px solid #dcd7e1; border-radius:12px; }
+.interface-language-switcher nav a { display:flex; align-items:center; min-height:44px; padding:8px; }
+.interface-language-switcher [aria-current] { text-decoration:underline; text-underline-offset:5px; }
+.interface-language-switcher a[lang="fa"],.interface-language-switcher a[lang="ps"] { font-family:var(--font-arabic),sans-serif; }
+.interface-language-switcher a[lang="en"] { font-family:var(--font-geist-sans),sans-serif; }
+::view-transition-old(language-surface) { animation:language-exit 450ms ease-out both; }
+::view-transition-new(language-surface) { animation:language-reveal 450ms ease-out both; }
+@keyframes language-exit { to { opacity:0; transform:scale(1.06); } }
+@keyframes language-reveal { from { opacity:0; transform:scale(.985); } }
+@media(prefers-reduced-motion:reduce) { ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*) { animation-duration:1ms !important; } }
+html[dir="rtl"] .public-shell h1 { line-height:1.45; }
+html[dir="rtl"] .public-shell h1 em { font-style:normal; }
+html[dir="rtl"] .public-shell h2,html[dir="rtl"] .public-shell h3 { line-height:1.55; }
+html[dir="rtl"] .public-shell .interface-language-switcher { font-family:var(--font-arabic),sans-serif; }
+
+/* The entry owns its sparse network; keep the approved global canvas on all other pages. */
+body:has([data-language-entry]) { background:#fafbf9; }
+body:has([data-language-entry]) .global-network-background { display:none; }
+.app-content main[data-language-entry] { background-color:#fafbf9 !important; }

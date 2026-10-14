@@ -3,9 +3,9 @@ import {readFileSync} from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
-function load(file, localStorage) {
+function load(file, localStorage, document) {
  const exports={};
- vm.runInNewContext(ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports,localStorage,require:name=>{if(name==='./navigator-language')return load('src/lib/assistant/navigator-language.ts',localStorage);assert.equal(name,'./member-navigator-copy-dari');return load('src/lib/assistant/member-navigator-copy-dari.ts');}});
+ vm.runInNewContext(ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports,localStorage,document,require:name=>{if(name==='./navigator-language')return load('src/lib/assistant/navigator-language.ts',localStorage);assert.equal(name,'./member-navigator-copy-dari');return load('src/lib/assistant/member-navigator-copy-dari.ts');}});
  return exports;
 }
 test('member Navigator exposes exactly three complete canonical resources', () => {
@@ -66,4 +66,16 @@ test('member Navigator retains complete Persian and Pashto copy', () => {
   assert.match(dialogue.ps.privacy, /پیغام یا غوښتنه نه لېږل کېږي/);
   assert.match(prompts.fa[3], /متخصصان حوزه تکنولوژی/);
   assert.match(prompts.ps[3], /د ټکنالوژۍ مسلکي کسان پیدا کړه/);
+});
+
+test('Navigator cookie survives reload independently and still normalizes legacy browser storage', () => {
+  const values = new Map([['afghan-hub-navigator-language','fa-AF'],['profile-languages','English, Pashto']]);
+  const storage = {getItem:key=>values.get(key),setItem:(key,value)=>values.set(key,value)};
+  const document = {cookie:'afghan-hub-navigator-language=ps; afghan-hub-language=en',documentElement:{lang:'en'}};
+  const language = load('src/lib/assistant/navigator-language.ts',storage,document);
+  assert.equal(language.readNavigatorLanguagePreference(),'ps');
+  assert.equal(values.get('afghan-hub-navigator-language'),'fa');
+  assert.equal(values.get('profile-languages'),'English, Pashto');
+  const unavailable = load('src/lib/assistant/navigator-language.ts',{getItem(){throw Error('blocked');}},document);
+  assert.equal(unavailable.readNavigatorLanguagePreference(),'ps');
 });

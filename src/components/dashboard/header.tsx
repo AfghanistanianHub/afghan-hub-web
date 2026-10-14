@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { CommunityNavigator } from "@/components/assistant/community-navigator";
 import { SignOutSubmit } from "@/components/dashboard/action-submit";
 import styles from "@/components/network/network-surfaces.module.css";
@@ -68,6 +70,7 @@ export function Header({
       </div>
 
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="hidden lg:block"><Suspense><LanguageSwitcher /></Suspense></div>
         <CommunityNavigator />
         <NotificationBell
           currentUserId={currentUserId}

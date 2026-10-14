@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useNavigatorLocale } from "@/components/i18n/locale-provider";
 import { type FormEvent, type KeyboardEvent as ReactKeyboardEvent, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ArrowUpRight, Compass, Search, Sparkles, X } from "lucide-react";
 import { trackAssistantEvent } from "@/lib/assistant/analytics";
@@ -8,7 +9,7 @@ import { ASSISTANT_OPEN_EVENT } from "@/components/assistant/contextual-assistan
 import { resolveNavigatorContext, type NavigatorContext } from "@/lib/assistant/conversation";
 import { memberNavigatorCopy as copy, memberNavigatorPrompts as prompts, memberNavigatorDialogue as dialogue, memberNavigatorLocales, memberNavigatorUtility } from "@/lib/assistant/member-navigator-copy";
 import styles from "./community-navigator.module.css";
-import { readNavigatorLanguagePreference, saveNavigatorLanguagePreference, subscribeNavigatorLanguagePreference, serverNavigatorLanguagePreference } from "@/lib/assistant/navigator-language";
+import { readNavigatorLanguagePreference, saveNavigatorLanguagePreference, subscribeNavigatorLanguagePreference } from "@/lib/assistant/navigator-language";
 
 type Language = "en" | "fa" | "ps";
 type Result = {
@@ -21,8 +22,9 @@ type Turn = { understanding?: string; clarification?: string; id: number; query:
 type Payload = { understanding?: string; clarification?: string; browseOnly?: boolean; context: NavigatorContext; groups: Group[]; results: Result[]; intent: string; entityType: Result["entityType"] | null; relatedUnavailable?: boolean };
 
 export function CommunityNavigator() {
+  const siteLocale = useNavigatorLocale();
   const [open, setOpen] = useState(false);
-  const savedLanguage = useSyncExternalStore(subscribeNavigatorLanguagePreference, readNavigatorLanguagePreference, serverNavigatorLanguagePreference);
+  const savedLanguage = useSyncExternalStore(subscribeNavigatorLanguagePreference, readNavigatorLanguagePreference, () => siteLocale);
   const [selectedLanguage, setLanguage] = useState<Language | null>(null);
   const language = selectedLanguage ?? savedLanguage;
   const [query, setQuery] = useState("");

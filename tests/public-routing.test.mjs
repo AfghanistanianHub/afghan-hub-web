@@ -100,7 +100,8 @@ test("sitemap contains canonical public categories and published detail URLs wit
     },
   });
   const urls = Array.from(await sitemapExports.default(), entry => entry.url);
-  assert.equal(new Set(urls).size, 11);
+  assert.equal(new Set(urls).size, 14);
+  for (const locale of ["en", "fa", "ps"]) assert.ok(urls.includes(`https://app.apnbc.ca/${locale}`));
   for (const page of ["privacy", "terms", "support"]) {
     assert.ok(urls.includes(`https://app.apnbc.ca/${page}`));
   }

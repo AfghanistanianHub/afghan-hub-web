@@ -17,7 +17,8 @@ function harness(matches = false) {
   const callbacks = new Map();
   const media = { matches, addEventListener: (key, fn) => callbacks.set(key, fn), removeEventListener: key => callbacks.delete(key) };
   const { MobileNavigation } = compile('mobile-navigation.tsx', {
-    react: { useState: () => [open, value => {open = value;}], useEffect: fn => {effect = fn;} },
+    react: { Suspense: "suspense", useState: () => [open, value => {open = value;}], useEffect: fn => {effect = fn;} },
+    '@/components/i18n/language-switcher': {LanguageSwitcher: 'language-switcher'},
     'next/link': {default:'link'}, 'next/navigation': {usePathname:()=>'/events/sample'},
     '@base-ui/react/dialog': {Dialog:Object.fromEntries(['Root','Trigger','Portal','Backdrop','Popup','Close'].map(key=>[key,key]))},
     'lucide-react':icons, '@/components/dashboard/navigation':navigation,

@@ -15,7 +15,7 @@ const search = fs.readFileSync(
   "utf8",
 );
 const publicHome = fs.readFileSync(
-  new URL("../src/app/(public)/page.tsx", import.meta.url),
+  new URL("../src/components/public/localized-home.tsx", import.meta.url),
   "utf8",
 );
 
