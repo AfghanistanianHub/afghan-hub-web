@@ -9,8 +9,10 @@ const preferences = readFileSync(new URL("../src/lib/assistant/navigator-languag
 const sitePreferences = readFileSync(new URL("../src/lib/i18n/site-language.ts", import.meta.url), "utf8");
 
 test("native-script font families are declared and language scoped", () => {
-  assert.match(css, /family=Estedad/);
-  assert.match(css, /family=Vazirmatn/);
+  const layout = readFileSync(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
+  assert.match(layout, /Estedad, Geist, Geist_Mono, Vazirmatn/);
+  assert.match(layout, /--font-estedad/);
+  assert.match(layout, /--font-vazirmatn/);
   assert.match(css, /:lang\(fa\)/);
   assert.match(css, /:lang\(prs\)/);
   assert.match(css, /:lang\(ps\)/);
@@ -26,11 +28,14 @@ test("Navigator provides its own language and direction boundary", () => {
   assert.match(navigatorCss, /\.identity h2/);
 });
 
-test("regional language tags map to shared site languages", () => {
-  assert.match(preferences, /normalizeSiteLanguage/);
-  for (const code of ["fa-AF", "fa-IR", "prs", "ps-AF"]) {
-    assert.ok(sitePreferences.includes(code), `missing regional language tag ${code}`);
-  }
+test("regional language tags are normalized by the canonical site language module", () => {
+  assert.match(sitePreferences, /normalizeSiteLanguage/);
+  assert.match(sitePreferences, /replaceAll\("_", "-"\)/);
+  assert.match(sitePreferences, /toLowerCase\(\)/);
+  assert.match(sitePreferences, /locale\.startsWith\("fa-"\)/);
+  assert.match(sitePreferences, /locale\.startsWith\("prs-"\)/);
+  assert.match(sitePreferences, /locale\.startsWith\("ps-"\)/);
+  // Concrete language-tag behavior is covered in site-language-runtime.test.mjs.
 });
 
 test("language-specific selectors retain specificity and inline-script isolation", () => {
@@ -43,4 +48,202 @@ test("language-specific selectors retain specificity and inline-script isolation
 test("Navigator form controls inherit native-language type", () => {
   assert.match(navigatorCss, /:is\(input, select, button, textarea\)/);
   assert.match(navigatorCss, /font-family:\s*var\(--font-fa-body\)/);
+});
+
+const publicNavigation = readFileSync(new URL("../src/components/public/public-navigation.tsx", import.meta.url), "utf8");
+const publicFooter = readFileSync(new URL("../src/components/public/localized-public-footer.tsx", import.meta.url), "utf8");
+const sharedCopy = readFileSync(new URL("../src/lib/i18n/shared-ui-copy.ts", import.meta.url), "utf8");
+
+test("public shell shares the same language preference and explicit RTL boundaries", () => {
+  for (const component of [publicNavigation, publicFooter]) {
+    assert.match(component, /subscribeSiteLanguagePreference/);
+    assert.match(component, /readSiteLanguagePreference/);
+    assert.match(component, /lang=\{language\}/);
+    assert.match(component, /dir=\{language === "en" \? "ltr" : "rtl"\}/);
+  }
+  assert.match(publicNavigation, /saveSiteLanguagePreference/);
+  assert.match(sitePreferences, /selected \?\? legacy/);
+});
+
+test("shared translations include all five community categories", () => {
+  for (const key of ["people", "businesses", "organizations", "opportunities", "events"]) {
+    assert.match(sharedCopy, new RegExp(key + ':'));
+  }
+});
+
+test("language preference remains usable when localStorage is blocked", () => {
+  assert.match(sitePreferences, /volatileLanguage = language/);
+  assert.match(sitePreferences, /volatileLanguage \?\? "en"/);
+  assert.match(preferences, /return readSiteLanguagePreference\(\)/);
+});
+
+test("animated category introduction uses localized content and RTL-safe geometry", () => {
+  const component = readFileSync(new URL("../src/components/public/scroll-category-introduction.tsx", import.meta.url), "utf8");
+  const categoryCss = readFileSync(new URL("../src/components/public/scroll-category-introduction.module.css", import.meta.url), "utf8");
+  assert.match(component, /getSharedUiCopy\(language\)/);
+  assert.match(component, /dir=\{language === "en" \? "ltr" : "rtl"\}/);
+  assert.match(categoryCss, /\.section:dir\(rtl\) \.line/);
+  assert.match(categoryCss, /\.section:dir\(rtl\) \.category::before/);
+});
+
+test("homepage sections share the site language without dropping interactive structure", () => {
+  const page = readFileSync(new URL("../src/app/(public)/page.tsx", import.meta.url), "utf8");
+  for (const name of ["LocalizedHomepageHero", "LocalizedHomepageSteps", "LocalizedHomepagePaths", "LocalizedHomepageValue", "LocalizedHomepageFinal", "ScrollCategoryIntroduction"]) {
+    assert.ok(page.includes("<" + name), `missing homepage section ${name}`);
+  }
+  for (const filename of ["localized-homepage-hero", "localized-homepage-steps", "localized-homepage-paths", "localized-homepage-value", "localized-homepage-final"]) {
+    const source = readFileSync(new URL(`../src/components/public/${filename}.tsx`, import.meta.url), "utf8");
+    assert.match(source, /subscribeSiteLanguagePreference/);
+    assert.match(source, /readSiteLanguagePreference/);
+    assert.match(source, /lang=\{language\}/);
+    assert.match(source, /dir=\{language === "en" \? "ltr" : "rtl"\}/);
+  }
+});
+
+test("language updates propagate between browser tabs and Pashto uses its intended typeface", () => {
+  const categoryCss = readFileSync(new URL("../src/components/public/scroll-category-introduction.module.css", import.meta.url), "utf8");
+  assert.match(sitePreferences, /volatileLanguage = null;\s*onChange\(\)/);
+  assert.match(sitePreferences, /event\.key === siteLanguagePreferenceKey/);
+  assert.match(categoryCss, /\.section\[lang="ps"\] \.title/);
+});
+
+test("mobile navigation actions and accessibility names use localized labels", () => {
+  assert.match(publicNavigation, /onClick=\{close\}>\{copy\.signIn\}<\/Link>/);
+  assert.match(publicNavigation, /onClick=\{close\}>\{copy\.getStarted\}<\/Link>/);
+  assert.match(publicNavigation, /<summary aria-label=\{copy\.navigation\}>/);
+  assert.match(publicNavigation, /aria-label=\{language === "en" \?/);
+});
+
+test("footer localizes platform navigation, Navigator label and rights notice", () => {
+  assert.match(publicFooter, /aria-label=\{language === "en" \? "Platform"/);
+  assert.match(publicFooter, /"راهنمای هوشمند"/);
+  assert.match(publicFooter, /"ځیرک لارښود"/);
+  assert.match(publicFooter, /"تمام حقوق محفوظ است\."/);
+  assert.match(publicFooter, /"ټول حقونه خوندي دي\."/);
+});
+
+test("homepage primary and final CTAs mirror arrow direction for RTL", () => {
+  for (const filename of ["localized-homepage-hero", "localized-homepage-final"]) {
+    const source = readFileSync(new URL(`../src/components/public/${filename}.tsx`, import.meta.url), "utf8");
+    assert.match(source, /ArrowLeft, ArrowRight/);
+    assert.match(source, /language === "en" \? ArrowRight : ArrowLeft/);
+    assert.match(source, /<Arrow size=\{17\}/);
+  }
+});
+
+test("Navigator journey links mirror arrows without changing canonical queries", () => {
+  const journey = readFileSync(new URL("../src/components/assistant/navigator-journey-link.tsx", import.meta.url), "utf8");
+  assert.match(journey, /language === "en" \? ArrowRight : ArrowLeft/);
+  assert.match(journey, /subscribeSiteLanguagePreference/);
+  assert.match(journey, /detail: query/);
+});
+
+test("Pashto footer headings and RTL mobile controls use native typography and alignment", () => {
+  const shellCss = readFileSync(new URL("../src/components/public/public-navigation.module.css", import.meta.url), "utf8");
+  assert.match(shellCss, /\.footer\[lang="ps"\] h2 \{ font-family:var\(--font-fa-body\)/);
+  assert.match(shellCss, /\.header:dir\(rtl\) \.account/);
+  assert.match(shellCss, /margin-right:auto/);
+});
+
+test("Navigator reads the shared site language snapshot as its single source of truth", () => {
+  assert.match(preferences, /export function readNavigatorLanguagePreference\(\): NavigatorLanguage \{\s*\/\//);
+  assert.match(preferences, /return readSiteLanguagePreference\(\)/);
+  assert.doesNotMatch(preferences, /const saved = localStorage\.getItem\(siteLanguagePreferenceKey\)/);
+});
+
+test("site language subscription observes legacy Navigator key changes", () => {
+  assert.ok(sitePreferences.includes('event.key === "afghan-hub-navigator-language"'));
+  assert.match(sitePreferences, /volatileLanguage = null;\s*onChange\(\)/);
+});
+
+test("public RTL navigation aligns menu and footer links to logical start", () => {
+  const shellCss = readFileSync(new URL("../src/components/public/public-navigation.module.css", import.meta.url), "utf8");
+  assert.ok(shellCss.includes(".header:dir(rtl) .bar { direction:rtl; }"));
+  assert.ok(shellCss.includes(".header:dir(rtl) .mobile nav { text-align:start; }"));
+  assert.ok(shellCss.includes(".footer:dir(rtl) nav a { text-align:start; }"));
+});
+
+test("accessible public skip link follows selected site language", () => {
+  const layout = readFileSync(new URL("../src/app/(public)/layout.tsx", import.meta.url), "utf8");
+  const skip = readFileSync(new URL("../src/components/public/localized-skip-link.tsx", import.meta.url), "utf8");
+  assert.ok(layout.includes("<LocalizedSkipLink />"));
+  assert.ok(skip.includes('href="#main-content"'));
+  assert.ok(skip.includes("subscribeSiteLanguagePreference"));
+  assert.ok(skip.includes("getSharedUiCopy(language).skipToContent"));
+  for (const locale of ["en", "fa", "ps"]) {
+    assert.ok(sharedCopy.includes("skipToContent:"));
+  }
+});
+
+test("localized homepage uses native-script headings and mirrored step progress", () => {
+  const landingCss = readFileSync(new URL("../src/app/(public)/landing.module.css", import.meta.url), "utf8");
+  assert.ok(landingCss.includes(".hero:dir(rtl) .statement h1"));
+  assert.ok(landingCss.includes('.hero[lang="ps"] .statement h1'));
+  assert.ok(landingCss.includes(".orientation:dir(rtl) .steps h3"));
+  assert.ok(landingCss.includes("transform-origin:right;"));
+  assert.ok(landingCss.includes("right:21px;"));
+});
+
+test("all localized homepage sections use native-script typography and RTL hover origins", () => {
+  const css = readFileSync(new URL("../src/app/(public)/landing.module.css", import.meta.url), "utf8");
+  for (const selector of [".paths:dir(rtl) h2", ".value:dir(rtl) h2", ".value:dir(rtl) h3", ".final:dir(rtl) h2", '.paths[lang="ps"] h2', '.final[lang="ps"] h2']) {
+    assert.ok(css.includes(selector), "missing localized type selector: " + selector);
+  }
+  assert.ok(css.includes(".paths:dir(rtl) .pathLinks a::after"));
+  assert.ok(css.includes("right:calc(100% - 5px);"));
+});
+
+test("localized mobile navigation maintains coarse-pointer touch targets", () => {
+  const css = readFileSync(new URL("../src/components/public/public-navigation.module.css", import.meta.url), "utf8");
+  assert.ok(css.includes("@media (pointer:coarse)"));
+  assert.ok(css.includes(".footer nav a { min-height:44px; }"));
+  assert.ok(css.includes(".languageControl select { min-height:44px; }"));
+  assert.ok(css.includes(".header:dir(rtl) .mobile nav a { text-align:start; }"));
+});
+
+test("hero network translates all five labels, descriptions and screen-reader names", () => {
+  const network = readFileSync(new URL("../src/components/public/living-network.tsx", import.meta.url), "utf8");
+  const css = readFileSync(new URL("../src/components/public/living-network.module.css", import.meta.url), "utf8");
+  assert.ok(network.includes("getSharedUiCopy(language)"));
+  assert.ok(network.includes("aria-label={copy[area.key]}"));
+  assert.ok(network.includes("{copy[area.key]}"));
+  assert.ok(network.includes("descriptions[language]"));
+  assert.ok(network.includes("lang={language}"));
+  assert.ok(css.includes('.network[lang="ps"] .label'));
+});
+
+test("Persian and Pashto hero network nodes have responsive text constraints", () => {
+  const css = readFileSync(new URL("../src/components/public/living-network.module.css", import.meta.url), "utf8");
+  assert.ok(css.includes(".network:dir(rtl) .node { width:142px;"));
+  assert.ok(css.includes("text-wrap:balance;"));
+  assert.ok(css.includes("@media(min-width:601px) and (max-width:1120px)"));
+  assert.ok(css.includes(".network:dir(rtl) .node { width:auto; min-width:0;"));
+});
+
+test("public layout does not stretch short pages into an empty gap before footer", () => {
+  const layout = readFileSync(new URL("../src/app/(public)/layout.tsx", import.meta.url), "utf8");
+  assert.ok(layout.includes("public-shell flex min-h-screen flex-col font-sans"));
+  assert.ok(!layout.includes("[&>main]:flex-1"));
+  assert.ok(layout.includes("<LocalizedPublicFooter />"));
+});
+
+test("Persian hero headline overrides serif and italic emphasis explicitly", () => {
+  const css = readFileSync(new URL("../src/app/(public)/landing.module.css", import.meta.url), "utf8");
+  const hero = readFileSync(new URL("../src/components/public/localized-homepage-hero.tsx", import.meta.url), "utf8");
+  assert.ok(hero.includes("data-hero-headline"));
+  assert.ok(css.includes('.hero[lang="fa"] .statement h1[data-hero-headline]'));
+  assert.ok(css.includes("font-family:var(--font-fa-heading);"));
+  assert.ok(css.includes('.hero[lang="fa"] .statement h1[data-hero-headline] em'));
+  assert.ok(css.includes("font-style:normal;"));
+});
+
+test("Persian and Pashto fonts are bundled by Next.js instead of runtime Google CSS", () => {
+  const layout = readFileSync(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
+  const globals = readFileSync(new URL("../src/app/globals.css", import.meta.url), "utf8");
+  assert.ok(layout.includes("Estedad, Geist, Geist_Mono, Vazirmatn"));
+  assert.ok(layout.includes('variable: "--font-estedad"'));
+  assert.ok(layout.includes('variable: "--font-vazirmatn"'));
+  assert.ok(globals.includes("--font-fa-heading: var(--font-estedad)"));
+  assert.ok(globals.includes("--font-fa-body: var(--font-vazirmatn)"));
+  assert.ok(!globals.includes("fonts.googleapis.com/css2?family=Estedad"));
 });
