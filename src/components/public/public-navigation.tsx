@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRef, useSyncExternalStore } from "react";
-import { readSiteLanguagePreference, subscribeSiteLanguagePreference } from "@/lib/i18n/site-language";
+import { readSiteLanguagePreference, subscribeSiteLanguagePreference, type SiteLanguage } from "@/lib/i18n/site-language";
 import { getSharedUiCopy } from "@/lib/i18n/shared-ui-copy";
 import { Menu, Search } from "lucide-react";
 import { Brand } from "./brand";
@@ -11,7 +11,7 @@ import { communityAreas } from "./community-areas";
 import styles from "./public-navigation.module.css";
 
 export function PublicNavigation() {
-  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, () => "en");
+  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
   const copy = getSharedUiCopy(language);
   const pathname = usePathname();
   const params = useSearchParams();
