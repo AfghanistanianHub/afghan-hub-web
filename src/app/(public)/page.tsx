@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CalendarDays, ChartNoAxesColumnIncreasing, Globe2, Search, Share2, UsersRound } from "lucide-react";
+import { ArrowRight, Globe2, Share2, UsersRound } from "lucide-react";
 import { HomepageMotion } from "@/components/public/homepage-motion";
 import { ScrollCategoryIntroduction } from "@/components/public/scroll-category-introduction";
 import { LocalizedHomepageHero } from "@/components/public/localized-homepage-hero";
+import { LocalizedHomepageSteps } from "@/components/public/localized-homepage-steps";
 import { NavigatorJourneyLink } from "@/components/assistant/navigator-journey-link";
 import { HomepageNavigator } from "@/components/assistant/homepage-navigator";
 import styles from "./landing.module.css";
@@ -15,12 +16,7 @@ export const metadata: Metadata = {
   openGraph: { title: "Afghan Hub — One network. Many ways to belong.", description, url: "https://app.apnbc.ca/", type: "website", images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Afghan Hub community network" }] },
   twitter: { card: "summary_large_image", title: "Afghan Hub — One network. Many ways to belong.", description, images: ["/opengraph-image"] },
 };
-const steps = [
-  { title: "Discover", description: "Find people, businesses, organizations, opportunities, and events.", icon: Search },
-  { title: "Connect", description: "Build meaningful relationships across communities.", icon: Share2 },
-  { title: "Participate", description: "Join events, pursue opportunities, and collaborate.", icon: CalendarDays },
-  { title: "Grow", description: "Create visibility, strengthen relationships, and increase impact.", icon: ChartNoAxesColumnIncreasing },
-];
+
 const paths = [
   { title: "Find my community", query: "Meet people" },
   { title: "Grow my business", query: "Grow my work or business" },
@@ -37,10 +33,7 @@ export default async function PublicHome() {
 
     <HomepageNavigator />
 
-    <section id="how-it-works" className={styles.orientation} aria-labelledby="how-heading">
-      <div><h2 id="how-heading">How Afghan Hub works</h2><p>A simple path to meaningful connections.</p></div>
-      <ol className={styles.steps}>{steps.map(({ title, description, icon: Icon }) => <li key={title} data-home-step><span className={styles.stepIcon}><Icon size={21} strokeWidth={1.6} aria-hidden="true" /></span><div><h3>{title}</h3><p>{description}</p></div></li>)}</ol>
-    </section>
+    <LocalizedHomepageSteps />
 
     <ScrollCategoryIntroduction />
 
