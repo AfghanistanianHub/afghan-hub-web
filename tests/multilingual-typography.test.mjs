@@ -190,3 +190,11 @@ test("all localized homepage sections use native-script typography and RTL hover
   assert.ok(css.includes(".paths:dir(rtl) .pathLinks a::after"));
   assert.ok(css.includes("right:calc(100% - 5px);"));
 });
+
+test("localized mobile navigation maintains coarse-pointer touch targets", () => {
+  const css = readFileSync(new URL("../src/components/public/public-navigation.module.css", import.meta.url), "utf8");
+  assert.ok(css.includes("@media (pointer:coarse)"));
+  assert.ok(css.includes(".footer nav a { min-height:44px; }"));
+  assert.ok(css.includes(".languageControl select { min-height:44px; }"));
+  assert.ok(css.includes(".header:dir(rtl) .mobile nav a { text-align:start; }"));
+});
