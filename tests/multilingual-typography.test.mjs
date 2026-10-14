@@ -101,3 +101,10 @@ test("language updates propagate between browser tabs and Pashto uses its intend
   assert.match(sitePreferences, /event\.key === siteLanguagePreferenceKey/);
   assert.match(categoryCss, /\.section\[lang="ps"\] \.title/);
 });
+
+test("mobile navigation actions and accessibility names use localized labels", () => {
+  assert.match(publicNavigation, /onClick=\{close\}>\{copy\.signIn\}<\/Link>/);
+  assert.match(publicNavigation, /onClick=\{close\}>\{copy\.getStarted\}<\/Link>/);
+  assert.match(publicNavigation, /<summary aria-label=\{copy\.navigation\}>/);
+  assert.match(publicNavigation, /aria-label=\{language === "en" \?/);
+});
