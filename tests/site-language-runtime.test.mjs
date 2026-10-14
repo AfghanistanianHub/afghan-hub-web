@@ -112,3 +112,16 @@ test("unrelated localStorage events do not notify language subscribers", async (
   assert.equal(updates, 0);
   unsubscribe();
 });
+
+test("locale parsing accepts mixed case and underscore separators", async () => {
+  const { language } = await setup();
+  for (const value of ["FA_af", "fa-IR", "PRS_AF", " Fa-CA "]) {
+    assert.equal(language.normalizeSiteLanguage(value), "fa");
+  }
+  for (const value of ["PS_af", "Ps-PK", " ps "]) {
+    assert.equal(language.normalizeSiteLanguage(value), "ps");
+  }
+  for (const value of [null, 123, {}, "farsi", "pseudolocale"]) {
+    assert.equal(language.normalizeSiteLanguage(value), "en");
+  }
+});
