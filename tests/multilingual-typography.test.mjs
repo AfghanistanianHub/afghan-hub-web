@@ -139,3 +139,9 @@ test("Pashto footer headings and RTL mobile controls use native typography and a
   assert.match(shellCss, /\.header:dir\(rtl\) \.account/);
   assert.match(shellCss, /margin-right:auto/);
 });
+
+test("Navigator reads the shared site language snapshot as its single source of truth", () => {
+  assert.match(preferences, /export function readNavigatorLanguagePreference\(\): NavigatorLanguage \{\s*\/\//);
+  assert.match(preferences, /return readSiteLanguagePreference\(\)/);
+  assert.doesNotMatch(preferences, /const saved = localStorage\.getItem\(siteLanguagePreferenceKey\)/);
+});
