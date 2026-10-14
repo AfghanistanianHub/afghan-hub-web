@@ -18,7 +18,7 @@ export function PublicNavigation() {
   const menu = useRef<HTMLDetailsElement>(null);
   const active = (key: string) => pathname === "/explore" && params.get("type") === key;
   const close = () => { if (menu.current) menu.current.open = false; };
-  const links = communityAreas.map(area => <Link key={area.key} href={area.href} onClick={close} aria-current={active(area.key) ? "page" : undefined}>{copy[area.key as keyof Pick<typeof copy, "people" | "businesses" | "organizations" | "opportunities" | "events">]}</Link>);
+  const links = communityAreas.map(area => <Link key={area.key} href={area.href} onClick={close} aria-current={active(area.key) ? "page" : undefined}>{copy[area.key]}</Link>);
 
   return <header className={styles.header} lang={language} dir={language === "en" ? "ltr" : "rtl"}>
     <div className={styles.bar}>
