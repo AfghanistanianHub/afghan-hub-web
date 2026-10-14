@@ -11,6 +11,8 @@ on:
       - "src/app/(public)/**"
       - "src/app/globals.css"
       - "tests/multilingual-typography.test.mjs"
+      - "tests/site-language-runtime.test.mjs"
+      - "package.json"
       - ".github/workflows/multilingual-typography.yml"
   push:
     branches:
@@ -24,6 +26,8 @@ on:
       - "src/app/(public)/**"
       - "src/app/globals.css"
       - "tests/multilingual-typography.test.mjs"
+      - "tests/site-language-runtime.test.mjs"
+      - "package.json"
       - ".github/workflows/multilingual-typography.yml"
   workflow_dispatch:
 
