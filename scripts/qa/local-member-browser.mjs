@@ -546,7 +546,14 @@ try {
       await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes(${JSON.stringify(title)})`), 'owner draft detail');
       const unavailableHeading = table === 'organizations' ? 'Organization not found' : 'This page isn’t available.';
       await visit(pageB, path);
-      await until(() => pageB.evaluate(`document.querySelector('main h1')?.textContent.trim()===${JSON.stringify(unavailableHeading)} && !document.querySelector('main')?.innerText.includes(${JSON.stringify(title)})`), 'foreign draft hidden');
+      try {
+        await until(() => pageB.evaluate(`document.querySelector('main h1')?.textContent.trim()===${JSON.stringify(unavailableHeading)} && !document.querySelector('main')?.innerText.includes(${JSON.stringify(title)})`), 'foreign draft hidden');
+      } catch (error) {
+        // Log only public UI state, never synthetic account data, cookies, tokens or page HTML.
+        const observed = await pageB.evaluate("JSON.stringify({path:location.pathname,heading:document.querySelector('main h1')?.textContent?.trim()??null,hasMain:!!document.querySelector('main'),hasErrorBoundary:!!document.querySelector('[role=alert]')})").catch(() => '{"unavailable":true}');
+        console.error('QA_FOREIGN_DRAFT_UI ' + JSON.stringify({table, expectedHeading: unavailableHeading, observed}));
+        throw error;
+      }
       await visit(pageB, `${path}/edit`);
       await until(() => pageB.evaluate(`document.querySelector('main h1')?.textContent.trim()===${JSON.stringify(unavailableHeading)} && !document.querySelector(${JSON.stringify(`[name=${titleField}]`)})`), 'foreign edit refused');
       await visit(pageA, `${path}/edit`); const edited = `${title} edited`; await fill(pageA, `[name=${titleField}]`, edited); await click(pageA, `form:has([name=${titleField}]) button[type=submit]`); await pathname(pageA, path);
