@@ -132,3 +132,10 @@ test("Navigator journey links mirror arrows without changing canonical queries",
   assert.match(journey, /subscribeSiteLanguagePreference/);
   assert.match(journey, /detail: query/);
 });
+
+test("Pashto footer headings and RTL mobile controls use native typography and alignment", () => {
+  const shellCss = readFileSync(new URL("../src/components/public/public-navigation.module.css", import.meta.url), "utf8");
+  assert.match(shellCss, /\.footer\[lang="ps"\] h2 \{ font-family:var\(--font-fa-body\)/);
+  assert.match(shellCss, /\.header:dir\(rtl\) \.account/);
+  assert.match(shellCss, /margin-right:auto/);
+});
