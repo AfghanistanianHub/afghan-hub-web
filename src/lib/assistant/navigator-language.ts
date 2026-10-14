@@ -1,3 +1,5 @@
+import { normalizeSiteLanguage, readSiteLanguagePreference, saveSiteLanguagePreference, siteLanguagePreferenceKey } from "@/lib/i18n/site-language";
+
 export const navigatorLocales = [
   { value: "en", label: "English" },
   { value: "fa", label: "فارسی / Persian" },
@@ -7,8 +9,7 @@ export const navigatorLocales = [
 export type NavigatorLanguage = (typeof navigatorLocales)[number]["value"];
 
 export function normalizeNavigatorLanguage(value: unknown): NavigatorLanguage {
-  if (value === "fa-AF" || value === "fa" || value === "prs" || value === "fa-IR") return "fa";
-  return value === "ps" || value === "ps-AF" ? "ps" : "en";
+  return normalizeSiteLanguage(value);
 }
 
 // Navigator-only preference: never read or mutate a member's profile languages.
@@ -16,7 +17,7 @@ export const navigatorLanguagePreferenceKey = "afghan-hub-navigator-language";
 
 export function readNavigatorLanguagePreference(): NavigatorLanguage {
   try {
-    const saved = localStorage.getItem(navigatorLanguagePreferenceKey);
+    const saved = localStorage.getItem(siteLanguagePreferenceKey) ?? localStorage.getItem(navigatorLanguagePreferenceKey);
     const language = normalizeNavigatorLanguage(saved);
     if (saved === "fa-AF") localStorage.setItem(navigatorLanguagePreferenceKey, language);
     return language;
@@ -28,9 +29,11 @@ export function readNavigatorLanguagePreference(): NavigatorLanguage {
 export function subscribeNavigatorLanguagePreference(onChange: () => void) {
   window.addEventListener("storage", onChange);
   window.addEventListener("navigator-language-change", onChange);
+  window.addEventListener("afghan-hub-site-language-change", onChange);
   return () => {
     window.removeEventListener("storage", onChange);
     window.removeEventListener("navigator-language-change", onChange);
+    window.removeEventListener("afghan-hub-site-language-change", onChange);
   };
 }
 
@@ -42,6 +45,7 @@ export function saveNavigatorLanguagePreference(value: unknown): NavigatorLangua
   const language = normalizeNavigatorLanguage(value);
   try {
     localStorage.setItem(navigatorLanguagePreferenceKey, language);
+    saveSiteLanguagePreference(language);
   } catch {
     // Storage may be unavailable; the in-page selection still works.
   }
