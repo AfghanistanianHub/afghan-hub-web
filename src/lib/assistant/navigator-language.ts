@@ -43,9 +43,9 @@ export function serverNavigatorLanguagePreference(): NavigatorLanguage {
 
 export function saveNavigatorLanguagePreference(value: unknown): NavigatorLanguage {
   const language = normalizeNavigatorLanguage(value);
+  saveSiteLanguagePreference(language);
   try {
     localStorage.setItem(navigatorLanguagePreferenceKey, language);
-    saveSiteLanguagePreference(language);
   } catch {
     // Storage may be unavailable; the in-page selection still works.
   }
