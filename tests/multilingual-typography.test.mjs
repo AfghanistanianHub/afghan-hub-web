@@ -125,3 +125,10 @@ test("homepage primary and final CTAs mirror arrow direction for RTL", () => {
     assert.match(source, /<Arrow size=\{17\}/);
   }
 });
+
+test("Navigator journey links mirror arrows without changing canonical queries", () => {
+  const journey = readFileSync(new URL("../src/components/assistant/navigator-journey-link.tsx", import.meta.url), "utf8");
+  assert.match(journey, /language === "en" \? ArrowRight : ArrowLeft/);
+  assert.match(journey, /subscribeSiteLanguagePreference/);
+  assert.match(journey, /detail: query/);
+});
