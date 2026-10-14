@@ -19,6 +19,7 @@ try {
       const hero = page.locator("section[aria-labelledby='landing-title']");
       await hero.locator("h1[data-hero-headline]").waitFor();
       await page.waitForFunction(lang => document.querySelector("section[aria-labelledby='landing-title']")?.getAttribute("lang") === lang, language);
+      await page.evaluate(() => document.fonts.ready);
       const state = await hero.evaluate(element => {
         const headline = element.querySelector("h1[data-hero-headline]");
         const computed = getComputedStyle(headline);
@@ -26,6 +27,7 @@ try {
           lang: element.lang,
           dir: element.dir,
           font: computed.fontFamily,
+          fontLoaded: document.fonts.check(`600 24px "${element.lang === "fa" ? "Estedad" : element.lang === "ps" ? "Vazirmatn" : "Geist"}"`),
           headline: headline.textContent,
           width: headline.getBoundingClientRect().width,
           scrollWidth: document.documentElement.scrollWidth,
@@ -35,8 +37,8 @@ try {
       assert.equal(state.lang, language);
       assert.equal(state.dir, language === "en" ? "ltr" : "rtl");
       assert.ok(state.headline.length > 12);
-      if (language === "fa") assert.match(state.font, /Estedad/i);
-      if (language === "ps") assert.match(state.font, /Vazirmatn/i);
+      if (language === "fa") { assert.match(state.font, /Estedad/i); assert.equal(state.fontLoaded, true); }
+      if (language === "ps") { assert.match(state.font, /Vazirmatn/i); assert.equal(state.fontLoaded, true); }
       assert.ok(state.scrollWidth <= state.clientWidth + 3, `horizontal overflow ${viewport.name}/${language}: ${JSON.stringify(state)}`);
       await page.screenshot({ path: `${output}/${viewport.name}-${language}.png`, fullPage: true });
       console.log(JSON.stringify({ viewport: viewport.name, ...state }));
