@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight, CalendarDays, ChartNoAxesColumnIncreasing, Globe2, Search, Share2, UsersRound } from "lucide-react";
 import { HomepageMotion } from "@/components/public/homepage-motion";
 import { ScrollCategoryIntroduction } from "@/components/public/scroll-category-introduction";
-import { LivingNetwork } from "@/components/public/living-network";
+import { LocalizedHomepageHero } from "@/components/public/localized-homepage-hero";
 import { NavigatorJourneyLink } from "@/components/assistant/navigator-journey-link";
 import { HomepageNavigator } from "@/components/assistant/homepage-navigator";
 import styles from "./landing.module.css";
@@ -33,15 +33,7 @@ const paths = [
 export default async function PublicHome() {
   return <main id="main-content" className={styles.page}>
     <HomepageMotion />
-    <section className={styles.hero} aria-labelledby="landing-title">
-      <div className={styles.statement}>
-        <p className={styles.eyebrow}>A MORE CONNECTED AFGHAN FUTURE</p>
-        <h1 id="landing-title">One network.<br />Many ways to <em>belong.</em></h1>
-        <p className={styles.intro}>{description}</p>
-        <div className={styles.actions}><Link href="/login?mode=join" data-landing-cta="join" className={styles.primary}>Join the community <ArrowRight size={17} aria-hidden="true" /></Link><Link href="/explore" data-landing-cta="explore" className={styles.secondary}>Explore the network <ArrowRight size={17} aria-hidden="true" /></Link></div>
-      </div>
-      <LivingNetwork />
-    </section>
+    <LocalizedHomepageHero />
 
     <HomepageNavigator />
 
