@@ -78,3 +78,37 @@ test("cross-tab storage event invalidates volatile language snapshot", async () 
   assert.equal(language.readSiteLanguagePreference(), "ps");
   unsubscribe();
 });
+
+test("clearing site storage invalidates cached preference and restores default", async () => {
+  const { language, store, window } = await setup();
+  const unsubscribe = language.subscribeSiteLanguagePreference(() => {});
+  language.saveSiteLanguagePreference("fa");
+  store.clear();
+  const event = new Event("storage");
+  Object.defineProperty(event, "key", { value: null });
+  window.dispatchEvent(event);
+  assert.equal(language.readSiteLanguagePreference(), "en");
+  unsubscribe();
+});
+
+test("legacy Navigator changes also notify subscribers across tabs", async () => {
+  const { language, window } = await setup();
+  let updates = 0;
+  const unsubscribe = language.subscribeSiteLanguagePreference(() => updates++);
+  const event = new Event("storage");
+  Object.defineProperty(event, "key", { value: "afghan-hub-navigator-language" });
+  window.dispatchEvent(event);
+  assert.equal(updates, 1);
+  unsubscribe();
+});
+
+test("unrelated localStorage events do not notify language subscribers", async () => {
+  const { language, window } = await setup();
+  let updates = 0;
+  const unsubscribe = language.subscribeSiteLanguagePreference(() => updates++);
+  const event = new Event("storage");
+  Object.defineProperty(event, "key", { value: "unrelated-preference" });
+  window.dispatchEvent(event);
+  assert.equal(updates, 0);
+  unsubscribe();
+});
