@@ -44,3 +44,24 @@ test("Navigator form controls inherit native-language type", () => {
   assert.match(navigatorCss, /:is\(input, select, button, textarea\)/);
   assert.match(navigatorCss, /font-family:\s*var\(--font-fa-body\)/);
 });
+
+const publicNavigation = readFileSync(new URL("../src/components/public/public-navigation.tsx", import.meta.url), "utf8");
+const publicFooter = readFileSync(new URL("../src/components/public/localized-public-footer.tsx", import.meta.url), "utf8");
+const sharedCopy = readFileSync(new URL("../src/lib/i18n/shared-ui-copy.ts", import.meta.url), "utf8");
+
+test("public shell shares the same language preference and explicit RTL boundaries", () => {
+  for (const component of [publicNavigation, publicFooter]) {
+    assert.match(component, /subscribeSiteLanguagePreference/);
+    assert.match(component, /readSiteLanguagePreference/);
+    assert.match(component, /lang=\{language\}/);
+    assert.match(component, /dir=\{language === "en" \? "ltr" : "rtl"\}/);
+  }
+  assert.match(publicNavigation, /saveSiteLanguagePreference/);
+  assert.match(sitePreferences, /selected \?\? legacy/);
+});
+
+test("shared translations include all five community categories", () => {
+  for (const key of ["people", "businesses", "organizations", "opportunities", "events"]) {
+    assert.match(sharedCopy, new RegExp(key + ':'));
+  }
+});
