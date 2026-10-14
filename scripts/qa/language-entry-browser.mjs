@@ -65,8 +65,12 @@ try {
         document.body.append(probe);
       });
       try {
+        // Chrome records platform-font usage after painting newly inserted text.
+        // Font loading alone is insufficient: wait through one rendered frame.
+        await page.evaluate(async()=>{await document.fonts.ready;await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));});
         const fonts=await actualFonts(page,'#qa-script-glyphs');
-        assert.ok(fonts.length && fonts.every(font=>font.isCustomFont && /Estedad/.test(font.familyName)),`Pashto glyph probe fell back: ${JSON.stringify(fonts)}`);
+        assert.ok(fonts.length,'Pashto glyph probe has no painted font usage');
+        assert.ok(fonts.every(font=>font.isCustomFont && /Estedad/.test(font.familyName)),`Pashto glyph probe fell back: ${JSON.stringify(fonts)}`);
         console.log(`FONT actual Pashto glyphs ${JSON.stringify(fonts)}`);
       } finally {await page.evaluate(()=>document.querySelector('#qa-script-glyphs').remove());}
     });
