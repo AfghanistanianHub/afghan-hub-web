@@ -42,7 +42,7 @@ export function saveSiteLanguagePreference(value: unknown): SiteLanguage {
 export function subscribeSiteLanguagePreference(onChange: () => void): () => void {
   if (typeof window === "undefined") return () => {};
   const onStorage = (event: StorageEvent) => {
-    if (event.key === siteLanguagePreferenceKey || event.key === null) {
+    if (event.key === siteLanguagePreferenceKey || event.key === "afghan-hub-navigator-language" || event.key === null) {
       volatileLanguage = null;
       onChange();
     }
