@@ -6,6 +6,7 @@ const css = readFileSync(new URL("../src/app/globals.css", import.meta.url), "ut
 const navigatorCss = readFileSync(new URL("../src/components/assistant/homepage-navigator.module.css", import.meta.url), "utf8");
 const navigator = readFileSync(new URL("../src/components/assistant/homepage-navigator.tsx", import.meta.url), "utf8");
 const preferences = readFileSync(new URL("../src/lib/assistant/navigator-language.ts", import.meta.url), "utf8");
+const sitePreferences = readFileSync(new URL("../src/lib/i18n/site-language.ts", import.meta.url), "utf8");
 
 test("native-script font families are declared and language scoped", () => {
   assert.match(css, /family=Estedad/);
@@ -25,9 +26,10 @@ test("Navigator provides its own language and direction boundary", () => {
   assert.match(navigatorCss, /\.identity h2/);
 });
 
-test("regional language tags map to existing Navigator languages", () => {
+test("regional language tags map to shared site languages", () => {
+  assert.match(preferences, /normalizeSiteLanguage/);
   for (const code of ["fa-AF", "fa-IR", "prs", "ps-AF"]) {
-    assert.ok(preferences.includes(code), `missing regional language tag ${code}`);
+    assert.ok(sitePreferences.includes(code), `missing regional language tag ${code}`);
   }
 });
 
