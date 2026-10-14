@@ -120,3 +120,36 @@
 @media(max-width:600px) {
   .hero:dir(rtl) .statement h1 { font-size:clamp(35px,9vw,48px); }
 }
+
+/* Native-script treatment for the remaining localized homepage sections.
+   Scope by lang/dir to avoid styling untranslated English route content. */
+.paths:dir(rtl) h2,
+.value:dir(rtl) h2,
+.value:dir(rtl) h3,
+.final:dir(rtl) h2 {
+  font-family:var(--font-fa-heading),var(--font-fa-body),sans-serif;
+  letter-spacing:normal;
+  line-height:1.6;
+}
+.paths[lang="ps"] h2,
+.value[lang="ps"] h2,
+.value[lang="ps"] h3,
+.final[lang="ps"] h2 {
+  font-family:var(--font-fa-body),sans-serif;
+}
+.paths:dir(rtl) p,
+.value:dir(rtl) p,
+.final:dir(rtl) p,
+.paths:dir(rtl) .pathLinks a {
+  font-family:var(--font-fa-body),sans-serif;
+  line-height:1.8;
+}
+.paths:dir(rtl) .pathLinks a::after,
+.paths:dir(rtl) .pathLinks a::before {
+  left:auto;
+  right:0;
+}
+.paths:dir(rtl) .pathLinks a:hover::before,
+.paths:dir(rtl) .pathLinks a:focus-visible::before {
+  right:calc(100% - 5px);
+}
