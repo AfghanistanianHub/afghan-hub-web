@@ -65,3 +65,18 @@ test("shared translations include all five community categories", () => {
     assert.match(sharedCopy, new RegExp(key + ':'));
   }
 });
+
+test("language preference remains usable when localStorage is blocked", () => {
+  assert.match(sitePreferences, /volatileLanguage = language/);
+  assert.match(sitePreferences, /volatileLanguage \?\? "en"/);
+  assert.match(preferences, /return readSiteLanguagePreference\(\)/);
+});
+
+test("animated category introduction uses localized content and RTL-safe geometry", () => {
+  const component = readFileSync(new URL("../src/components/public/scroll-category-introduction.tsx", import.meta.url), "utf8");
+  const categoryCss = readFileSync(new URL("../src/components/public/scroll-category-introduction.module.css", import.meta.url), "utf8");
+  assert.match(component, /getSharedUiCopy\(language\)/);
+  assert.match(component, /dir=\{language === "en" \? "ltr" : "rtl"\}/);
+  assert.match(categoryCss, /\.section:dir\(rtl\) \.line/);
+  assert.match(categoryCss, /\.section:dir\(rtl\) \.category::before/);
+});
