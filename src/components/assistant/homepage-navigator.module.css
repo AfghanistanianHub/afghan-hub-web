@@ -97,3 +97,14 @@
   line-height:1.5;
   letter-spacing:normal;
 }
+
+/* Keep native-script control text legible without changing English sizing. */
+.navigator:is([lang="fa"], [lang="fa-AF"], [lang="prs"], [lang="ps"]) :is(input, select, button, textarea) {
+  font-family: var(--font-fa-body);
+}
+.navigator:is([lang="fa"], [lang="fa-AF"], [lang="prs"], [lang="ps"]) :is(.identity p, .utility details p, .status) {
+  line-height: 1.8;
+}
+.navigator:is([lang="fa"], [lang="fa-AF"], [lang="prs"], [lang="ps"]) .search input {
+  font-size: max(14px, 0.875rem);
+}
