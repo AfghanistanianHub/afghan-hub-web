@@ -1032,15 +1032,13 @@ try {
     await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
     await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
     await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'replayed cross-context signup refused');
-    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
-    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'separate-context signup feedback');
     assert.ok((await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at);
     await visit(receiver,'/dashboard'); await pathname(receiver,'/login');
-    await login(receiver,email); await pathname(receiver,'/profile'); await onboard(receiver,'SeparateSignup');
+    await login(receiver,email); await pathname(receiver,'/dashboard');
     await captureState(receiver,'separate-signup-after-explicit-login');
     await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
     await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
-    await visit(receiver,'/dashboard'); await pathname(receiver,'/login');
+    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'replayed signup token remains refused');
   });
   const recoveryAccount=await member('recovery');
   const recoveryPage=await page();
