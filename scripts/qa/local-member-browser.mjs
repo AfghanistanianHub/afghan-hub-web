@@ -419,7 +419,6 @@ try {
     }
   });
   await check('Real signup and delivered one-time email establish the browser session', async () => {
-  await check('Real signup, local email delivery and PKCE callback establish the browser session', async () => {
     await visit(pageA, '/login?mode=join');
     await fill(pageA, '[name=email]', a.email); await fill(pageA, '[name=password]', password);
     await click(pageA, '#join button[type=submit]');
