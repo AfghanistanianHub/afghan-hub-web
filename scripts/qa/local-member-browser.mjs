@@ -996,8 +996,6 @@ try {
       for (const locale of ['fa','ps']) {
         await select(visual,'#ai-navigator select',locale);
         await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`),'visual Navigator RTL');
-        for(const width of [1440,768,390,320]) {
-          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
         for(const width of [1440,390]) {
           await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
           await visual.evaluate(`document.querySelector('#ai-navigator').scrollIntoView({block:'center'})`);
@@ -1005,7 +1003,6 @@ try {
           writeFileSync(`${visualDir}/navigator-${locale}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
         }
       }
-      writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, viewportWidths:[1440,768,390,320], findings},null,2)+'\n');
       writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, findings},null,2)+'\n');
     });
   }
