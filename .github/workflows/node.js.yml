@@ -11,6 +11,7 @@ on:
     branches:
       - main
       - feat/approved-community-homepage
+      - feat/member-page-workspaces
     paths-ignore:
       - "docs/**"
       - "**/*.md"

@@ -1,3 +1,4 @@
+import { AuthBrand } from "@/components/auth/auth-brand";
 import { SupportLinks } from "@/components/public/support-links";
 import { SubmitButton } from "@/components/auth/submit-button";
 import Link from "next/link";
@@ -25,6 +26,8 @@ export default async function LoginPage({
     "w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10";
 
   return (
+    <main id="main-content" className="auth-page min-h-screen text-foreground">
+      <AuthBrand />
     <main className="auth-page min-h-screen text-foreground">
       <header className="auth-brand">
 

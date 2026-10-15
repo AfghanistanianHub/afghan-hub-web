@@ -1,3 +1,4 @@
+import { AuthBrand } from "@/components/auth/auth-brand";
 import Link from "next/link";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { redirect } from "next/navigation";
@@ -35,6 +36,8 @@ export default async function UpdatePasswordPage({
     "w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10";
 
   return (
+    <main id="main-content" className="auth-page min-h-screen text-foreground">
+      <AuthBrand />
     <main className="auth-page min-h-screen text-foreground">
       <header className="auth-brand">
         <Link href="/" className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Afghan Hub</Link>

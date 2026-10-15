@@ -41,3 +41,16 @@
   .section[data-reveal="true"] .category[data-reveal-visible] { pointer-events:auto; }
   .section[data-reveal="true"] .line { transform:none; }
 }
+
+/* Logical positioning keeps the scroll spine on the reading-start edge in RTL. */
+.section:dir(rtl) .stage { padding-inline-start:28px; padding-inline-end:0; }
+.section:dir(rtl) .line { left:auto; right:0; }
+.section:dir(rtl) .category::before { left:auto; right:-30px; }
+.section:dir(rtl) .category::after { margin-left:0; margin-right:auto; }
+.section:dir(rtl) .title { font-family:var(--font-fa-heading),sans-serif; letter-spacing:normal; line-height:1.5; }
+.section[lang="ps"] .title { font-family:var(--font-fa-body),sans-serif; }
+.section:dir(rtl) .description { font-family:var(--font-fa-body),sans-serif; line-height:1.8; }
+@media(max-width:599px) {
+  .section:dir(rtl) .stage { padding-inline-start:20px; }
+  .section:dir(rtl) .category::before { right:-22px; }
+}

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Estedad, Geist, Geist_Mono, Vazirmatn } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import { GlobalNetworkBackground } from "@/components/visual/global-network-background";
@@ -10,6 +10,9 @@ const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
+
+const estedad = Estedad({ variable: "--font-estedad", subsets: ["arabic"], display: "swap" });
+const vazirmatn = Vazirmatn({ variable: "--font-vazirmatn", subsets: ["arabic"], display: "swap" });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -56,7 +59,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${estedad.variable} ${vazirmatn.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <GlobalNetworkBackground />

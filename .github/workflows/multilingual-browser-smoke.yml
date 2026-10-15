@@ -1,0 +1,51 @@
+name: Multilingual browser smoke
+
+on:
+  pull_request:
+    paths:
+      - "src/app/**"
+      - "src/components/public/**"
+      - "src/lib/i18n/**"
+      - "scripts/qa/multilingual-browser-smoke.mjs"
+      - ".github/workflows/multilingual-browser-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install app dependencies
+        run: npm ci
+      - name: Install browser runner without changing lockfile
+        run: npm install --no-save --package-lock=false playwright
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start isolated local dev server
+        run: |
+          npm run dev -- --hostname 127.0.0.1 > /tmp/afghan-hub-dev.log 2>&1 &
+          echo $! > /tmp/afghan-hub-dev.pid
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/afghan-hub-dev.log
+          exit 1
+      - name: Verify desktop/mobile English, Persian and Pashto
+        run: node scripts/qa/multilingual-browser-smoke.mjs
+      - name: Upload screenshots and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: multilingual-browser-evidence
+          path: |
+            artifacts/multilingual-browser/
+            /tmp/afghan-hub-dev.log
+          if-no-files-found: ignore

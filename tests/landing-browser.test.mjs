@@ -406,6 +406,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   }
   await page.send("Emulation.setDeviceMetricsOverride",{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   await page.send("Page.navigate",{url:appUrl+'/explore?type=organizations'});
+  await waitFor(()=>page.evaluate("document.readyState==='complete'&&location.pathname==='/explore'&&location.search==='?type=organizations'&&!!document.querySelector('input[name=q]')"),"catalogue interactions");
   await waitFor(()=>page.evaluate("document.readyState==='complete'&&!!document.querySelector('input[name=q]')"),"catalogue interactions");
   await page.evaluate("document.fonts.ready.then(()=>true)");
   assert.equal(await page.evaluate("document.querySelector('nav[aria-label=\"Listing categories\"] a[aria-current=page]').getAttribute('href')"),'/explore?type=organizations#results-heading');
@@ -414,10 +415,37 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:touch});
     await page.send('Emulation.setTouchEmulationEnabled',{enabled:touch});
     for (const kind of ['opportunities','events','businesses','organizations']) {
-      await page.evaluate(`new Promise(resolve => {
-        document.querySelector('nav[aria-label="Listing categories"] a[href="/explore?type=${kind}#results-heading"]').scrollIntoView({block:'center',behavior:'instant'});
-        requestAnimationFrame(()=>requestAnimationFrame(resolve));
+      // A completed document can still swap web fonts or restore its scroll.
+      // Dispatch one native click/tap only after the intended link is stable and
+      // actually wins hit testing; never retry navigation or replace it with JS.
+      await page.evaluate('document.fonts.ready.then(()=>true)');
+      const selector=`nav[aria-label="Listing categories"] a[href="/explore?type=${kind}#results-heading"]`;
+      const stablePoint=()=>page.evaluate(`new Promise(resolve => {
+        const a=document.querySelector(${JSON.stringify(selector)});if(!a){resolve(null);return;}
+        a.scrollIntoView({block:'center',behavior:'instant'});
+        let previous,stable=0,frames=0;
+        const probe=()=>{
+          const r=a.getBoundingClientRect(), point={x:r.x+r.width/2,y:r.y+r.height/2};
+          const hit=document.elementFromPoint(point.x,point.y);
+          const usable=r.width>0&&r.height>0&&point.x>0&&point.x<innerWidth&&point.y>0&&point.y<innerHeight&&hit&&(hit===a||a.contains(hit));
+          stable=usable&&previous&&Math.abs(previous.x-point.x)<0.5&&Math.abs(previous.y-point.y)<0.5?stable+1:0;
+          previous=point;
+          if(stable>=3){resolve(point);return;}
+          if(++frames>=30){resolve(null);return;}
+          requestAnimationFrame(probe);
+        };requestAnimationFrame(probe);
       })`);
+      let point=await waitFor(stablePoint,'stable category hit target '+kind+' at '+width);
+      if(!touch){
+        await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',...point});
+        point=await waitFor(stablePoint,'hovered category hit target '+kind+' at '+width);
+      }
+      await page.evaluate(`(() => {
+        window.__categoryClick=null;
+        document.addEventListener('click',event=>{
+          window.__categoryClick={trusted:event.isTrusted,href:event.target.closest?.('a')?.getAttribute('href')??null};
+        },{once:true,capture:true});
+      })()`);
       const point=await waitFor(()=>page.evaluate(`(async()=>{
         const a=document.querySelector('nav[aria-label="Listing categories"] a[href="/explore?type=${kind}#results-heading"]');
         if(!a) return false;
@@ -437,6 +465,10 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
         await page.send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});
       }
       try {
+      await waitFor(()=>page.evaluate(`document.readyState==='complete'&&location.search==='?type=${kind}'&&document.querySelector('nav[aria-label="Listing categories"] a[aria-current=page]')?.getAttribute('href')==='/explore?type=${kind}#results-heading'&&document.querySelector('input[name=type]')?.value==='${kind}'`),'actual category navigation '+kind+' at '+width);
+      } catch(error) {
+        const state=await page.evaluate(`({path:location.pathname,query:location.search,hash:location.hash,ready:document.readyState,fonts:document.fonts.status,active:document.querySelector('nav[aria-label="Listing categories"] a[aria-current=page]')?.getAttribute('href'),formType:document.querySelector('input[name=type]')?.value,click:window.__categoryClick})`);
+        throw new Error(error.message+'; category state: '+JSON.stringify(state));
         await waitFor(()=>page.evaluate(`document.readyState==='complete'&&location.search==='?type=${kind}'&&document.querySelector('nav[aria-label="Listing categories"] a[aria-current=page]')?.getAttribute('href')==='/explore?type=${kind}#results-heading'&&document.querySelector('input[name=type]')?.value==='${kind}'`),'actual category navigation '+kind+' at '+width);
       } catch(error) {
         console.log('AFGHAN_HUB_CATEGORY_FAILURE '+JSON.stringify(await page.evaluate(`({expected:${JSON.stringify(kind)},width:innerWidth,route:location.pathname,query:location.search,hash:location.hash,ready:document.readyState,selected:document.querySelector('nav[aria-label="Listing categories"] a[aria-current=page]')?.getAttribute('href'),formType:document.querySelector('input[name=type]')?.value,activeId:document.activeElement?.id,scrollY})`)));

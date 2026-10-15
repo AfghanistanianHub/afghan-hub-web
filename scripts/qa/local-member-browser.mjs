@@ -104,6 +104,14 @@ async function check(name, fn) {
 async function captureState(page, label) {
   if(process.env.LOCAL_QA_VISUAL!=='1') return;
   const visualDir=process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual'; mkdirSync(visualDir,{recursive:true});
+  for(const width of [1440,768,390,320]) {
+    await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
+    await page.send('Emulation.setPageScaleFactor',{pageScaleFactor:1});
+    const screenshot=await page.send('Page.captureScreenshot',{format:'png'});
+    writeFileSync(`${visualDir}/${label}-${width}.png`,Buffer.from(screenshot.data,'base64'));
+    if (process.env.LOCAL_QA_DESIGN_REVIEW==='1' || (width===390 && ['navigator-member-fa-results','navigator-member-ps-results','opportunities-filtered-results','opportunities-empty','businesses-outage'].includes(label)) || (width===1440 && ['submissions-owner-note','businesses-recovered'].includes(label))) {
+      const jpg=await page.send('Page.captureScreenshot',{format:'jpeg',quality:65});
+      const file=`${visualDir}/${label}-after-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));if(process.env.LOCAL_QA_DESIGN_REVIEW!=='1') reviewImages.push({label,width,file});
   for(const width of [1440,390]) {
     await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
     await page.send('Emulation.setPageScaleFactor',{pageScaleFactor:1});
@@ -183,6 +191,20 @@ async function page(existingContext, proxied = false) {
   await connection.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   return connection;
 }
+async function visit(page, path) {
+  assert.ok(path.startsWith('/') && !path.startsWith('//'));
+  const navigation = await page.send('Page.navigate', { url: appUrl + path });
+  assert.ok(!navigation.errorText, `Native navigation failed: ${navigation.errorText}`);
+  try {
+    if (navigation.loaderId) await until(() => page.loadedDocuments.has(navigation.loaderId), 'requested document loaded');
+    await until(() => page.evaluate(`location.origin===${JSON.stringify(appUrl)} && document.readyState==='complete'`), 'local page');
+  } catch (error) {
+    error.navigationState = await page.evaluate(`({requestedPath:${JSON.stringify(path.split('?')[0])},origin:location.origin,path:location.pathname,ready:document.readyState,visible:document.visibilityState,focused:document.hasFocus()})`).catch(()=>({unavailable:true}));
+    throw error;
+  }
+}
+async function pathname(page, path) {
+  await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), `expected route ${path}`);
 async function visit(page, path, timeout = 20000) {
   assert.ok(path.startsWith('/') && !path.startsWith('//'));
   const deadline = Date.now() + timeout;
@@ -253,6 +275,7 @@ async function select(page, selector, value) {
 }
 async function eventStart(page) {
   await click(page, 'button[aria-label^="Select start date & time:"]');
+  await captureState(page, 'event-calendar-dialog');
   await click(page, '[role=dialog] .rdp-day:not([data-disabled=true]) .rdp-day_button:not([disabled])');
   await select(page, '#starts_at-hour', '11');
   await select(page, '#starts_at-minute', '30');
@@ -274,6 +297,7 @@ async function login(page, email, secret = password) {
 }
 async function onboard(page, name) {
   await pathname(page, '/profile');
+  await captureState(page, 'onboarding');
   await fill(page, '[name=first_name]', 'Synthetic');
   await fill(page, '[name=last_name]', name);
   await fill(page, '[name=city]', 'Vancouver');
@@ -292,6 +316,12 @@ async function deliveredConfirmation(email, type = 'signup', excludedIds = []) {
   const message = await response.json();
   assert.ok(message.To.some(to => to.Address === email));
   const links = [...message.HTML.matchAll(/href=["']([^"']+)["']/g)].map(match => match[1].replaceAll('&amp;', '&'));
+  const link = links.map(value => new URL(value)).find(url => url.origin === appUrl && url.pathname === '/auth/confirm');
+  assert.ok(link, 'Email must contain the loopback application confirmation URL');
+  assert.equal(link.searchParams.get('type'), type==='signup' ? 'signup' : 'recovery');
+  assert.match(link.searchParams.get('token_hash'), /^[A-Za-z0-9_-]+$/);
+  assert.equal(link.searchParams.has('redirect_to'), false);
+  assert.equal(link.searchParams.has('next'), false);
   const link = links.map(value => new URL(value)).find(url => url.origin === apiUrl && url.pathname === '/auth/v1/verify');
   assert.ok(link, 'Email must contain the loopback Auth verification URL');
   assert.equal(link.searchParams.get('type'), type);
@@ -321,6 +351,9 @@ try {
   const compareUrl = requireLocalTarget('http://localhost:3102', 3102);
   if (process.env.LOCAL_QA_COMPARE_DIR) {
     const compareDir = resolve(process.env.LOCAL_QA_COMPARE_DIR);
+    assert.equal(execFileSync('git',['-C',compareDir,'rev-parse','HEAD'],{encoding:'utf8'}).trim(), 'dad64a27c09aebb32651149b5e33f8bf2534703f', 'Visual baseline must be pinned');
+    const baselineBuild=launch(process.execPath,[nextCli,'build',compareDir],env);
+    assert.equal(await new Promise((resolve,reject)=>{baselineBuild.once('exit',resolve);baselineBuild.once('error',reject);}),0,'Baseline production build failed');
     assert.ok(existsSync(join(compareDir, '.next/BUILD_ID')), 'Comparison requires a prebuilt baseline checkout');
     launch(process.execPath, [nextCli, 'start', compareDir, '--hostname', '127.0.0.1', '--port', '3102'], env);
     await until(async () => (await fetch(compareUrl)).ok, 'baseline comparison server');
@@ -350,6 +383,11 @@ try {
   });
   await check('Navigator exposes three languages and migrates legacy Persian preference with RTL', async () => {
     await visit(pageA, '/');
+    await pageA.evaluate(`localStorage.removeItem('afghan-hub-site-language'); localStorage.setItem('afghan-hub-navigator-language','fa-AF')`);
+    await visit(pageA, '/');
+    await until(() => pageA.evaluate(`document.querySelector('#ai-navigator select')?.value==='fa' && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`), 'legacy preference hydrated');
+    assert.deepEqual(await pageA.evaluate(`[...document.querySelectorAll('#ai-navigator select option')].map(node=>node.value)`), ['en','fa','ps']);
+    assert.equal(await pageA.evaluate(`localStorage.getItem('afghan-hub-navigator-language')`), 'fa-AF'); // Legacy storage is read-only; the shared preference reader normalizes its value.
     await pageA.evaluate(`localStorage.setItem('afghan-hub-navigator-language','fa-AF')`);
     await visit(pageA, '/');
     await until(() => pageA.evaluate(`document.querySelector('#ai-navigator select')?.value==='fa' && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`), 'legacy preference hydrated');
@@ -384,6 +422,7 @@ try {
       await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
     }
   });
+  await check('Real signup and delivered one-time email establish the browser session', async () => {
   await check('Real signup, local email delivery and PKCE callback establish the browser session', async () => {
     await visit(pageA, '/login?mode=join');
     await fill(pageA, '[name=email]', a.email); await fill(pageA, '[name=password]', password);
@@ -406,6 +445,10 @@ try {
       assert.equal(row.onboarding_completed, true); assert.equal(row.last_name, label);
     }
   });
+  await visit(pageB,'/submissions');
+  await until(()=>pageB.evaluate(`location.pathname==='/submissions' && document.querySelector('main')?.innerText.includes('No submissions yet')`),'empty owner submissions rendered');
+  assert.ok(await pageB.evaluate(`document.querySelector('main')?.innerText.includes('No submissions yet')`),'Empty owner submissions must have truthful counts');
+  await captureState(pageB,'submissions-empty');
   await check('Empty owner submissions finish rendering with truthful zero counts', async () => {
     await visit(pageB,'/submissions');
     await pathname(pageB,'/submissions');
@@ -584,6 +627,10 @@ try {
     const reviewerPage = await page(); await login(reviewerPage, reviewer.email); await pathname(reviewerPage, '/dashboard');
     await check(`${role}: moderation access respects admin-only team boundary`, async () => {
       await visit(reviewerPage, '/moderation'); await pathname(reviewerPage, '/moderation');
+      await captureState(reviewerPage, `${role}-moderation`);
+      assert.equal(await reviewerPage.evaluate(`!!document.querySelector('a[href="/moderation/team"]')`), role === 'admin');
+      await visit(reviewerPage, '/moderation/team'); await pathname(reviewerPage, role === 'admin' ? '/moderation/team' : '/moderation');
+      if (role === 'admin') await captureState(reviewerPage,'admin-team');
       assert.equal(await reviewerPage.evaluate(`!!document.querySelector('a[href="/moderation/team"]')`), role === 'admin');
       await visit(reviewerPage, '/moderation/team'); await pathname(reviewerPage, role === 'admin' ? '/moderation/team' : '/moderation');
     });
@@ -764,6 +811,13 @@ try {
     assert.equal(await pageA.evaluate(`[...document.querySelectorAll('main article')].every(item=>item.innerText.includes('Business'))`), true);
     await visit(pageA, '/messages');
     await until(() => pageA.evaluate(`!!document.querySelector('input[placeholder="Name or latest message"]')`), 'inbox search input');
+    const inboxInput='input[placeholder="Name or latest message"]';
+    await click(pageA,inboxInput);
+    await until(()=>pageA.evaluate(`document.hasFocus() && document.activeElement===document.querySelector(${JSON.stringify(inboxInput)})`),'inbox owns native keyboard focus');
+    await pageA.send('Input.insertText', {text:'No-matching-synthetic-conversation'});
+    await until(()=>pageA.evaluate(`document.querySelector(${JSON.stringify(inboxInput)})?.value==='No-matching-synthetic-conversation'`),'native inbox search value');
+    await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
+    assert.equal(await pageA.evaluate(`!!document.querySelector(${JSON.stringify(`main a[href="${conversationPath}"]`)})`),false,'Filtered inbox must hide the real conversation');
     await click(pageA, 'input[placeholder="Name or latest message"]');
     await until(() => pageA.evaluate(`document.visibilityState==='visible' && document.hasFocus() && document.activeElement===document.querySelector('input[placeholder="Name or latest message"]')`), 'native inbox input focused');
     await pageA.send('Input.insertText', {text:'No-matching-synthetic-conversation'});
@@ -781,6 +835,33 @@ try {
   });
   if (process.env.LOCAL_QA_VISUAL === '1') {
     await check('Representative pages: desktop/mobile layout, global canvas and Navigator RTL', async () => {
+      const memberVisual = await page(pageA.browserContextId);
+      const designReviewer=await member('design-reviewer');
+      execFileSync('docker',['exec','supabase_db_afghan-hub-local-journey','psql','-U','postgres','-d','postgres','-v','ON_ERROR_STOP=1','-c',`BEGIN; SELECT set_config('request.jwt.claim.role','service_role',true); UPDATE public.profiles SET role='admin',onboarding_completed=true WHERE id='${designReviewer.id}'; COMMIT;`],{stdio:'ignore'});
+      const adminVisual=await page(); await login(adminVisual,designReviewer.email); await pathname(adminVisual,'/dashboard');
+      const detailRoutes=[];
+      for(const table of ['businesses','organizations','opportunities','events']) {
+        const fixture=listings.filter(row=>row.table===table).at(-1);
+        assert.ok(fixture,`Missing visual fixture: ${table}`);
+        const row=await data(admin.from(table).select('slug,status').eq('id',fixture.id).single());
+        assert.equal(row.status,'published','Public detail evidence requires a published synthetic fixture');
+        detailRoutes.push(`/${table}/${row.slug}`,`/${table}/${row.slug}/edit`,`/explore/${table}/${row.slug}`);
+      }
+      let visual=memberVisual;
+      const findings = [];
+      const reviewDetails = [];
+      for (const table of ['businesses','organizations','opportunities','events']) {
+        const fixture = listings.filter(row=>row.table===table).at(-1);
+        if (!fixture) continue;
+        const row = await data(admin.from(table).select('slug').eq('id',fixture.id).maybeSingle());
+        if (row) reviewDetails.push(`/${table}/${row.slug}`,`/${table}/${row.slug}/edit`,`/explore/${table}/${row.slug}`);
+      }
+      const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
+      mkdirSync(visualDir, {recursive:true});
+      for (const phase of process.env.LOCAL_QA_COMPARE_DIR ? ['before', 'after'] : [process.env.LOCAL_QA_VISUAL_PHASE ?? 'after']) {
+      for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/','/about','/explore','/search','/saved','/settings','/profile','/dashboard','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new',...reviewDetails,'/not-a-real-page']) {
+      for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/','/about','/explore','/profile','/dashboard','/search','/saved','/settings','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new','/moderation','/moderation/team',...detailRoutes,'/not-a-real-page']) {
+        visual=route.startsWith('/moderation')?adminVisual:memberVisual;
       const visual = await page(pageA.browserContextId);
       const findings = [];
       const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
@@ -792,6 +873,25 @@ try {
           if(navigation.loaderId) await until(()=>visual.loadedDocuments.has(navigation.loaderId), 'baseline document loaded');
           await until(()=>visual.evaluate(`location.origin===${JSON.stringify(compareUrl)} && document.readyState==='complete'`), 'baseline page');
         } else await visit(visual,route);
+        await visual.evaluate('document.fonts.ready.then(()=>true)');
+        if(route==='/') await select(visual,'#ai-navigator select','en');
+        for (const width of [1440,768,390,320]) {
+          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
+          const state = await visual.evaluate(`({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,canvas:!!document.querySelector('.global-network-background canvas'),rejectedArt:!!document.querySelector('[data-hero-layer="architecture"]'),heading:!!document.querySelector('main h1')})`);
+          if (phase === 'after') assert.equal(state.overflow,false,`Horizontal overflow: ${route} at ${width}`);
+          if(!['/login','/login?mode=join','/forgot-password','/update-password','/not-a-real-page'].includes(route)) assert.equal(state.route,new URL(route,appUrl).pathname,'Member screenshot must depict its requested route');
+        for (const width of [1440,768,390,320]) {
+          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
+          const state = await visual.evaluate(`({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,canvas:!!document.querySelector('.global-network-background canvas'),rejectedArt:!!document.querySelector('[data-hero-layer="architecture"]'),heading:!!document.querySelector('main h1')})`);
+          if(phase==='after') assert.equal(state.overflow,false,`Horizontal overflow: ${route} at ${width}`);
+          await visual.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+          assert.equal(await visual.evaluate(`matchMedia('(prefers-reduced-motion: reduce)').matches`),true);
+          await visual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+          await visual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+          const keyboard=await visual.evaluate(`(() => {const el=document.activeElement;const css=getComputedStyle(el);return {tag:el.tagName,visible:!!el.getClientRects().length,focusVisible:el.matches(':focus-visible'),outlineWidth:css.outlineWidth};})()`);
+          assert.equal(keyboard.visible,true,'Tab target must be visible');
+          state.keyboard=keyboard; state.reducedMotion=true;
+          await visual.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]});
         for (const width of [1440,390]) {
           await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
           const state = await visual.evaluate(`({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,canvas:!!document.querySelector('.global-network-background canvas'),rejectedArt:!!document.querySelector('[data-hero-layer="architecture"]'),heading:!!document.querySelector('main h1')})`);
@@ -802,6 +902,84 @@ try {
           if(phase === 'after' && width===390) assert.equal(await visual.evaluate(`(() => {const heading=document.querySelector('[data-member-page-header] h1');return !heading || heading.getBoundingClientRect().width>=200;})()`), true, 'Mobile title must have readable width');
           if(phase==='after' && route==='/submissions' && width===390) assert.ok(await visual.evaluate(`document.querySelector('main article a[href]')?.getBoundingClientRect().width>=280`),'Submission title must retain readable mobile width beside its actions');
           await visual.send('Emulation.setPageScaleFactor', {pageScaleFactor:1});
+          findings.push({sourceRevision:phase==='before'?process.env.LOCAL_QA_COMPARE_SHA:sourceRevision,phase,requested:route===conversationPath?'/messages/[id]':route,width,...state,route:state.route.replace(/[0-9a-f-]{36}/g,'[id]')});
+          writeFileSync(`${visualDir}/layout-checks-after.json`,JSON.stringify({sourceRevision,sourceTree,zoom:100,findings},null,2)+'\n');
+          if (process.env.LOCAL_QA_DESIGN_REVIEW==='1' && [1440,320].includes(width)) {
+            if(process.env.LOCAL_QA_AXE_PATH) {
+              await visual.evaluate(readFileSync(process.env.LOCAL_QA_AXE_PATH,'utf8'));
+              const axe = await visual.evaluate(`axe.run(document.querySelector('main') ?? document.body,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>({violations:r.violations.map(v=>({id:v.id,impact:v.impact,description:v.description,targets:v.nodes.map(n=>n.target)})),incomplete:r.incomplete.map(v=>v.id)}))`);
+              findings.at(-1).accessibility=axe;
+            }
+            findings.at(-1).type = await visual.evaluate(`(() => {const h=document.querySelector('main h1');return h?{font:getComputedStyle(h).fontFamily,size:getComputedStyle(h).fontSize,lineHeight:getComputedStyle(h).lineHeight,width:h.getBoundingClientRect().width}:null;})()`);
+          }
+          writeFileSync(`${visualDir}/layout-checks-after.json`,JSON.stringify({sourceRevision,sourceTree,zoom:100,findings},null,2)+'\n');
+          const label=reviewDetails.includes(route)?route.startsWith('/explore/')?`public-${route.split('/')[2]}-detail`:`${route.split('/')[1]}-${route.endsWith('/edit')?'edit':'detail'}`:route==='/'?'homepage':route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replaceAll('/','-');
+          const metrics=await visual.send('Page.getLayoutMetrics');
+          const clip={x:0,y:0,width,height:Math.min(metrics.cssContentSize.height,16000),scale:1};
+          const screenshot=await visual.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true,clip});
+          findings.push({sourceRevision:phase==='before'?'dad64a27c09aebb32651149b5e33f8bf2534703f':sourceRevision,phase,requested:route===conversationPath?'/messages/[id]':route.replace(/browser-[^/]+/g,'[fixture]'),width,...state,route:state.route.replace(/[0-9a-f-]{36}/g,'[id]').replace(/browser-[^/]+/g,'[fixture]')});
+          const label=route==='/'?'homepage':route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replace(/browser-[^/]+/g,'fixture').replaceAll('/','-');
+          const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
+          writeFileSync(`${visualDir}/${label}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
+          if (process.env.LOCAL_QA_DESIGN_REVIEW==='1' || (phase==='after' && ['businesses','organizations','opportunities','events','submissions','network','member','messages','conversation'].includes(label))) {
+            const jpg=await visual.send('Page.captureScreenshot',{format:'jpeg',quality:75,captureBeyondViewport:true,clip});
+            const file=`${visualDir}/${label}-${phase}-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));if(process.env.LOCAL_QA_DESIGN_REVIEW!=='1') reviewImages.push({label,width,file});
+          }
+        }
+      }
+      }
+      for (const phase of process.env.LOCAL_QA_COMPARE_DIR ? ['before','after'] : ['after']) {
+        if(phase==='before') {
+          const navigation=await visual.send('Page.navigate',{url:compareUrl+'/'});
+          if(navigation.loaderId) await until(()=>visual.loadedDocuments.has(navigation.loaderId),'baseline Navigator document');
+        } else await visit(visual,'/');
+        for (const locale of ['en','fa','ps']) {
+          await select(visual,'#ai-navigator select',locale);
+          await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')===${JSON.stringify(locale==='en'?'ltr':'rtl')}`),'visual Navigator language');
+          for(const width of [1440,768,390,320]) {
+            await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
+            await visual.evaluate(`document.querySelector('#ai-navigator').scrollIntoView({block:'center'})`);
+            const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
+            writeFileSync(`${visualDir}/navigator-${locale}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
+            const jpg=await visual.send('Page.captureScreenshot',{format:'jpeg',quality:75});
+            writeFileSync(`${visualDir}/navigator-${locale}-${phase}-${width}.jpg`,Buffer.from(jpg.data,'base64'));
+            if(phase==='after') {
+              assert.equal(await visual.evaluate(`document.documentElement.scrollWidth>innerWidth`),false);
+              const size=await visual.evaluate(`getComputedStyle(document.querySelector('#ai-navigator input')).fontSize`);
+              assert.ok(parseFloat(size)>=16,'Navigator field text must avoid mobile focus zoom');
+            }
+          }
+        }
+      }
+      await visit(visual,'/network');
+      await visual.send('Emulation.setDeviceMetricsOverride',{width:320,height:1000,deviceScaleFactor:1,mobile:true});
+      await openMemberNavigator(visual);
+      await check('Navigator keyboard focus stays inside the dialog and Escape restores its launcher',async()=> {
+        for(let index=0;index<20;index++) {
+          await visual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+          await visual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+          assert.equal(await visual.evaluate(`document.querySelector('dialog[open]').contains(document.activeElement)`),true);
+        }
+        await visual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+        await visual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+        await until(()=>visual.evaluate(`!document.querySelector('dialog[open]') && document.activeElement?.getAttribute('aria-haspopup')==='dialog'`),'Escape returns Navigator focus');
+      });
+      await visit(visual,'/network');
+      await click(visual,'button[aria-label^="Notifications"]');
+      await until(()=>visual.evaluate(`!!document.querySelector('[role=dialog][aria-label="Notifications"]')`),'notification panel open');
+      await captureState(visual,'notifications-dialog');
+      await visual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+      await visual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+      await check('Reduced-motion Navigator and global canvas stay usable at 320px',async()=> {
+        await visual.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+        await visit(visual,'/');
+        assert.equal(await visual.evaluate(`matchMedia('(prefers-reduced-motion: reduce)').matches`),true);
+        await captureState(visual,'homepage-reduced-motion');
+        await visual.send('Emulation.setEmulatedMedia',{features:[]});
+      });
+      writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, findings},null,2)+'\n');
+      const phase = 'after';
+      visual=memberVisual;
           findings.push({phase,requested:route===conversationPath?'/messages/[id]':route,width,...state,route:state.route.replace(/[0-9a-f-]{36}/g,'[id]')});
           const label=route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replaceAll('/','-');
           const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
@@ -818,6 +996,8 @@ try {
       for (const locale of ['fa','ps']) {
         await select(visual,'#ai-navigator select',locale);
         await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`),'visual Navigator RTL');
+        for(const width of [1440,768,390,320]) {
+          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
         for(const width of [1440,390]) {
           await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
           await visual.evaluate(`document.querySelector('#ai-navigator').scrollIntoView({block:'center'})`);
@@ -825,12 +1005,15 @@ try {
           writeFileSync(`${visualDir}/navigator-${locale}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
         }
       }
+      writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, viewportWidths:[1440,768,390,320], findings},null,2)+'\n');
       writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, findings},null,2)+'\n');
     });
   }
   await check('Directory and submission request failures remain visible without false empty counts', async () => {
     // Sanitized stage evidence: docker exit codes, container states, route timings and
     // HTTP/error names only. It is attached to any failure so the cause stays visible.
+    await pageA.send('Page.bringToFront');
+    await until(()=>pageA.evaluate(`document.visibilityState==='visible' && document.hasFocus()`),'outage browser is foregrounded');
     const evidence = { stages: [], probes: [], docker: [] };
     const rest = 'supabase_rest_afghan-hub-local-journey';
     const kong = 'supabase_kong_afghan-hub-local-journey';
@@ -858,6 +1041,7 @@ try {
       for (const route of ['/businesses','/organizations','/opportunities','/events','/submissions']) {
         const started = Date.now();
         try {
+          await visit(pageA, route);
           // Middleware, access-context and workspace reads each have their own
           // 10-second request deadline. Bound this whole outage navigation too;
           // a 20-second document limit cannot cover those sequential phases.
@@ -874,6 +1058,7 @@ try {
       }
     } catch (error) {
       evidence.failedStep = step;
+      if(error.navigationState)evidence.navigation=error.navigationState;
       error.evidence = evidence;
       throw error;
     } finally {
@@ -954,6 +1139,7 @@ try {
     await until(() => pageB.evaluate(`location.pathname===${JSON.stringify(conversationPath)} && document.body.innerText.includes(${JSON.stringify(message('offline'))})`), 'reconnect catch-up', 35000);
     await snapshot('caught-up');
   });
+  await check('Separate-context signup confirms identity and creates only the receiving browser session', async () => {
   await check('Separate-context signup confirms the identity but PKCE session exchange fails closed without its verifier', async () => {
     const requester=await page(), receiver=await page();
     assert.notEqual(requester.browserContextId,receiver.browserContextId);
@@ -964,6 +1150,21 @@ try {
     const registered=(await data(admin.auth.admin.listUsers())).users.find(user=>user.email===email);
     assert.ok(registered); users.push(registered.id); assert.ok(!registered.email_confirmed_at);
     const link=await deliveredConfirmation(email);
+    const wrongType=new URL(link); wrongType.searchParams.set('type','recovery');
+    await receiver.send('Page.navigate',{url:wrongType.href}); await pathname(receiver,'/forgot-password');
+    await visit(receiver,'/update-password'); await pathname(receiver,'/login');
+    assert.ok(!(await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at,'Changing token type must not confirm the identity');
+    const attemptedRedirect=new URL(link); attemptedRedirect.searchParams.set('next','https://example.invalid');
+    await receiver.send('Page.navigate',{url:attemptedRedirect.href}); await pathname(receiver,'/profile');
+    assert.ok((await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at);
+    await onboard(receiver,'SeparateSignup');
+    assert.equal((await data(admin.from('profiles').select('last_name').eq('id',registered.id).single())).last_name,'SeparateSignup');
+    await visit(receiver,'/dashboard'); await pathname(receiver,'/dashboard');
+    await visit(requester,'/dashboard'); await pathname(requester,'/login');
+    await captureState(receiver,'separate-signup-confirmed');
+    await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
+    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
+    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'replayed cross-context signup refused');
     await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
     await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'separate-context signup feedback');
     assert.ok((await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at);
@@ -1002,6 +1203,7 @@ try {
     await click(recoveryPage,'button[aria-label="Sign out"]'); await pathname(recoveryPage,'/login');
   });
   await check('Missing, invalid and replayed reset links cannot establish signed-out password-change sessions', async () => {
+    for(const url of [`${appUrl}/auth/confirm?type=recovery`,`${appUrl}/auth/confirm?type=recovery&token_hash=invalid-synthetic-token`,`${appUrl}/auth/callback?next=/update-password`,`${appUrl}/auth/callback?next=/update-password&code=invalid-synthetic-code`,recoveryLink]) {
     for(const url of [`${appUrl}/auth/callback?next=/update-password`,`${appUrl}/auth/callback?next=/update-password&code=invalid-synthetic-code`,recoveryLink]) {
       await recoveryPage.send('Page.navigate',{url}); await pathname(recoveryPage,'/forgot-password');
       await until(()=>recoveryPage.evaluate(`!!document.querySelector('[role=alert]')`),'invalid reset feedback');
@@ -1036,6 +1238,33 @@ try {
     await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:replacement})); await data(verifier.auth.signOut({scope:'local'}));
     newPassword=replacement;
   });
+  await check('Separate-context recovery changes the password and replay cannot restore the signed-out session', async () => {
+    const link=await requestRecovery(), receiver=await page();
+    assert.notEqual(receiver.browserContextId,recoveryPage.browserContextId);
+    const head=await fetch(link,{method:'HEAD',redirect:'manual'}); assert.equal(head.status,405);
+    assert.match(head.headers.get('cache-control'),/no-store/);
+    const wrongType=new URL(link); wrongType.searchParams.set('type','signup');
+    await receiver.send('Page.navigate',{url:wrongType.href}); await pathname(receiver,'/login');
+    await visit(receiver,'/update-password'); await pathname(receiver,'/login');
+    const maliciousNext=new URL(link); maliciousNext.searchParams.set('next','https://example.invalid');
+    await receiver.send('Page.navigate',{url:maliciousNext.href}); await pathname(receiver,'/update-password');
+    assert.equal(await receiver.evaluate('location.origin'),appUrl);
+    await captureState(receiver,'separate-recovery-password-form');
+    const replacement=`QA-${randomUUID()}-dD4!`;
+    await fill(receiver,'[name=password]',replacement); await fill(receiver,'[name=passwordConfirmation]',replacement);
+    await click(receiver,'form button[type=submit]'); await pathname(receiver,'/login');
+    await until(()=>receiver.evaluate(`document.body.innerText.includes('Password updated successfully.')`),'cross-context password update');
+    const verifier=createClient(apiUrl,status.ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+    assert.ok((await verifier.auth.signInWithPassword({email:recoveryAccount.email,password:newPassword})).error,'Prior password must fail after cross-context recovery');
+    await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:replacement})); await data(verifier.auth.signOut({scope:'local'}));
+    newPassword=replacement;
+    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/forgot-password');
+    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'replayed cross-context recovery refused');
+    await visit(receiver,'/update-password'); await pathname(receiver,'/login');
+    await visit(recoveryPage,'/dashboard'); await pathname(recoveryPage,'/login');
+    await login(receiver,recoveryAccount.email,replacement); await pathname(receiver,'/dashboard');
+    await captureState(receiver,'separate-recovery-completed');
+    await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
   await check('Separate-context recovery refuses PKCE exchange without a verifier and cannot change the password', async () => {
     const link=await requestRecovery(), receiver=await page();
     assert.notEqual(receiver.browserContextId,recoveryPage.browserContextId);
@@ -1110,6 +1339,7 @@ try {
     results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'pass' });
   } catch { results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'fail' }); process.exitCode = 1; }
   mkdirSync('reports', { recursive: true });
+  writeFileSync('reports/local-member-browser.json', JSON.stringify({ sourceRevision, sourceTree, environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery uses disposable local Mailpit and reviewed token-hash templates; external SMTP/deliverability, physical-device compatibility and hosted template activation remain unverified', 'Business and organization deletion UI is absent; native-language review remains pending', ...(results.some(result=>result.scenario==='Background conversation stays unread and both sender tabs receive the real read receipt' && result.status==='pass') ? [] : ['Multi-tab read receipts have not passed in this run']), ...(results.some(row=>row.scenario==='Admin role form promotes and demotes a synthetic member with existing-session authorization' && row.status==='pass') ? [] : ['Admin team role mutations have not passed in this run']), 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
   writeFileSync('reports/local-member-browser.json', JSON.stringify({ sourceRevision, sourceTree, environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery uses disposable local Mailpit; external SMTP/deliverability is unverified. Separate-context signup requires explicit sign-in because its PKCE verifier stays with the requesting browser; separate-context recovery fails closed without its PKCE verifier and is not a successful cross-device recovery flow', 'Business and organization deletion UI is absent; native-language review remains pending', ...(results.some(result=>result.scenario==='Background conversation stays unread and both sender tabs receive the real read receipt' && result.status==='pass') ? [] : ['Multi-tab read receipts have not passed in this run']), ...(results.some(row=>row.scenario==='Admin role form promotes and demotes a synthetic member with existing-session authorization' && row.status==='pass') ? [] : ['Admin team role mutations have not passed in this run']), 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
   console.log(`${results.filter(r => r.status === 'pass').length} passed; ${results.filter(r => r.status === 'fail').length} failed`);
   // Only complete successful disposable runs emit review images; never auth

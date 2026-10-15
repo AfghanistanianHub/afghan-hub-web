@@ -20,6 +20,7 @@ export function PageRecovery({ reset }: RecoveryProps) {
         aria-labelledby="recovery-title"
         className="relative mx-auto w-full max-w-3xl border-y border-border"
       >
+        <div className="flex min-h-[390px] flex-col justify-center p-5 sm:p-10 lg:p-12">
         <div className="flex min-h-[390px] flex-col justify-center p-7 sm:p-10 lg:p-12">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Page unavailable</p>
           <h1 id="recovery-title" className="mt-4 max-w-xl text-3xl font-medium tracking-[-0.035em] text-foreground sm:text-4xl">
