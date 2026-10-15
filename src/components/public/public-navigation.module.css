@@ -38,7 +38,26 @@
 
 /* Native language names remain readable regardless of the selected UI language. */
 .languageControl { display:inline-flex; align-items:center; min-height:44px; }
-.languageControl select { max-width:94px; min-height:36px; padding:0 6px; border:1px solid #dfd6e6; border-radius:8px; background:var(--background); color:inherit; font:inherit; cursor:pointer; }
+.languageControl select {
+  max-width:120px;
+  min-height:36px;
+  padding:0 34px 0 12px;
+  border:1px solid #dfd6e6;
+  border-radius:8px;
+  appearance:none;
+  background-color:var(--background);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232a2730' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+  background-size:16px 16px;
+  color:inherit;
+  font:inherit;
+  cursor:pointer;
+}
+.languageControl select:dir(rtl) {
+  padding:0 12px 0 34px;
+  background-position:left 12px center;
+}
 .languageControl select:focus-visible { outline:2px solid var(--primary); outline-offset:3px; }
 .languageControl option[lang="fa"],.languageControl option[lang="ps"] { font-family:var(--font-fa-body); }
 .footer:dir(rtl) nav { align-items:flex-start; text-align:start; }
@@ -49,7 +68,7 @@
 .footer[lang="ps"] h2 { font-family:var(--font-fa-body); }
 .header:dir(rtl) .account { direction:rtl; }
 @media(max-width:960px) { .header:dir(rtl) .account { margin-left:0; margin-right:auto; } }
-@media(max-width:480px) { .languageControl select { max-width:80px; } }
+@media(max-width:480px) { .languageControl select { max-width:112px; } }
 
 /* Maintain comfortable touch targets and readable language controls on phones. */
 @media (pointer:coarse) {
@@ -57,6 +76,6 @@
   .languageControl select { min-height:44px; }
 }
 @media(max-width:480px) {
-  .languageControl select { max-width:88px; font-size:12px; }
+  .languageControl select { max-width:112px; font-size:12px; }
   .header:dir(rtl) .mobile nav a { text-align:start; }
 }
