@@ -21,7 +21,7 @@ export function readSiteLanguagePreference(): SiteLanguage {
     const legacy = window.localStorage.getItem("afghan-hub-navigator-language");
     return normalizeSiteLanguage(selected ?? legacy);
   } catch {
-    return "en";
+    return volatileLanguage ?? "en";
   }
 }
 
