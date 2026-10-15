@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { appendFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { requireLocalTarget } from './local-target.mjs';
+const sha = '472a4dda64204b68f47957b4769f963fa97add1a';
+const dir = resolve(process.env.RUNNER_TEMP, 'design-before');
+const status = JSON.parse(execFileSync('supabase', ['status', '-o', 'json'], {cwd:process.env.LOCAL_QA_DIR,encoding:'utf8',stdio:['ignore','pipe','pipe']}));
+const apiUrl = requireLocalTarget(status.API_URL);
+execFileSync('git', ['worktree', 'add', '--detach', dir, sha], {stdio:'ignore'});
+assert.equal(spawnSync('npm',['ci'],{cwd:dir,stdio:'ignore'}).status,0);
+const env = {...process.env,NEXT_PUBLIC_SITE_URL:'http://localhost:3100',NEXT_PUBLIC_SUPABASE_URL:apiUrl,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:status.ANON_KEY,NAVIGATOR_MODEL_PROVIDER:'structured',NAVIGATOR_MODEL_ENABLED:'false',NEXT_TELEMETRY_DISABLED:'1'};
+assert.equal(spawnSync(process.execPath,[resolve(dir,'node_modules/next/dist/bin/next'),'build'],{cwd:dir,env,stdio:'ignore'}).status,0,'Pinned baseline build failed');
+appendFileSync(process.env.GITHUB_ENV, `LOCAL_QA_COMPARE_DIR=${dir}\nLOCAL_QA_COMPARE_SHA=${sha}\n`);
+console.log(`Built pinned before source ${sha}; loopback services only`);

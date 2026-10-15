@@ -80,7 +80,7 @@ export default async function EventPage({ params, searchParams }: Props) {
     <section data-illustration-trigger className="relative mt-6 overflow-hidden rounded-sm border border-border bg-card">
       <MemberListingArtwork kind="events" />
       <div className="relative grid gap-7 px-6 py-8 md:px-9 md:py-11 lg:grid-cols-[120px_minmax(0,1fr)_auto] lg:items-start">
-        <div className="flex size-24 flex-col items-center justify-center rounded-[var(--radius)] border border-primary/15 bg-background/88 text-center shadow-sm backdrop-blur lg:size-28">
+        <div className="flex size-24 flex-col items-center justify-center rounded-[var(--radius)] border border-primary/15 bg-background text-center shadow-sm lg:size-28">
           <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary">{dateParts.month}</span>
           <span className="mt-1 text-4xl font-bold tracking-tight text-foreground">{dateParts.day}</span>
         </div>
@@ -91,7 +91,7 @@ export default async function EventPage({ params, searchParams }: Props) {
               {event.is_online ? <Monitor aria-hidden="true" className="size-3.5"/> : <MapPin aria-hidden="true" className="size-3.5"/>}
               {event.is_online ? "Online event" : "In-person event"}
             </span>
-            {!hasStarted && event.status === "published" ? <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-background/75 px-3 py-1.5 text-xs font-medium text-primary"><Sparkles aria-hidden="true" className="size-3"/>Upcoming</span> : null}
+            {!hasStarted && event.status === "published" ? <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-background px-3 py-1.5 text-xs font-medium text-primary"><Sparkles aria-hidden="true" className="size-3"/>Upcoming</span> : null}
           </div>
           <h1 className="mt-5 break-words text-3xl font-medium leading-[1.08] tracking-[-0.035em] text-foreground md:text-4xl">{event.title}</h1>
           {event.organization ? <p className="mt-4 text-sm text-muted-foreground">Hosted by <Link href={`/organizations/${event.organization.slug}`} className="rounded-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">{event.organization.name}</Link></p> : <p className="mt-4 text-sm text-muted-foreground">Community event</p>}
