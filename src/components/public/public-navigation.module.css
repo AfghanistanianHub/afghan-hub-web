@@ -79,3 +79,15 @@
   .languageControl select { max-width:112px; font-size:12px; }
   .header:dir(rtl) .mobile nav a { text-align:start; }
 }
+
+/* Keep the mobile language control and menu inside narrow 320px viewports. */
+@media(max-width:360px) {
+  .bar { padding-inline:10px; gap:6px; min-width:0; }
+  .brand { font-size:18px; gap:5px; flex-shrink:1; min-width:0; }
+  .brandMark { flex-shrink:0; width:19px; height:23px; }
+  .brandMark i { inset:5px 5px 0; }
+  .account { min-width:0; gap:2px; }
+  .languageControl { min-width:0; }
+  .languageControl select { max-width:82px; padding-left:6px; padding-right:22px; background-position:right 5px center; }
+  .mobile { flex:0 0 44px; }
+}
