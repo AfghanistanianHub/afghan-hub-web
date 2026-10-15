@@ -392,9 +392,6 @@ export default async function SearchPage({
   return (
     <main className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <div className="mx-auto max-w-5xl">
-        <section className="relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8 shadow-[var(--shadow-surface)] md:px-8 md:py-10">
-          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
         <section className="relative overflow-hidden workspace-surface px-5 py-6 md:px-6 md:py-8">
           <div className="relative">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
