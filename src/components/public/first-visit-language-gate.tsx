@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, type ReactNode } from "react";
+import { useState, useSyncExternalStore, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { saveSiteLanguagePreference, siteLanguagePreferenceKey, subscribeSiteLanguagePreference, type SiteLanguage } from "@/lib/i18n/site-language";
 import styles from "./first-visit-language-gate.module.css";
@@ -14,6 +14,7 @@ const languages: { code: SiteLanguage; name: string; direction: "ltr" | "rtl" }[
 /** Gate only the root home page. Deep links must never be intercepted. */
 export function FirstVisitLanguageGate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const [chosenThisSession, setChosenThisSession] = useState(false);
   const selection = useSyncExternalStore(
     subscribeSiteLanguagePreference,
     () => {
@@ -31,10 +32,11 @@ export function FirstVisitLanguageGate({ children }: { children: ReactNode }) {
   // Only the root is gated; deep links never require a language selection.
   if (pathname !== "/") return <>{children}</>;
   if (selection === "loading") return <div className={styles.loading} aria-label="Loading" />;
-  if (selection === "selected") return <>{children}</>;
+  if (selection === "selected" || chosenThisSession) return <>{children}</>;
 
   function choose(language: SiteLanguage) {
     saveSiteLanguagePreference(language);
+    setChosenThisSession(true);
   }
 
   return (
