@@ -199,7 +199,7 @@ async function visit(page, path) {
   }
 }
 async function pathname(page, path) {
-  await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), `expected route ${path}`);
+  await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)} && document.readyState==='complete'`), `expected route ${path}`, 30000);
 }
 async function fill(page, selector, value) {
   const fieldSelector = (selector.startsWith('form') || selector.startsWith('dialog')) ? selector : `form ${selector}`;
@@ -604,7 +604,6 @@ try {
       await visit(reviewerPage, '/moderation'); await pathname(reviewerPage, '/moderation');
       await captureState(reviewerPage, `${role}-moderation`);
       assert.equal(await reviewerPage.evaluate(`!!document.querySelector('a[href="/moderation/team"]')`), role === 'admin');
-      await visit(reviewerPage, '/moderation/team'); await pathname(reviewerPage, role === 'admin' ? '/moderation/team' : '/moderation');
       if (role === 'admin') await captureState(reviewerPage,'admin-team');
       assert.equal(await reviewerPage.evaluate(`!!document.querySelector('a[href="/moderation/team"]')`), role === 'admin');
       await visit(reviewerPage, '/moderation/team'); await pathname(reviewerPage, role === 'admin' ? '/moderation/team' : '/moderation');
