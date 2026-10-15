@@ -172,6 +172,10 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     await page.evaluate("document.fonts.ready.then(()=>true)");
     await delay(950);
     const layout = await page.evaluate(layoutExpression);
+    if (layout.scrollWidth > width + 1) {
+      const overflowing = await page.evaluate(`[...document.querySelectorAll('body *')].map(el=>({el,r:el.getBoundingClientRect()})).filter(({r})=>r.width>0&&(r.right>innerWidth+1||r.left< -1)).slice(0,12).map(({el,r})=>({tag:el.tagName,className:typeof el.className==='string'?el.className.slice(0,140):'',left:Math.round(r.left),right:Math.round(r.right)}))`);
+      console.error('AFGHAN_HUB_MOBILE_OVERFLOW '+JSON.stringify({width,scrollWidth:layout.scrollWidth,overflowing}));
+    }
     assert.ok(layout.scrollWidth <= width + 1, `Horizontal overflow at ${width}`);
     assert.equal(layout.targets.length, 5);
     assert.ok(layout.targets.every(target => target.clickable && target.height >= 44 && target.width >= 44));
