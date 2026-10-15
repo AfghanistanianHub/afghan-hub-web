@@ -860,7 +860,7 @@ try {
           }
           await until(()=>visual.evaluate(`!!document.querySelector('#ai-navigator select')`),'visual Navigator available after entrance');
         }
-        await until(()=>visual.evaluate(`Object.keys(document.querySelector('#ai-navigator select') ?? {}).some(key => key.startsWith('__reactProps
+        await until(()=>visual.evaluate(`Object.keys(document.querySelector('#ai-navigator select') || {}).some(key => key.startsWith('__reactProps'))`),'visual Navigator React hydration');
         for (const locale of ['en','fa','ps']) {
           await select(visual,'#ai-navigator select',locale);
           await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')===${JSON.stringify(locale==='en'?'ltr':'rtl')}`),'visual Navigator language');
