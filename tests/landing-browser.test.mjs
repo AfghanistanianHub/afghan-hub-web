@@ -163,6 +163,13 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   console.log("AFGHAN_HUB_SANDBOX_VERIFIED Seccomp-BPF enabled; no sandbox-disabling launch flags.");
   const axeSource = require("axe-core").source;
   const screenshots = [];
+  // A new visitor sees the language entrance first. Choose English through the
+  // actual UI before exercising the existing homepage layout and motion suite.
+  await page.send("Page.navigate", {url:appUrl});
+  await waitFor(() => page.evaluate("!!document.querySelector('main button[lang=en]')"), "first-visit language entrance");
+  assert.equal(await page.evaluate("document.querySelector('[data-community-node]')===null"), true, "Homepage stays hidden until language selection");
+  await page.evaluate("document.querySelector('main button[lang=en]').click()");
+  await waitFor(() => page.evaluate("!!document.querySelector('[data-community-node]')"), "homepage after language selection");
   // Approved living network: meaningful destinations, stable bounds and reduced motion.
   await page.send("Emulation.setScrollbarsHidden", {hidden:true});
   for (const width of [320,390,768,1024,1280,1440]) {
