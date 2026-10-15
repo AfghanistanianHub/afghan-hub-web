@@ -772,9 +772,11 @@ try {
     // The server-rendered input may exist before React hydrates. Wait for the
     // authenticated conversation fixture so a zero-result search is meaningful.
     await until(() => pageA.evaluate(`document.querySelectorAll('main a[href^="/messages/"]').length>0`), 'hydrated inbox with permitted conversation');
-    await click(pageA, 'input[placeholder="Name or latest message"]');
+    const inboxInput = 'input[placeholder="Name or latest message"]';
+    await click(pageA, inboxInput);
+    await until(() => pageA.evaluate(`document.hasFocus() && document.activeElement===document.querySelector(${JSON.stringify(inboxInput)})`), 'inbox owns native keyboard focus');
     await pageA.send('Input.insertText', {text:'No-matching-synthetic-conversation'});
-    await until(() => pageA.evaluate(`document.querySelector('input[placeholder="Name or latest message"]')?.value==='No-matching-synthetic-conversation'`), 'inbox search text entered');
+    await until(() => pageA.evaluate(`document.querySelector(${JSON.stringify(inboxInput)})?.value==='No-matching-synthetic-conversation'`), 'native inbox search value');
     try {
       await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
     } catch (error) {
