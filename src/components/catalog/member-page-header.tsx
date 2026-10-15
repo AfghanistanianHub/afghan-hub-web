@@ -16,6 +16,7 @@ export function MemberPageHeader({ title, description, icon: Icon, children }: {
         </span>
         <div className="min-w-0">
           <h1 className="workspace-heading">{title}</h1>
+          <h1 className="text-3xl font-medium tracking-tight text-foreground">{title}</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">{description}</p>
         </div>
       </div>

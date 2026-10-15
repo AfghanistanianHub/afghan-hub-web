@@ -12,6 +12,11 @@ export function normalizeSiteLanguage(value: unknown): SiteLanguage {
   const locale = value.trim().replaceAll("_", "-").toLowerCase();
   if (locale === "fa" || locale.startsWith("fa-") || locale === "prs" || locale.startsWith("prs-")) return "fa";
   if (locale === "ps" || locale.startsWith("ps-")) return "ps";
+export type SiteLanguage = (typeof siteLocales)[number];
+
+export function normalizeSiteLanguage(value: unknown): SiteLanguage {
+  if (value === "fa" || value === "fa-AF" || value === "fa-IR" || value === "prs") return "fa";
+  if (value === "ps" || value === "ps-AF") return "ps";
   return "en";
 }
 
@@ -25,6 +30,9 @@ export function readSiteLanguagePreference(): SiteLanguage {
     return normalizeSiteLanguage(selected ?? legacy);
   } catch {
     return volatileLanguage ?? "en";
+    return normalizeSiteLanguage(window.localStorage.getItem(siteLanguagePreferenceKey));
+  } catch {
+    return "en";
   }
 }
 
@@ -53,6 +61,10 @@ export function subscribeSiteLanguagePreference(onChange: () => void): () => voi
   window.addEventListener(siteLanguageChangeEvent, onChange);
   return () => {
     window.removeEventListener("storage", onStorage);
+  window.addEventListener("storage", onChange);
+  window.addEventListener(siteLanguageChangeEvent, onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
     window.removeEventListener(siteLanguageChangeEvent, onChange);
   };
 }

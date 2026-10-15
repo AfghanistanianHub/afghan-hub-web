@@ -18,6 +18,10 @@ export default async function ForgotPasswordPage({
   return (
     <main id="main-content" className="auth-page min-h-screen text-foreground">
       <AuthBrand />
+    <main className="auth-page min-h-screen text-foreground">
+      <header className="auth-brand">
+        <Link href="/" className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Afghan Hub</Link>
+      </header>
 
       <section className="auth-form-region">
 

@@ -9,6 +9,7 @@
     "lint": "eslint",
     "smoke:public": "node scripts/smoke-public.mjs",
     "test:typography": "node --test tests/multilingual-typography.test.mjs tests/site-language-runtime.test.mjs",
+    "test:typography": "node --test tests/multilingual-typography.test.mjs",
     "backup:free-plan": "bash scripts/backup-free-plan.sh",
     "acceptance:auth": "node scripts/member-auth-acceptance.mjs",
     "acceptance:member-pair": "node scripts/member-pair-preflight.mjs",

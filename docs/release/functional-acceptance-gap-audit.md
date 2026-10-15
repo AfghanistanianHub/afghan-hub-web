@@ -29,6 +29,7 @@ Complete-pass claims require every scenario in each independent job, plus fixtur
 A new `/auth/confirm` route and reviewed token-hash email templates implement session establishment in the receiving browser. See [cross-browser implementation and activation boundary](cross-browser-email-verification.md). Final-revision complete acceptance is required for this new code. Hosted templates and SMTP remain unchanged; external delivery is still unverified.
 
 The following records the original baseline limitation and proposal:
+## Open authentication capability
 
 The application currently supports only exchangeCodeForSession at /auth/callback. A successful reset requested on device A and opened on device B remains unavailable. The receiving device shows an invalid/expired-link message despite a verifier-context mismatch. The separate-context scenario documents that limitation rather than relaxing its authentication boundary.
 

@@ -142,6 +142,7 @@
 @media(prefers-reduced-motion:reduce) { .question { animation:none; } }
 
 /* Native-language typography overrides the shared UI family for script coverage. */
+/* Native-language typography for Navigator; retain the editorial serif in English. */
 .navigator:is([lang="fa"], [lang="fa-AF"], [lang="prs"], [lang="ps"]) {
   font-family:var(--font-fa-body);
 }
@@ -166,4 +167,5 @@
 .navigator:is([lang="fa"], [lang="fa-AF"], [lang="prs"], [lang="ps"]) .search input {
   font-size: 1rem;
   font-size:16px;
+  font-size: max(14px, 0.875rem);
 }

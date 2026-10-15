@@ -112,6 +112,14 @@ async function captureState(page, label) {
     if (process.env.LOCAL_QA_DESIGN_REVIEW==='1' || (width===390 && ['navigator-member-fa-results','navigator-member-ps-results','opportunities-filtered-results','opportunities-empty','businesses-outage'].includes(label)) || (width===1440 && ['submissions-owner-note','businesses-recovered'].includes(label))) {
       const jpg=await page.send('Page.captureScreenshot',{format:'jpeg',quality:65});
       const file=`${visualDir}/${label}-after-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));if(process.env.LOCAL_QA_DESIGN_REVIEW!=='1') reviewImages.push({label,width,file});
+  for(const width of [1440,390]) {
+    await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
+    await page.send('Emulation.setPageScaleFactor',{pageScaleFactor:1});
+    const screenshot=await page.send('Page.captureScreenshot',{format:'png'});
+    writeFileSync(`${visualDir}/${label}-${width}.png`,Buffer.from(screenshot.data,'base64'));
+    if ((width===390 && ['navigator-member-fa-results','navigator-member-ps-results','opportunities-filtered-results','opportunities-empty','businesses-outage'].includes(label)) || (width===1440 && ['submissions-owner-note','businesses-recovered'].includes(label))) {
+      const jpg=await page.send('Page.captureScreenshot',{format:'jpeg',quality:65});
+      const file=`${visualDir}/${label}-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));reviewImages.push({label,width,file});
     }
   }
   await page.send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
@@ -197,6 +205,16 @@ async function visit(page, path) {
 }
 async function pathname(page, path) {
   await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), `expected route ${path}`);
+async function visit(page, path, timeout = 20000) {
+  assert.ok(path.startsWith('/') && !path.startsWith('//'));
+  const deadline = Date.now() + timeout;
+  const navigation = await page.send('Page.navigate', { url: appUrl + path });
+  assert.ok(!navigation.errorText, 'Native document navigation must not report a transport error');
+  if (navigation.loaderId) await until(() => page.loadedDocuments.has(navigation.loaderId), 'requested document loaded', Math.max(1, deadline - Date.now()));
+  await until(() => page.evaluate(`location.origin===${JSON.stringify(appUrl)} && document.readyState==='complete'`), 'local page', Math.max(1, deadline - Date.now()));
+}
+async function pathname(page, path) {
+  await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), 'expected route');
 }
 async function fill(page, selector, value) {
   const fieldSelector = (selector.startsWith('form') || selector.startsWith('dialog')) ? selector : `form ${selector}`;
@@ -304,6 +322,10 @@ async function deliveredConfirmation(email, type = 'signup', excludedIds = []) {
   assert.match(link.searchParams.get('token_hash'), /^[A-Za-z0-9_-]+$/);
   assert.equal(link.searchParams.has('redirect_to'), false);
   assert.equal(link.searchParams.has('next'), false);
+  const link = links.map(value => new URL(value)).find(url => url.origin === apiUrl && url.pathname === '/auth/v1/verify');
+  assert.ok(link, 'Email must contain the loopback Auth verification URL');
+  assert.equal(link.searchParams.get('type'), type);
+  assert.equal(link.searchParams.get('redirect_to'), type==='signup' ? `${appUrl}/auth/callback?next=/dashboard&flow=signup` : `${appUrl}/auth/callback?next=/update-password`);
   return link.href;
 }
 async function member(label) {
@@ -332,6 +354,7 @@ try {
     assert.equal(execFileSync('git',['-C',compareDir,'rev-parse','HEAD'],{encoding:'utf8'}).trim(), 'dad64a27c09aebb32651149b5e33f8bf2534703f', 'Visual baseline must be pinned');
     const baselineBuild=launch(process.execPath,[nextCli,'build',compareDir],env);
     assert.equal(await new Promise((resolve,reject)=>{baselineBuild.once('exit',resolve);baselineBuild.once('error',reject);}),0,'Baseline production build failed');
+    assert.ok(existsSync(join(compareDir, '.next/BUILD_ID')), 'Comparison requires a prebuilt baseline checkout');
     launch(process.execPath, [nextCli, 'start', compareDir, '--hostname', '127.0.0.1', '--port', '3102'], env);
     await until(async () => (await fetch(compareUrl)).ok, 'baseline comparison server');
   }
@@ -365,6 +388,11 @@ try {
     await until(() => pageA.evaluate(`document.querySelector('#ai-navigator select')?.value==='fa' && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`), 'legacy preference hydrated');
     assert.deepEqual(await pageA.evaluate(`[...document.querySelectorAll('#ai-navigator select option')].map(node=>node.value)`), ['en','fa','ps']);
     assert.equal(await pageA.evaluate(`localStorage.getItem('afghan-hub-navigator-language')`), 'fa-AF'); // Legacy storage is read-only; the shared preference reader normalizes its value.
+    await pageA.evaluate(`localStorage.setItem('afghan-hub-navigator-language','fa-AF')`);
+    await visit(pageA, '/');
+    await until(() => pageA.evaluate(`document.querySelector('#ai-navigator select')?.value==='fa' && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`), 'legacy preference hydrated');
+    assert.deepEqual(await pageA.evaluate(`[...document.querySelectorAll('#ai-navigator select option')].map(node=>node.value)`), ['en','fa','ps']);
+    assert.equal(await pageA.evaluate(`localStorage.getItem('afghan-hub-navigator-language')`), 'fa');
     await select(pageA, '#ai-navigator select', 'ps');
     await until(() => pageA.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')==='ps' && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`), 'Pashto RTL');
     await select(pageA, '#ai-navigator select', 'en');
@@ -395,6 +423,7 @@ try {
     }
   });
   await check('Real signup and delivered one-time email establish the browser session', async () => {
+  await check('Real signup, local email delivery and PKCE callback establish the browser session', async () => {
     await visit(pageA, '/login?mode=join');
     await fill(pageA, '[name=email]', a.email); await fill(pageA, '[name=password]', password);
     await click(pageA, '#join button[type=submit]');
@@ -602,6 +631,8 @@ try {
       assert.equal(await reviewerPage.evaluate(`!!document.querySelector('a[href="/moderation/team"]')`), role === 'admin');
       await visit(reviewerPage, '/moderation/team'); await pathname(reviewerPage, role === 'admin' ? '/moderation/team' : '/moderation');
       if (role === 'admin') await captureState(reviewerPage,'admin-team');
+      assert.equal(await reviewerPage.evaluate(`!!document.querySelector('a[href="/moderation/team"]')`), role === 'admin');
+      await visit(reviewerPage, '/moderation/team'); await pathname(reviewerPage, role === 'admin' ? '/moderation/team' : '/moderation');
     });
     if (role === 'admin') {
       const target = await member('role-target');
@@ -787,6 +818,11 @@ try {
     await until(()=>pageA.evaluate(`document.querySelector(${JSON.stringify(inboxInput)})?.value==='No-matching-synthetic-conversation'`),'native inbox search value');
     await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
     assert.equal(await pageA.evaluate(`!!document.querySelector(${JSON.stringify(`main a[href="${conversationPath}"]`)})`),false,'Filtered inbox must hide the real conversation');
+    await click(pageA, 'input[placeholder="Name or latest message"]');
+    await until(() => pageA.evaluate(`document.visibilityState==='visible' && document.hasFocus() && document.activeElement===document.querySelector('input[placeholder="Name or latest message"]')`), 'native inbox input focused');
+    await pageA.send('Input.insertText', {text:'No-matching-synthetic-conversation'});
+    await until(() => pageA.evaluate(`document.querySelector('input[placeholder="Name or latest message"]')?.value==='No-matching-synthetic-conversation'`), 'native inbox query retained');
+    await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
     await visit(pageA, conversationPath);
     assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-label="Conversation navigation"]')).display!=='none'`), true);
     await pageA.send('Emulation.setDeviceMetricsOverride', { width:390, height:1000, deviceScaleFactor:1, mobile:true });
@@ -826,6 +862,12 @@ try {
       for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/','/about','/explore','/search','/saved','/settings','/profile','/dashboard','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new',...reviewDetails,'/not-a-real-page']) {
       for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/','/about','/explore','/profile','/dashboard','/search','/saved','/settings','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new','/moderation','/moderation/team',...detailRoutes,'/not-a-real-page']) {
         visual=route.startsWith('/moderation')?adminVisual:memberVisual;
+      const visual = await page(pageA.browserContextId);
+      const findings = [];
+      const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
+      mkdirSync(visualDir, {recursive:true});
+      for (const phase of process.env.LOCAL_QA_COMPARE_DIR ? ['before', 'after'] : [process.env.LOCAL_QA_VISUAL_PHASE ?? 'after']) {
+      for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/about','/profile','/dashboard','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new','/not-a-real-page']) {
         if (phase === 'before' && process.env.LOCAL_QA_COMPARE_DIR) {
           const navigation = await visual.send('Page.navigate', {url:compareUrl+route});
           if(navigation.loaderId) await until(()=>visual.loadedDocuments.has(navigation.loaderId), 'baseline document loaded');
@@ -850,6 +892,10 @@ try {
           assert.equal(keyboard.visible,true,'Tab target must be visible');
           state.keyboard=keyboard; state.reducedMotion=true;
           await visual.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]});
+        for (const width of [1440,390]) {
+          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
+          const state = await visual.evaluate(`({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,canvas:!!document.querySelector('.global-network-background canvas'),rejectedArt:!!document.querySelector('[data-hero-layer="architecture"]'),heading:!!document.querySelector('main h1')})`);
+          assert.equal(state.overflow,false,`Horizontal overflow: ${route} at ${width}`);
           if(['/businesses','/organizations','/opportunities','/events','/submissions','/network','/messages',conversationPath,`/members/${b.id}`].includes(route)) assert.equal(state.route,new URL(route,appUrl).pathname,'Member screenshot must depict its requested route');
           if (['/businesses','/organizations','/opportunities','/events','/submissions','/network','/messages',conversationPath,`/members/${b.id}`].includes(route)) assert.equal(state.heading,true,`Member page requires h1: ${route}`);
           assert.equal(state.canvas,true); if (phase === 'after') assert.equal(state.rejectedArt,false);
@@ -934,18 +980,33 @@ try {
       writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, findings},null,2)+'\n');
       const phase = 'after';
       visual=memberVisual;
+          findings.push({phase,requested:route===conversationPath?'/messages/[id]':route,width,...state,route:state.route.replace(/[0-9a-f-]{36}/g,'[id]')});
+          const label=route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replaceAll('/','-');
+          const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
+          writeFileSync(`${visualDir}/${label}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
+          if(phase==='after' && ['businesses','organizations','opportunities','events','submissions','network','member','messages','conversation'].includes(label)) {
+            const jpg=await visual.send('Page.captureScreenshot',{format:'jpeg',quality:65});
+            const file=`${visualDir}/${label}-after-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));reviewImages.push({label,width,file});
+          }
+        }
+      }
+      }
+      const phase = 'after';
       await visit(visual,'/');
       for (const locale of ['fa','ps']) {
         await select(visual,'#ai-navigator select',locale);
         await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`),'visual Navigator RTL');
         for(const width of [1440,768,390,320]) {
           await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
+        for(const width of [1440,390]) {
+          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
           await visual.evaluate(`document.querySelector('#ai-navigator').scrollIntoView({block:'center'})`);
           const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
           writeFileSync(`${visualDir}/navigator-${locale}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
         }
       }
       writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, viewportWidths:[1440,768,390,320], findings},null,2)+'\n');
+      writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, findings},null,2)+'\n');
     });
   }
   await check('Directory and submission request failures remain visible without false empty counts', async () => {
@@ -981,6 +1042,11 @@ try {
         const started = Date.now();
         try {
           await visit(pageA, route);
+          // Middleware, access-context and workspace reads each have their own
+          // 10-second request deadline. Bound this whole outage navigation too;
+          // a 20-second document limit cannot cover those sequential phases.
+          await visit(pageA, route, 40000);
+          assert.equal(await pageA.evaluate('location.pathname'), route, 'Outage must retain the requested workspace');
         } catch (error) {
           evidence.stages.push({ route, outcome: 'navigation-error', error: error.name, ms: Date.now() - started });
           throw error;
@@ -1009,6 +1075,9 @@ try {
         dockerExit(['exec', db, 'psql', '-U', 'postgres', '-d', 'postgres', '-c', "NOTIFY pgrst, 'reload schema';"]);
         return probe('recovery');
       }, 'local REST service restored', 90000);
+      // Successful teardown must not relabel an earlier navigation failure as
+      // a failed health probe. Preserve the actual failing stage in the report.
+      if (evidence.failedStep) step = evidence.failedStep;
     }
   });
   await check('Directory and submissions recover with accessible populated content', async () => {
@@ -1071,6 +1140,7 @@ try {
     await snapshot('caught-up');
   });
   await check('Separate-context signup confirms identity and creates only the receiving browser session', async () => {
+  await check('Separate-context signup confirms the identity but PKCE session exchange fails closed without its verifier', async () => {
     const requester=await page(), receiver=await page();
     assert.notEqual(requester.browserContextId,receiver.browserContextId);
     const email=`browser-${stamp}-separate-signup@example.invalid`;
@@ -1095,6 +1165,14 @@ try {
     await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
     await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
     await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'replayed cross-context signup refused');
+    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
+    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'separate-context signup feedback');
+    assert.ok((await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at);
+    await visit(receiver,'/dashboard'); await pathname(receiver,'/login');
+    await login(receiver,email); await pathname(receiver,'/profile'); await onboard(receiver,'SeparateSignup');
+    await captureState(receiver,'separate-signup-after-explicit-login');
+    await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
+    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
     await visit(receiver,'/dashboard'); await pathname(receiver,'/login');
   });
   const recoveryAccount=await member('recovery');
@@ -1126,6 +1204,7 @@ try {
   });
   await check('Missing, invalid and replayed reset links cannot establish signed-out password-change sessions', async () => {
     for(const url of [`${appUrl}/auth/confirm?type=recovery`,`${appUrl}/auth/confirm?type=recovery&token_hash=invalid-synthetic-token`,`${appUrl}/auth/callback?next=/update-password`,`${appUrl}/auth/callback?next=/update-password&code=invalid-synthetic-code`,recoveryLink]) {
+    for(const url of [`${appUrl}/auth/callback?next=/update-password`,`${appUrl}/auth/callback?next=/update-password&code=invalid-synthetic-code`,recoveryLink]) {
       await recoveryPage.send('Page.navigate',{url}); await pathname(recoveryPage,'/forgot-password');
       await until(()=>recoveryPage.evaluate(`!!document.querySelector('[role=alert]')`),'invalid reset feedback');
       await visit(recoveryPage,'/update-password'); await pathname(recoveryPage,'/login');
@@ -1186,6 +1265,15 @@ try {
     await login(receiver,recoveryAccount.email,replacement); await pathname(receiver,'/dashboard');
     await captureState(receiver,'separate-recovery-completed');
     await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
+  await check('Separate-context recovery refuses PKCE exchange without a verifier and cannot change the password', async () => {
+    const link=await requestRecovery(), receiver=await page();
+    assert.notEqual(receiver.browserContextId,recoveryPage.browserContextId);
+    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/forgot-password');
+    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'separate reset feedback');
+    await visit(receiver,'/update-password'); await pathname(receiver,'/login');
+    const verifier=createClient(apiUrl,status.ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+    await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:newPassword})); await data(verifier.auth.signOut({scope:'local'}));
+    await captureState(receiver,'separate-recovery-refused');
   });
   await check('Duplicate signup preserves one account and expired confirmation cannot create a session', async () => {
     const requester=await page(), email=`browser-${stamp}-duplicate-signup@example.invalid`;
@@ -1252,6 +1340,7 @@ try {
   } catch { results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'fail' }); process.exitCode = 1; }
   mkdirSync('reports', { recursive: true });
   writeFileSync('reports/local-member-browser.json', JSON.stringify({ sourceRevision, sourceTree, environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery uses disposable local Mailpit and reviewed token-hash templates; external SMTP/deliverability, physical-device compatibility and hosted template activation remain unverified', 'Business and organization deletion UI is absent; native-language review remains pending', ...(results.some(result=>result.scenario==='Background conversation stays unread and both sender tabs receive the real read receipt' && result.status==='pass') ? [] : ['Multi-tab read receipts have not passed in this run']), ...(results.some(row=>row.scenario==='Admin role form promotes and demotes a synthetic member with existing-session authorization' && row.status==='pass') ? [] : ['Admin team role mutations have not passed in this run']), 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
+  writeFileSync('reports/local-member-browser.json', JSON.stringify({ sourceRevision, sourceTree, environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery uses disposable local Mailpit; external SMTP/deliverability is unverified. Separate-context signup requires explicit sign-in because its PKCE verifier stays with the requesting browser; separate-context recovery fails closed without its PKCE verifier and is not a successful cross-device recovery flow', 'Business and organization deletion UI is absent; native-language review remains pending', ...(results.some(result=>result.scenario==='Background conversation stays unread and both sender tabs receive the real read receipt' && result.status==='pass') ? [] : ['Multi-tab read receipts have not passed in this run']), ...(results.some(row=>row.scenario==='Admin role form promotes and demotes a synthetic member with existing-session authorization' && row.status==='pass') ? [] : ['Admin team role mutations have not passed in this run']), 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
   console.log(`${results.filter(r => r.status === 'pass').length} passed; ${results.filter(r => r.status === 'fail').length} failed`);
   // Only complete successful disposable runs emit review images; never auth
   // state, provider payloads or hosted-account screenshots. These bytes let

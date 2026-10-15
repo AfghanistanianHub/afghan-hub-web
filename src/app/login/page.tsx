@@ -28,6 +28,18 @@ export default async function LoginPage({
   return (
     <main id="main-content" className="auth-page min-h-screen text-foreground">
       <AuthBrand />
+    <main className="auth-page min-h-screen text-foreground">
+      <header className="auth-brand">
+
+        <div className="relative z-10">
+          <Link href="/" className="inline-flex items-center gap-2 rounded-sm text-sm font-semibold uppercase tracking-[0.22em] text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+            <span className="flex size-8 items-center justify-center rounded-[var(--radius-control)] bg-secondary text-primary">A</span>
+            Afghan Hub
+          </Link>
+
+        </div>
+
+      </header>
 
       <section className="auth-form-region">
         <div className="relative w-full max-w-md">
