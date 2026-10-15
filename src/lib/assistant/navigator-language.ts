@@ -1,4 +1,4 @@
-import { normalizeSiteLanguage, saveSiteLanguagePreference, siteLanguagePreferenceKey } from "@/lib/i18n/site-language";
+import { normalizeSiteLanguage, readSiteLanguagePreference, saveSiteLanguagePreference } from "@/lib/i18n/site-language";
 
 export const navigatorLocales = [
   { value: "en", label: "English" },
@@ -16,14 +16,9 @@ export function normalizeNavigatorLanguage(value: unknown): NavigatorLanguage {
 export const navigatorLanguagePreferenceKey = "afghan-hub-navigator-language";
 
 export function readNavigatorLanguagePreference(): NavigatorLanguage {
-  try {
-    const saved = localStorage.getItem(siteLanguagePreferenceKey) ?? localStorage.getItem(navigatorLanguagePreferenceKey);
-    const language = normalizeNavigatorLanguage(saved);
-    if (saved === "fa-AF") localStorage.setItem(navigatorLanguagePreferenceKey, language);
-    return language;
-  } catch {
-    return "en";
-  }
+  // The shared store is authoritative, including when storage is blocked.
+  // It also supports the legacy Navigator key and synchronizes across tabs.
+  return readSiteLanguagePreference();
 }
 
 export function subscribeNavigatorLanguagePreference(onChange: () => void) {

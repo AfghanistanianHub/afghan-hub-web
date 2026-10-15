@@ -356,11 +356,11 @@ try {
   });
   await check('Navigator exposes three languages and migrates legacy Persian preference with RTL', async () => {
     await visit(pageA, '/');
-    await pageA.evaluate(`localStorage.setItem('afghan-hub-navigator-language','fa-AF')`);
+    await pageA.evaluate(`localStorage.removeItem('afghan-hub-site-language'); localStorage.setItem('afghan-hub-navigator-language','fa-AF')`);
     await visit(pageA, '/');
     await until(() => pageA.evaluate(`document.querySelector('#ai-navigator select')?.value==='fa' && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`), 'legacy preference hydrated');
     assert.deepEqual(await pageA.evaluate(`[...document.querySelectorAll('#ai-navigator select option')].map(node=>node.value)`), ['en','fa','ps']);
-    assert.equal(await pageA.evaluate(`localStorage.getItem('afghan-hub-navigator-language')`), 'fa');
+    assert.equal(await pageA.evaluate(`localStorage.getItem('afghan-hub-navigator-language')`), 'fa-AF'); // Legacy storage is read-only; the shared preference reader normalizes its value.
     await select(pageA, '#ai-navigator select', 'ps');
     await until(() => pageA.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')==='ps' && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`), 'Pashto RTL');
     await select(pageA, '#ai-navigator select', 'en');

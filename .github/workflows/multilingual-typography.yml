@@ -1,0 +1,53 @@
+name: Multilingual typography and homepage
+
+on:
+  pull_request:
+    paths:
+      - "src/lib/i18n/**"
+      - "src/lib/assistant/navigator-language.ts"
+      - "src/components/public/**"
+      - "src/components/assistant/homepage-navigator*"
+      - "src/components/assistant/navigator-journey-link.tsx"
+      - "src/app/(public)/**"
+      - "src/app/globals.css"
+      - "tests/multilingual-typography.test.mjs"
+      - "tests/site-language-runtime.test.mjs"
+      - "package.json"
+      - ".github/workflows/multilingual-typography.yml"
+  push:
+    branches:
+      - feat/typography-preview-2026
+    paths:
+      - "src/lib/i18n/**"
+      - "src/lib/assistant/navigator-language.ts"
+      - "src/components/public/**"
+      - "src/components/assistant/homepage-navigator*"
+      - "src/components/assistant/navigator-journey-link.tsx"
+      - "src/app/(public)/**"
+      - "src/app/globals.css"
+      - "tests/multilingual-typography.test.mjs"
+      - "tests/site-language-runtime.test.mjs"
+      - "package.json"
+      - ".github/workflows/multilingual-typography.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  typography:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Run multilingual source contracts
+        run: npm run test:typography
+      - name: Verify TypeScript types
+        run: npx tsc --noEmit
+      - name: Lint the integration candidate
+        run: npm run lint

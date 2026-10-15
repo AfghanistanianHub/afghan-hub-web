@@ -34,3 +34,28 @@
   .footer { grid-template-columns:2fr 1fr 1fr; } .footer>div { grid-column:1/-1; }
 }
 @media(max-width:480px) { .bar { padding:14px 16px; gap:4px; } .brand { font-size:22px; gap:8px; } .brandMark { width:23px; height:27px; } .join { display:none; } .footer { padding:28px 20px; gap:22px 10px; grid-template-columns:1fr 1fr; } .footer nav:last-of-type { grid-column:1/-1; } .footer nav a { min-height:36px; } }
+
+/* Native language names remain readable regardless of the selected UI language. */
+.languageControl { display:inline-flex; align-items:center; min-height:44px; }
+.languageControl select { max-width:94px; min-height:36px; padding:0 6px; border:1px solid #dfd6e6; border-radius:8px; background:var(--background); color:inherit; font:inherit; cursor:pointer; }
+.languageControl select:focus-visible { outline:2px solid var(--primary); outline-offset:3px; }
+.languageControl option[lang="fa"],.languageControl option[lang="ps"] { font-family:var(--font-fa-body); }
+.footer:dir(rtl) nav { align-items:flex-start; text-align:start; }
+.footer:dir(rtl) nav a { text-align:start; }
+.header:dir(rtl) .bar { direction:rtl; }
+.header:dir(rtl) .mobile nav { text-align:start; }
+.footer:dir(rtl) h2 { font-family:var(--font-fa-heading); line-height:1.6; }
+.footer[lang="ps"] h2 { font-family:var(--font-fa-body); }
+.header:dir(rtl) .account { direction:rtl; }
+@media(max-width:960px) { .header:dir(rtl) .account { margin-left:0; margin-right:auto; } }
+@media(max-width:480px) { .languageControl select { max-width:80px; } }
+
+/* Maintain comfortable touch targets and readable language controls on phones. */
+@media (pointer:coarse) {
+  .footer nav a { min-height:44px; }
+  .languageControl select { min-height:44px; }
+}
+@media(max-width:480px) {
+  .languageControl select { max-width:88px; font-size:12px; }
+  .header:dir(rtl) .mobile nav a { text-align:start; }
+}
