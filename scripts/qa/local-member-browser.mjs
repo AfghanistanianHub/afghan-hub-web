@@ -792,11 +792,6 @@ try {
     await until(()=>pageA.evaluate(`document.querySelector(${JSON.stringify(inboxInput)})?.value==='No-matching-synthetic-conversation'`),'native inbox search value');
     await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
     assert.equal(await pageA.evaluate(`!!document.querySelector(${JSON.stringify(`main a[href="${conversationPath}"]`)})`),false,'Filtered inbox must hide the real conversation');
-    await click(pageA, 'input[placeholder="Name or latest message"]');
-    await until(() => pageA.evaluate(`document.visibilityState==='visible' && document.hasFocus() && document.activeElement===document.querySelector('input[placeholder="Name or latest message"]')`), 'native inbox input focused');
-    await pageA.send('Input.insertText', {text:'No-matching-synthetic-conversation'});
-    await until(() => pageA.evaluate(`document.querySelector('input[placeholder="Name or latest message"]')?.value==='No-matching-synthetic-conversation'`), 'native inbox query retained');
-    await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
     await visit(pageA, conversationPath);
     assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-label="Conversation navigation"]')).display!=='none'`), true);
     await pageA.send('Emulation.setDeviceMetricsOverride', { width:390, height:1000, deviceScaleFactor:1, mobile:true });
