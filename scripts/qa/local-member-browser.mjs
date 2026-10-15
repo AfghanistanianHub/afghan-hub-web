@@ -1181,15 +1181,6 @@ try {
     await login(receiver,recoveryAccount.email,replacement); await pathname(receiver,'/dashboard');
     await captureState(receiver,'separate-recovery-completed');
     await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
-  await check('Separate-context recovery refuses PKCE exchange without a verifier and cannot change the password', async () => {
-    const link=await requestRecovery(), receiver=await page();
-    assert.notEqual(receiver.browserContextId,recoveryPage.browserContextId);
-    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/forgot-password');
-    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'separate reset feedback');
-    await visit(receiver,'/update-password'); await pathname(receiver,'/login');
-    const verifier=createClient(apiUrl,status.ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
-    await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:newPassword})); await data(verifier.auth.signOut({scope:'local'}));
-    await captureState(receiver,'separate-recovery-refused');
   });
   await check('Duplicate signup preserves one account and expired confirmation cannot create a session', async () => {
     const requester=await page(), email=`browser-${stamp}-duplicate-signup@example.invalid`;
