@@ -179,7 +179,10 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     await page.evaluate("document.fonts.ready.then(()=>true)");
     await delay(950);
     const layout = await page.evaluate(layoutExpression);
-    assert.ok(layout.scrollWidth <= width + 1, `Horizontal overflow at ${width}`);
+    if (layout.scrollWidth > width + 1) {
+      const offenders = await page.evaluate(`[...document.querySelectorAll('body *')].map(el=>({tag:el.tagName,selector:el.id?'#'+el.id:el.className&&typeof el.className==='string'?'.'+el.className.trim().split(/\\s+/).slice(0,2).join('.'):el.tagName.toLowerCase(),left:Math.round(el.getBoundingClientRect().left),right:Math.round(el.getBoundingClientRect().right),scrollWidth:el.scrollWidth})).filter(el=>el.right>innerWidth+1||el.left< -1).slice(0,16)`);
+      assert.fail(`Horizontal overflow at ${width}: document ${layout.scrollWidth}px; offenders ${JSON.stringify(offenders)}`);
+    }
     assert.equal(layout.targets.length, 5);
     assert.ok(layout.targets.every(target => target.clickable && target.height >= 44 && target.width >= 44));
     assert.equal(layout.covers,5,"Five category destinations in the introduction");
