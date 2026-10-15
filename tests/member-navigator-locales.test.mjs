@@ -6,6 +6,16 @@ import ts from 'typescript';
 function load(file, localStorage) {
  const exports={};
  vm.runInNewContext(ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports,localStorage,require:name=>{if(name==='./navigator-language')return load('src/lib/assistant/navigator-language.ts',localStorage);assert.equal(name,'@/lib/i18n/site-language');return load('src/lib/i18n/site-language.ts',localStorage);}});
+ const window = {localStorage, dispatchEvent() {}};
+ const modules = {
+   './navigator-language': 'src/lib/assistant/navigator-language.ts',
+   './member-navigator-copy-dari': 'src/lib/assistant/member-navigator-copy-dari.ts',
+   '@/lib/i18n/site-language': 'src/lib/i18n/site-language.ts',
+ };
+ vm.runInNewContext(ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{
+   exports, localStorage, window, Event: class Event { constructor(type) { this.type=type; } },
+   require:name=>{assert.ok(modules[name], `Unexpected dependency: ${name}`);return load(modules[name],localStorage);},
+ });
  return exports;
 }
 test('member Navigator exposes exactly three complete canonical resources', () => {

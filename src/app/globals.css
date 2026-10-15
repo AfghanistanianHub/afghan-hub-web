@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Estedad:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -227,8 +226,8 @@
 
 /* Language-aware typography. :lang() also matches descendants inheriting an ancestor language. */
 :root {
-  --font-fa-body: "Vazirmatn", sans-serif;
-  --font-fa-heading: "Estedad", "Vazirmatn", sans-serif;
+  --font-fa-body: var(--font-vazirmatn), sans-serif;
+  --font-fa-heading: var(--font-estedad), var(--font-vazirmatn), sans-serif;
 }
 :is(:lang(fa), :lang(prs), :lang(ps)) {
   --font-sans: var(--font-fa-body);
@@ -255,4 +254,10 @@
 .font-afghan-heading { font-family: var(--font-fa-heading); }
 :where([dir="rtl"]) :where(input[type="email"], input[type="url"], input[type="password"]) {
   direction: ltr;
+}
+
+/* Workspace headings share directory rhythm; homepage headings remain independent. */
+@layer utilities {
+  .workspace-heading { font-size:1.875rem; font-weight:500; line-height:1.2; letter-spacing:-0.025em; color:var(--foreground); }
+  .workspace-surface { border:1px solid var(--border); border-radius:var(--radius); background:var(--card); box-shadow:var(--shadow-surface); }
 }

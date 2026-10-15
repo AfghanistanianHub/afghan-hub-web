@@ -229,13 +229,11 @@ export default async function ModerationPage({
   return (
     <main className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <div className="mx-auto max-w-6xl">
-        <section className="relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
-          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
+        <section className="relative overflow-hidden workspace-surface px-5 py-6 md:px-6 md:py-8">
           <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Admin tools</p>
-              <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Content moderation</h1>
+              <h1 className="mt-3 workspace-heading">Content moderation</h1>
               <p className="mt-3 max-w-3xl text-muted-foreground">
                 Review opportunities, events, businesses, and organizations before they become visible to the community.
               </p>
