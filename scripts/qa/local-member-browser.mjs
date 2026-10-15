@@ -191,20 +191,6 @@ async function page(existingContext, proxied = false) {
   await connection.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   return connection;
 }
-async function visit(page, path) {
-  assert.ok(path.startsWith('/') && !path.startsWith('//'));
-  const navigation = await page.send('Page.navigate', { url: appUrl + path });
-  assert.ok(!navigation.errorText, `Native navigation failed: ${navigation.errorText}`);
-  try {
-    if (navigation.loaderId) await until(() => page.loadedDocuments.has(navigation.loaderId), 'requested document loaded');
-    await until(() => page.evaluate(`location.origin===${JSON.stringify(appUrl)} && document.readyState==='complete'`), 'local page');
-  } catch (error) {
-    error.navigationState = await page.evaluate(`({requestedPath:${JSON.stringify(path.split('?')[0])},origin:location.origin,path:location.pathname,ready:document.readyState,visible:document.visibilityState,focused:document.hasFocus()})`).catch(()=>({unavailable:true}));
-    throw error;
-  }
-}
-async function pathname(page, path) {
-  await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), `expected route ${path}`);
 async function visit(page, path, timeout = 20000) {
   assert.ok(path.startsWith('/') && !path.startsWith('//'));
   const deadline = Date.now() + timeout;
