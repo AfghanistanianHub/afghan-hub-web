@@ -1017,7 +1017,8 @@ try {
     await visit(receiver,'/update-password'); await pathname(receiver,'/login');
     assert.ok(!(await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at,'Changing token type must not confirm the identity');
     const attemptedRedirect=new URL(link); attemptedRedirect.searchParams.set('next','https://example.invalid');
-    await receiver.send('Page.navigate',{url:attemptedRedirect.href}); await pathname(receiver,'/dashboard');
+    await receiver.send('Page.navigate',{url:attemptedRedirect.href});
+    await until(() => receiver.evaluate(`['/profile','/dashboard'].includes(location.pathname) && document.readyState==='complete'`), 'verified signup enters protected onboarding or dashboard');
     await visit(receiver,'/profile'); await pathname(receiver,'/profile');
     assert.ok((await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at);
     await onboard(receiver,'SeparateSignup');
