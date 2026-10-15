@@ -42,8 +42,7 @@ export function FirstVisitLanguageGate({ children }: { children: ReactNode }) {
   return (
     <main id="main-content" className={styles.entrance}>
       <section className={styles.panel} aria-label="Choose your language">
-        <div className={styles.mark} aria-hidden="true"><span /><span /><span /><span /></div>
-        <div className={styles.brand}>AFGHAN <span>HUB</span></div>
+        <div className={styles.brand}><span className={styles.brandMark} aria-hidden="true"><i /></span><span>Afghan Hub</span></div>
         <h1 className={styles.srOnly}>Choose your language · زبان خود را انتخاب کنید · خپله ژبه وټاکئ</h1>
         <div className={styles.choices} role="group" aria-label="Choose your language">
           {languages.map(({ code, name, direction }) => (
