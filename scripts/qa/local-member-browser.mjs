@@ -186,11 +186,17 @@ async function page(existingContext, proxied = false) {
 async function visit(page, path) {
   assert.ok(path.startsWith('/') && !path.startsWith('//'));
   const navigation = await page.send('Page.navigate', { url: appUrl + path });
-  if (navigation.loaderId) await until(() => page.loadedDocuments.has(navigation.loaderId), 'requested document loaded');
-  await until(() => page.evaluate(`location.origin===${JSON.stringify(appUrl)} && document.readyState==='complete'`), 'local page');
+  assert.ok(!navigation.errorText, `Native navigation failed: ${navigation.errorText}`);
+  try {
+    if (navigation.loaderId) await until(() => page.loadedDocuments.has(navigation.loaderId), 'requested document loaded');
+    await until(() => page.evaluate(`location.origin===${JSON.stringify(appUrl)} && document.readyState==='complete'`), 'local page');
+  } catch (error) {
+    error.navigationState = await page.evaluate(`({requestedPath:${JSON.stringify(path.split('?')[0])},origin:location.origin,path:location.pathname,ready:document.readyState,visible:document.visibilityState,focused:document.hasFocus()})`).catch(()=>({unavailable:true}));
+    throw error;
+  }
 }
 async function pathname(page, path) {
-  await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), 'expected route');
+  await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), `expected route ${path}`);
 }
 async function fill(page, selector, value) {
   const fieldSelector = (selector.startsWith('form') || selector.startsWith('dialog')) ? selector : `form ${selector}`;
@@ -290,10 +296,12 @@ async function deliveredConfirmation(email, type = 'signup', excludedIds = []) {
   const message = await response.json();
   assert.ok(message.To.some(to => to.Address === email));
   const links = [...message.HTML.matchAll(/href=["']([^"']+)["']/g)].map(match => match[1].replaceAll('&amp;', '&'));
-  const link = links.map(value => new URL(value)).find(url => url.origin === apiUrl && url.pathname === '/auth/v1/verify');
-  assert.ok(link, 'Email must contain the loopback Auth verification URL');
-  assert.equal(link.searchParams.get('type'), type);
-  assert.equal(link.searchParams.get('redirect_to'), type==='signup' ? `${appUrl}/auth/callback?next=/dashboard&flow=signup` : `${appUrl}/auth/callback?next=/update-password`);
+  const link = links.map(value => new URL(value)).find(url => url.origin === appUrl && url.pathname === '/auth/confirm');
+  assert.ok(link, 'Email must contain the loopback application confirmation URL');
+  assert.equal(link.searchParams.get('type'), type==='signup' ? 'signup' : 'recovery');
+  assert.match(link.searchParams.get('token_hash'), /^[A-Za-z0-9_-]+$/);
+  assert.equal(link.searchParams.has('redirect_to'), false);
+  assert.equal(link.searchParams.has('next'), false);
   return link.href;
 }
 async function member(label) {
@@ -352,7 +360,7 @@ try {
     await visit(pageA, '/');
     await until(() => pageA.evaluate(`document.querySelector('#ai-navigator select')?.value==='fa' && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`), 'legacy preference hydrated');
     assert.deepEqual(await pageA.evaluate(`[...document.querySelectorAll('#ai-navigator select option')].map(node=>node.value)`), ['en','fa','ps']);
-    assert.equal(await pageA.evaluate(`localStorage.getItem('afghan-hub-navigator-language')`), 'fa-AF'); // Legacy key is read-only; normalization occurs in the shared preference reader.
+    assert.equal(await pageA.evaluate(`localStorage.getItem('afghan-hub-navigator-language')`), 'fa-AF'); // Legacy storage is read-only; the shared preference reader normalizes its value.
     await select(pageA, '#ai-navigator select', 'ps');
     await until(() => pageA.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')==='ps' && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`), 'Pashto RTL');
     await select(pageA, '#ai-navigator select', 'en');
@@ -382,7 +390,7 @@ try {
       await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
     }
   });
-  await check('Real signup, local email delivery and PKCE callback establish the browser session', async () => {
+  await check('Real signup and delivered one-time email establish the browser session', async () => {
     await visit(pageA, '/login?mode=join');
     await fill(pageA, '[name=email]', a.email); await fill(pageA, '[name=password]', password);
     await click(pageA, '#join button[type=submit]');
@@ -544,16 +552,9 @@ try {
       const row = await listingRow(table, titleField, title); listings.push({table, id:row.id}); assert.equal(row[ownerField], a.id); assert.equal(row.status, 'draft');
       const path = `/${table}/${row.slug}`; await pathname(pageA, path);
       await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes(${JSON.stringify(title)})`), 'owner draft detail');
-      const unavailableHeading = table === 'organizations' ? 'Organization not found' : 'This page isn’t available.';
+      const unavailableHeading = table === 'organizations' ? 'Organization not found' : table === 'businesses' ? 'Business not found' : 'This page isn’t available.';
       await visit(pageB, path);
-      try {
-        await until(() => pageB.evaluate(`document.querySelector('main h1')?.textContent.trim()===${JSON.stringify(unavailableHeading)} && !document.querySelector('main')?.innerText.includes(${JSON.stringify(title)})`), 'foreign draft hidden');
-      } catch (error) {
-        // Log only public UI state, never synthetic account data, cookies, tokens or page HTML.
-        const observed = await pageB.evaluate("JSON.stringify({path:location.pathname,heading:document.querySelector('main h1')?.textContent?.trim()??null,hasMain:!!document.querySelector('main'),hasErrorBoundary:!!document.querySelector('[role=alert]')})").catch(() => '{"unavailable":true}');
-        console.error('QA_FOREIGN_DRAFT_UI ' + JSON.stringify({table, expectedHeading: unavailableHeading, observed}));
-        throw error;
-      }
+      await until(() => pageB.evaluate(`document.querySelector('main h1')?.textContent.trim()===${JSON.stringify(unavailableHeading)} && !document.querySelector('main')?.innerText.includes(${JSON.stringify(title)})`), 'foreign draft hidden');
       await visit(pageB, `${path}/edit`);
       await until(() => pageB.evaluate(`document.querySelector('main h1')?.textContent.trim()===${JSON.stringify(unavailableHeading)} && !document.querySelector(${JSON.stringify(`[name=${titleField}]`)})`), 'foreign edit refused');
       await visit(pageA, `${path}/edit`); const edited = `${title} edited`; await fill(pageA, `[name=${titleField}]`, edited); await click(pageA, `form:has([name=${titleField}]) button[type=submit]`); await pathname(pageA, path);
@@ -769,22 +770,13 @@ try {
     assert.equal(await pageA.evaluate(`[...document.querySelectorAll('main article')].every(item=>item.innerText.includes('Business'))`), true);
     await visit(pageA, '/messages');
     await until(() => pageA.evaluate(`!!document.querySelector('input[placeholder="Name or latest message"]')`), 'inbox search input');
-    // The server-rendered input may exist before React hydrates. Wait for the
-    // authenticated conversation fixture so a zero-result search is meaningful.
-    await until(() => pageA.evaluate(`document.querySelectorAll('main a[href^="/messages/"]').length>0`), 'hydrated inbox with permitted conversation');
-    const inboxInput = 'input[placeholder="Name or latest message"]';
-    await click(pageA, inboxInput);
-    await until(() => pageA.evaluate(`document.hasFocus() && document.activeElement===document.querySelector(${JSON.stringify(inboxInput)})`), 'inbox owns native keyboard focus');
+    const inboxInput='input[placeholder="Name or latest message"]';
+    await click(pageA,inboxInput);
+    await until(()=>pageA.evaluate(`document.hasFocus() && document.activeElement===document.querySelector(${JSON.stringify(inboxInput)})`),'inbox owns native keyboard focus');
     await pageA.send('Input.insertText', {text:'No-matching-synthetic-conversation'});
-    await until(() => pageA.evaluate(`document.querySelector(${JSON.stringify(inboxInput)})?.value==='No-matching-synthetic-conversation'`), 'native inbox search value');
-    try {
-      await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
-    } catch (error) {
-      // Only structural UI evidence: no message text, profile details, cookies or tokens.
-      const observed = await pageA.evaluate(`JSON.stringify({path:location.pathname,searchValue:document.querySelector('input[placeholder="Name or latest message"]')?.value??null,emptyHeading:[...document.querySelectorAll('main h2')].some(node=>node.textContent?.trim()==='No matching conversations'),hasInboxError:!!document.querySelector('main [role=alert]'),visibleConversationLinks:document.querySelectorAll('main a[href^="/messages/"]').length})`).catch(() => '{"unavailable":true}');
-      console.error('QA_INBOX_FILTER_UI ' + observed);
-      throw error;
-    }
+    await until(()=>pageA.evaluate(`document.querySelector(${JSON.stringify(inboxInput)})?.value==='No-matching-synthetic-conversation'`),'native inbox search value');
+    await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
+    assert.equal(await pageA.evaluate(`!!document.querySelector(${JSON.stringify(`main a[href="${conversationPath}"]`)})`),false,'Filtered inbox must hide the real conversation');
     await visit(pageA, conversationPath);
     assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-label="Conversation navigation"]')).display!=='none'`), true);
     await pageA.send('Emulation.setDeviceMetricsOverride', { width:390, height:1000, deviceScaleFactor:1, mobile:true });
@@ -847,6 +839,8 @@ try {
   await check('Directory and submission request failures remain visible without false empty counts', async () => {
     // Sanitized stage evidence: docker exit codes, container states, route timings and
     // HTTP/error names only. It is attached to any failure so the cause stays visible.
+    await pageA.send('Page.bringToFront');
+    await until(()=>pageA.evaluate(`document.visibilityState==='visible' && document.hasFocus()`),'outage browser is foregrounded');
     const evidence = { stages: [], probes: [], docker: [] };
     const rest = 'supabase_rest_afghan-hub-local-journey';
     const kong = 'supabase_kong_afghan-hub-local-journey';
@@ -886,6 +880,7 @@ try {
       }
     } catch (error) {
       evidence.failedStep = step;
+      if(error.navigationState)evidence.navigation=error.navigationState;
       error.evidence = evidence;
       throw error;
     } finally {
@@ -963,7 +958,7 @@ try {
     await until(() => pageB.evaluate(`location.pathname===${JSON.stringify(conversationPath)} && document.body.innerText.includes(${JSON.stringify(message('offline'))})`), 'reconnect catch-up', 35000);
     await snapshot('caught-up');
   });
-  await check('Separate-context signup confirms the identity but PKCE session exchange fails closed without its verifier', async () => {
+  await check('Separate-context signup confirms identity and creates only the receiving browser session', async () => {
     const requester=await page(), receiver=await page();
     assert.notEqual(requester.browserContextId,receiver.browserContextId);
     const email=`browser-${stamp}-separate-signup@example.invalid`;
@@ -973,14 +968,21 @@ try {
     const registered=(await data(admin.auth.admin.listUsers())).users.find(user=>user.email===email);
     assert.ok(registered); users.push(registered.id); assert.ok(!registered.email_confirmed_at);
     const link=await deliveredConfirmation(email);
-    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
-    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'separate-context signup feedback');
+    const wrongType=new URL(link); wrongType.searchParams.set('type','recovery');
+    await receiver.send('Page.navigate',{url:wrongType.href}); await pathname(receiver,'/forgot-password');
+    await visit(receiver,'/update-password'); await pathname(receiver,'/login');
+    assert.ok(!(await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at,'Changing token type must not confirm the identity');
+    const attemptedRedirect=new URL(link); attemptedRedirect.searchParams.set('next','https://example.invalid');
+    await receiver.send('Page.navigate',{url:attemptedRedirect.href}); await pathname(receiver,'/profile');
     assert.ok((await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at);
-    await visit(receiver,'/dashboard'); await pathname(receiver,'/login');
-    await login(receiver,email); await pathname(receiver,'/profile'); await onboard(receiver,'SeparateSignup');
-    await captureState(receiver,'separate-signup-after-explicit-login');
+    await onboard(receiver,'SeparateSignup');
+    assert.equal((await data(admin.from('profiles').select('last_name').eq('id',registered.id).single())).last_name,'SeparateSignup');
+    await visit(receiver,'/dashboard'); await pathname(receiver,'/dashboard');
+    await visit(requester,'/dashboard'); await pathname(requester,'/login');
+    await captureState(receiver,'separate-signup-confirmed');
     await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
     await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
+    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'replayed cross-context signup refused');
     await visit(receiver,'/dashboard'); await pathname(receiver,'/login');
   });
   const recoveryAccount=await member('recovery');
@@ -1011,7 +1013,7 @@ try {
     await click(recoveryPage,'button[aria-label="Sign out"]'); await pathname(recoveryPage,'/login');
   });
   await check('Missing, invalid and replayed reset links cannot establish signed-out password-change sessions', async () => {
-    for(const url of [`${appUrl}/auth/callback?next=/update-password`,`${appUrl}/auth/callback?next=/update-password&code=invalid-synthetic-code`,recoveryLink]) {
+    for(const url of [`${appUrl}/auth/confirm?type=recovery`,`${appUrl}/auth/confirm?type=recovery&token_hash=invalid-synthetic-token`,`${appUrl}/auth/callback?next=/update-password`,`${appUrl}/auth/callback?next=/update-password&code=invalid-synthetic-code`,recoveryLink]) {
       await recoveryPage.send('Page.navigate',{url}); await pathname(recoveryPage,'/forgot-password');
       await until(()=>recoveryPage.evaluate(`!!document.querySelector('[role=alert]')`),'invalid reset feedback');
       await visit(recoveryPage,'/update-password'); await pathname(recoveryPage,'/login');
@@ -1045,15 +1047,33 @@ try {
     await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:replacement})); await data(verifier.auth.signOut({scope:'local'}));
     newPassword=replacement;
   });
-  await check('Separate-context recovery refuses PKCE exchange without a verifier and cannot change the password', async () => {
+  await check('Separate-context recovery changes the password and replay cannot restore the signed-out session', async () => {
     const link=await requestRecovery(), receiver=await page();
     assert.notEqual(receiver.browserContextId,recoveryPage.browserContextId);
-    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/forgot-password');
-    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'separate reset feedback');
+    const head=await fetch(link,{method:'HEAD',redirect:'manual'}); assert.equal(head.status,405);
+    assert.match(head.headers.get('cache-control'),/no-store/);
+    const wrongType=new URL(link); wrongType.searchParams.set('type','signup');
+    await receiver.send('Page.navigate',{url:wrongType.href}); await pathname(receiver,'/login');
     await visit(receiver,'/update-password'); await pathname(receiver,'/login');
+    const maliciousNext=new URL(link); maliciousNext.searchParams.set('next','https://example.invalid');
+    await receiver.send('Page.navigate',{url:maliciousNext.href}); await pathname(receiver,'/update-password');
+    assert.equal(await receiver.evaluate('location.origin'),appUrl);
+    await captureState(receiver,'separate-recovery-password-form');
+    const replacement=`QA-${randomUUID()}-dD4!`;
+    await fill(receiver,'[name=password]',replacement); await fill(receiver,'[name=passwordConfirmation]',replacement);
+    await click(receiver,'form button[type=submit]'); await pathname(receiver,'/login');
+    await until(()=>receiver.evaluate(`document.body.innerText.includes('Password updated successfully.')`),'cross-context password update');
     const verifier=createClient(apiUrl,status.ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
-    await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:newPassword})); await data(verifier.auth.signOut({scope:'local'}));
-    await captureState(receiver,'separate-recovery-refused');
+    assert.ok((await verifier.auth.signInWithPassword({email:recoveryAccount.email,password:newPassword})).error,'Prior password must fail after cross-context recovery');
+    await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:replacement})); await data(verifier.auth.signOut({scope:'local'}));
+    newPassword=replacement;
+    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/forgot-password');
+    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'replayed cross-context recovery refused');
+    await visit(receiver,'/update-password'); await pathname(receiver,'/login');
+    await visit(recoveryPage,'/dashboard'); await pathname(recoveryPage,'/login');
+    await login(receiver,recoveryAccount.email,replacement); await pathname(receiver,'/dashboard');
+    await captureState(receiver,'separate-recovery-completed');
+    await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
   });
   await check('Duplicate signup preserves one account and expired confirmation cannot create a session', async () => {
     const requester=await page(), email=`browser-${stamp}-duplicate-signup@example.invalid`;
@@ -1094,7 +1114,7 @@ try {
     try { results.at(-1).ownerFeedback = await pages[0].evaluate(`({route:location.pathname, cardCount:document.querySelectorAll('main article').length, expectedLink:!!document.querySelector(${JSON.stringify(`a[href="${expectedListingPath}"]`)}), expectedCard:document.querySelector(${JSON.stringify(`article:has(a[href="${expectedListingPath}"])`)})?.innerText.replace(/Synthetic[^\\n]*/g,'[synthetic title]'), unavailable:[...document.querySelectorAll('main [role=status]')].map(node=>node.textContent)})`); } catch { /* Sanitized optional diagnosis */ }
   }
   for (const page of pages) {
-    try { states.push({telemetry:page.telemetry,dom:await page.evaluate(`({ready:document.readyState,alert:!!document.querySelector('[role=alert]'),moderationForm:!!document.querySelector('[name=entity_id]'),unavailableListing:document.querySelector('main h1')?.textContent.includes('couldn’t load'),notFound:document.querySelector('main h1')?.textContent.includes('available'),route:location.pathname.replace(/browser-[^/]+/g,'[synthetic-slug]'),composer:!!document.querySelector('textarea[name=message]'),errorBoundary:document.body.innerText.includes('Something went wrong')})`)}); } catch { states.push({unavailable:true}); }
+    try { states.push({telemetry:page.telemetry,dom:await page.evaluate(`({ready:document.readyState,heading:document.querySelector('main h1')?.textContent?.trim().replace(/Synthetic[^\\n]*/g,'[synthetic title]'),alert:!!document.querySelector('[role=alert]'),moderationForm:!!document.querySelector('[name=entity_id]'),unavailableListing:document.querySelector('main h1')?.textContent.includes('couldn’t load'),notFound:document.querySelector('main h1')?.textContent.includes('available'),route:location.pathname.replace(/browser-[^/]+/g,'[synthetic-slug]'),composer:!!document.querySelector('textarea[name=message]'),errorBoundary:document.body.innerText.includes('Something went wrong')})`)}); } catch { states.push({unavailable:true}); }
   }
   results.at(-1).browserStates = states;
   if (fixtureB && conversationId) {
@@ -1119,7 +1139,7 @@ try {
     results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'pass' });
   } catch { results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'fail' }); process.exitCode = 1; }
   mkdirSync('reports', { recursive: true });
-  writeFileSync('reports/local-member-browser.json', JSON.stringify({ sourceRevision, sourceTree, environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery uses disposable local Mailpit; external SMTP/deliverability is unverified. Separate-context signup requires explicit sign-in because its PKCE verifier stays with the requesting browser; separate-context recovery fails closed without its PKCE verifier and is not a successful cross-device recovery flow', 'Business and organization deletion UI is absent; native-language review remains pending', ...(results.some(result=>result.scenario==='Background conversation stays unread and both sender tabs receive the real read receipt' && result.status==='pass') ? [] : ['Multi-tab read receipts have not passed in this run']), ...(results.some(row=>row.scenario==='Admin role form promotes and demotes a synthetic member with existing-session authorization' && row.status==='pass') ? [] : ['Admin team role mutations have not passed in this run']), 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
+  writeFileSync('reports/local-member-browser.json', JSON.stringify({ sourceRevision, sourceTree, environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery uses disposable local Mailpit and reviewed token-hash templates; external SMTP/deliverability, physical-device compatibility and hosted template activation remain unverified', 'Business and organization deletion UI is absent; native-language review remains pending', ...(results.some(result=>result.scenario==='Background conversation stays unread and both sender tabs receive the real read receipt' && result.status==='pass') ? [] : ['Multi-tab read receipts have not passed in this run']), ...(results.some(row=>row.scenario==='Admin role form promotes and demotes a synthetic member with existing-session authorization' && row.status==='pass') ? [] : ['Admin team role mutations have not passed in this run']), 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
   console.log(`${results.filter(r => r.status === 'pass').length} passed; ${results.filter(r => r.status === 'fail').length} failed`);
   // Only complete successful disposable runs emit review images; never auth
   // state, provider payloads or hosted-account screenshots. These bytes let
