@@ -860,7 +860,9 @@ try {
           }
           await until(()=>visual.evaluate(`!!document.querySelector('#ai-navigator select')`),'visual Navigator available after entrance');
         }
-        await until(() => visual.evaluate(`(() => {const select=document.querySelector('#ai-navigator select');return !!select && Object.keys(select).some(key=>key.startsWith('__reactProps
+        await until(()=>visual.evaluate(`!!document.querySelector('#ai-navigator select')`),'visual Navigator hydrated');
+        for (const locale of ['en','fa','ps']) {
+          await select(visual,'#ai-navigator select',locale);
           await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')===${JSON.stringify(locale==='en'?'ltr':'rtl')}`),'visual Navigator language');
           for(const width of [1440,768,390,320]) {
             await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
