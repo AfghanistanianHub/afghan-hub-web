@@ -869,7 +869,7 @@ try {
           writeFileSync(`${visualDir}/navigator-${locale}-after-${width}.png`, Buffer.from(screenshot.data,'base64'));
         }
       }
-      writeFileSync(`${visualDir}/layout-checks-after.json`, JSON.stringify({sourceRevision, sourceTree, zoom:100, widths, findings},null,2)+'\\n');
+      writeFileSync(`${visualDir}/layout-checks-after.json`, JSON.stringify({sourceRevision, sourceTree, zoom:100, widths, findings},null,2)+'\n');
     });
   }
   await check('Directory and submission request failures remain visible without false empty counts', async () => {
