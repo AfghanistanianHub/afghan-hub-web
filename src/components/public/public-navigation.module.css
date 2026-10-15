@@ -91,3 +91,13 @@
   .languageControl select { max-width:82px; padding-left:6px; padding-right:22px; background-position:right 5px center; }
   .mobile { flex:0 0 44px; }
 }
+
+/* At 320px the language switcher and search consume the flexible header space.
+   Reserve a fixed menu slot rather than allowing the details box to overflow. */
+@media(max-width:360px) {
+  .bar { position:relative; padding-right:60px; }
+  .mobile { position:absolute; right:10px; top:50%; transform:translateY(-50%); width:44px; }
+  .account { flex-shrink:1; }
+  .header:dir(rtl) .bar { padding-right:10px; padding-left:60px; }
+  .header:dir(rtl) .mobile { right:auto; left:10px; }
+}
