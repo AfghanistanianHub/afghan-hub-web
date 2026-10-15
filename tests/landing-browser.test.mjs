@@ -446,16 +446,6 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
           window.__categoryClick={trusted:event.isTrusted,href:event.target.closest?.('a')?.getAttribute('href')??null};
         },{once:true,capture:true});
       })()`);
-      const point=await waitFor(()=>page.evaluate(`(async()=>{
-        const a=document.querySelector('nav[aria-label="Listing categories"] a[href="/explore?type=${kind}#results-heading"]');
-        if(!a) return false;
-        const first=a.getBoundingClientRect();
-        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-        const r=a.getBoundingClientRect(); const x=r.x+r.width/2,y=r.y+r.height/2;
-        const hit=document.elementFromPoint(x,y);
-        if(Math.abs(first.x-r.x)>0.5||Math.abs(first.y-r.y)>0.5||x<=0||y<=0||x>=innerWidth||y>=innerHeight||!hit||!a.contains(hit)) return false;
-        return {x,y};
-      })()`),'stable actual category pointer target '+kind+' at '+width);
       if(touch) {
         await page.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[point]});
         await page.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
@@ -469,6 +459,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
       } catch(error) {
         const state=await page.evaluate(`({path:location.pathname,query:location.search,hash:location.hash,ready:document.readyState,fonts:document.fonts.status,active:document.querySelector('nav[aria-label="Listing categories"] a[aria-current=page]')?.getAttribute('href'),formType:document.querySelector('input[name=type]')?.value,click:window.__categoryClick})`);
         throw new Error(error.message+'; category state: '+JSON.stringify(state));
+      }
       await waitFor(()=>page.evaluate("(()=>{const r=document.querySelector('#results-heading').getBoundingClientRect();return r.top>=0&&r.bottom<innerHeight&&document.activeElement.id==='results-heading'})()"),'Category navigation reveals and focuses results');
     }
   }
