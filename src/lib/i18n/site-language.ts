@@ -1,36 +1,25 @@
-/** Shared, browser-side language preference for future localized route shells.
- * Does not claim that untranslated English content has been localized.
- */
+/** Shared browser-side site language preference (not profile language). */
 export const siteLanguagePreferenceKey = "afghan-hub-site-language";
 export const siteLanguageChangeEvent = "afghan-hub-site-language-change";
 export const siteLocales = ["en", "fa", "ps"] as const;
-let volatileLanguage: SiteLanguage | null = null;
 export type SiteLanguage = (typeof siteLocales)[number];
+let volatileLanguage: SiteLanguage | null = null;
 
 export function normalizeSiteLanguage(value: unknown): SiteLanguage {
   if (typeof value !== "string") return "en";
   const locale = value.trim().replaceAll("_", "-").toLowerCase();
   if (locale === "fa" || locale.startsWith("fa-") || locale === "prs" || locale.startsWith("prs-")) return "fa";
   if (locale === "ps" || locale.startsWith("ps-")) return "ps";
-export type SiteLanguage = (typeof siteLocales)[number];
-
-export function normalizeSiteLanguage(value: unknown): SiteLanguage {
-  if (value === "fa" || value === "fa-AF" || value === "fa-IR" || value === "prs") return "fa";
-  if (value === "ps" || value === "ps-AF") return "ps";
   return "en";
 }
 
 export function readSiteLanguagePreference(): SiteLanguage {
   if (typeof window === "undefined") return "en";
+  if (volatileLanguage !== null) return volatileLanguage;
   try {
-    // Preserve language chosen in Navigator before site-wide preferences existed.
     const selected = window.localStorage.getItem(siteLanguagePreferenceKey);
-    if (volatileLanguage !== null) return volatileLanguage;
     const legacy = window.localStorage.getItem("afghan-hub-navigator-language");
     return normalizeSiteLanguage(selected ?? legacy);
-  } catch {
-    return volatileLanguage ?? "en";
-    return normalizeSiteLanguage(window.localStorage.getItem(siteLanguagePreferenceKey));
   } catch {
     return "en";
   }
@@ -43,7 +32,7 @@ export function saveSiteLanguagePreference(value: unknown): SiteLanguage {
   try {
     window.localStorage.setItem(siteLanguagePreferenceKey, language);
   } catch {
-    // Private browsing and storage restrictions must not block language choice.
+    // Storage may be unavailable; keep the in-page selection.
   }
   window.dispatchEvent(new Event(siteLanguageChangeEvent));
   return language;
@@ -61,10 +50,6 @@ export function subscribeSiteLanguagePreference(onChange: () => void): () => voi
   window.addEventListener(siteLanguageChangeEvent, onChange);
   return () => {
     window.removeEventListener("storage", onStorage);
-  window.addEventListener("storage", onChange);
-  window.addEventListener(siteLanguageChangeEvent, onChange);
-  return () => {
-    window.removeEventListener("storage", onChange);
     window.removeEventListener(siteLanguageChangeEvent, onChange);
   };
 }
