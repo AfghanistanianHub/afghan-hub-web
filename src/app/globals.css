@@ -155,8 +155,8 @@
 /* Focused authentication: one task column, not a vacant illustration panel. */
 .auth-page { display:flex; flex-direction:column; padding:clamp(1.25rem,4vw,3rem); }
 .auth-brand { width:100%; max-width:72rem; margin-inline:auto; }
-.auth-form-region { display:flex; flex:1; justify-content:center; align-items:center; padding-block:clamp(2.5rem,7vh,5rem); }
-.auth-form-region > div { background:var(--card); border:1px solid var(--border-subtle); border-radius:var(--radius-card); padding:clamp(1.5rem,4vw,2.5rem); box-shadow:var(--shadow-surface); max-width:32rem; }
+.auth-form-region { display:flex; flex:1; justify-content:center; align-items:center; padding-block:clamp(3rem,8vh,6rem); }
+.auth-form-region > div { width:100%; max-width:32rem; background:transparent; border:0; border-radius:0; padding:clamp(1rem,3vw,2rem) 0; box-shadow:none; }
 @media(max-width:479px) { .auth-form-region > div { padding:1.25rem; } .auth-form-region { padding-block:2rem; } }
 
 /* Shared member rhythm leaves task cards intact and caps oversized page widths. */
