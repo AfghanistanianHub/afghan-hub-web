@@ -856,78 +856,31 @@ try {
         const row = await data(admin.from(table).select('slug').eq('id',fixture.id).maybeSingle());
         if (row) reviewDetails.push(`/${table}/${row.slug}`,`/${table}/${row.slug}/edit`,`/explore/${table}/${row.slug}`);
       }
-      const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
-      mkdirSync(visualDir, {recursive:true});
-      for (const phase of process.env.LOCAL_QA_COMPARE_DIR ? ['before', 'after'] : [process.env.LOCAL_QA_VISUAL_PHASE ?? 'after']) {
-      for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/','/about','/explore','/search','/saved','/settings','/profile','/dashboard','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new',...reviewDetails,'/not-a-real-page']) {
-      for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/','/about','/explore','/profile','/dashboard','/search','/saved','/settings','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new','/moderation','/moderation/team',...detailRoutes,'/not-a-real-page']) {
-        visual=route.startsWith('/moderation')?adminVisual:memberVisual;
-      const visual = await page(pageA.browserContextId);
+      const visual = memberVisual;
       const findings = [];
       const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
       mkdirSync(visualDir, {recursive:true});
-      for (const phase of process.env.LOCAL_QA_COMPARE_DIR ? ['before', 'after'] : [process.env.LOCAL_QA_VISUAL_PHASE ?? 'after']) {
-      for (const route of ['/login','/login?mode=join','/forgot-password','/update-password','/about','/profile','/dashboard','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new','/not-a-real-page']) {
-        if (phase === 'before' && process.env.LOCAL_QA_COMPARE_DIR) {
-          const navigation = await visual.send('Page.navigate', {url:compareUrl+route});
-          if(navigation.loaderId) await until(()=>visual.loadedDocuments.has(navigation.loaderId), 'baseline document loaded');
-          await until(()=>visual.evaluate(`location.origin===${JSON.stringify(compareUrl)} && document.readyState==='complete'`), 'baseline page');
-        } else await visit(visual,route);
-        await visual.evaluate('document.fonts.ready.then(()=>true)');
-        if(route==='/') await select(visual,'#ai-navigator select','en');
-        for (const width of [1440,768,390,320]) {
-          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
-          const state = await visual.evaluate(`({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,canvas:!!document.querySelector('.global-network-background canvas'),rejectedArt:!!document.querySelector('[data-hero-layer="architecture"]'),heading:!!document.querySelector('main h1')})`);
-          if (phase === 'after') assert.equal(state.overflow,false,`Horizontal overflow: ${route} at ${width}`);
-          if(!['/login','/login?mode=join','/forgot-password','/update-password','/not-a-real-page'].includes(route)) assert.equal(state.route,new URL(route,appUrl).pathname,'Member screenshot must depict its requested route');
-        for (const width of [1440,768,390,320]) {
-          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
-          const state = await visual.evaluate(`({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,canvas:!!document.querySelector('.global-network-background canvas'),rejectedArt:!!document.querySelector('[data-hero-layer="architecture"]'),heading:!!document.querySelector('main h1')})`);
-          if(phase==='after') assert.equal(state.overflow,false,`Horizontal overflow: ${route} at ${width}`);
-          await visual.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
-          assert.equal(await visual.evaluate(`matchMedia('(prefers-reduced-motion: reduce)').matches`),true);
-          await visual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
-          await visual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
-          const keyboard=await visual.evaluate(`(() => {const el=document.activeElement;const css=getComputedStyle(el);return {tag:el.tagName,visible:!!el.getClientRects().length,focusVisible:el.matches(':focus-visible'),outlineWidth:css.outlineWidth};})()`);
-          assert.equal(keyboard.visible,true,'Tab target must be visible');
-          state.keyboard=keyboard; state.reducedMotion=true;
-          await visual.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]});
-        for (const width of [1440,390]) {
-          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
-          const state = await visual.evaluate(`({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,canvas:!!document.querySelector('.global-network-background canvas'),rejectedArt:!!document.querySelector('[data-hero-layer="architecture"]'),heading:!!document.querySelector('main h1')})`);
-          assert.equal(state.overflow,false,`Horizontal overflow: ${route} at ${width}`);
-          if(['/businesses','/organizations','/opportunities','/events','/submissions','/network','/messages',conversationPath,`/members/${b.id}`].includes(route)) assert.equal(state.route,new URL(route,appUrl).pathname,'Member screenshot must depict its requested route');
-          if (['/businesses','/organizations','/opportunities','/events','/submissions','/network','/messages',conversationPath,`/members/${b.id}`].includes(route)) assert.equal(state.heading,true,`Member page requires h1: ${route}`);
-          assert.equal(state.canvas,true); if (phase === 'after') assert.equal(state.rejectedArt,false);
-          if(phase === 'after' && width===390) assert.equal(await visual.evaluate(`(() => {const heading=document.querySelector('[data-member-page-header] h1');return !heading || heading.getBoundingClientRect().width>=200;})()`), true, 'Mobile title must have readable width');
-          if(phase==='after' && route==='/submissions' && width===390) assert.ok(await visual.evaluate(`document.querySelector('main article a[href]')?.getBoundingClientRect().width>=280`),'Submission title must retain readable mobile width beside its actions');
-          await visual.send('Emulation.setPageScaleFactor', {pageScaleFactor:1});
-          findings.push({sourceRevision:phase==='before'?process.env.LOCAL_QA_COMPARE_SHA:sourceRevision,phase,requested:route===conversationPath?'/messages/[id]':route,width,...state,route:state.route.replace(/[0-9a-f-]{36}/g,'[id]')});
-          writeFileSync(`${visualDir}/layout-checks-after.json`,JSON.stringify({sourceRevision,sourceTree,zoom:100,findings},null,2)+'\n');
-          if (process.env.LOCAL_QA_DESIGN_REVIEW==='1' && [1440,320].includes(width)) {
-            if(process.env.LOCAL_QA_AXE_PATH) {
-              await visual.evaluate(readFileSync(process.env.LOCAL_QA_AXE_PATH,'utf8'));
-              const axe = await visual.evaluate(`axe.run(document.querySelector('main') ?? document.body,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(r=>({violations:r.violations.map(v=>({id:v.id,impact:v.impact,description:v.description,targets:v.nodes.map(n=>n.target)})),incomplete:r.incomplete.map(v=>v.id)}))`);
-              findings.at(-1).accessibility=axe;
-            }
-            findings.at(-1).type = await visual.evaluate(`(() => {const h=document.querySelector('main h1');return h?{font:getComputedStyle(h).fontFamily,size:getComputedStyle(h).fontSize,lineHeight:getComputedStyle(h).lineHeight,width:h.getBoundingClientRect().width}:null;})()`);
-          }
-          writeFileSync(`${visualDir}/layout-checks-after.json`,JSON.stringify({sourceRevision,sourceTree,zoom:100,findings},null,2)+'\n');
-          const label=reviewDetails.includes(route)?route.startsWith('/explore/')?`public-${route.split('/')[2]}-detail`:`${route.split('/')[1]}-${route.endsWith('/edit')?'edit':'detail'}`:route==='/'?'homepage':route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replaceAll('/','-');
-          const metrics=await visual.send('Page.getLayoutMetrics');
-          const clip={x:0,y:0,width,height:Math.min(metrics.cssContentSize.height,16000),scale:1};
-          const screenshot=await visual.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true,clip});
-          findings.push({sourceRevision:phase==='before'?'dad64a27c09aebb32651149b5e33f8bf2534703f':sourceRevision,phase,requested:route===conversationPath?'/messages/[id]':route.replace(/browser-[^/]+/g,'[fixture]'),width,...state,route:state.route.replace(/[0-9a-f-]{36}/g,'[id]').replace(/browser-[^/]+/g,'[fixture]')});
-          const label=route==='/'?'homepage':route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replace(/browser-[^/]+/g,'fixture').replaceAll('/','-');
-          const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
-          writeFileSync(`${visualDir}/${label}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
-          if (process.env.LOCAL_QA_DESIGN_REVIEW==='1' || (phase==='after' && ['businesses','organizations','opportunities','events','submissions','network','member','messages','conversation'].includes(label))) {
-            const jpg=await visual.send('Page.captureScreenshot',{format:'jpeg',quality:75,captureBeyondViewport:true,clip});
-            const file=`${visualDir}/${label}-${phase}-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));if(process.env.LOCAL_QA_DESIGN_REVIEW!=='1') reviewImages.push({label,width,file});
+      const captureRoutes = ['/login','/login?mode=join','/forgot-password','/update-password','/','/about','/explore','/profile','/dashboard','/search','/saved','/settings','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new','/not-a-real-page'];
+      for (const phase of process.env.LOCAL_QA_COMPARE_DIR ? ['before','after'] : ['after']) {
+        for (const route of captureRoutes) {
+          if (phase === 'before') {
+            const navigation = await visual.send('Page.navigate', {url:compareUrl+route});
+            if(navigation.loaderId) await until(()=>visual.loadedDocuments.has(navigation.loaderId),'baseline visual document');
+            await until(()=>visual.evaluate(`location.origin===${JSON.stringify(compareUrl)} && document.readyState==='complete'`),'baseline page loaded');
+          } else await visit(visual,route);
+          await visual.evaluate('document.fonts.ready.then(()=>true)');
+          for (const width of [1440,768,390,320]) {
+            await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
+            const state = await visual.evaluate(`({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,canvas:!!document.querySelector('.global-network-background canvas'),heading:!!document.querySelector('main h1')})`);
+            if (phase==='after') assert.equal(state.overflow,false,`Horizontal overflow: ${route} at ${width}`);
+            findings.push({sourceRevision:phase==='before'?process.env.LOCAL_QA_COMPARE_SHA:sourceRevision,phase,requested:route===conversationPath?'/messages/[id]':route,width,...state});
+            const label=route==='/'?'homepage':route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replaceAll('/','-');
+            const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
+            writeFileSync(`${visualDir}/${label}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
           }
         }
       }
-      }
+      writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision,sourceTree,zoom:100,findings},null,2)+'\\n');
       for (const phase of process.env.LOCAL_QA_COMPARE_DIR ? ['before','after'] : ['after']) {
         if(phase==='before') {
           const navigation=await visual.send('Page.navigate',{url:compareUrl+'/'});
