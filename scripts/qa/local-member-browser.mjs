@@ -1057,7 +1057,6 @@ try {
     await snapshot('caught-up');
   });
   await check('Separate-context signup confirms identity and creates only the receiving browser session', async () => {
-  await check('Separate-context signup confirms the identity but PKCE session exchange fails closed without its verifier', async () => {
     const requester=await page(), receiver=await page();
     assert.notEqual(requester.browserContextId,receiver.browserContextId);
     const email=`browser-${stamp}-separate-signup@example.invalid`;
