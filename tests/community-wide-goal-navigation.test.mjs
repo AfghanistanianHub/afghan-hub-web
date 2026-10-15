@@ -56,6 +56,7 @@ test("public landing exposes all five community areas and discovery paths", () =
   assert.match(introduction, /communityAreas/);
   assert.match(introduction, /href=\{area.href\}/);
   assert.match(introduction, /category-icons/);
-  assert.match(publicHome, /\/login\?mode=join/);
+  const publicNavigation = fs.readFileSync(new URL("../src/components/public/public-navigation.tsx", import.meta.url), "utf8");
+  assert.match(publicNavigation, /\/login\?mode=join/);
   assert.doesNotMatch(goalPaths, /label: "Settle"/);
 });
