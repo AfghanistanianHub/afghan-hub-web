@@ -860,7 +860,382 @@ try {
           }
           await until(()=>visual.evaluate(`!!document.querySelector('#ai-navigator select')`),'visual Navigator available after entrance');
         }
-        await until(()=>visual.evaluate(`!!document.querySelector('#ai-navigator select')`),'visual Navigator hydrated');
+        await until(()=>visual.evaluate(`Object.keys(document.querySelector('#ai-navigator select') ?? {}).some(key => key.startsWith('__reactProps
+        for (const locale of ['en','fa','ps']) {
+          await select(visual,'#ai-navigator select',locale);
+          await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')===${JSON.stringify(locale==='en'?'ltr':'rtl')}`),'visual Navigator language');
+          for(const width of [1440,768,390,320]) {
+            await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
+            await visual.evaluate(`document.querySelector('#ai-navigator').scrollIntoView({block:'center'})`);
+            const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
+            writeFileSync(`${visualDir}/navigator-${locale}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
+            const jpg=await visual.send('Page.captureScreenshot',{format:'jpeg',quality:75});
+            writeFileSync(`${visualDir}/navigator-${locale}-${phase}-${width}.jpg`,Buffer.from(jpg.data,'base64'));
+            if(phase==='after') {
+              assert.equal(await visual.evaluate(`document.documentElement.scrollWidth>innerWidth`),false);
+              const size=await visual.evaluate(`getComputedStyle(document.querySelector('#ai-navigator input')).fontSize`);
+              assert.ok(parseFloat(size)>=16,'Navigator field text must avoid mobile focus zoom');
+            }
+          }
+        }
+      }
+      await visit(visual,'/network');
+      await visual.send('Emulation.setDeviceMetricsOverride',{width:320,height:1000,deviceScaleFactor:1,mobile:true});
+      await openMemberNavigator(visual);
+      await check('Navigator keyboard focus stays inside the dialog and Escape restores its launcher',async()=> {
+        for(let index=0;index<20;index++) {
+          await visual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+          await visual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+          assert.equal(await visual.evaluate(`document.querySelector('dialog[open]').contains(document.activeElement)`),true);
+        }
+        await visual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+        await visual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+        await until(()=>visual.evaluate(`!document.querySelector('dialog[open]') && document.activeElement?.getAttribute('aria-haspopup')==='dialog'`),'Escape returns Navigator focus');
+      });
+      await visit(visual,'/network');
+      await click(visual,'button[aria-label^="Notifications"]');
+      await until(()=>visual.evaluate(`!!document.querySelector('[role=dialog][aria-label="Notifications"]')`),'notification panel open');
+      await captureState(visual,'notifications-dialog');
+      await visual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+      await visual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+      await check('Reduced-motion Navigator and global canvas stay usable at 320px',async()=> {
+        await visual.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+        await visit(visual,'/');
+        assert.equal(await visual.evaluate(`matchMedia('(prefers-reduced-motion: reduce)').matches`),true);
+        await captureState(visual,'homepage-reduced-motion');
+        await visual.send('Emulation.setEmulatedMedia',{features:[]});
+      });
+      writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, findings},null,2)+'\n');
+    });
+  }
+  await check('Directory and submission request failures remain visible without false empty counts', async () => {
+    // Sanitized stage evidence: docker exit codes, container states, route timings and
+    // HTTP/error names only. It is attached to any failure so the cause stays visible.
+    await pageA.send('Page.bringToFront');
+    await until(()=>pageA.evaluate(`document.visibilityState==='visible' && document.hasFocus()`),'outage browser is foregrounded');
+    const evidence = { stages: [], probes: [], docker: [] };
+    const rest = 'supabase_rest_afghan-hub-local-journey';
+    const kong = 'supabase_kong_afghan-hub-local-journey';
+    const db = 'supabase_db_afghan-hub-local-journey';
+    const dockerExit = (args) => { const exit = spawnSync('docker', args, { stdio: 'ignore' }).status; evidence.docker.push({ command: args[0], target: args.at(-1) === rest || args.at(-1) === kong ? args.at(-1).replace('afghan-hub-local-journey', '<project>') : args[1], exit }); return exit; };
+    const containerState = (name) => { const r = spawnSync('docker', ['inspect', '-f', '{{.State.Status}}', name], { encoding: 'utf8' }); return r.status === 0 ? r.stdout.trim() : `inspect-exit-${r.status}`; };
+    const probe = async (phase) => {
+      const started = Date.now();
+      let entry;
+      try {
+        const response = await fetch(`${apiUrl}/rest/v1/businesses?select=id&limit=0`, { headers: { apikey: status.ANON_KEY, Authorization: `Bearer ${status.ANON_KEY}` }, signal: AbortSignal.timeout(5000) });
+        try { await response.arrayBuffer(); } catch {}
+        entry = { phase, http: response.status, ms: Date.now() - started };
+      } catch (error) {
+        entry = { phase, error: error.name, ms: Date.now() - started };
+      }
+      if (evidence.probes.length < 60) evidence.probes.push(entry);
+      return entry.http === 200;
+    };
+    try {
+      evidence.before = { rest: containerState(rest), kong: containerState(kong) };
+      assert.equal(dockerExit(['stop', rest]), 0, 'Could not stop the disposable REST service');
+      evidence.during = { rest: containerState(rest) };
+      await probe('during-outage');
+      for (const route of ['/businesses','/organizations','/opportunities','/events','/submissions']) {
+        const started = Date.now();
+        try {
+          await visit(pageA, route);
+          // Middleware, access-context and workspace reads each have their own
+          // 10-second request deadline. Bound this whole outage navigation too;
+          // a 20-second document limit cannot cover those sequential phases.
+          await visit(pageA, route, 40000);
+          assert.equal(await pageA.evaluate('location.pathname'), route, 'Outage must retain the requested workspace');
+        } catch (error) {
+          evidence.stages.push({ route, outcome: 'navigation-error', error: error.name, ms: Date.now() - started });
+          throw error;
+        }
+        evidence.stages.push({ route, outcome: 'loaded', ms: Date.now() - started });
+        assert.ok(await pageA.evaluate(`!!document.querySelector('main [role=alert]')`), `Load failure must be announced: ${route}`);
+        await captureState(pageA,`${route.slice(1)}-outage`);
+        if(route==='/submissions') assert.equal(await pageA.evaluate(`document.querySelector('main')?.innerText.includes('No submissions yet')`), false);
+      }
+    } catch (error) {
+      evidence.failedStep = step;
+      if(error.navigationState)evidence.navigation=error.navigationState;
+      error.evidence = evidence;
+      throw error;
+    } finally {
+      // Restore every service this check touched, even when an assertion above failed.
+      const started = dockerExit(['start', rest]);
+      // Kong resolves its PostgREST upstream when it starts; a restarted REST container
+      // can get a new address that the gateway keeps trying to reach.
+      const kongRestarted = dockerExit(['restart', kong]);
+      evidence.restore = { startExit: started, kongRestartExit: kongRestarted, rest: containerState(rest), kong: containerState(kong) };
+      if (started !== 0 || kongRestarted !== 0) throw new Error('Could not restore the disposable gateway services');
+      // PostgREST can sit in schema-cache backoff after a restart; ask the disposable
+      // database to reload it and retry the bounded readiness probe.
+      await until(async () => {
+        dockerExit(['exec', db, 'psql', '-U', 'postgres', '-d', 'postgres', '-c', "NOTIFY pgrst, 'reload schema';"]);
+        return probe('recovery');
+      }, 'local REST service restored', 90000);
+      // Successful teardown must not relabel an earlier navigation failure as
+      // a failed health probe. Preserve the actual failing stage in the report.
+      if (evidence.failedStep) step = evidence.failedStep;
+    }
+  });
+  await check('Directory and submissions recover with accessible populated content', async () => {
+    assert.equal(await pageA.evaluate('location.pathname'),'/submissions');
+    await click(pageA,'main button[type=button]');
+    await until(()=>pageA.evaluate(`location.pathname==='/submissions' && !document.querySelector('main [role=alert]') && document.querySelector('main')?.innerText.includes('Synthetic')`),'workspace Retry restores truthful submissions');
+    for(const route of ['/businesses','/organizations','/opportunities','/events','/submissions']) {
+      await visit(pageA,route);
+      results.recoveryStates ??= [];
+      results.recoveryStates.push(await pageA.evaluate(`({requested:${JSON.stringify(route)},route:location.pathname,heading:document.querySelector('main h1')?.textContent,alert:document.querySelector('main [role=alert]')?.textContent?.slice(0,180)})`));
+      await until(()=>pageA.evaluate(`location.pathname===${JSON.stringify(route)} && !document.querySelector('main [role=alert]') && document.querySelector('main')?.innerText.includes('Synthetic')`),`Recovered document finished rendering: ${route}`);
+      assert.equal(await pageA.evaluate(`!!document.querySelector('main [role=alert]')`),false,`Recovery must clear outage: ${route}`);
+      assert.ok(await pageA.evaluate(`document.querySelector('main')?.innerText.includes('Synthetic')`),`Recovery must show fixtures: ${route}`);
+      await captureState(pageA,`${route.slice(1)}-recovered`);
+    }
+  });
+  await check('Live conversation delivery and offline reconnect catch-up without reload', async () => {
+    await visit(pageA, conversationPath);
+    await visit(pageB, conversationPath);
+    pageB.activeRefreshes.clear();
+    pageB.lastRefreshActivity=Date.now();
+    await send(pageA, message('live'));
+    await until(() => pageB.evaluate(`document.body.innerText.includes(${JSON.stringify(message('live'))})`), 'live message');
+    await until(() => pageB.telemetry.systems.some(event => event.stream === 'messages' && event.status === 'ok'), 'receiver PostgreSQL stream ready');
+    const snapshot = async phase => {
+      const transport = await pageB.evaluate(`({...window.__qaTransport.state(), route:location.pathname, missedVisible:document.body.innerText.includes(${JSON.stringify(message('offline'))})})`);
+      reconnectEvidence.push({ phase, at: Date.now(), ...transport, cdpActiveSockets:pageB.activeSockets.size, cdpCloses:pageB.telemetry.closes, authenticatedJoins:pageB.telemetry.authenticatedJoins, ready:pageB.telemetry.systems.filter(event=>event.stream==='messages' && event.status==='ok').length, changes:pageB.telemetry.changes, refreshRequests:pageB.telemetry.refreshRequests });
+      return transport;
+    };
+    await snapshot('live');
+    const before = { closes:pageB.telemetry.closes, joins:pageB.telemetry.authenticatedJoins, ready:pageB.telemetry.systems.length, changes:pageB.telemetry.changes };
+    // Cut the receiver's actual proxy transport, not a browser online flag.
+    await until(() => pageB.activeRefreshes.size===0 && Date.now()-pageB.lastRefreshActivity>300, 'receiver refreshes settled before interruption');
+    const transportBefore = await pageB.evaluate('window.__qaTransport.state()');
+    assert.ok(receiverNetwork.forwarded>0 && receiverNetwork.sockets.size>0,'Receiver must use the real loopback proxy');
+    receiverNetwork.offline=true;
+    for(const response of receiverNetwork.responses)response.pause();
+    for(const socket of receiverNetwork.sockets)socket.destroy();
+    await until(async () => (await pageB.evaluate('window.__qaTransport.state()')).closes > transportBefore.closes, 'native receiver socket closed');
+    await until(async () => {
+      const state = await pageB.evaluate('window.__qaTransport.state()');
+      return receiverNetwork.offline && receiverNetwork.sockets.size===0 && state.open === 0 && state.closes > transportBefore.closes;
+    }, 'receiver transport genuinely disconnected');
+    await snapshot('disconnected');
+    const disconnectedChanges=pageB.telemetry.changes;
+    await send(pageA, message('offline'));
+    const persisted = await data(admin.from('messages').select('id').eq('conversation_id',conversationId).eq('body',message('offline')));
+    assert.equal(persisted.length,1,'Missed message must be persisted exactly once');
+    reconnectEvidence.push({ phase:'persisted', messageIds:persisted.map(row=>row.id), count:persisted.length });
+    assert.equal((await snapshot('missed')).missedVisible, false, 'Offline browser must miss this message before reconnect');
+    assert.equal(pageB.telemetry.changes,disconnectedChanges,'Disconnected receiver must not receive PostgreSQL changes');
+    receiverNetwork.offline=false;
+    for(const response of receiverNetwork.responses)response.resume();
+    const held=receiverNetwork.held.splice(0);
+    reconnectEvidence.push({phase:'http-restored',pausedRefreshes:held.length});
+    for(const forward of held)forward();
+    await until(() => pageB.telemetry.authenticatedJoins > before.joins && pageB.telemetry.systems.slice(before.ready).some(event=>event.stream==='messages' && event.status==='ok'), 'authenticated PostgreSQL stream recovered', 35000);
+    await snapshot('rejoined');
+    await until(() => pageB.evaluate(`location.pathname===${JSON.stringify(conversationPath)} && document.body.innerText.includes(${JSON.stringify(message('offline'))})`), 'reconnect catch-up', 35000);
+    await snapshot('caught-up');
+  });
+  await check('Separate-context signup confirms identity and creates only the receiving browser session', async () => {
+    const requester=await page(), receiver=await page();
+    assert.notEqual(requester.browserContextId,receiver.browserContextId);
+    const email=`browser-${stamp}-separate-signup@example.invalid`;
+    await visit(requester,'/login?mode=join'); await fill(requester,'[name=email]',email); await fill(requester,'[name=password]',password);
+    await click(requester,'#join button[type=submit]');
+    await until(()=>requester.evaluate(`document.body.innerText.includes('Account created.')`),'separate signup notice');
+    const registered=(await data(admin.auth.admin.listUsers())).users.find(user=>user.email===email);
+    assert.ok(registered); users.push(registered.id); assert.ok(!registered.email_confirmed_at);
+    const link=await deliveredConfirmation(email);
+    const wrongType=new URL(link); wrongType.searchParams.set('type','recovery');
+    await receiver.send('Page.navigate',{url:wrongType.href}); await pathname(receiver,'/forgot-password');
+    await visit(receiver,'/update-password'); await pathname(receiver,'/login');
+    assert.ok(!(await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at,'Changing token type must not confirm the identity');
+    const attemptedRedirect=new URL(link); attemptedRedirect.searchParams.set('next','https://example.invalid');
+    await receiver.send('Page.navigate',{url:attemptedRedirect.href}); await pathname(receiver,'/profile');
+    assert.ok((await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at);
+    await onboard(receiver,'SeparateSignup');
+    assert.equal((await data(admin.from('profiles').select('last_name').eq('id',registered.id).single())).last_name,'SeparateSignup');
+    await visit(receiver,'/dashboard'); await pathname(receiver,'/dashboard');
+    await visit(requester,'/dashboard'); await pathname(requester,'/login');
+    await captureState(receiver,'separate-signup-confirmed');
+    await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
+    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
+    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'replayed cross-context signup refused');
+    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
+    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'separate-context signup feedback');
+    assert.ok((await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at);
+    await visit(receiver,'/dashboard'); await pathname(receiver,'/login');
+    await login(receiver,email); await pathname(receiver,'/profile'); await onboard(receiver,'SeparateSignup');
+    await captureState(receiver,'separate-signup-after-explicit-login');
+    await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
+    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
+    await visit(receiver,'/dashboard'); await pathname(receiver,'/login');
+  });
+  const recoveryAccount=await member('recovery');
+  const recoveryPage=await page();
+  let recoveryLink;
+  let newPassword=`QA-${randomUUID()}-bB2!`;
+  async function requestRecovery() {
+    const inbox=await (await fetch(`${mailUrl}/api/v1/messages`,{redirect:'error'})).json();
+    const previousIds=inbox.messages.map(message=>message.ID);
+    await visit(recoveryPage,'/forgot-password'); await fill(recoveryPage,'[name=email]',recoveryAccount.email);
+    await click(recoveryPage,'form button[type=submit]');
+    await until(()=>recoveryPage.evaluate(`location.pathname==='/forgot-password' && document.querySelector('[role=status]')?.textContent.includes('If an account exists')`),'reset request notice');
+    return deliveredConfirmation(recoveryAccount.email,'recovery',previousIds);
+  }
+  await check('Real password recovery validates matching passwords, signs out and accepts only the new password', async () => {
+    recoveryLink=await requestRecovery();
+    await recoveryPage.send('Page.navigate',{url:recoveryLink}); await pathname(recoveryPage,'/update-password');
+    await fill(recoveryPage,'[name=password]',newPassword); await fill(recoveryPage,'[name=passwordConfirmation]',password);
+    await click(recoveryPage,'form button[type=submit]');
+    await until(()=>recoveryPage.evaluate(`document.querySelector('[role=alert]')?.textContent.includes('Passwords do not match')`),'mismatched password refusal');
+    await fill(recoveryPage,'[name=password]',newPassword); await fill(recoveryPage,'[name=passwordConfirmation]',newPassword);
+    await click(recoveryPage,'form button[type=submit]'); await pathname(recoveryPage,'/login');
+    await until(()=>recoveryPage.evaluate(`document.body.innerText.includes('Password updated successfully.')`),'password update confirmation');
+    const verifier=createClient(apiUrl,status.ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+    assert.ok((await verifier.auth.signInWithPassword({email:recoveryAccount.email,password})).error,'Old password must fail');
+    await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:newPassword})); await data(verifier.auth.signOut({scope:'local'}));
+    await login(recoveryPage,recoveryAccount.email,newPassword); await pathname(recoveryPage,'/profile'); await onboard(recoveryPage,'Recovery');
+    await click(recoveryPage,'button[aria-label="Sign out"]'); await pathname(recoveryPage,'/login');
+  });
+  await check('Missing, invalid and replayed reset links cannot establish signed-out password-change sessions', async () => {
+    for(const url of [`${appUrl}/auth/confirm?type=recovery`,`${appUrl}/auth/confirm?type=recovery&token_hash=invalid-synthetic-token`,`${appUrl}/auth/callback?next=/update-password`,`${appUrl}/auth/callback?next=/update-password&code=invalid-synthetic-code`,recoveryLink]) {
+      await recoveryPage.send('Page.navigate',{url}); await pathname(recoveryPage,'/forgot-password');
+      await until(()=>recoveryPage.evaluate(`!!document.querySelector('[role=alert]')`),'invalid reset feedback');
+      await visit(recoveryPage,'/update-password'); await pathname(recoveryPage,'/login');
+      await visit(recoveryPage,'/dashboard'); await pathname(recoveryPage,'/login');
+    }
+  });
+  await check('Expired reset email is refused and leaves the existing password and anonymous boundary intact', async () => {
+    const expiredLink=await requestRecovery();
+    assert.ok(users.includes(recoveryAccount.id)); assert.match(recoveryAccount.id,/^[0-9a-f-]{36}$/);
+    execFileSync('docker',['exec','supabase_db_afghan-hub-local-journey','psql','-U','postgres','-d','postgres','-v','ON_ERROR_STOP=1','-c',`UPDATE auth.users SET recovery_sent_at=now()-interval '2 hours' WHERE id='${recoveryAccount.id}';`],{stdio:'ignore'});
+    await recoveryPage.send('Page.navigate',{url:expiredLink}); await pathname(recoveryPage,'/forgot-password');
+    await until(()=>recoveryPage.evaluate(`!!document.querySelector('[role=alert]')`),'expired reset feedback');
+    await visit(recoveryPage,'/update-password'); await pathname(recoveryPage,'/login');
+    const verifier=createClient(apiUrl,status.ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+    await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:newPassword})); await data(verifier.auth.signOut({scope:'local'}));
+    await captureState(recoveryPage,'expired-reset-refused');
+  });
+  await check('A newer reset request invalidates the older email and completes with the current link', async () => {
+    const older=await requestRecovery(); await delay(1100);
+    const newer=await requestRecovery(); assert.notEqual(newer,older);
+    await recoveryPage.send('Page.navigate',{url:older}); await pathname(recoveryPage,'/forgot-password');
+    await until(()=>recoveryPage.evaluate(`!!document.querySelector('[role=alert]')`),'superseded reset feedback');
+    await visit(recoveryPage,'/update-password'); await pathname(recoveryPage,'/login');
+    await recoveryPage.send('Page.navigate',{url:newer}); await pathname(recoveryPage,'/update-password');
+    const replacement=`QA-${randomUUID()}-cC3!`;
+    await fill(recoveryPage,'[name=password]',replacement); await fill(recoveryPage,'[name=passwordConfirmation]',replacement);
+    await click(recoveryPage,'form button[type=submit]'); await pathname(recoveryPage,'/login');
+    await until(()=>recoveryPage.evaluate(`document.body.innerText.includes('Password updated successfully.')`),'newest reset changes password');
+    const verifier=createClient(apiUrl,status.ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+    assert.ok((await verifier.auth.signInWithPassword({email:recoveryAccount.email,password:newPassword})).error);
+    await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:replacement})); await data(verifier.auth.signOut({scope:'local'}));
+    newPassword=replacement;
+  });
+  await check('Separate-context recovery changes the password and replay cannot restore the signed-out session', async () => {
+    const link=await requestRecovery(), receiver=await page();
+    assert.notEqual(receiver.browserContextId,recoveryPage.browserContextId);
+    const head=await fetch(link,{method:'HEAD',redirect:'manual'}); assert.equal(head.status,405);
+    assert.match(head.headers.get('cache-control'),/no-store/);
+    const wrongType=new URL(link); wrongType.searchParams.set('type','signup');
+    await receiver.send('Page.navigate',{url:wrongType.href}); await pathname(receiver,'/login');
+    await visit(receiver,'/update-password'); await pathname(receiver,'/login');
+    const maliciousNext=new URL(link); maliciousNext.searchParams.set('next','https://example.invalid');
+    await receiver.send('Page.navigate',{url:maliciousNext.href}); await pathname(receiver,'/update-password');
+    assert.equal(await receiver.evaluate('location.origin'),appUrl);
+    await captureState(receiver,'separate-recovery-password-form');
+    const replacement=`QA-${randomUUID()}-dD4!`;
+    await fill(receiver,'[name=password]',replacement); await fill(receiver,'[name=passwordConfirmation]',replacement);
+    await click(receiver,'form button[type=submit]'); await pathname(receiver,'/login');
+    await until(()=>receiver.evaluate(`document.body.innerText.includes('Password updated successfully.')`),'cross-context password update');
+    const verifier=createClient(apiUrl,status.ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+    assert.ok((await verifier.auth.signInWithPassword({email:recoveryAccount.email,password:newPassword})).error,'Prior password must fail after cross-context recovery');
+    await data(verifier.auth.signInWithPassword({email:recoveryAccount.email,password:replacement})); await data(verifier.auth.signOut({scope:'local'}));
+    newPassword=replacement;
+    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/forgot-password');
+    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'replayed cross-context recovery refused');
+    await visit(receiver,'/update-password'); await pathname(receiver,'/login');
+    await visit(recoveryPage,'/dashboard'); await pathname(recoveryPage,'/login');
+    await login(receiver,recoveryAccount.email,replacement); await pathname(receiver,'/dashboard');
+    await captureState(receiver,'separate-recovery-completed');
+    await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
+  });
+  await check('Duplicate signup preserves one account and expired confirmation cannot create a session', async () => {
+    const requester=await page(), email=`browser-${stamp}-duplicate-signup@example.invalid`;
+    await visit(requester,'/login?mode=join'); await fill(requester,'[name=email]',email); await fill(requester,'[name=password]',password);
+    await click(requester,'#join button[type=submit]');
+    await until(()=>requester.evaluate(`document.body.innerText.includes('Account created.')`),'first duplicate signup notice');
+    const row=(await data(admin.auth.admin.listUsers())).users.find(user=>user.email===email); assert.ok(row); users.push(row.id);
+    const oldInbox=await (await fetch(`${mailUrl}/api/v1/messages`,{redirect:'error'})).json();
+    await delay(1100); // Disposable Auth max_frequency is one second; do not conflate resend throttling with identity duplication.
+    await visit(requester,'/login?mode=join'); await fill(requester,'[name=email]',email); await fill(requester,'[name=password]',password);
+    await click(requester,'#join button[type=submit]');
+    await until(()=>requester.evaluate(`document.body.innerText.includes('Account created.')`),'duplicate signup notice');
+    const duplicates=(await data(admin.auth.admin.listUsers())).users.filter(user=>user.email===email);
+    assert.equal(duplicates.length,1); assert.equal(duplicates[0].id,row.id);
+    const link=await deliveredConfirmation(email,'signup',oldInbox.messages.map(message=>message.ID));
+    assert.ok(users.includes(row.id)); assert.match(row.id,/^[0-9a-f-]{36}$/);
+    execFileSync('docker',['exec','supabase_db_afghan-hub-local-journey','psql','-U','postgres','-d','postgres','-v','ON_ERROR_STOP=1','-c',`UPDATE auth.users SET confirmation_sent_at=now()-interval '2 hours' WHERE id='${row.id}';`],{stdio:'ignore'});
+    await requester.send('Page.navigate',{url:link}); await pathname(requester,'/login');
+    await until(()=>requester.evaluate(`!!document.querySelector('[role=alert]')`),'expired signup feedback');
+    assert.ok(!(await data(admin.auth.admin.getUserById(row.id))).user.email_confirmed_at);
+    await visit(requester,'/dashboard'); await pathname(requester,'/login');
+  });
+  await check('Sign-out clears browser access while the other account remains signed in', async () => {
+    await click(pageA, 'button[aria-label="Sign out"]'); await pathname(pageA, '/login');
+    await visit(pageA, '/dashboard'); await pathname(pageA, '/login'); await visit(pageB, '/dashboard'); await pathname(pageB, '/dashboard');
+  });
+  await check('Replayed confirmation cannot restore a signed-out browser session', async () => {
+    await pageA.send('Page.navigate', {url:confirmationLink}); await pathname(pageA, '/login');
+    await until(() => pageA.evaluate(`!!document.querySelector('[role=alert]')`), 'used confirmation feedback'); await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
+  });
+} catch (error) {
+  results.push({ scenario, status: 'fail', diagnostic: { step, type: error.name, line: error.stack?.match(/local-member-browser\.mjs:(\d+)/)?.[1], failureInjection: error.evidence } });
+  const states = [];
+  if(pages[0]) {
+    try {results.at(-1).navigator=await pages[0].evaluate(`(() => {const d=document.querySelector('dialog[open]');const t=[...document.querySelectorAll('dialog[open] article')].at(-1);return {open:!!d,language:d?.getAttribute('lang'),inputLength:d?.querySelector('input')?.value.length,submitEnabled:d?.querySelector('button[type=submit]')?.disabled===false,turns:d?.querySelectorAll('article').length,latestText:t?.innerText.slice(0,600),links:[...t?.querySelectorAll('a')??[]].map(a=>a.getAttribute('href')),runtimeErrors:${JSON.stringify(pages[0].exceptions)}};})()`);await captureState(pages[0],'failed-scenario');}catch{}
+  }
+  if (expectedListingPath) {
+    try { results.at(-1).ownerFeedback = await pages[0].evaluate(`({route:location.pathname, cardCount:document.querySelectorAll('main article').length, expectedLink:!!document.querySelector(${JSON.stringify(`a[href="${expectedListingPath}"]`)}), expectedCard:document.querySelector(${JSON.stringify(`article:has(a[href="${expectedListingPath}"])`)})?.innerText.replace(/Synthetic[^\\n]*/g,'[synthetic title]'), unavailable:[...document.querySelectorAll('main [role=status]')].map(node=>node.textContent)})`); } catch { /* Sanitized optional diagnosis */ }
+  }
+  for (const page of pages) {
+    try { states.push({telemetry:page.telemetry,dom:await page.evaluate(`({ready:document.readyState,heading:document.querySelector('main h1')?.textContent?.trim().replace(/Synthetic[^\\n]*/g,'[synthetic title]'),alert:!!document.querySelector('[role=alert]'),moderationForm:!!document.querySelector('[name=entity_id]'),unavailableListing:document.querySelector('main h1')?.textContent.includes('couldn’t load'),notFound:document.querySelector('main h1')?.textContent.includes('available'),route:location.pathname.replace(/browser-[^/]+/g,'[synthetic-slug]'),composer:!!document.querySelector('textarea[name=message]'),errorBoundary:document.body.innerText.includes('Something went wrong')})`)}); } catch { states.push({unavailable:true}); }
+  }
+  results.at(-1).browserStates = states;
+  if (fixtureB && conversationId) {
+    try {
+      const notifications = await data(admin.from('notifications').select('id,read_at').eq('recipient_id', fixtureB).eq('conversation_id', conversationId));
+      const messages = await data(admin.from('messages').select('id').eq('conversation_id', conversationId));
+      results.at(-1).databaseState = { notifications: notifications.length, unread: notifications.filter(row=>!row.read_at).length, messages: messages.length };
+    } catch { /* Never expose provider payloads */ }
+  }
+  console.error(`FAIL ${scenario} at ${step}; diagnostic: ${JSON.stringify(results.at(-1).diagnostic)}`); process.exitCode = 1;
+} finally {
+  receiverNetwork.offline=false;
+  for(const socket of receiverNetwork.sockets)socket.destroy();
+  receiverProxy.closeAllConnections();receiverProxy.close();
+  for (const page of pages) page.close(); browser?.close();
+  for (const child of children) if (child.exitCode === null) child.kill();
+  await delay(300);
+  if (profile) await fs.rm(profile, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+  try {
+    for (const {table,id} of [...listings].reverse()) await data(admin.from(table).delete().eq('id',id));
+    for (const id of users) await data(admin.auth.admin.deleteUser(id));
+    results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'pass' });
+  } catch { results.push({ scenario: 'Cleanup captured synthetic account IDs', status: 'fail' }); process.exitCode = 1; }
+  mkdirSync('reports', { recursive: true });
+  writeFileSync('reports/local-member-browser.json', JSON.stringify({ sourceRevision, sourceTree, environment: 'disposable loopback Supabase and production Next.js server; sandboxed Chrome', results, reconnectEvidence, limitations: ['Email delivery uses disposable local Mailpit and reviewed token-hash templates; external SMTP/deliverability, physical-device compatibility and hosted template activation remain unverified', 'Business and organization deletion UI is absent; native-language review remains pending', ...(results.some(result=>result.scenario==='Background conversation stays unread and both sender tabs receive the real read receipt' && result.status==='pass') ? [] : ['Multi-tab read receipts have not passed in this run']), ...(results.some(row=>row.scenario==='Admin role form promotes and demotes a synthetic member with existing-session authorization' && row.status==='pass') ? [] : ['Admin team role mutations have not passed in this run']), 'No production, hosted test target or model provider calls'] }, null, 2) + '\n');
+  console.log(`${results.filter(r => r.status === 'pass').length} passed; ${results.filter(r => r.status === 'fail').length} failed`);
+  // Only complete successful disposable runs emit review images; never auth
+  // state, provider payloads or hosted-account screenshots. These bytes let
+  // reviewers view evidence without relaxing Preview deployment protection.
+  console.log('QA_SANITIZED_SUMMARY '+JSON.stringify({sourceRevision,sourceTree,results:results.map(row=>({scenario:row.scenario,status:row.status,diagnostic:row.diagnostic,navigator:row.navigator,browserStates:row.browserStates?.map(state=>state.dom)})),recoveryStates:results.recoveryStates??[]}));
+  for(const item of reviewImages) console.log('QA_REVIEW_IMAGE '+JSON.stringify({sourceRevision,sourceTree,acceptanceFailed:results.some(row=>row.status==='fail'),label:item.label,width:item.width,data:readFileSync(item.file).toString('base64')}));
+}
+))`),'visual Navigator React hydration');
         for (const locale of ['en','fa','ps']) {
           await select(visual,'#ai-navigator select',locale);
           await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')===${JSON.stringify(locale==='en'?'ltr':'rtl')}`),'visual Navigator language');
