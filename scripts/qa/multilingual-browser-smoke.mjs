@@ -14,6 +14,8 @@ try {
     const errors = [];
     page.on("pageerror", error => errors.push(error.message));
     await page.goto(base, { waitUntil: "domcontentloaded", timeout: 45000 });
+    await page.getByRole("button", {name: /English/}).click();
+    await page.locator("header select").first().waitFor();
     for (const language of ["en", "fa", "ps"]) {
       await page.locator("header select").first().selectOption(language);
       const hero = page.locator("section[aria-labelledby='landing-title']");
