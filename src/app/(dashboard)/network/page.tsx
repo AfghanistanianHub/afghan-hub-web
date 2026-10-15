@@ -120,12 +120,12 @@ export default async function NetworkPage() {
   return (
     <main
       data-illustration-focus-scope
-      className="px-4 py-7 sm:px-6 md:px-8 lg:px-10 xl:px-12"
+      className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12"
     >
       <div className="mx-auto w-full max-w-[1500px]">
         <section
           data-illustration-trigger
-          className="relative border-b border-border pb-5"
+          className="relative border-b border-border/70 pb-9 pt-4 sm:pt-6"
         >
           <div className="relative min-w-0">
             <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
@@ -133,11 +133,11 @@ export default async function NetworkPage() {
               Community network
             </div>
 
-            <h1 className="mt-2 text-3xl font-medium tracking-tight text-foreground">
+            <h1 className="mt-4 max-w-[22ch] text-balance text-[clamp(2.1rem,3.8vw,3.6rem)] font-medium leading-[1.08] tracking-[-0.045em] text-foreground">
               Your network
             </h1>
 
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base md:leading-7">
+            <p className="mt-5 max-w-[65ch] text-base leading-7 text-muted-foreground">
               Find professionals, entrepreneurs, artists, students, and community leaders — then turn discovery into a real connection.
             </p>
 
@@ -156,7 +156,7 @@ export default async function NetworkPage() {
               />
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-border pt-3">
+            <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3 border-t border-border/70 pt-5">
               {stats.map(({ label, value, icon: Icon }) => (
                 <div
                   key={label}
