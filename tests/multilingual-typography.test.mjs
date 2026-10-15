@@ -13,8 +13,8 @@ test("native-script font families are declared and language scoped", () => {
   assert.match(layout, /Estedad, Geist, Geist_Mono, Vazirmatn/);
   assert.match(layout, /--font-estedad/);
   assert.match(layout, /--font-vazirmatn/);
-  assert.match(css, /family=Estedad/);
-  assert.match(css, /family=Vazirmatn/);
+  assert.match(css, /--font-fa-heading:\s*var\(--font-estedad\)/);
+  assert.match(css, /--font-fa-body:\s*var\(--font-vazirmatn\)/);
   assert.match(css, /:lang\(fa\)/);
   assert.match(css, /:lang\(prs\)/);
   assert.match(css, /:lang\(ps\)/);
