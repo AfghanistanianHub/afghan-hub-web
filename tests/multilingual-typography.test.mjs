@@ -38,6 +38,8 @@ test("regional language tags are normalized by the canonical site language modul
   assert.match(sitePreferences, /locale\.startsWith\("prs-"\)/);
   assert.match(sitePreferences, /locale\.startsWith\("ps-"\)/);
   // Concrete language-tag behavior is covered in site-language-runtime.test.mjs.
+});
+
 test("regional language tags map to shared site languages", () => {
   assert.match(preferences, /normalizeSiteLanguage/);
   for (const code of ["fa-AF", "fa-IR", "prs", "ps-AF"]) {
