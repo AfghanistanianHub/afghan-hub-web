@@ -978,32 +978,6 @@ try {
         await visual.send('Emulation.setEmulatedMedia',{features:[]});
       });
       writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, findings},null,2)+'\n');
-      const phase = 'after';
-      visual=memberVisual;
-          findings.push({phase,requested:route===conversationPath?'/messages/[id]':route,width,...state,route:state.route.replace(/[0-9a-f-]{36}/g,'[id]')});
-          const label=route===conversationPath?'conversation':route===`/members/${b.id}`?'member':route==='/login?mode=join'?'signup':route.slice(1).replaceAll('/','-');
-          const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
-          writeFileSync(`${visualDir}/${label}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
-          if(phase==='after' && ['businesses','organizations','opportunities','events','submissions','network','member','messages','conversation'].includes(label)) {
-            const jpg=await visual.send('Page.captureScreenshot',{format:'jpeg',quality:65});
-            const file=`${visualDir}/${label}-after-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));reviewImages.push({label,width,file});
-          }
-        }
-      }
-      }
-      const phase = 'after';
-      await visit(visual,'/');
-      for (const locale of ['fa','ps']) {
-        await select(visual,'#ai-navigator select',locale);
-        await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`),'visual Navigator RTL');
-        for(const width of [1440,390]) {
-          await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
-          await visual.evaluate(`document.querySelector('#ai-navigator').scrollIntoView({block:'center'})`);
-          const screenshot=await visual.send('Page.captureScreenshot',{format:'png'});
-          writeFileSync(`${visualDir}/navigator-${locale}-${phase}-${width}.png`,Buffer.from(screenshot.data,'base64'));
-        }
-      }
-      writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, findings},null,2)+'\n');
     });
   }
   await check('Directory and submission request failures remain visible without false empty counts', async () => {
