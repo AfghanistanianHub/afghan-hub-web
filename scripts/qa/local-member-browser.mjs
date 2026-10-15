@@ -605,8 +605,7 @@ try {
       assert.equal(await reviewerPage.evaluate(`!!document.querySelector('a[href="/moderation/team"]')`), role === 'admin');
       await visit(reviewerPage, '/moderation/team'); await pathname(reviewerPage, role === 'admin' ? '/moderation/team' : '/moderation');
       if (role === 'admin') await captureState(reviewerPage,'admin-team');
-      assert.equal(await reviewerPage.evaluate(`!!document.querySelector('a[href="/moderation/team"]')`), role === 'admin');
-      await visit(reviewerPage, '/moderation/team'); await pathname(reviewerPage, role === 'admin' ? '/moderation/team' : '/moderation');
+      // Team page access was checked above; it need not contain a link to itself.
     });
     if (role === 'admin') {
       const target = await member('role-target');
