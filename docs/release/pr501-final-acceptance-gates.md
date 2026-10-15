@@ -29,6 +29,13 @@ Status: **not release-approved**. This is an evidence ledger for the multilingua
 5. **Cross-page design and accessibility:** review localized navigation and real Arabic-script typography on desktop/mobile, keyboard/focus and reduced-motion behavior, with a clear disposition for any remaining defects.
 6. **Production release approval:** after all above, obtain explicit approval to merge PR #501 into PR #490's branch, verify PR #490 again, and separately obtain explicit approval before Production deployment.
 
+## Latest verified candidate — `ee47f76a04a0bdfd5224eea12e0a0c07a3921f74`
+
+- [Authenticated acceptance run 38676663339](https://github.com/AfghanistanianHub/afghan-hub-web/actions/runs/38676663339): completed **success**, both independent jobs; each logged **14 API/RLS passed, 0 failed** and **52 Chrome browser scenarios passed, 0 failed**. Both `pr501-authenticated-pass-1` and `pr501-authenticated-pass-2` artifacts exist and are not expired.
+- [Multilingual browser smoke 38676663408](https://github.com/AfghanistanianHub/afghan-hub-web/actions/runs/38676663408): **success**.
+- [Typography and homepage 38676663386](https://github.com/AfghanistanianHub/afghan-hub-web/actions/runs/38676663386): **success**.
+- The earlier `c43fba6` evidence remains historical. These new results cover the documentation-update commit `ee47f76` and supersede it as the latest verified head. No hosted SMTP, Production data, or deployment authorization was tested or granted.
+
 ## Additional verified workflows at accepted head
 
 - [Multilingual browser smoke 38662208566](https://github.com/AfghanistanianHub/afghan-hub-web/actions/runs/38662208566): success.
