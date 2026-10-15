@@ -35,7 +35,7 @@ test('legacy Navigator preference migrates to Persian without touching profile i
   const values = new Map([['afghan-hub-navigator-language', 'fa-AF'], ['profile-languages', 'Dari, English']]);
   const language = load('src/lib/assistant/navigator-language.ts', { getItem: (key) => values.get(key), setItem: (key, value) => values.set(key, value) });
   assert.equal(language.readNavigatorLanguagePreference(), 'fa');
-  assert.equal(values.get(language.navigatorLanguagePreferenceKey), 'fa');
+  assert.equal(values.get(language.navigatorLanguagePreferenceKey), 'fa-AF'); // Legacy key remains unchanged on read.
   assert.equal(values.get('profile-languages'), 'Dari, English');
   assert.equal(language.saveNavigatorLanguagePreference('fa-AF'), 'fa');
   assert.equal(language.saveNavigatorLanguagePreference('ps'), 'ps');
