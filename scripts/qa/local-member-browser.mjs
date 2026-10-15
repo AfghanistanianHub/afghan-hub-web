@@ -102,24 +102,22 @@ async function check(name, fn) {
   console.log(`PASS ${name}`);
 }
 async function captureState(page, label) {
-  if(process.env.LOCAL_QA_VISUAL!=='1') return;
-  const visualDir=process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual'; mkdirSync(visualDir,{recursive:true});
-  for(const width of [1440,768,390,320]) {
+  if (process.env.LOCAL_QA_VISUAL !== '1') return;
+  const visualDir=process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
+  mkdirSync(visualDir,{recursive:true});
+  for (const width of [1440,768,390,320]) {
     await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
     await page.send('Emulation.setPageScaleFactor',{pageScaleFactor:1});
     const screenshot=await page.send('Page.captureScreenshot',{format:'png'});
     writeFileSync(`${visualDir}/${label}-${width}.png`,Buffer.from(screenshot.data,'base64'));
-    if (process.env.LOCAL_QA_DESIGN_REVIEW==='1' || (width===390 && ['navigator-member-fa-results','navigator-member-ps-results','opportunities-filtered-results','opportunities-empty','businesses-outage'].includes(label)) || (width===1440 && ['submissions-owner-note','businesses-recovered'].includes(label))) {
+    const includeJpeg = process.env.LOCAL_QA_DESIGN_REVIEW==='1' ||
+      (width===390 && ['navigator-member-fa-results','navigator-member-ps-results','opportunities-filtered-results','opportunities-empty','businesses-outage'].includes(label)) ||
+      (width===1440 && ['submissions-owner-note','businesses-recovered'].includes(label));
+    if (includeJpeg) {
       const jpg=await page.send('Page.captureScreenshot',{format:'jpeg',quality:65});
-      const file=`${visualDir}/${label}-after-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));if(process.env.LOCAL_QA_DESIGN_REVIEW!=='1') reviewImages.push({label,width,file});
-  for(const width of [1440,390]) {
-    await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===390});
-    await page.send('Emulation.setPageScaleFactor',{pageScaleFactor:1});
-    const screenshot=await page.send('Page.captureScreenshot',{format:'png'});
-    writeFileSync(`${visualDir}/${label}-${width}.png`,Buffer.from(screenshot.data,'base64'));
-    if ((width===390 && ['navigator-member-fa-results','navigator-member-ps-results','opportunities-filtered-results','opportunities-empty','businesses-outage'].includes(label)) || (width===1440 && ['submissions-owner-note','businesses-recovered'].includes(label))) {
-      const jpg=await page.send('Page.captureScreenshot',{format:'jpeg',quality:65});
-      const file=`${visualDir}/${label}-${width}.jpg`;writeFileSync(file,Buffer.from(jpg.data,'base64'));reviewImages.push({label,width,file});
+      const file=`${visualDir}/${label}-after-${width}.jpg`;
+      writeFileSync(file,Buffer.from(jpg.data,'base64'));
+      if (process.env.LOCAL_QA_DESIGN_REVIEW!=='1') reviewImages.push({label,width,file});
     }
   }
   await page.send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
