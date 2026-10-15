@@ -1019,7 +1019,10 @@ try {
     const attemptedRedirect=new URL(link); attemptedRedirect.searchParams.set('next','https://example.invalid');
     await receiver.send('Page.navigate',{url:attemptedRedirect.href});
     await until(() => receiver.evaluate(`['/profile','/dashboard'].includes(location.pathname) && document.readyState==='complete'`), 'verified signup enters protected onboarding or dashboard');
-    await visit(receiver,'/profile'); await pathname(receiver,'/profile');
+    await visit(receiver,'/profile');
+    const profileLanding = await receiver.evaluate(`({route:location.pathname,ready:document.readyState,hasProfileForm:!!document.querySelector('form:has([name=first_name])')})`);
+    assert.equal(profileLanding.route, '/profile', `Cross-context session did not open profile: ${JSON.stringify(profileLanding)}`);
+    assert.ok(profileLanding.hasProfileForm, 'Verified browser must see the profile editing form');
     assert.ok((await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at);
     await onboard(receiver,'SeparateSignup');
     assert.equal((await data(admin.from('profiles').select('last_name').eq('id',registered.id).single())).last_name,'SeparateSignup');
