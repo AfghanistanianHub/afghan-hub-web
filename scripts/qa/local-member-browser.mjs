@@ -322,10 +322,6 @@ async function deliveredConfirmation(email, type = 'signup', excludedIds = []) {
   assert.match(link.searchParams.get('token_hash'), /^[A-Za-z0-9_-]+$/);
   assert.equal(link.searchParams.has('redirect_to'), false);
   assert.equal(link.searchParams.has('next'), false);
-  const link = links.map(value => new URL(value)).find(url => url.origin === apiUrl && url.pathname === '/auth/v1/verify');
-  assert.ok(link, 'Email must contain the loopback Auth verification URL');
-  assert.equal(link.searchParams.get('type'), type);
-  assert.equal(link.searchParams.get('redirect_to'), type==='signup' ? `${appUrl}/auth/callback?next=/dashboard&flow=signup` : `${appUrl}/auth/callback?next=/update-password`);
   return link.href;
 }
 async function member(label) {
