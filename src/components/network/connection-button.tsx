@@ -44,7 +44,7 @@ export function ConnectionButton({
   if (connection.status === "accepted") {
     return (
       <div className="flex flex-wrap items-center gap-2.5">
-        <span className="inline-flex min-h-11 items-center rounded-sm border border-primary/20 bg-primary/[0.07] px-4 py-2.5 text-sm font-semibold text-primary">
+        <span className="inline-flex min-h-11 items-center rounded-full bg-primary/[0.07] px-4 py-2.5 text-sm font-semibold text-primary">
           Connected
         </span>
 
@@ -62,7 +62,7 @@ export function ConnectionButton({
           <input type="hidden" name="connection_id" value={connection.id} />
           <PendingSubmitButton
             pendingLabel="Disconnecting…"
-            className={`inline-flex min-w-40 items-center justify-center border border-destructive/25 bg-card px-4 py-2.5 text-sm font-semibold text-destructive hover:bg-destructive/10 ${styles.control}`}
+            className={`inline-flex items-center justify-center px-3 py-2.5 text-sm text-muted-foreground underline underline-offset-4 hover:text-destructive ${styles.control}`}
           >
             Disconnect
           </PendingSubmitButton>

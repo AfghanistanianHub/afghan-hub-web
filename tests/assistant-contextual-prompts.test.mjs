@@ -36,7 +36,8 @@ test("contextual prompts are available on opportunity, event and network surface
   assert.match(eventPage, /Find similar events/);
   assert.match(eventPage, /Find related organizations/);
   assert.match(network, /Find tech professionals/);
-  assert.match(network, /Find filmmakers/);
+  assert.match(network, /Find artists/);
+  assert.match(network, /Find artists working in arts and culture/);
   assert.match(network, /Find mentors/);
 });
 

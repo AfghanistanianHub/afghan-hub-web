@@ -1,0 +1,1965 @@
+{
+  "environment": "disposable loopback Supabase and production Next.js server; sandboxed Chrome",
+  "results": [
+    {
+      "scenario": "Chrome renderer sandbox enabled",
+      "status": "pass"
+    },
+    {
+      "scenario": "Navigator exposes three languages and migrates legacy Persian preference with RTL",
+      "status": "pass"
+    },
+    {
+      "scenario": "Served callback redirects use configured origin despite upstream Host",
+      "status": "pass"
+    },
+    {
+      "scenario": "Anonymous protected route redirects to sign-in",
+      "status": "pass"
+    },
+    {
+      "scenario": "Wrong password shows accessible error and preserves auth boundary",
+      "status": "pass"
+    },
+    {
+      "scenario": "Missing/invalid signup callbacks show accessible errors and reject external destinations",
+      "status": "pass"
+    },
+    {
+      "scenario": "Real signup, local email delivery and PKCE callback establish the browser session",
+      "status": "pass"
+    },
+    {
+      "scenario": "Real sign-in and onboarding forms persist both synthetic profiles",
+      "status": "pass"
+    },
+    {
+      "scenario": "Member Navigator exposes the same three languages and RTL without changing profile languages",
+      "status": "pass"
+    },
+    {
+      "scenario": "Cookie sessions survive reload and remain separate",
+      "status": "pass"
+    },
+    {
+      "scenario": "Two-account connection request and acceptance through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "Realtime unread notification and notification navigation",
+      "status": "pass"
+    },
+    {
+      "scenario": "organizations: owner create/edit, draft privacy and foreign edit boundary through browser",
+      "status": "pass"
+    },
+    {
+      "scenario": "opportunities: owner create/edit, draft privacy and foreign edit boundary through browser",
+      "status": "pass"
+    },
+    {
+      "scenario": "events: owner create/edit, draft privacy and foreign edit boundary through browser",
+      "status": "pass"
+    },
+    {
+      "scenario": "Members and anonymous browsers cannot access moderation or admin team controls",
+      "status": "pass"
+    },
+    {
+      "scenario": "admin: moderation access respects admin-only team boundary",
+      "status": "pass"
+    },
+    {
+      "scenario": "admin: organizations rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "admin: opportunities rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "admin: events rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "admin: businesses rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "moderator: moderation access respects admin-only team boundary",
+      "status": "pass"
+    },
+    {
+      "scenario": "moderator: organizations rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "moderator: opportunities rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "moderator: events rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "moderator: businesses rejection feedback and approval publication through real forms",
+      "status": "pass"
+    },
+    {
+      "scenario": "Live conversation delivery and offline reconnect catch-up without reload",
+      "status": "fail",
+      "diagnostic": {
+        "step": "receiver transport genuinely disconnected",
+        "type": "Error",
+        "line": "42"
+      },
+      "ownerFeedback": {
+        "route": "/messages/11b2894f-9b72-4605-b514-b3e994fd0528",
+        "cardCount": 0,
+        "expectedLink": false,
+        "unavailable": []
+      },
+      "browserStates": [
+        {
+          "telemetry": {
+            "sockets": 27,
+            "closes": 0,
+            "frames": 140,
+            "socketErrors": 0,
+            "systems": [
+              {
+                "at": 1791533918661,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791533918666,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791533934675,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791533934936,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791533948224,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791533948283,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791533976658,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791533976745,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791533987016,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534010141,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534010144,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534038949,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534038957,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534047217,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534047274,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534061434,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534061450,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534079408,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534079472,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534093245,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534093370,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534140377,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534140448,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534168785,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534168786,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534182851,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534183494,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534215013,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534215043,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534227710,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534227724,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534248153,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534248153,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534255865,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534255913,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534264347,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534264348,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534275281,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534275298,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534287814,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534287826,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534294776,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534294827,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534305260,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534305307,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534310666,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534310675,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534320268,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534320277,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534325752,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534325756,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534336325,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534336343,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534337290,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534337308,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534338390,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              }
+            ],
+            "replies": [
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok"
+            ],
+            "changes": 21,
+            "authenticatedJoins": 56,
+            "anonymousJoins": 0,
+            "refreshRequests": 1523
+          },
+          "dom": {
+            "ready": "complete",
+            "alert": false,
+            "moderationForm": false,
+            "route": "/messages/11b2894f-9b72-4605-b514-b3e994fd0528",
+            "composer": true,
+            "errorBoundary": false
+          }
+        },
+        {
+          "telemetry": {
+            "sockets": 33,
+            "closes": 5,
+            "frames": 140,
+            "socketErrors": 4,
+            "systems": [
+              {
+                "at": 1791533944681,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791533944699,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791533962792,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791533962796,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791533989953,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791533990093,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534006273,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534006462,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534006577,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534030795,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534030847,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534034627,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534034659,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534054365,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534054366,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534058041,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534058078,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534086718,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534086897,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534089596,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534089675,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534105901,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534106129,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534109262,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534109297,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534112631,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534112804,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534142543,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534142551,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534157932,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534157933,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534189180,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534189197,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534205811,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534205825,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534230421,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534230421,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534239500,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534239582,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534256984,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534256997,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534262467,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534262467,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534276839,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534276855,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534284750,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534284750,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534296269,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534296427,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534301384,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534301387,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534311764,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534311797,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534316958,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534316980,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534327229,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534327229,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534333109,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534333110,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534338690,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534338716,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534341956,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              }
+            ],
+            "replies": [
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok"
+            ],
+            "changes": 9,
+            "authenticatedJoins": 62,
+            "anonymousJoins": 0,
+            "refreshRequests": 885
+          },
+          "dom": {
+            "ready": "complete",
+            "alert": false,
+            "moderationForm": false,
+            "route": "/messages/11b2894f-9b72-4605-b514-b3e994fd0528",
+            "composer": true,
+            "errorBoundary": false
+          }
+        },
+        {
+          "telemetry": {
+            "sockets": 0,
+            "closes": 0,
+            "frames": 0,
+            "socketErrors": 0,
+            "systems": [],
+            "replies": [],
+            "changes": 0,
+            "authenticatedJoins": 0,
+            "anonymousJoins": 0,
+            "refreshRequests": 0
+          },
+          "dom": {
+            "ready": "complete",
+            "alert": false,
+            "moderationForm": false,
+            "unavailableListing": false,
+            "notFound": false,
+            "route": "/login",
+            "composer": false,
+            "errorBoundary": false
+          }
+        },
+        {
+          "telemetry": {
+            "sockets": 11,
+            "closes": 0,
+            "frames": 47,
+            "socketErrors": 0,
+            "systems": [
+              {
+                "at": 1791534130616,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534130623,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534131855,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534131862,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534132944,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534133022,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534134125,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534134129,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534145976,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534146002,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534170925,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534171008,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534194017,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534194067,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534218904,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534218935,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534233028,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534233133,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534250351,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534250484,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534258005,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534258013,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              }
+            ],
+            "replies": [
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok"
+            ],
+            "changes": 0,
+            "authenticatedJoins": 22,
+            "anonymousJoins": 0,
+            "refreshRequests": 51
+          },
+          "dom": {
+            "ready": "complete",
+            "alert": false,
+            "moderationForm": true,
+            "unavailableListing": false,
+            "notFound": false,
+            "route": "/moderation",
+            "composer": false,
+            "errorBoundary": false
+          }
+        },
+        {
+          "telemetry": {
+            "sockets": 0,
+            "closes": 0,
+            "frames": 0,
+            "socketErrors": 0,
+            "systems": [],
+            "replies": [],
+            "changes": 0,
+            "authenticatedJoins": 0,
+            "anonymousJoins": 0,
+            "refreshRequests": 0
+          },
+          "dom": {
+            "ready": "complete",
+            "alert": false,
+            "moderationForm": false,
+            "unavailableListing": false,
+            "notFound": false,
+            "route": "/explore/organizations/[synthetic-slug]",
+            "composer": false,
+            "errorBoundary": false
+          }
+        },
+        {
+          "telemetry": {
+            "sockets": 0,
+            "closes": 0,
+            "frames": 0,
+            "socketErrors": 0,
+            "systems": [],
+            "replies": [],
+            "changes": 0,
+            "authenticatedJoins": 0,
+            "anonymousJoins": 0,
+            "refreshRequests": 0
+          },
+          "dom": {
+            "ready": "complete",
+            "alert": false,
+            "moderationForm": false,
+            "unavailableListing": false,
+            "notFound": false,
+            "route": "/explore/opportunities/[synthetic-slug]",
+            "composer": false,
+            "errorBoundary": false
+          }
+        },
+        {
+          "telemetry": {
+            "sockets": 0,
+            "closes": 0,
+            "frames": 0,
+            "socketErrors": 0,
+            "systems": [],
+            "replies": [],
+            "changes": 0,
+            "authenticatedJoins": 0,
+            "anonymousJoins": 0,
+            "refreshRequests": 0
+          },
+          "dom": {
+            "ready": "complete",
+            "alert": false,
+            "moderationForm": false,
+            "unavailableListing": false,
+            "notFound": false,
+            "route": "/explore/events/[synthetic-slug]",
+            "composer": false,
+            "errorBoundary": false
+          }
+        },
+        {
+          "telemetry": {
+            "sockets": 0,
+            "closes": 0,
+            "frames": 0,
+            "socketErrors": 0,
+            "systems": [],
+            "replies": [],
+            "changes": 0,
+            "authenticatedJoins": 0,
+            "anonymousJoins": 0,
+            "refreshRequests": 17
+          },
+          "dom": {
+            "ready": "complete",
+            "alert": false,
+            "moderationForm": false,
+            "unavailableListing": false,
+            "notFound": false,
+            "route": "/explore/businesses/[synthetic-slug]",
+            "composer": false,
+            "errorBoundary": false
+          }
+        },
+        {
+          "telemetry": {
+            "sockets": 12,
+            "closes": 0,
+            "frames": 49,
+            "socketErrors": 0,
+            "systems": [
+              {
+                "at": 1791534268744,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534268746,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534269451,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534269464,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534270216,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534270226,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534270947,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534270965,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534271808,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534271809,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534278655,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534278864,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534288694,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534288717,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534297997,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534297999,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534306736,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534306749,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534313290,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534313294,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534321580,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534321593,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534328700,
+                "stream": "other",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              },
+              {
+                "at": 1791534328779,
+                "stream": "messages",
+                "extension": "postgres_changes",
+                "status": "ok",
+                "permissionError": false,
+                "databaseError": false
+              }
+            ],
+            "replies": [
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok"
+            ],
+            "changes": 0,
+            "authenticatedJoins": 24,
+            "anonymousJoins": 0,
+            "refreshRequests": 86
+          },
+          "dom": {
+            "ready": "complete",
+            "alert": false,
+            "moderationForm": true,
+            "unavailableListing": false,
+            "notFound": false,
+            "route": "/moderation",
+            "composer": false,
+            "errorBoundary": false
+          }
+        },
+        {
+          "telemetry": {
+            "sockets": 0,
+            "closes": 0,
+            "frames": 0,
+            "socketErrors": 0,
+            "systems": [],
+            "replies": [],
+            "changes": 0,
+            "authenticatedJoins": 0,
+            "anonymousJoins": 0,
+            "refreshRequests": 0
+          },
+          "dom": {
+            "ready": "complete",
+            "alert": false,
+            "moderationForm": false,
+            "unavailableListing": false,
+            "notFound": false,
+            "route": "/explore/organizations/[synthetic-slug]",
+            "composer": false,
+            "errorBoundary": false
+          }
+        },
+        {
+          "telemetry": {
+            "sockets": 0,
+            "closes": 0,
+            "frames": 0,
+            "socketErrors": 0,
+            "systems": [],
+            "replies": [],
+            "changes": 0,
+            "authenticatedJoins": 0,
+            "anonymousJoins": 0,
+            "refreshRequests": 0
+          },
+          "dom": {
+            "ready": "complete",
+            "alert": false,
+            "moderationForm": false,
+            "unavailableListing": false,
+            "notFound": false,
+            "route": "/explore/opportunities/[synthetic-slug]",
+            "composer": false,
+            "errorBoundary": false
+          }
+        },
+        {
+          "telemetry": {
+            "sockets": 0,
+            "closes": 0,
+            "frames": 0,
+            "socketErrors": 0,
+            "systems": [],
+            "replies": [],
+            "changes": 0,
+            "authenticatedJoins": 0,
+            "anonymousJoins": 0,
+            "refreshRequests": 19
+          },
+          "dom": {
+            "ready": "complete",
+            "alert": false,
+            "moderationForm": false,
+            "unavailableListing": false,
+            "notFound": false,
+            "route": "/explore/events/[synthetic-slug]",
+            "composer": false,
+            "errorBoundary": false
+          }
+        },
+        {
+          "telemetry": {
+            "sockets": 0,
+            "closes": 0,
+            "frames": 0,
+            "socketErrors": 0,
+            "systems": [],
+            "replies": [],
+            "changes": 0,
+            "authenticatedJoins": 0,
+            "anonymousJoins": 0,
+            "refreshRequests": 0
+          },
+          "dom": {
+            "ready": "complete",
+            "alert": false,
+            "moderationForm": false,
+            "unavailableListing": false,
+            "notFound": false,
+            "route": "/explore/businesses/[synthetic-slug]",
+            "composer": false,
+            "errorBoundary": false
+          }
+        }
+      ],
+      "databaseState": {
+        "notifications": 2,
+        "unread": 0,
+        "messages": 2
+      }
+    },
+    {
+      "scenario": "Cleanup captured synthetic account IDs",
+      "status": "pass"
+    }
+  ],
+  "reconnectEvidence": [
+    {
+      "phase": "live",
+      "at": 1791534342800,
+      "online": true,
+      "open": 1,
+      "connecting": 0,
+      "route": "/messages/11b2894f-9b72-4605-b514-b3e994fd0528",
+      "missedVisible": false,
+      "activeSockets": 29,
+      "closes": 0,
+      "authenticatedJoins": 62,
+      "ready": 30,
+      "changes": 9,
+      "refreshRequests": 866
+    }
+  ],
+  "limitations": [
+    "Email delivery is verified only with disposable local Mailpit; external SMTP/deliverability and cross-device confirmation remain untested",
+    "Organization deletion UI is absent; native-language review and multi-tab read receipts remain pending",
+    "Admin team role mutations are not tested; no production, hosted test target or model provider calls"
+  ]
+}

@@ -86,7 +86,7 @@ test('date and location ranking excludes unrelated data and allows remote partic
 
 const decision = {plan:{kinds:['organizations'],people:false,topic:'arts',location:'Vancouver',thisMonth:false},understanding:'Find arts organizations in Vancouver.',clarification:null};
 test('model planning is validated before the same permission-aware tool runs', async () => {
-  const h=harness({planner:async input=>{assert.equal(input.language,'fa-AF');return decision;},rows:{organizations:[listing('actual-organization')]}});
+  const h=harness({planner:async input=>{assert.equal(input.language,'fa');return decision;},rows:{organizations:[listing('actual-organization')]}});
   const data=await(await h.POST(request({query:'help me find my path',language:'fa-AF'}))).json();
   assert.equal(data.engine,'model-assisted');assert.equal(data.fallback,null);assert.equal(data.results[0].href,'/explore/organizations/actual-organization');assert.equal(h.calls.length,1);
 });
@@ -142,4 +142,65 @@ test('public follow-up evaluation preserves and updates only the requested dimen
     for(const [key,value] of Object.entries(expected))assert.deepEqual(JSON.parse(JSON.stringify(plan[key])),value,query+' '+key);
   }
   const independent=h.planPublicDiscovery('Find software businesses in Toronto',{},plan);assert.deepEqual(Array.from(independent.kinds),['businesses']);assert.equal(independent.location,'Toronto');assert.equal(independent.thisMonth,false);
+});
+
+test('multilingual location follow-ups preserve prior topic and category', () => {
+  const h=harness();
+  const previous={kinds:['opportunities'],people:false,topic:'technology',location:'Toronto',thisMonth:false};
+  for (const query of ['Only in vancouver', 'فقط در ونکوور', 'تنها در ونکوور', 'یوازې په ونکوور']) {
+    const plan=h.planPublicDiscovery(query,{},previous);
+    assert.equal(plan.location.toLowerCase(),'vancouver',query);
+    assert.equal(plan.topic,'technology',query);
+    assert.deepEqual(Array.from(plan.kinds),['opportunities'],query);
+  }
+});
+
+test('all-location follow-ups in Persian retain the current search', () => {
+  const h=harness();
+  const previous={kinds:['events'],people:true,topic:'arts',location:'Vancouver',thisMonth:true};
+  for(const query of ['Anywhere','All locations','هر جا','همه جا','هر ځای']) {
+    const plan=h.planPublicDiscovery(query,{},previous);
+    assert.equal(plan.location,'',query);
+    assert.equal(plan.topic,'arts',query);
+    assert.equal(plan.people,true,query);
+    assert.equal(plan.thisMonth,true,query);
+    assert.deepEqual(Array.from(plan.kinds),['events'],query);
+  }
+});
+
+test('realistic multilingual public conversations return catalogue records and explain their permitted scope', async () => {
+  for (const [language, exchange] of [
+    ['en', ['I’m new in Vancouver and want to meet people.', 'I’m an artist looking for collaborators.', 'Only North Vancouver.', 'Show me events too.', 'Anywhere.', 'Actually, I need a job instead.']],
+    ['fa', ['من در ونکوور تازه هستم و می‌خواهم با افراد آشنا شوم', 'من هنرمند هستم و دنبال همکار می‌گردم', 'فقط شمال ونکوور', 'رویدادها را هم نشان بده', 'هر جا', 'در واقع دنبال شغل هستم']],
+    ['ps', ['زه په ونکوور کې نوی یم او غواړم خلک وپېژنم', 'زه هنرمند یم او همکار ملګري غواړم', 'یوازې شمالي ونکوور', 'غونډې هم را وښیه', 'هر ځای', 'په حقیقت کې دنده غواړم']],
+  ]) {
+    const h = harness({ rows: {
+      events: [{...listing('art-gathering', 'Art collaboration gathering'), location: 'North Vancouver, Canada'}],
+      opportunities: [{...listing('job-opening', 'Job opening'), description:'Hiring for employment', summary:'Employment', category:'Employment', location:'Vancouver, Canada'}],
+    }});
+    let context;
+    for (let index=0;index<exchange.length;index++) {
+      const response = await h.POST(request({query:exchange[index],language,context}));
+      assert.equal(response.status,200,exchange[index]); const result = await response.json(); context = result.plan;
+      assert.ok(result.understanding, 'structured results must explain their scope');
+      assert.ok(result.results.every(row=>row.href.startsWith('/explore/')));
+      if(index===0) assert.equal(context.people,true);
+      if(index===1) assert.equal(context.location,'Vancouver','Artist follow-up retains the current location');
+      if(index===2 || index===3) assert.equal(context.location,'North Vancouver');
+      if(index===3) {assert.equal(context.topic,'arts');assert.ok(result.results.some(row=>row.href==='/explore/events/art-gathering'));}
+      if(index===4) assert.equal(context.location,'');
+      if(index===5) { assert.equal(context.topic,'job'); assert.deepEqual(context.kinds,['opportunities']);assert.equal(context.location,'');assert.equal(context.people,false);assert.equal(result.results[0]?.href,'/explore/opportunities/job-opening'); }
+    }
+    assert.ok(h.calls.every(call=>call.kind!=='profiles'));
+  }
+});
+
+test('location-question answers preserve prior topic when no model is available', async () => {
+  for (const [language,clarification,query] of [['en','Which city?','North Vancouver'],['fa','در کدام شهر؟','شمال ونکوور'],['ps','چېرته؟','شمالي ونکوور']]) {
+    const h=harness({rows:{events:[{...listing('art-gathering'),location:'North Vancouver, Canada'}]}});
+    const context={kinds:['events'],people:false,topic:'arts',location:'Vancouver',thisMonth:false};
+    const response=await h.POST(request({query,language,clarification,context}));assert.equal(response.status,200);
+    const data=await response.json();assert.equal(data.plan.topic,'arts');assert.equal(data.plan.location,'North Vancouver');assert.deepEqual(data.plan.kinds,['events']);assert.equal(data.results[0].href,'/explore/events/art-gathering');
+    const changed=await(await h.POST(request({query:'Actually, I need a job instead.',language,clarification,context}))).json();assert.equal(changed.plan.topic,'job');assert.equal(changed.plan.location,'');assert.deepEqual(changed.plan.kinds,['opportunities']);
+  }
 });

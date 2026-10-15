@@ -59,3 +59,26 @@ test("category-only refinements are not mistaken for cities", () => {
     if(type!=="profile") assert.equal(context.memberSignal,undefined,query);
   }
 });
+
+test('realistic three-language discovery chains preserve refinements and replace goals', () => {
+  for (const exchange of [
+    ['I’m new in Vancouver and want to meet people.', 'I’m an artist looking for collaborators.', 'Only North Vancouver.', 'Show me events too.', 'Anywhere.', 'Actually, I need a job instead.'],
+    ['من در ونکوور تازه هستم و می‌خواهم با افراد آشنا شوم', 'من هنرمند هستم و دنبال همکار می‌گردم', 'فقط شمال ونکوور', 'رویدادها را هم نشان بده', 'هر جا', 'در واقع دنبال شغل هستم'],
+    ['زه په ونکوور کې نوی یم او غواړم خلک وپېژنم', 'زه هنرمند یم او همکار ملګري غواړم', 'یوازې شمالي ونکوور', 'غونډې هم را وښیه', 'هر ځای', 'په حقیقت کې دنده غواړم'],
+  ]) {
+    let context = resolve(exchange[0]);
+    assert.equal(context.entityType, 'profile', exchange[0]); assert.equal(context.topic, '', exchange[0]);
+    const initialCity=context.city;
+    context = resolve(exchange[1], context); assert.equal(context.topic, 'arts', exchange[1]); assert.equal(context.city,initialCity,'Artist refinement retains the current location');
+    context = resolve(exchange[2], context); assert.equal(context.topic, 'arts'); assert.ok(context.city);
+    context = resolve(exchange[3], context); assert.equal(context.entityType, 'event'); assert.equal(context.topic, 'arts'); assert.ok(context.city);
+    context = resolve(exchange[4], context); assert.equal(context.city, undefined); assert.equal(context.topic, 'arts');
+    context = resolve(exchange[5], context); assert.equal(context.entityType, 'opportunity'); assert.equal(context.topic, 'job'); assert.equal(context.city, undefined);
+  }
+});
+test('answers to a short topic clarification keep category and location', () => {
+  for (const input of ['arts', 'هنر', 'هنرمند']) {
+    const context = resolve(input, { topic: '', city: 'Vancouver', entityType: 'profile' });
+    assert.equal(context.topic, 'arts'); assert.equal(context.city, 'Vancouver'); assert.equal(context.entityType, 'profile');
+  }
+});

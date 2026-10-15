@@ -65,14 +65,16 @@ test('notification opening focuses the panel; Escape closes and restores the tri
   const trigger = find(render(), n => n.type === 'button')[0];
   trigger.props.onClick();
   assert.equal(find(render(), n => n.props?.role === 'dialog').length, 1);
-  const cleanup = effects[1]();
+  // Effects after opening: first is the realtime subscription (skipped; its
+  // mock client throws), then the focus effect and the global listeners.
+  const cleanups = effects.slice(1).map(effect => effect());
   assert.equal(panelFocus, 1);
   let prevented = 0;
   listeners.get('keydown')({key:'Escape',preventDefault:()=>prevented++});
   assert.equal(open, false);
   assert.equal(triggerFocus, 1);
   assert.equal(prevented, 1);
-  cleanup();
+  cleanups.forEach(cleanup => cleanup?.());
   assert.equal(listeners.size, 0);
   assert.equal(find(render(), n => n.props?.role === 'dialog').length, 0);
 });

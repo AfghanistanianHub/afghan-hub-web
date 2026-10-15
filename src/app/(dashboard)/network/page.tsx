@@ -1,5 +1,4 @@
 import { ContextualAssistantPrompt } from "@/components/assistant/contextual-assistant-prompt";
-import { CatalogIllustration } from "@/components/public/catalog-illustration";
 import {
   ArrowRight,
   Sparkles,
@@ -126,7 +125,7 @@ export default async function NetworkPage() {
       <div className="mx-auto w-full max-w-[1500px]">
         <section
           data-illustration-trigger
-          className="relative overflow-hidden border-y border-border/80 px-1 py-7 sm:px-2 sm:py-8 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.75fr)] lg:items-center lg:gap-10 lg:px-4 lg:py-9 xl:gap-14"
+          className="relative border-b border-border pb-5"
         >
           <div className="relative min-w-0">
             <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
@@ -134,8 +133,8 @@ export default async function NetworkPage() {
               Community network
             </div>
 
-            <h1 className="mt-4 max-w-3xl text-3xl font-medium leading-[1.06] tracking-[-0.04em] text-foreground md:text-4xl xl:text-[2.7rem]">
-              Discover the people behind the community.
+            <h1 className="mt-2 text-3xl font-medium tracking-tight text-foreground">
+              Your network
             </h1>
 
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base md:leading-7">
@@ -148,8 +147,8 @@ export default async function NetworkPage() {
                 query="Find professionals working in technology"
               />
               <ContextualAssistantPrompt
-                label="Find filmmakers"
-                query="Find professionals working in film and media"
+                label="Find artists"
+                query="Find artists working in arts and culture"
               />
               <ContextualAssistantPrompt
                 label="Find mentors"
@@ -157,31 +156,18 @@ export default async function NetworkPage() {
               />
             </div>
 
-            <div className="mt-6 grid max-w-2xl grid-cols-3 border-y border-border/80">
-              {stats.map(({ label, value, helper, icon: Icon }, index) => (
+            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-border pt-3">
+              {stats.map(({ label, value, icon: Icon }) => (
                 <div
                   key={label}
-                  className={`min-w-0 py-3.5 ${index > 0 ? "border-l border-border/80 pl-4 sm:pl-5" : "pr-4 sm:pr-5"}`}
+                  className="flex min-h-11 items-center gap-2 text-sm"
                 >
-                  <div className="flex items-center gap-2 text-primary">
-                    <Icon aria-hidden="true" className="size-3.5 shrink-0" />
-                    <p className="truncate text-[0.68rem] font-semibold uppercase tracking-[0.12em]">{label}</p>
-                  </div>
-                  <div className="mt-2 flex min-w-0 items-baseline gap-1.5">
-                    <p className="text-xl font-bold tracking-tight text-foreground">{value}</p>
-                    <p className="truncate text-xs text-muted-foreground">{helper}</p>
-                  </div>
+                  <Icon aria-hidden="true" className="size-4 text-primary" /><span className="font-semibold">{value}</span><span className="text-muted-foreground">{label}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="relative mt-7 flex min-h-52 items-center justify-center lg:mt-0 lg:min-h-0 lg:justify-end">
-            <div className="pointer-events-none absolute inset-x-8 top-1/2 h-36 -translate-y-1/2 rounded-full bg-primary/[0.035] blur-3xl" />
-            <div className="relative w-full max-w-[360px] lg:max-w-[390px] xl:max-w-[420px]" aria-hidden="true">
-              <CatalogIllustration interactive kind="people" />
-            </div>
-          </div>
         </section>
 
         <div className="mt-7 space-y-7 lg:mt-8 lg:space-y-8">

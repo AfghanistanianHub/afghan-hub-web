@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/client";
+import { subscribeMemberChannel } from "@/lib/supabase/member-realtime";
 
 type RealtimeReadReceiptRefreshProps = {
   conversationId: string;
@@ -36,12 +37,10 @@ export function RealtimeReadReceiptRefresh({
         if (payload.extension === "postgres_changes" && payload.status === "ok") {
           router.refresh();
         }
-      })
-      .subscribe();
+      });
 
-    return () => {
-      void supabase.removeChannel(channel);
-    };
+    const cleanup = subscribeMemberChannel(supabase, channel);
+    return cleanup;
   }, [conversationId, router]);
 
   return null;

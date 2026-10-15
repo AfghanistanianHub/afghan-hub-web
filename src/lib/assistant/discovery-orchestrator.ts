@@ -12,6 +12,14 @@ export class PlannerUnavailable extends Error {
 export async function discover(input: unknown, tool: DiscoveryTool, signal: AbortSignal, planner?: DiscoveryPlanner): Promise<PublicDiscoveryResponse> {
   const request = discoveryRequestSchema.parse(input);
   let plan = planPublicDiscovery(request.query, request.filters, request.context);
+  // Continue a previously asked location question even when the planner is
+  // unavailable on this turn. Guided answers still have precedence, and an
+  // explicit new goal must not be swallowed by a stale question.
+  if (!request.filters && request.context && request.clarification &&
+      /city|where|location|کجا|شهر|چېرته|ځای/iu.test(request.clarification) &&
+      !/\b(?:actually|instead|need|find|show|only|events?|jobs?)\b|در واقع|دنبال|نشان بده|په حقیقت|غواړم/iu.test(request.query)) {
+    plan = planPublicDiscovery(`Only ${request.query.slice(0, 60)}`, {}, request.context);
+  }
   let engine: PublicDiscoveryResponse["engine"] = "structured-search";
   let fallback: PublicDiscoveryResponse["fallback"] = "disabled";
   let understanding = "";
@@ -31,5 +39,13 @@ export async function discover(input: unknown, tool: DiscoveryTool, signal: Abor
   }
   signal.throwIfAborted();
   const feed = clarification ? { results: [], unavailable: [] } : await tool(plan, signal);
-  return publicDiscoveryResponseSchema.parse({ ...feed, plan, mode: "public-catalog", limited: true, engine, fallback, understanding, clarification });
+  if (engine === "structured-search") {
+    const scope = [plan.topic, plan.location].filter(Boolean).join(" · ");
+    understanding = request.language === "fa"
+      ? `${feed.results.length} نتیجه از فهرست عمومی${scope ? `: ${scope}` : ""}.${plan.people ? " پروفایل اعضا پس از ورود در دسترس است." : ""}`
+      : request.language === "ps"
+        ? `${feed.results.length} پایلې له عامه لېست څخه${scope ? `: ${scope}` : ""}.${plan.people ? " د غړو پروفایلونه له ننوتلو وروسته شته." : ""}`
+        : `${feed.results.length} public catalogue matches${scope ? `: ${scope}` : ""}.${plan.people ? " Member profiles are available after sign-in." : ""}`;
+  }
+  return publicDiscoveryResponseSchema.parse({ ...feed, plan, mode: "public-catalog", limited: true, engine, fallback, understanding: understanding.slice(0, 240), clarification });
 }

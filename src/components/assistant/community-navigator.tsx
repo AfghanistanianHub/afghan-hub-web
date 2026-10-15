@@ -1,27 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { type FormEvent, type KeyboardEvent as ReactKeyboardEvent, useEffect, useRef, useState } from "react";
+import { type FormEvent, type KeyboardEvent as ReactKeyboardEvent, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ArrowUpRight, Compass, Search, Sparkles, X } from "lucide-react";
 import { trackAssistantEvent } from "@/lib/assistant/analytics";
 import { ASSISTANT_OPEN_EVENT } from "@/components/assistant/contextual-assistant-prompt";
 import { resolveNavigatorContext, type NavigatorContext } from "@/lib/assistant/conversation";
 import { memberNavigatorCopy as copy, memberNavigatorPrompts as prompts, memberNavigatorDialogue as dialogue, memberNavigatorLocales, memberNavigatorUtility } from "@/lib/assistant/member-navigator-copy";
 import styles from "./community-navigator.module.css";
+import { readNavigatorLanguagePreference, saveNavigatorLanguagePreference, subscribeNavigatorLanguagePreference, serverNavigatorLanguagePreference } from "@/lib/assistant/navigator-language";
 
-type Language = "en" | "fa-AF" | "fa" | "ps";
+type Language = "en" | "fa" | "ps";
 type Result = {
   entityType: "profile" | "business" | "organization" | "opportunity" | "event";
   entityId: string; title: string; subtitle: string | null; city: string | null;
   country: string | null; href: string; rank: number; matchedTopics?: string[];
 };
 type Group = { memberSignal: NavigatorContext["memberSignal"] | null; results: Result[] };
-type Turn = { id: number; query: string; status: "pending" | "ready" | "failed"; context?: NavigatorContext; groups: Group[]; relatedUnavailable?: boolean; scopeLimited?: boolean; browseOnly?: boolean };
-type Payload = { browseOnly?: boolean; context: NavigatorContext; groups: Group[]; results: Result[]; intent: string; entityType: Result["entityType"] | null; relatedUnavailable?: boolean };
+type Turn = { understanding?: string; clarification?: string; id: number; query: string; status: "pending" | "ready" | "failed"; context?: NavigatorContext; groups: Group[]; relatedUnavailable?: boolean; scopeLimited?: boolean; browseOnly?: boolean };
+type Payload = { understanding?: string; clarification?: string; browseOnly?: boolean; context: NavigatorContext; groups: Group[]; results: Result[]; intent: string; entityType: Result["entityType"] | null; relatedUnavailable?: boolean };
 
 export function CommunityNavigator() {
   const [open, setOpen] = useState(false);
-  const [language, setLanguage] = useState<Language>("en");
+  const savedLanguage = useSyncExternalStore(subscribeNavigatorLanguagePreference, readNavigatorLanguagePreference, serverNavigatorLanguagePreference);
+  const [selectedLanguage, setLanguage] = useState<Language | null>(null);
+  const language = selectedLanguage ?? savedLanguage;
   const [query, setQuery] = useState("");
   const [turns, setTurns] = useState<Turn[]>([]);
   const [pending, setPending] = useState(false);
@@ -102,12 +105,12 @@ export function CommunityNavigator() {
     setTurns(current => [...current.slice(-9), {id, query: normalized, status: "pending", context: resolveNavigatorContext(normalized, previousContext), groups: []}]);
     let scopeLimited = false;
     try {
-      const response = await fetch("/api/assistant/search", { method: "POST", headers: {"content-type":"application/json"}, signal: controller.signal, body: JSON.stringify({query: normalized, limit: 8, context: previousContext}) });
+      const response = await fetch("/api/assistant/search", { method: "POST", headers: {"content-type":"application/json"}, signal: controller.signal, body: JSON.stringify({query: normalized, language, limit: 8, context: previousContext}) });
       if (!response.ok) { scopeLimited = response.status === 422; throw new Error("Search unavailable"); }
       const data = await response.json() as Payload;
       if (controller.signal.aborted || id !== sequence.current) return;
       contextRef.current = data.context;
-      setTurns(current => current.map(turn => turn.id === id ? {...turn, status: "ready", context: data.context, groups: data.groups, relatedUnavailable: data.relatedUnavailable, browseOnly: data.browseOnly} : turn));
+      setTurns(current => current.map(turn => turn.id === id ? {...turn, status: "ready", context: data.context, groups: data.groups, relatedUnavailable: data.relatedUnavailable, browseOnly: data.browseOnly, understanding: data.understanding, clarification: data.clarification} : turn));
       trackAssistantEvent({event:"assistant_search",language,intent:data.intent,entityType:data.entityType,resultCount:data.results.length,hadResults:data.results.length>0});
     } catch {
       if ((!controller.signal.aborted || controller.signal.reason === "timeout") && id === sequence.current) setTurns(current => current.map(turn => turn.id === id ? {...turn,status:"failed",scopeLimited} : turn));
@@ -153,16 +156,17 @@ export function CommunityNavigator() {
       <header className={styles.header}>
         <div className={styles.brand}><span className={styles.identity}><span className={styles.identityMark}><Compass size={17} aria-hidden="true" /></span><span><small>AFGHAN HUB</small><strong>Community Navigator</strong></span></span><button type="button" className={styles.close} aria-label={memberNavigatorUtility[language].close} onClick={() => setOpen(false)}><X size={19} aria-hidden="true" /></button></div>
         <p className={styles.kicker}><Sparkles size={13} aria-hidden="true" />{labels.title}</p><h2 id="community-navigator-title">{strings.title}</h2><p className={styles.description}>{strings.description}</p>
-        <div className={styles.toolbar}>{memberNavigatorLocales.map(({value:option,label}) => <button type="button" key={option} aria-pressed={language===option} onClick={() => {setLanguage(option);trackAssistantEvent({event:"assistant_language_change",language:option});}}>{label}</button>)}<button type="button" className={styles.reset} onClick={startOver}>{labels.start}</button></div>
+        <div className={styles.toolbar}>{memberNavigatorLocales.map(({value:option,label}) => <button type="button" key={option} aria-pressed={language===option} onClick={() => {setLanguage(option);saveNavigatorLanguagePreference(option);trackAssistantEvent({event:"assistant_language_change",language:option});}}>{label}</button>)}<button type="button" className={styles.reset} onClick={startOver}>{labels.start}</button></div>
       </header>
       <p role="status" aria-live="polite" className="sr-only">{pending ? strings.searching : turns.at(-1)?.status === "ready" ? `${labels.matches}: ${turns.at(-1)?.groups.reduce((count,group)=>count+group.results.length,0)}` : ""}</p>
       <div className={styles.conversation} aria-label={labels.title}>
         {!turns.length ? <div className={styles.welcome}><p className={styles.description}>{labels.grounded}</p><div className={styles.prompts}>{prompts[language].map((prompt,index) => <button type="button" key={prompt} onClick={() => void runSearch(prompt)}><span>{String(index + 1).padStart(2,"0")}</span>{prompt}<ArrowUpRight size={14} aria-hidden="true" /></button>)}</div></div> : null}
-        {turns.map((turn,index) => <article key={turn.id} className={styles.turn}>
+        {turns.map((turn,index) => <article key={turn.id} className={styles.turn} aria-busy={turn.status === "pending"}>
           <div className={styles.user}><p className={styles.label}>{labels.you}</p><p>{turn.query}</p></div>
           <p className={styles.label}>{labels.title}</p>
           {turn.status === "pending" ? <div className={styles.pending}><span className={styles.progress} aria-hidden="true" />{strings.searching}</div> : turn.status === "failed" ? <div role="status"><p className={styles.summary}>{turn.scopeLimited ? strings.scopeError : strings.error}</p><div className={styles.followups}>{!turn.scopeLimited ? <button type="button" disabled={pending} onClick={() => void runSearch(turn.query, turn.context)}>{labels.retry}</button> : null}</div>{recoveryLinks(turn.context)}</div> : <>
             <p className={styles.summary}>{turn.browseOnly ? strings.recovery : turn.groups.some(group=>group.results.length) ? labels.matches : strings.empty}</p>
+            {turn.clarification ? <p className={styles.description}>{turn.clarification}</p> : turn.understanding ? <p className={styles.description} dir="auto">{turn.understanding}</p> : null}
             <div className={styles.context}>{turn.context?.topic ? <span>{turn.context.topic}</span> : null}{turn.context?.city ? <span>{turn.context.city}</span> : null}</div>
             {turn.groups.map((group,groupIndex) => <div key={groupIndex} className={styles.group}>
               {group.memberSignal ? <><h4>{group.memberSignal==="open_to_mentoring"?labels.mentors:labels.mentees}</h4><p className={styles.scope}>{labels.preference}</p>{!group.results.length ? <p className={styles.description}>{strings.empty}</p> : null}</> : null}
@@ -170,7 +174,7 @@ export function CommunityNavigator() {
             </div>)}
             {turn.relatedUnavailable ? <p className={styles.scope}>{labels.partial}</p> : null}
             {!turn.groups.some(group=>group.results.length) ? <>{!turn.browseOnly ? <p className={styles.description}>{strings.recovery}</p> : null}{recoveryLinks(turn.context)}</> : null}
-            {index===turns.length-1 ? <div className={styles.followups} aria-label={labels.follow}><button type="button" disabled={pending} onClick={() => void runSearch(turn.context?.entityType==="event"?labels.people:labels.events)}>{turn.context?.entityType==="event"?labels.people:labels.events}</button>{turn.context?.city ? <button type="button" disabled={pending} onClick={() => void runSearch(labels.anywhere)}>{labels.anywhere}</button> : null}</div> : null}
+            {index===turns.length-1 ? <div className={styles.followups} aria-label={labels.follow}><button type="button" disabled={pending} onClick={() => void runSearch(turn.context?.entityType==="opportunity"?labels.organizations:turn.context?.entityType==="event"?labels.people:labels.events)}>{turn.context?.entityType==="opportunity"?labels.organizations:turn.context?.entityType==="event"?labels.people:labels.events}</button>{turn.context?.city ? <button type="button" disabled={pending} onClick={() => void runSearch(labels.anywhere)}>{labels.anywhere}</button> : null}</div> : null}
           </>}
         </article>)}
         <div ref={bottomRef} />

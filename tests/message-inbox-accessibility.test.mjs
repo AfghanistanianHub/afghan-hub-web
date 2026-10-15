@@ -8,7 +8,7 @@ const pagePath = new URL(
 );
 
 test("message inbox announces load failures", async () => {
-  const source = await readFile(pagePath, "utf8");
+  const source = await readFile(new URL("../src/components/messages/conversation-navigation.tsx", import.meta.url), "utf8");
 
   assert.match(source, /role="alert"/);
   assert.match(source, /aria-live="assertive"/);
@@ -19,5 +19,9 @@ test("message inbox navigation exposes visible keyboard focus", async () => {
   const source = await readFile(pagePath, "utf8");
 
   assert.match(source, /href="\/network"[\s\S]{0,500}focus-visible:outline/);
-  assert.match(source, /focus-visible:relative focus-visible:z-10 focus-visible:outline-2/);
+  const rows = await readFile(new URL("../src/components/messages/conversation-list.tsx", import.meta.url), "utf8");
+  assert.match(rows, /focus-visible:relative focus-visible:outline-2/);
+  assert.match(rows, /aria-current=\{activeId === item.id/);
+  assert.match(rows, /Search conversations/);
+  assert.match(rows, /rounded-full object-cover/);
 });

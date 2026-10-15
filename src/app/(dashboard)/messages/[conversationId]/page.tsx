@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft, CheckCheck, MessageSquare, UserRound } from "lucide-react";
 
+import { ConversationNavigation } from "@/components/messages/conversation-navigation";
 import { MarkConversationRead } from "@/components/messages/mark-conversation-read";
 import { MessageComposer } from "@/components/messages/message-composer";
 import { MessageThread } from "@/components/messages/message-thread";
@@ -112,7 +113,9 @@ export default async function ConversationPage({ params, searchParams }: Convers
       ) : null}
       <RealtimeReadReceiptRefresh conversationId={conversationId} />
 
-      <div className={`mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-hidden border ${styles.surface}`}>
+      <div className="mx-auto grid w-full max-w-[1400px] flex-1 grid-cols-1 overflow-hidden border border-border bg-card lg:grid-cols-[300px_minmax(0,1fr)]">
+        <aside aria-label="Conversation navigation" className="hidden min-w-0 border-e border-border lg:block"><h2 className="px-4 pt-5 text-lg font-semibold">Messages</h2><ConversationNavigation currentUserId={user.id} activeId={conversationId} /></aside>
+        <div className="flex min-w-0 flex-col">
         <header className="relative flex items-center gap-3 border-b border-border bg-background px-4 py-4 sm:gap-4 sm:px-5">
           <Link
             href="/messages"
@@ -128,15 +131,16 @@ export default async function ConversationPage({ params, searchParams }: Convers
               alt=""
               width={44}
               height={44}
-              className="relative size-11 shrink-0 rounded-sm border border-border object-cover"
+              className="relative size-11 shrink-0 rounded-full border border-border object-cover"
             />
           ) : (
-            <div className="relative flex size-11 shrink-0 items-center justify-center rounded-sm bg-secondary text-primary">
+            <div className="relative flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
               <UserRound aria-hidden="true" className="size-5" />
             </div>
           )}
 
           <div className="relative min-w-0 flex-1">
+            <h1>
             {otherMemberId ? (
               <Link
                 href={`/members/${otherMemberId}`}
@@ -147,6 +151,8 @@ export default async function ConversationPage({ params, searchParams }: Convers
             ) : (
               <p className="line-clamp-2 break-words font-semibold leading-5 text-foreground">{memberName}</p>
             )}
+
+            </h1>
 
             <p className="mt-0.5 line-clamp-2 break-words text-sm leading-5 text-muted-foreground">
               {otherMember?.headline || "Afghan Hub member"}
@@ -182,13 +188,13 @@ export default async function ConversationPage({ params, searchParams }: Convers
           ) : null}
 
           {messages.length === 0 ? (
-            <div className="flex h-full min-h-72 items-center justify-center px-4 text-center">
+            <div className="flex h-full min-h-40 items-center justify-center px-4 text-center">
               <div className="relative w-full max-w-md overflow-hidden rounded-sm border border-border bg-background px-6 py-10">
                 
-                <span className="relative mx-auto flex size-14 items-center justify-center rounded-sm bg-secondary text-primary">
+                <span className="relative mx-auto flex size-14 items-center justify-center rounded-full bg-secondary text-primary">
                   <MessageSquare aria-hidden="true" className="size-7" />
                 </span>
-                <h1 className="relative mt-5 text-lg font-semibold text-foreground">Start your conversation</h1>
+                <h2 className="relative mt-5 text-lg font-semibold text-foreground">Start your conversation</h2>
                 <p className="relative mt-2 break-words text-sm leading-6 text-muted-foreground">Send a message to {memberName}.</p>
               </div>
             </div>
@@ -208,13 +214,13 @@ export default async function ConversationPage({ params, searchParams }: Convers
                     <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-6">{message.body}</p>
 
                     <p
-                      className={`mt-1 text-right text-xs ${
+                      className={`mt-1 text-end text-xs ${
                         isMine ? "text-primary-foreground" : "text-muted-foreground"
                       }`}
                     >
                       {formatMessageTime(message.created_at)}
                       {isMine && message.id === latestSentMessage?.id && latestSentMessageIsSeen ? (
-                        <span className="ml-2 inline-flex items-center gap-1 font-medium">
+                        <span className="ms-2 inline-flex items-center gap-1 font-medium">
                           <CheckCheck aria-hidden="true" className="size-3.5" /> Seen
                         </span>
                       ) : null}
@@ -227,6 +233,7 @@ export default async function ConversationPage({ params, searchParams }: Convers
         </MessageThread>
 
         <MessageComposer conversationId={conversationId} />
+        </div>
       </div>
     </main>
   );

@@ -49,6 +49,11 @@ function loadRoute(path) {
       if (name === "zod") {
         return realRequire("zod");
       }
+      if (name === "@/lib/assistant/public-discovery-contract") {
+        const contract = {};
+        vm.runInNewContext(transpile("../src/lib/assistant/public-discovery-contract.ts"), { exports: contract, Set, require: realRequire });
+        return contract;
+      }
       if (name === "@/lib/http/request-origin") {
         return { isSameOriginRequest };
       }

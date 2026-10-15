@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { isValidHttpUrl } from "@/lib/validation";
 
@@ -159,5 +160,9 @@ export async function saveProfile(formData: FormData) {
     }
   }
 
+  // Dashboard may have been prefetched while onboarding was incomplete.
+  // Invalidate that guarded payload only after the profile write succeeds.
+  revalidatePath("/dashboard");
+  revalidatePath("/profile");
   redirect("/dashboard");
 }

@@ -46,6 +46,7 @@ function mount(currentUserId) {
         if (name === "react") return { useEffect: (effect) => { cleanup = effect(); } };
         if (name === "next/navigation") return { useRouter: () => ({ refresh: () => { refreshes++; } }) };
         if (name === "@/lib/supabase/client") return { createClient: () => client };
+        if (name === "@/lib/supabase/member-realtime") return { subscribeMemberChannel: (client, channel) => { channel.subscribe(); return () => { void client.removeChannel(channel); }; } };
         throw new Error("Unexpected dependency: " + name);
       },
     },

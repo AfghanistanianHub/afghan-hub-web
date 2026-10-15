@@ -31,7 +31,7 @@ export function Sidebar({
     : dashboardNavigation;
 
   return (
-    <aside className="sticky top-0 hidden h-dvh min-h-0 w-64 shrink-0 overflow-hidden border-r border-border bg-background lg:flex lg:flex-col">
+    <aside className="sticky top-0 hidden h-dvh min-h-0 w-64 shrink-0 overflow-hidden border-e border-border bg-card lg:flex lg:flex-col">
       <div className="relative flex h-20 shrink-0 items-center border-b border-border px-5">
         <Link href="/dashboard" className="group inline-flex items-center gap-3 rounded-[var(--radius)] px-1 py-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
           <span className="flex size-9 items-center justify-center rounded-[var(--radius)] border border-primary-foreground/10 bg-primary text-sm font-medium text-primary-foreground transition-colors motion-reduce:transition-none group-hover:bg-primary/90">
@@ -73,11 +73,11 @@ export function Sidebar({
               {active ? (
                 <span
                   aria-hidden="true"
-                  className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-primary"
+                  className="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-primary"
                 />
               ) : null}
               <span
-                className={`flex size-8 shrink-0 items-center justify-center rounded-[var(--radius)] transition-colors motion-reduce:transition-none ${
+                className={`flex size-8 shrink-0 items-center justify-center rounded-full transition-colors motion-reduce:transition-none ${
                   active
                     ? "text-primary"
                     : "bg-transparent text-current"
@@ -90,7 +90,7 @@ export function Sidebar({
               {item.href === "/messages" && unreadMessageCount > 0 ? (
                 <span
                   aria-label={`${unreadMessageCount} unread messages`}
-                  className="ml-auto flex min-w-6 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-foreground"
+                  className="ms-auto flex min-w-6 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-foreground"
                 >
                   {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
                 </span>
@@ -99,7 +99,7 @@ export function Sidebar({
               {item.href === "/moderation" && pendingModerationCount > 0 ? (
                 <span
                   aria-label={`${pendingModerationCount} submissions pending moderation`}
-                  className="ml-auto flex min-w-6 shrink-0 items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-xs font-bold text-accent-foreground"
+                  className="ms-auto flex min-w-6 shrink-0 items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-xs font-bold text-accent-foreground"
                 >
                   {pendingModerationCount > 99 ? "99+" : pendingModerationCount}
                 </span>

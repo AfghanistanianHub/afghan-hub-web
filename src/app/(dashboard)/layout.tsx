@@ -7,6 +7,7 @@ import { RealtimeMessageRefresh } from "@/components/messages/realtime-message-r
 import { getTotalUnreadMessageCount } from "@/lib/messages";
 import { getMyAccessContext } from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
+import { WorkspaceRecovery } from "@/components/feedback/page-recovery";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
@@ -27,7 +28,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
 
   const [
     { data: profile },
-    { data: accessContext },
+    { data: accessContext, error: accessContextError },
     { data: notificationRows, error: notificationRowsError },
     { count: unreadNotificationCount, error: unreadNotificationCountError },
     { data: unreadMessageRows },
@@ -68,6 +69,10 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
       .is("read_at", null),
     supabase.rpc("get_unread_message_counts"),
   ]);
+
+  // An outage is not an incomplete profile. Keep the requested route and fail
+  // closed: no workspace children, moderation controls or false zero counts.
+  if (accessContextError) return <WorkspaceRecovery />;
 
   if (!accessContext?.onboarding_completed) {
     redirect("/profile");
@@ -138,7 +143,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
   );
 
   return (
-    <div className="relative min-h-screen overflow-x-clip bg-background text-foreground">
+    <div className="member-shell relative min-h-screen overflow-x-clip bg-background text-foreground">
       <RealtimeMessageRefresh currentUserId={user.id} />
       <div className="flex min-h-screen">
         <Sidebar

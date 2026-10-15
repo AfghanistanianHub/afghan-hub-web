@@ -94,10 +94,10 @@ export function MyConnections({
                     alt={name}
                     width={44}
                     height={44}
-                    className="size-11 shrink-0 rounded-[var(--radius-control)] border border-border object-cover"
+                    className="size-11 shrink-0 rounded-full border border-border object-cover"
                   />
                 ) : (
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-secondary font-bold text-primary transition group-hover:bg-primary/[0.14]">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary font-bold text-primary transition group-hover:bg-primary/[0.14]">
                     {name.charAt(0).toUpperCase() || (
                       <UserRound aria-hidden="true" className="size-5" />
                     )}

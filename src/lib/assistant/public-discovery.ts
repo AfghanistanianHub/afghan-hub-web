@@ -20,17 +20,19 @@ export function planPublicDiscovery(query: string, filters: DiscoveryFilters = {
   if (previous && locationFollowup) query = `Only ${locationFollowup[1]}`;
   if (previous && replacement) query = query.replace(/\b(?:instead|rather)\b/giu, " ").trim();
   if (previous && eventFollowup) query = query.replace(/^are there any\s+/iu, " ").trim();
-  const refinement = (!!previous && !!(topicalFollowup || locationFollowup || replacement || eventFollowup)) || /^(?:only|just|anywhere|all locations|فقط|تنها|یوازې|هر جا|هر ځای)(?:\s|$)|(?:\b(?:too|also|as well)\b|(?:^|\s)هم(?:\s|$))/iu.test(query);
+  const newGoal = /\bactually\b|در واقع|په حقیقت/iu.test(original) || replacement && /\b(?:need|looking for)\b|می‌خواهم|میخواهم|غواړم/iu.test(original);
+  const shortTopic = !!previous && !inferAssistantIntent(query).entityType && original.split(/\s+/u).length <= 3;
+  const artistRefinement = !!previous?.people && /\b(?:artists?|creatives?)\b|هنرمند/iu.test(query);
+  const refinement = !newGoal && ((!!previous && !!(artistRefinement || shortTopic || topicalFollowup || locationFollowup || replacement || eventFollowup)) || /^(?:only|just|anywhere|all locations|فقط|تنها|یوازې|هر جا|همه جا|هر ځای)(?:\s|$)|(?:\b(?:too|also|as well)\b|(?:^|\s)هم(?:\s|$))/iu.test(query));
   const previousEntity = previous?.kinds.length === 1 ? ({businesses:"business",organizations:"organization",opportunities:"opportunity",events:"event"} as const)[previous.kinds[0]] : undefined;
-  const context = resolveNavigatorContext(query.replace(/^(only|just)\s+(?:in|near|at)\s+/iu, "$1 "), refinement && previous ? { topic: previous.topic, city: previous.location || undefined, entityType: previousEntity } : undefined);
-  const goal = filters.goal ?? query;
+  const context = resolveNavigatorContext(query.replace(/^(only|just|فقط|تنها|یوازې)\s+(?:in|near|at|در|په)\s+/iu, "$1 "), refinement && previous ? { topic: previous.topic, city: previous.location || undefined, entityType: artistRefinement ? "profile" : previousEntity } : undefined);  const goal = filters.goal ?? query;
   const inferred = inferAssistantIntent(goal);
   const explicit = discoveryKinds.filter(kind => inferAssistantIntent(kind).entityType &&
     new RegExp(`\\b${kind}\\b`, "i").test(goal));
   const entity = refinement ? context.entityType ?? (topicalFollowup ? inferred.entityType : previousEntity) : inferred.entityType;
   const kinds: PublicKind[] = explicit.length > 1 ? explicit : entity && entity !== "profile" ? [typeToKind[entity]] : refinement && previous ? previous.kinds : [...discoveryKinds];
   const people = entity === "profile" || /\b(?:artists?|creatives?|meet people)\b|هنرمندان|خلاقان|نوښتګر/iu.test(goal);
-  let topic = filters.topic ?? ((replacement || eventFollowup || locationFollowup) && previous ? previous.topic : context.topic);
+  let topic = filters.topic ?? ((replacement || eventFollowup || locationFollowup) && previous && refinement ? previous.topic : context.topic);
   topic = topic.replace(/\b(?:i want to|want to|want|i need|need|help me|connect with|meet|show|grow my|my|this month|community|afghan[- ]owned|what's next|and|or|please|looking for)\b/giu, " ").replace(/\s+/g, " ").trim();
   if (/^(?:arts?|artists?|creatives?|arts & culture|artists & creatives)$/iu.test(topic)) topic = "arts";
   if (/^(?:i'm still exploring|i m still exploring|explore|work or|arts & culture|artists & creatives)$/iu.test(topic)) topic = /arts|artists/iu.test(topic) ? "arts" : "";

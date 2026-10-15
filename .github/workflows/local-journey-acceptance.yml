@@ -3,11 +3,12 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - 'src/**'
+      - 'tests/**'
       - 'scripts/qa/**'
+      - 'supabase/**'
+      - 'package*.json'
       - '.github/workflows/local-journey-acceptance.yml'
-      - 'supabase/migrations/**'
-      - 'src/app/(auth)/**'
-      - 'src/app/(dashboard)/**'
   workflow_dispatch:
 permissions:
   contents: read
@@ -17,9 +18,15 @@ concurrency:
 jobs:
   journeys:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        complete-pass: [1, 2]
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: 24.x
@@ -40,14 +47,20 @@ jobs:
           fi
       - name: Run real authenticated API and RLS journeys
         run: node scripts/qa/local-member-journeys.mjs
+      - name: Complete sandboxed browser journeys and desktop/mobile evidence
+        env:
+          LOCAL_QA_VISUAL: "1"
+        run: node scripts/qa/local-member-browser.mjs
       - name: Upload sanitized scenario results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: local-member-journey-results
+          name: local-member-journey-results-pass-${{ matrix.complete-pass }}
           path: |
             reports/local-member-journeys.json
             reports/local-model-budget.json
+            reports/local-member-browser.json
+            reports/visual/
           if-no-files-found: warn
           retention-days: 14
       - name: Destroy this run's isolated stack

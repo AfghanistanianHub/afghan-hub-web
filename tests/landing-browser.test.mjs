@@ -407,6 +407,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   await page.send("Emulation.setDeviceMetricsOverride",{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   await page.send("Page.navigate",{url:appUrl+'/explore?type=organizations'});
   await waitFor(()=>page.evaluate("document.readyState==='complete'&&!!document.querySelector('input[name=q]')"),"catalogue interactions");
+  await page.evaluate("document.fonts.ready.then(()=>true)");
   assert.equal(await page.evaluate("document.querySelector('nav[aria-label=\"Listing categories\"] a[aria-current=page]').getAttribute('href')"),'/explore?type=organizations#results-heading');
   // Exercise the category controls themselves with real pointer, keyboard and first tap.
   for (const [width,touch] of [[1440,false],[390,true]]) {
@@ -417,15 +418,30 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
         document.querySelector('nav[aria-label="Listing categories"] a[href="/explore?type=${kind}#results-heading"]').scrollIntoView({block:'center',behavior:'instant'});
         requestAnimationFrame(()=>requestAnimationFrame(resolve));
       })`);
-      const point=await page.evaluate(`(()=>{const a=document.querySelector('nav[aria-label="Listing categories"] a[href="/explore?type=${kind}#results-heading"]');const r=a.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);
+      const point=await waitFor(()=>page.evaluate(`(async()=>{
+        const a=document.querySelector('nav[aria-label="Listing categories"] a[href="/explore?type=${kind}#results-heading"]');
+        if(!a) return false;
+        const first=a.getBoundingClientRect();
+        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+        const r=a.getBoundingClientRect(); const x=r.x+r.width/2,y=r.y+r.height/2;
+        const hit=document.elementFromPoint(x,y);
+        if(Math.abs(first.x-r.x)>0.5||Math.abs(first.y-r.y)>0.5||x<=0||y<=0||x>=innerWidth||y>=innerHeight||!hit||!a.contains(hit)) return false;
+        return {x,y};
+      })()`),'stable actual category pointer target '+kind+' at '+width);
       if(touch) {
         await page.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[point]});
         await page.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
       } else {
+        await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',...point});
         await page.send('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...point});
         await page.send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});
       }
-      await waitFor(()=>page.evaluate(`document.readyState==='complete'&&location.search==='?type=${kind}'&&document.querySelector('nav[aria-label="Listing categories"] a[aria-current=page]')?.getAttribute('href')==='/explore?type=${kind}#results-heading'&&document.querySelector('input[name=type]')?.value==='${kind}'`),'actual category navigation '+kind+' at '+width);
+      try {
+        await waitFor(()=>page.evaluate(`document.readyState==='complete'&&location.search==='?type=${kind}'&&document.querySelector('nav[aria-label="Listing categories"] a[aria-current=page]')?.getAttribute('href')==='/explore?type=${kind}#results-heading'&&document.querySelector('input[name=type]')?.value==='${kind}'`),'actual category navigation '+kind+' at '+width);
+      } catch(error) {
+        console.log('AFGHAN_HUB_CATEGORY_FAILURE '+JSON.stringify(await page.evaluate(`({expected:${JSON.stringify(kind)},width:innerWidth,route:location.pathname,query:location.search,hash:location.hash,ready:document.readyState,selected:document.querySelector('nav[aria-label="Listing categories"] a[aria-current=page]')?.getAttribute('href'),formType:document.querySelector('input[name=type]')?.value,activeId:document.activeElement?.id,scrollY})`)));
+        throw error;
+      }
       await waitFor(()=>page.evaluate("(()=>{const r=document.querySelector('#results-heading').getBoundingClientRect();return r.top>=0&&r.bottom<innerHeight&&document.activeElement.id==='results-heading'})()"),'Category navigation reveals and focuses results');
     }
   }
@@ -512,8 +528,10 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
       for(const type of ['keyDown','keyUp'])await page.send('Input.dispatchKeyEvent',{type,key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
       assert.ok(await page.evaluate("document.querySelector('dialog').contains(document.activeElement)"),'Native dialog contains keyboard focus');
     }
-    for(const option of ['دری','پښتو']) {
+    assert.deepEqual(await page.evaluate("[...document.querySelectorAll('dialog button')].map(b=>b.textContent).filter(label=>['English','فارسی / Persian','پښتو / Pashto','دری'].includes(label))"),['English','فارسی / Persian','پښتو / Pashto'],'Navigator exposes exactly the consolidated languages');
+    for(const [option, language] of [['فارسی / Persian','fa'],['پښتو / Pashto','ps']]) {
       await page.evaluate(`[...document.querySelectorAll('dialog button')].find(b=>b.textContent===${JSON.stringify(option)}).click()`);
+      assert.equal(await page.evaluate("document.querySelector('dialog').lang"),language);
       assert.equal(await page.evaluate("document.querySelector('dialog').dir"),'rtl');
       assert.ok(await page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'RTL drawer fits');
     }
