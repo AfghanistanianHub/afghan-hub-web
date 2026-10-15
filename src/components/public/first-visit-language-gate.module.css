@@ -1,14 +1,10 @@
 .loading { min-height: 100vh; }
 .entrance { min-height: 100svh; display: grid; place-items: center; padding: 3rem 1.25rem; position: relative; isolation: isolate; }
 .panel { width: min(100%, 700px); display: flex; flex-direction: column; align-items: center; text-align: center; }
-.mark { position: relative; width: 48px; height: 48px; margin-bottom: 1.75rem; transform: rotate(-20deg); }
-.mark span { position: absolute; width: 12px; height: 12px; border-radius: 50%; background: #7860a1; box-shadow: 0 0 25px #7860a150; }
-.mark span:nth-child(1) { top: 4px; left: 18px; }
-.mark span:nth-child(2) { top: 24px; left: 2px; }
-.mark span:nth-child(3) { top: 24px; right: 2px; }
-.mark span:nth-child(4) { bottom: 0; left: 18px; }
-.brand { font-family: var(--font-geist-sans), sans-serif; font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 750; letter-spacing: -.065em; line-height: 1.1; margin-bottom: clamp(3rem, 9vh, 6rem); color: #25222a; }
-.brand span { color: #7860a1; }
+.brand { display:inline-flex; align-items:center; gap:20px; font:clamp(2.1rem,5vw,3.5rem)/1 Georgia,'Times New Roman',serif; white-space:nowrap; color:#19152b; margin-bottom:clamp(3rem,9vh,6rem); }
+.brandMark { display:block; position:relative; width:42px; height:49px; border-radius:26px 26px 0 0; background:linear-gradient(105deg,#624291 55%,#b88ae5); flex:none; }
+.brandMark i { position:absolute; inset:11px 11px 0; background:var(--background); border-radius:18px 18px 0 0; }
+@media(max-width:560px) { .brand { gap:12px; } .brandMark { width:30px; height:35px; } .brandMark i { inset:8px 8px 0; } }
 .choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; gap: clamp(.65rem, 2vw, 1.35rem); }
 .choice { min-height: 116px; border: 1px solid #dbd3e1; border-radius: 20px; background: #ffffffcc; backdrop-filter: blur(14px); color: #29252f; display: flex; justify-content: space-between; align-items: center; padding: 1.4rem; cursor: pointer; font-size: clamp(1.1rem, 2vw, 1.45rem); font-weight: 550; transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease; }
 .choice[lang="fa"], .choice[lang="ps"] { font-family: var(--font-estedad), var(--font-vazirmatn), sans-serif; }
