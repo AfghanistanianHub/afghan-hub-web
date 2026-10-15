@@ -852,8 +852,6 @@ try {
         const row = await data(admin.from(table).select('slug').eq('id',fixture.id).maybeSingle());
         if (row) reviewDetails.push(`/${table}/${row.slug}`,`/${table}/${row.slug}/edit`,`/explore/${table}/${row.slug}`);
       }
-      const visual = memberVisual;
-      const findings = [];
       const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
       mkdirSync(visualDir, {recursive:true});
       const captureRoutes = ['/login','/login?mode=join','/forgot-password','/update-password','/','/about','/explore','/profile','/dashboard','/search','/saved','/settings','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new','/not-a-real-page'];
@@ -1124,7 +1122,6 @@ try {
   });
   await check('Missing, invalid and replayed reset links cannot establish signed-out password-change sessions', async () => {
     for(const url of [`${appUrl}/auth/confirm?type=recovery`,`${appUrl}/auth/confirm?type=recovery&token_hash=invalid-synthetic-token`,`${appUrl}/auth/callback?next=/update-password`,`${appUrl}/auth/callback?next=/update-password&code=invalid-synthetic-code`,recoveryLink]) {
-    for(const url of [`${appUrl}/auth/callback?next=/update-password`,`${appUrl}/auth/callback?next=/update-password&code=invalid-synthetic-code`,recoveryLink]) {
       await recoveryPage.send('Page.navigate',{url}); await pathname(recoveryPage,'/forgot-password');
       await until(()=>recoveryPage.evaluate(`!!document.querySelector('[role=alert]')`),'invalid reset feedback');
       await visit(recoveryPage,'/update-password'); await pathname(recoveryPage,'/login');
