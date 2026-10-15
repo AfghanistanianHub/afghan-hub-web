@@ -851,7 +851,15 @@ try {
         if(phase==='before') {
           const navigation=await visual.send('Page.navigate',{url:compareUrl+'/'});
           if(navigation.loaderId) await until(()=>visual.loadedDocuments.has(navigation.loaderId),'baseline Navigator document');
-        } else await visit(visual,'/');
+        } else {
+          await visit(visual,'/');
+          // The isolated visual browser may have no site-language preference.
+          // Enter through the real first-visit gate before testing Navigator.
+          if (await visual.evaluate(`!!document.querySelector('main button[lang="en"]') && !document.querySelector('#ai-navigator')`)) {
+            await click(visual,'main button[lang="en"]');
+          }
+          await until(()=>visual.evaluate(`!!document.querySelector('#ai-navigator select')`),'visual Navigator available after entrance');
+        }
         for (const locale of ['en','fa','ps']) {
           await select(visual,'#ai-navigator select',locale);
           await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')===${JSON.stringify(locale==='en'?'ltr':'rtl')}`),'visual Navigator language');
