@@ -255,7 +255,7 @@ async function openMemberNavigator(page) {
 }
 async function select(page, selector, value) {
   await until(() => page.evaluate(`!!document.querySelector(${JSON.stringify(selector)})`), 'select field');
-  await page.evaluate(`(() => { const field=document.querySelector(${JSON.stringify(selector)}); field.value=${JSON.stringify(value)}; field.dispatchEvent(new Event('change',{bubbles:true})); return true; })()`);
+  await page.evaluate(`(() => { const field=document.querySelector(${JSON.stringify(selector)}); Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(field,${JSON.stringify(value)}); field.dispatchEvent(new Event('input',{bubbles:true})); field.dispatchEvent(new Event('change',{bubbles:true})); return true; })()`);
 }
 async function eventStart(page) {
   await click(page, 'button[aria-label^="Select start date & time:"]');
