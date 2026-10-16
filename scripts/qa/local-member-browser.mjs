@@ -839,7 +839,6 @@ try {
         detailRoutes.push(`/${table}/${row.slug}`,`/${table}/${row.slug}/edit`,`/explore/${table}/${row.slug}`);
       }
       const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
-      mkdirSync(visualDir, {recursive:true});
       mkdirSync(visualDir, { recursive: true });
       const findings = [];
       const widths = [1440, 768, 390, 320];
