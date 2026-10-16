@@ -3,20 +3,20 @@ import {readFileSync} from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
-function load(file, localStorage) {
- const exports={};
- vm.runInNewContext(ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports,localStorage,require:name=>{if(name==='./navigator-language')return load('src/lib/assistant/navigator-language.ts',localStorage);assert.equal(name,'@/lib/i18n/site-language');return load('src/lib/i18n/site-language.ts',localStorage);}});
- const window = {localStorage, dispatchEvent() {}};
- const modules = {
-   './navigator-language': 'src/lib/assistant/navigator-language.ts',
-   './member-navigator-copy-dari': 'src/lib/assistant/member-navigator-copy-dari.ts',
-   '@/lib/i18n/site-language': 'src/lib/i18n/site-language.ts',
- };
- vm.runInNewContext(ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{
-   exports, localStorage, window, Event: class Event { constructor(type) { this.type=type; } },
-   require:name=>{assert.ok(modules[name], `Unexpected dependency: ${name}`);return load(modules[name],localStorage);},
- });
- return exports;
+function load(file, storage) {
+  const exports = {};
+  const window = { localStorage: storage, dispatchEvent() {}, addEventListener() {}, removeEventListener() {} };
+  const dependencies = {
+    '@/lib/i18n/site-language': 'src/lib/i18n/site-language.ts',
+    './navigator-language': 'src/lib/assistant/navigator-language.ts',
+  };
+  const requireModule = name => {
+    assert.ok(dependencies[name], `Unexpected module dependency: ${name}`);
+    return load(dependencies[name], storage);
+  };
+  vm.runInNewContext(ts.transpileModule(readFileSync(file,'utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,
+    {exports,localStorage:storage,window,Event:class Event{constructor(type){this.type=type}},require:requireModule});
+  return exports;
 }
 test('member Navigator exposes exactly three complete canonical resources', () => {
   const { memberNavigatorCopy: copy, memberNavigatorDialogue: dialogue, memberNavigatorPrompts: prompts, memberNavigatorLocales: locales, memberNavigatorUtility: utility } = load('src/lib/assistant/member-navigator-copy.ts');
@@ -36,10 +36,12 @@ test('legacy Navigator preference migrates to Persian without touching profile i
   const language = load('src/lib/assistant/navigator-language.ts', { getItem: (key) => values.get(key), setItem: (key, value) => values.set(key, value) });
   assert.equal(language.readNavigatorLanguagePreference(), 'fa');
   assert.equal(values.get(language.navigatorLanguagePreferenceKey), 'fa-AF'); // Legacy key remains unchanged on read.
+  // A legacy key remains readable, while the canonical site preference is normalized on save.
+  assert.equal(values.get(language.navigatorLanguagePreferenceKey), 'fa-AF');
   assert.equal(values.get('profile-languages'), 'Dari, English');
   assert.equal(language.saveNavigatorLanguagePreference('fa-AF'), 'fa');
   assert.equal(language.saveNavigatorLanguagePreference('ps'), 'ps');
-  assert.equal(language.readNavigatorLanguagePreference(), 'ps');
+  assert.equal(values.get('afghan-hub-site-language'), 'ps');
   for (const value of [null, undefined, 'invalid', {}, 'en']) assert.equal(language.normalizeNavigatorLanguage(value), 'en');
 });
 

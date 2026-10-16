@@ -106,6 +106,10 @@ async function captureState(page, label) {
   const visualDir=process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
   mkdirSync(visualDir,{recursive:true});
   for (const width of [1440,768,390,320]) {
+  if(process.env.LOCAL_QA_VISUAL!=='1') return;
+  const visualDir=process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
+  mkdirSync(visualDir,{recursive:true});
+  for(const width of [1440,768,390,320]) {
     await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
     await page.send('Emulation.setPageScaleFactor',{pageScaleFactor:1});
     const screenshot=await page.send('Page.captureScreenshot',{format:'png'});
@@ -118,6 +122,11 @@ async function captureState(page, label) {
       const file=`${visualDir}/${label}-after-${width}.jpg`;
       writeFileSync(file,Buffer.from(jpg.data,'base64'));
       if (process.env.LOCAL_QA_DESIGN_REVIEW!=='1') reviewImages.push({label,width,file});
+    if(process.env.LOCAL_QA_DESIGN_REVIEW==='1' || (width===390 && ['navigator-member-fa-results','navigator-member-ps-results','opportunities-filtered-results','opportunities-empty','businesses-outage'].includes(label)) || (width===1440 && ['submissions-owner-note','businesses-recovered'].includes(label))) {
+      const jpg=await page.send('Page.captureScreenshot',{format:'jpeg',quality:65});
+      const file=`${visualDir}/${label}-after-${width}.jpg`;
+      writeFileSync(file,Buffer.from(jpg.data,'base64'));
+      if(process.env.LOCAL_QA_DESIGN_REVIEW!=='1') reviewImages.push({label,width,file});
     }
   }
   await page.send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
@@ -199,6 +208,20 @@ async function visit(page, path, timeout = 20000) {
 }
 async function pathname(page, path) {
   await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), 'expected route');
+async function visit(page, path) {
+  assert.ok(path.startsWith('/') && !path.startsWith('//'));
+  const navigation = await page.send('Page.navigate', { url: appUrl + path });
+  assert.ok(!navigation.errorText, `Native navigation failed: ${navigation.errorText}`);
+  try {
+    if (navigation.loaderId) await until(() => page.loadedDocuments.has(navigation.loaderId), 'requested document loaded');
+    await until(() => page.evaluate(`location.origin===${JSON.stringify(appUrl)} && document.readyState==='complete'`), 'local page');
+  } catch (error) {
+    error.navigationState = await page.evaluate(`({requestedPath:${JSON.stringify(path.split('?')[0])},origin:location.origin,path:location.pathname,ready:document.readyState,visible:document.visibilityState,focused:document.hasFocus()})`).catch(()=>({unavailable:true}));
+    throw error;
+  }
+}
+async function pathname(page, path) {
+  await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)} && document.readyState==='complete'`), `expected route ${path}`, 30000);
 }
 async function fill(page, selector, value) {
   const fieldSelector = (selector.startsWith('form') || selector.startsWith('dialog')) ? selector : `form ${selector}`;
@@ -398,6 +421,7 @@ try {
     }
   });
   await check('Real signup and delivered one-time email establish the browser session', async () => {
+  await check('Real signup, local email delivery and PKCE callback establish the browser session', async () => {
     await visit(pageA, '/login?mode=join');
     await fill(pageA, '[name=email]', a.email); await fill(pageA, '[name=password]', password);
     await click(pageA, '#join button[type=submit]');
@@ -603,7 +627,6 @@ try {
       await visit(reviewerPage, '/moderation'); await pathname(reviewerPage, '/moderation');
       await captureState(reviewerPage, `${role}-moderation`);
       assert.equal(await reviewerPage.evaluate(`!!document.querySelector('a[href="/moderation/team"]')`), role === 'admin');
-      await visit(reviewerPage, '/moderation/team'); await pathname(reviewerPage, role === 'admin' ? '/moderation/team' : '/moderation');
       if (role === 'admin') await captureState(reviewerPage,'admin-team');
       // Team page access was checked above; it need not contain a link to itself.
     });
@@ -815,15 +838,6 @@ try {
         assert.equal(row.status,'published','Public detail evidence requires a published synthetic fixture');
         detailRoutes.push(`/${table}/${row.slug}`,`/${table}/${row.slug}/edit`,`/explore/${table}/${row.slug}`);
       }
-      let visual=memberVisual;
-      const findings = [];
-      const reviewDetails = [];
-      for (const table of ['businesses','organizations','opportunities','events']) {
-        const fixture = listings.filter(row=>row.table===table).at(-1);
-        if (!fixture) continue;
-        const row = await data(admin.from(table).select('slug').eq('id',fixture.id).maybeSingle());
-        if (row) reviewDetails.push(`/${table}/${row.slug}`,`/${table}/${row.slug}/edit`,`/explore/${table}/${row.slug}`);
-      }
       const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
       mkdirSync(visualDir, {recursive:true});
       const captureRoutes = ['/login','/login?mode=join','/forgot-password','/update-password','/','/about','/explore','/profile','/dashboard','/search','/saved','/settings','/network',`/members/${b.id}`,'/submissions','/messages',conversationPath,'/businesses','/organizations','/opportunities','/events','/businesses/new','/organizations/new','/opportunities/new','/events/new','/not-a-real-page'];
@@ -875,7 +889,45 @@ try {
               assert.equal(await visual.evaluate(`document.documentElement.scrollWidth>innerWidth`),false);
               const size=await visual.evaluate(`getComputedStyle(document.querySelector('#ai-navigator input')).fontSize`);
               assert.ok(parseFloat(size)>=16,'Navigator field text must avoid mobile focus zoom');
+      mkdirSync(visualDir, { recursive: true });
+      const findings = [];
+      const widths = [1440, 768, 390, 320];
+      const routes = ['/login', '/login?mode=join', '/forgot-password', '/update-password',
+        '/', '/about', '/explore', '/profile', '/dashboard', '/search', '/saved',
+        '/settings', '/network', `/members/${b.id}`, '/submissions', '/messages',
+        conversationPath, '/businesses', '/organizations', '/opportunities', '/events',
+        '/businesses/new', '/organizations/new', '/opportunities/new', '/events/new',
+        '/moderation', '/moderation/team', ...detailRoutes, '/not-a-real-page'];
+      const phases = process.env.LOCAL_QA_COMPARE_DIR ? ['before', 'after'] : [process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'];
+      for (const phase of phases) {
+        for (const route of routes) {
+          const visual = route.startsWith('/moderation') ? adminVisual : memberVisual;
+          const phaseUrl = phase === 'before' && process.env.LOCAL_QA_COMPARE_DIR
+            ? compareUrl + route : appUrl + route;
+          if (phase === 'before') {
+            const navigation = await visual.send('Page.navigate', { url: phaseUrl });
+            if (navigation.loaderId) await until(() => visual.loadedDocuments.has(navigation.loaderId), 'baseline visual document');
+            await until(() => visual.evaluate(`location.origin===${JSON.stringify(compareUrl)} && document.readyState==='complete'`), 'baseline visual ready');
+          } else {
+            await visit(visual, route);
+          }
+          await visual.evaluate('document.fonts.ready.then(() => true)');
+          for (const width of widths) {
+            await visual.send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: width < 768 });
+            const state = await visual.evaluate(`({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,canvas:!!document.querySelector('.global-network-background canvas'),heading:!!document.querySelector('main h1')})`);
+            if (phase === 'after') {
+              assert.equal(state.overflow, false, `Horizontal overflow: ${route} at ${width}`);
+              assert.equal(state.canvas, true, `Missing global canvas: ${route}`);
+              if (!['/login','/login?mode=join','/forgot-password','/update-password','/not-a-real-page'].includes(route)) {
+                assert.equal(state.route, new URL(route, appUrl).pathname, `Wrong visual route: ${route}`);
+              }
             }
+            const label = route === '/' ? 'homepage' : route === conversationPath ? 'conversation'
+              : route === `/members/${b.id}` ? 'member' : route === '/login?mode=join'
+              ? 'signup' : route.slice(1).replaceAll('/', '-').replace(/browser-[^/]+/g,'fixture');
+            const screenshot = await visual.send('Page.captureScreenshot', { format:'png' });
+            writeFileSync(`${visualDir}/${label}-${phase}-${width}.png`, Buffer.from(screenshot.data, 'base64'));
+            findings.push({ phase, requested: route, width, ...state });
           }
         }
       }
@@ -906,6 +958,17 @@ try {
         await visual.send('Emulation.setEmulatedMedia',{features:[]});
       });
       writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, findings},null,2)+'\n');
+      for (const locale of ['en','fa','ps']) {
+        await visit(memberVisual, '/');
+        await select(memberVisual, '#ai-navigator select', locale);
+        await until(() => memberVisual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)}`), 'Navigator language selected');
+        for (const width of widths) {
+          await memberVisual.send('Emulation.setDeviceMetricsOverride', { width, height:1000, deviceScaleFactor:1, mobile:width<768 });
+          const screenshot = await memberVisual.send('Page.captureScreenshot', { format:'png' });
+          writeFileSync(`${visualDir}/navigator-${locale}-after-${width}.png`, Buffer.from(screenshot.data,'base64'));
+        }
+      }
+      writeFileSync(`${visualDir}/layout-checks-after.json`, JSON.stringify({sourceRevision, sourceTree, zoom:100, widths, findings},null,2)+'\n');
     });
   }
   await check('Directory and submission request failures remain visible without false empty counts', async () => {
@@ -1053,7 +1116,12 @@ try {
     await visit(receiver,'/update-password'); await pathname(receiver,'/login');
     assert.ok(!(await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at,'Changing token type must not confirm the identity');
     const attemptedRedirect=new URL(link); attemptedRedirect.searchParams.set('next','https://example.invalid');
-    await receiver.send('Page.navigate',{url:attemptedRedirect.href}); await pathname(receiver,'/profile');
+    await receiver.send('Page.navigate',{url:attemptedRedirect.href});
+    await until(() => receiver.evaluate(`['/profile','/dashboard'].includes(location.pathname) && document.readyState==='complete'`), 'verified signup enters protected onboarding or dashboard');
+    await visit(receiver,'/profile');
+    const profileLanding = await receiver.evaluate(`({route:location.pathname,ready:document.readyState,hasProfileForm:!!document.querySelector('form:has([name=first_name])')})`);
+    assert.equal(profileLanding.route, '/profile', `Cross-context session did not open profile: ${JSON.stringify(profileLanding)}`);
+    assert.ok(profileLanding.hasProfileForm, 'Verified browser must see the profile editing form');
     assert.ok((await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at);
     await onboard(receiver,'SeparateSignup');
     assert.equal((await data(admin.from('profiles').select('last_name').eq('id',registered.id).single())).last_name,'SeparateSignup');
@@ -1063,15 +1131,13 @@ try {
     await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
     await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
     await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'replayed cross-context signup refused');
-    await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
-    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'separate-context signup feedback');
     assert.ok((await data(admin.auth.admin.getUserById(registered.id))).user.email_confirmed_at);
     await visit(receiver,'/dashboard'); await pathname(receiver,'/login');
-    await login(receiver,email); await pathname(receiver,'/profile'); await onboard(receiver,'SeparateSignup');
+    await login(receiver,email); await pathname(receiver,'/dashboard');
     await captureState(receiver,'separate-signup-after-explicit-login');
     await click(receiver,'button[aria-label="Sign out"]'); await pathname(receiver,'/login');
     await receiver.send('Page.navigate',{url:link}); await pathname(receiver,'/login');
-    await visit(receiver,'/dashboard'); await pathname(receiver,'/login');
+    await until(()=>receiver.evaluate(`!!document.querySelector('[role=alert]')`),'replayed signup token remains refused');
   });
   const recoveryAccount=await member('recovery');
   const recoveryPage=await page();

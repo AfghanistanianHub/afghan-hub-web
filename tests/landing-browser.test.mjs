@@ -183,6 +183,10 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
       const offenders = await page.evaluate(`[...document.querySelectorAll('body *')].map(el=>({tag:el.tagName,selector:el.id?'#'+el.id:el.className&&typeof el.className==='string'?'.'+el.className.trim().split(/\\s+/).slice(0,2).join('.'):el.tagName.toLowerCase(),left:Math.round(el.getBoundingClientRect().left),right:Math.round(el.getBoundingClientRect().right),scrollWidth:el.scrollWidth})).filter(el=>el.right>innerWidth+1||el.left< -1).slice(0,16)`);
       assert.fail(`Horizontal overflow at ${width}: document ${layout.scrollWidth}px; offenders ${JSON.stringify(offenders)}`);
     }
+      const overflowing = await page.evaluate(`[...document.querySelectorAll('body *')].map(el=>({el,r:el.getBoundingClientRect()})).filter(({r})=>r.width>0&&(r.right>innerWidth+1||r.left< -1)).slice(0,12).map(({el,r})=>({tag:el.tagName,className:typeof el.className==='string'?el.className.slice(0,140):'',left:Math.round(r.left),right:Math.round(r.right)}))`);
+      console.error('AFGHAN_HUB_MOBILE_OVERFLOW '+JSON.stringify({width,scrollWidth:layout.scrollWidth,overflowing}));
+    }
+    assert.ok(layout.scrollWidth <= width + 1, `Horizontal overflow at ${width}`);
     assert.equal(layout.targets.length, 5);
     assert.ok(layout.targets.every(target => target.clickable && target.height >= 44 && target.width >= 44));
     assert.equal(layout.covers,5,"Five category destinations in the introduction");

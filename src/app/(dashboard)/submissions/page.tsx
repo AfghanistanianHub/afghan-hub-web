@@ -49,7 +49,7 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
   const createHref = selected === "All" ? "/opportunities/new" : `/${selected.toLowerCase()}/new`;
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-7 sm:px-6 md:px-8 lg:px-10">
+    <main className="mx-auto w-full max-w-[1320px] px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <MemberPageHeader title="My submissions" description="Track review status and manage the content you have shared." icon={BriefcaseBusiness}>
         <Link href="/opportunities/new" className={`inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground ${focusClass}`}>New opportunity</Link>
         <Link href="/events/new" className={`inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-border bg-card px-4 py-2.5 text-sm font-semibold ${focusClass}`}>New event</Link>
@@ -62,11 +62,11 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
           return <Link key={category} href={category === "All" ? "/submissions" : `/submissions?category=${category.toLowerCase()}`} aria-current={category === selected ? "page" : undefined} className={`inline-flex min-h-11 items-center gap-2 rounded-[var(--radius-control)] px-3 py-2 text-sm font-semibold ${focusClass} ${category === selected ? "bg-secondary text-primary" : "hover:bg-muted"}`}>{category}<span className="text-xs" aria-label={unavailable ? "Count unavailable" : `${count} submissions`}>{unavailable ? "—" : count}</span></Link>;
         })}
       </nav>
-      {visible.length ? <div className="mt-4 divide-y divide-border border-y border-border bg-card">
+      {visible.length ? <div className="mt-6 grid gap-3 md:grid-cols-2">
         {visible.map((item) => {
           const presentation = getStatusPresentation(item.status);
           const StatusIcon = presentation.icon;
-          return <article key={`${item.category}-${item.id}`} className="px-4 py-5 focus-within:border-primary/50">
+          return <article key={`${item.category}-${item.id}`} className="min-w-0 rounded-[var(--radius-card)] border border-border bg-card p-5 transition-colors hover:border-primary/40 focus-within:border-primary/50 sm:p-6">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0 basis-full sm:basis-auto sm:flex-1"><p className="text-xs font-medium text-muted-foreground">{item.type}</p><Link href={item.path} className={`mt-1 inline-flex min-h-11 items-center break-words text-lg font-semibold hover:text-primary ${focusClass}`}>{item.title}</Link><p className="mt-1 text-xs text-muted-foreground">Updated <time dateTime={item.updatedAt}>{formatDate(item.updatedAt)}</time></p></div>
               <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${presentation.className}`}><StatusIcon aria-hidden="true" className="size-3.5" />{presentation.label}</span>
