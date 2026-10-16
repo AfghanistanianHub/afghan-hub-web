@@ -863,7 +863,7 @@ try {
         await until(()=>visual.evaluate(`Object.keys(document.querySelector('#ai-navigator select') || {}).some(key => key.startsWith('__reactProps'))`),'visual Navigator React hydration');
         for (const locale of ['en','fa','ps']) {
           await select(visual,'#ai-navigator select',locale);
-          await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')===${JSON.stringify(locale==='en'?'ltr':'rtl')}`),'visual Navigator language');
+          await until(()=>visual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)} && document.querySelector('#ai-navigator')?.getAttribute('dir')===${JSON.stringify(locale==='en'?'ltr':'rtl')}`),`visual Navigator language ${locale} (${phase})`);
           for(const width of [1440,768,390,320]) {
             await visual.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
             await visual.evaluate(`document.querySelector('#ai-navigator').scrollIntoView({block:'center'})`);
