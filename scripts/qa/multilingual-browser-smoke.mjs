@@ -5,6 +5,18 @@ import { mkdir } from "node:fs/promises";
 const base = process.env.BROWSER_BASE_URL ?? "http://127.0.0.1:3000";
 const output = "artifacts/multilingual-browser";
 await mkdir(output, { recursive: true });
+for (const locale of ["en", "fa", "ps"]) {
+  const response = await fetch(`${base}/${locale}`);
+  assert.equal(response.status, 200, `locale homepage HTTP status: ${locale}`);
+  const html = await response.text();
+  const heroStart = html.lastIndexOf("<section", html.indexOf('aria-labelledby="landing-title"'));
+  const heroEnd = html.indexOf("</section>", heroStart);
+  const hero = html.slice(heroStart, heroEnd);
+  const expected = locale === "en" ? "One network." : locale === "fa" ? "یک شبکه." : "یوه شبکه.";
+  assert.ok(hero.includes(expected), `homepage hero must be server-rendered in ${locale}`);
+  assert.ok(hero.includes(`lang="${locale}"`), `homepage hero language attribute: ${locale}`);
+  assert.ok(hero.includes(`dir="${locale === "en" ? "ltr" : "rtl"}"`), `homepage hero direction: ${locale}`);
+}
 const browser = await chromium.launch({ headless: true });
 let failures = [];
 try {
