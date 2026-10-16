@@ -50,9 +50,9 @@ function GuideHeight({ children }: { children: ReactNode }) {
   return <div ref={container} className={styles.guideHeight}><div ref={content}>{children}</div></div>;
 }
 
-export function HomepageNavigator() {
+export function HomepageNavigator({ initialLanguage }: { initialLanguage?: NavigatorLanguage }) {
   const params = useSearchParams();
-  const savedLanguage = useSyncExternalStore(subscribeNavigatorLanguagePreference, readNavigatorLanguagePreference, serverNavigatorLanguagePreference);
+  const savedLanguage = useSyncExternalStore(subscribeNavigatorLanguagePreference, readNavigatorLanguagePreference, () => initialLanguage ?? serverNavigatorLanguagePreference());
   const [selectedLanguage, setLanguage] = useState<NavigatorLanguage | null>(null);
   const language = selectedLanguage ?? savedLanguage;
   const t = navigatorCopy[language];

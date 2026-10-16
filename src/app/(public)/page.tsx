@@ -1,13 +1,5 @@
 import type { Metadata } from "next";
-import { HomepageMotion } from "@/components/public/homepage-motion";
-import { ScrollCategoryIntroduction } from "@/components/public/scroll-category-introduction";
-import { LocalizedHomepageHero } from "@/components/public/localized-homepage-hero";
-import { LocalizedHomepageSteps } from "@/components/public/localized-homepage-steps";
-import { LocalizedHomepagePaths } from "@/components/public/localized-homepage-paths";
-import { LocalizedHomepageValue } from "@/components/public/localized-homepage-value";
-import { LocalizedHomepageFinal } from "@/components/public/localized-homepage-final";
-import { HomepageNavigator } from "@/components/assistant/homepage-navigator";
-import styles from "./landing.module.css";
+import { PublicHomeContent } from "@/components/public/public-home-content";
 
 const description = "Afghan Hub connects people, businesses, organizations, opportunities, and events — creating space for meaningful connections, collaboration, and shared progress.";
 export const metadata: Metadata = {
@@ -20,20 +12,5 @@ export const metadata: Metadata = {
 
 
 export default async function PublicHome() {
-  return <main id="main-content" className={styles.page}>
-    <HomepageMotion />
-    <LocalizedHomepageHero />
-
-    <HomepageNavigator />
-
-    <LocalizedHomepageSteps />
-
-    <ScrollCategoryIntroduction />
-
-    <LocalizedHomepagePaths />
-
-    <LocalizedHomepageValue />
-
-    <LocalizedHomepageFinal />
-  </main>;
+  return <PublicHomeContent initialLanguage="en" />;
 }

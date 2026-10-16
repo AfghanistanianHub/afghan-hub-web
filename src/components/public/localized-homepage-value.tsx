@@ -25,8 +25,8 @@ const copy = {
 
 const icons = [UsersRound, Share2, Globe2] as const;
 
-export function LocalizedHomepageValue() {
-  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
+export function LocalizedHomepageValue({ initialLanguage = "en" }: { initialLanguage?: SiteLanguage }) {
+  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => initialLanguage);
   const t = copy[language];
   return <section className={styles.value} aria-labelledby="value-heading" lang={language} dir={language === "en" ? "ltr" : "rtl"}>
     <div><h2 id="value-heading">{t.title}</h2><p>{t.description}</p></div>

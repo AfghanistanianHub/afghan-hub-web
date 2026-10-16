@@ -16,6 +16,11 @@ export function normalizeSiteLanguage(value: unknown): SiteLanguage {
 export function readSiteLanguagePreference(): SiteLanguage {
   if (typeof window === "undefined") return "en";
   if (volatileLanguage !== null) return volatileLanguage;
+  const routeLocale = window.location.pathname.match(/^\/(en|fa|ps)\/?$/)?.[1];
+  if (routeLocale === "en" || routeLocale === "fa" || routeLocale === "ps") {
+    volatileLanguage = routeLocale;
+    return routeLocale;
+  }
   try {
     const selected = window.localStorage.getItem(siteLanguagePreferenceKey);
     const legacy = window.localStorage.getItem("afghan-hub-navigator-language");
