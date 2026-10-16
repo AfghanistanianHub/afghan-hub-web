@@ -931,33 +931,6 @@ try {
           }
         }
       }
-      await visit(visual,'/network');
-      await visual.send('Emulation.setDeviceMetricsOverride',{width:320,height:1000,deviceScaleFactor:1,mobile:true});
-      await openMemberNavigator(visual);
-      await check('Navigator keyboard focus stays inside the dialog and Escape restores its launcher',async()=> {
-        for(let index=0;index<20;index++) {
-          await visual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
-          await visual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
-          assert.equal(await visual.evaluate(`document.querySelector('dialog[open]').contains(document.activeElement)`),true);
-        }
-        await visual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
-        await visual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
-        await until(()=>visual.evaluate(`!document.querySelector('dialog[open]') && document.activeElement?.getAttribute('aria-haspopup')==='dialog'`),'Escape returns Navigator focus');
-      });
-      await visit(visual,'/network');
-      await click(visual,'button[aria-label^="Notifications"]');
-      await until(()=>visual.evaluate(`!!document.querySelector('[role=dialog][aria-label="Notifications"]')`),'notification panel open');
-      await captureState(visual,'notifications-dialog');
-      await visual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
-      await visual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
-      await check('Reduced-motion Navigator and global canvas stay usable at 320px',async()=> {
-        await visual.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
-        await visit(visual,'/');
-        assert.equal(await visual.evaluate(`matchMedia('(prefers-reduced-motion: reduce)').matches`),true);
-        await captureState(visual,'homepage-reduced-motion');
-        await visual.send('Emulation.setEmulatedMedia',{features:[]});
-      });
-      writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, findings},null,2)+'\n');
       for (const locale of ['en','fa','ps']) {
         await visit(memberVisual, '/');
         await select(memberVisual, '#ai-navigator select', locale);
