@@ -929,7 +929,6 @@ try {
       for (const route of ['/businesses','/organizations','/opportunities','/events','/submissions']) {
         const started = Date.now();
         try {
-          await visit(pageA, route);
           // Middleware, access-context and workspace reads each have their own
           // 10-second request deadline. Bound this whole outage navigation too;
           // a 20-second document limit cannot cover those sequential phases.
