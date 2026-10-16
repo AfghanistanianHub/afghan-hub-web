@@ -6,8 +6,8 @@ import ts from "typescript";
 const exports = {};
 vm.runInNewContext(ts.transpileModule(fs.readFileSync(new URL("../src/lib/public-catalog.ts", import.meta.url), "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, { exports });
 test("public route matching does not include member routes or similar prefixes", () => {
-  for (const path of ["/robots.txt", "/sitemap.xml", "/", "/about", "/privacy", "/terms", "/support", "/explore", "/explore/events/test"]) assert.equal(exports.isPublicPath(path), true);
-  for (const path of ["/robots.txt/private", "/sitemap.xml/private", "/dashboard", "/members/member", "/messages", "/events/test", "/explorer", "/about-private", "/privacy/private", "/privacy-settings", "/terms/private", "/terms-private", "/support/private", "/support-admin", "/moderation"]) assert.equal(exports.isPublicPath(path), false);
+  for (const path of ["/robots.txt", "/sitemap.xml", "/", "/en", "/fa", "/ps", "/about", "/privacy", "/terms", "/support", "/explore", "/explore/events/test"]) assert.equal(exports.isPublicPath(path), true);
+  for (const path of ["/robots.txt/private", "/sitemap.xml/private", "/dashboard", "/en/private", "/fa/settings", "/ps/admin", "/members/member", "/messages", "/events/test", "/explorer", "/about-private", "/privacy/private", "/privacy-settings", "/terms/private", "/terms-private", "/support/private", "/support-admin", "/moderation"]) assert.equal(exports.isPublicPath(path), false);
 });
 test("category and pagination inputs reject prototype names and malformed pages", () => {
   assert.equal(exports.isPublicKind("events"), true);
