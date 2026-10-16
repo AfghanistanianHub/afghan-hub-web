@@ -65,6 +65,7 @@ try {
       const hero = page.locator("section[aria-labelledby='landing-title']");
       await hero.locator("h1[data-hero-headline]").waitFor();
       await page.waitForFunction(lang => document.querySelector("section[aria-labelledby='landing-title']")?.getAttribute("lang") === lang, language);
+      await page.waitForFunction(lang => document.documentElement.lang === lang && document.documentElement.dir === (lang === "en" ? "ltr" : "rtl"), language);
       await page.evaluate(() => document.fonts.ready);
       const state = await hero.evaluate(element => {
         const headline = element.querySelector("h1[data-hero-headline]");
