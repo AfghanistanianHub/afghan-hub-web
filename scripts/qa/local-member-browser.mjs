@@ -842,6 +842,7 @@ try {
       mkdirSync(visualDir, {recursive:true});
       const findings = [];
       const widths = [1440,768,390,320];
+      // Keep route captures in one pass; locale-specific Navigator captures follow below.
       const routes = ['/login', '/login?mode=join', '/forgot-password', '/update-password',
         '/', '/about', '/explore', '/profile', '/dashboard', '/search', '/saved',
         '/settings', '/network', `/members/${b.id}`, '/submissions', '/messages',
