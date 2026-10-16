@@ -19,6 +19,7 @@ try {
     assert.equal(await page.locator("header select").count(), 0, "Public navigation must stay hidden until language selection");
     assert.equal(await page.locator('button[lang="en"], button[lang="fa"], button[lang="ps"]').count(), 3);
     await page.getByRole("button", {name: /English/}).click();
+    await page.waitForURL(url => url.pathname === "/en", { timeout: 45000 });
     await page.locator("header select").first().waitFor();
     assert.equal(await page.evaluate(() => localStorage.getItem("afghan-hub-site-language")), "en");
     await page.reload({waitUntil:"domcontentloaded"});
@@ -35,7 +36,10 @@ try {
       await direct.close();
     }
     for (const language of ["en", "fa", "ps"]) {
-      await page.locator("header select").first().selectOption(language);
+      if (new URL(page.url()).pathname !== `/${language}`) {
+        await page.locator("header select").first().selectOption(language);
+        await page.waitForURL(url => url.pathname === `/${language}`, { timeout: 45000 });
+      }
       const hero = page.locator("section[aria-labelledby='landing-title']");
       await hero.locator("h1[data-hero-headline]").waitFor();
       await page.waitForFunction(lang => document.querySelector("section[aria-labelledby='landing-title']")?.getAttribute("lang") === lang, language);
