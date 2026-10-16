@@ -28,8 +28,8 @@ const content = {
 
 const icons = [Search, Share2, CalendarDays, ChartNoAxesColumnIncreasing] as const;
 
-export function LocalizedHomepageSteps() {
-  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
+export function LocalizedHomepageSteps({ initialLanguage = "en" }: { initialLanguage?: SiteLanguage }) {
+  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => initialLanguage);
   const copy = content[language];
   return <section id="how-it-works" className={styles.orientation} aria-labelledby="how-heading" lang={language} dir={language === "en" ? "ltr" : "rtl"}>
     <div><h2 id="how-heading">{copy.title}</h2><p>{copy.subtitle}</p></div>
