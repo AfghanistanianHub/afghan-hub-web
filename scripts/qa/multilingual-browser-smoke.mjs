@@ -20,6 +20,16 @@ try {
     assert.equal(await page.locator('button[lang="en"], button[lang="fa"], button[lang="ps"]').count(), 3);
     await page.getByRole("button", {name: /English/}).click();
     await page.waitForURL(url => url.pathname === "/en", { timeout: 45000 });
+    const entryState = await page.evaluate(() => ({
+      url: location.href,
+      title: document.title,
+      htmlLang: document.documentElement.lang,
+      headerCount: document.querySelectorAll("header").length,
+      selectCount: document.querySelectorAll("header select").length,
+      bodyText: document.body.innerText.slice(0, 700),
+    }));
+    console.log(JSON.stringify({ viewport: viewport.name, localeEntry: entryState }));
+    await page.screenshot({ path: `${output}/${viewport.name}-locale-entry.png`, fullPage: true });
     await page.locator("header select").first().waitFor();
     assert.equal(await page.evaluate(() => localStorage.getItem("afghan-hub-site-language")), "en");
     await page.reload({waitUntil:"domcontentloaded"});
