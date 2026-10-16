@@ -155,8 +155,8 @@
 /* Focused authentication: one task column, not a vacant illustration panel. */
 .auth-page { display:flex; flex-direction:column; padding:clamp(1.25rem,4vw,3rem); }
 .auth-brand { width:100%; max-width:72rem; margin-inline:auto; }
-.auth-form-region { display:flex; flex:1; justify-content:center; align-items:center; padding-block:clamp(2.5rem,7vh,5rem); }
-.auth-form-region > div { background:var(--card); border:1px solid var(--border-subtle); border-radius:var(--radius-card); padding:clamp(1.5rem,4vw,2.5rem); box-shadow:var(--shadow-surface); max-width:32rem; }
+.auth-form-region { display:flex; flex:1; justify-content:center; align-items:center; padding-block:clamp(3rem,8vh,6rem); }
+.auth-form-region > div { width:100%; max-width:32rem; background:transparent; border:0; border-radius:0; padding:clamp(1rem,3vw,2rem) 0; box-shadow:none; }
 @media(max-width:479px) { .auth-form-region > div { padding:1.25rem; } .auth-form-region { padding-block:2rem; } }
 
 /* Shared member rhythm leaves task cards intact and caps oversized page widths. */
@@ -260,4 +260,22 @@
 @layer utilities {
   .workspace-heading { font-size:1.875rem; font-weight:500; line-height:1.2; letter-spacing:-0.025em; color:var(--foreground); }
   .workspace-surface { border:1px solid var(--border); border-radius:var(--radius); background:var(--card); box-shadow:var(--shadow-surface); }
+}
+
+/* Open editorial hierarchy for member catalogue pages. Keep form panels distinct. */
+.member-shell [data-member-page-header] + form,
+.member-shell [data-member-page-header] + section form {
+  scroll-margin-block-start: 6rem;
+}
+.member-shell [data-member-page-header] h1 {
+  overflow-wrap: anywhere;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .member-shell [data-member-page-header] {
+    animation: member-header-enter 550ms cubic-bezier(.22,.68,.3,1) both;
+  }
+}
+@keyframes member-header-enter {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
 }

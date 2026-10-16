@@ -79,3 +79,16 @@
   .languageControl select { max-width:112px; font-size:12px; }
   .header:dir(rtl) .mobile nav a { text-align:start; }
 }
+
+/* The 320px navigation must fit its brand, locale and menu without scrolling.
+   Search stays available from the opened mobile menu at this breakpoint. */
+@media (max-width:359px) {
+  .bar { padding-inline:12px; gap:4px; }
+  .brand { font-size:18px; gap:6px; }
+  .brandMark { width:20px; height:24px; flex-shrink:0; }
+  .account { gap:0; min-width:0; }
+  .account .search { display:none; }
+  .languageControl select { max-width:96px; padding-inline:9px 27px; background-position:right 8px center; background-size:14px 14px; }
+  .languageControl select:dir(rtl) { padding-inline:27px 9px; background-position:left 8px center; }
+  .mobile { flex-shrink:0; }
+}
