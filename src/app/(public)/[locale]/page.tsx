@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import PublicHome from "../page";
+import { PublicHomeContent } from "@/components/public/public-home-content";
 import { PublicLocaleSync } from "@/components/i18n/public-locale-sync";
 import type { SiteLanguage } from "@/lib/i18n/site-language";
 
@@ -35,5 +35,5 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function LocaleHomepage({ params }: { params: Promise<{ locale: string }> }) {
   const locale = resolveLocale((await params).locale);
   if (!locale) notFound();
-  return <><PublicLocaleSync locale={locale} /><PublicHome /></>;
+  return <><PublicLocaleSync locale={locale} /><PublicHomeContent initialLanguage={locale} /></>;
 }
