@@ -163,6 +163,13 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   console.log("AFGHAN_HUB_SANDBOX_VERIFIED Seccomp-BPF enabled; no sandbox-disabling launch flags.");
   const axeSource = require("axe-core").source;
   const screenshots = [];
+  // A new visitor sees the language entrance first. Choose English through the
+  // actual UI before exercising the existing homepage layout and motion suite.
+  await page.send("Page.navigate", {url:appUrl});
+  await waitFor(() => page.evaluate("!!document.querySelector('main button[lang=en]')"), "first-visit language entrance");
+  assert.equal(await page.evaluate("document.querySelector('[data-community-node]')===null"), true, "Homepage stays hidden until language selection");
+  await page.evaluate("document.querySelector('main button[lang=en]').click()");
+  await waitFor(() => page.evaluate("!!document.querySelector('[data-community-node]')"), "homepage after language selection");
   // Approved living network: meaningful destinations, stable bounds and reduced motion.
   await page.send("Emulation.setScrollbarsHidden", {hidden:true});
   for (const width of [320,390,768,1024,1280,1440]) {
@@ -173,6 +180,9 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     await delay(950);
     const layout = await page.evaluate(layoutExpression);
     if (layout.scrollWidth > width + 1) {
+      const offenders = await page.evaluate(`[...document.querySelectorAll('body *')].map(el=>({tag:el.tagName,selector:el.id?'#'+el.id:el.className&&typeof el.className==='string'?'.'+el.className.trim().split(/\\s+/).slice(0,2).join('.'):el.tagName.toLowerCase(),left:Math.round(el.getBoundingClientRect().left),right:Math.round(el.getBoundingClientRect().right),scrollWidth:el.scrollWidth})).filter(el=>el.right>innerWidth+1||el.left< -1).slice(0,16)`);
+      assert.fail(`Horizontal overflow at ${width}: document ${layout.scrollWidth}px; offenders ${JSON.stringify(offenders)}`);
+    }
       const overflowing = await page.evaluate(`[...document.querySelectorAll('body *')].map(el=>({el,r:el.getBoundingClientRect()})).filter(({r})=>r.width>0&&(r.right>innerWidth+1||r.left< -1)).slice(0,12).map(({el,r})=>({tag:el.tagName,className:typeof el.className==='string'?el.className.slice(0,140):'',left:Math.round(r.left),right:Math.round(r.right)}))`);
       console.error('AFGHAN_HUB_MOBILE_OVERFLOW '+JSON.stringify({width,scrollWidth:layout.scrollWidth,overflowing}));
     }

@@ -14,6 +14,26 @@ try {
     const errors = [];
     page.on("pageerror", error => errors.push(error.message));
     await page.goto(base, { waitUntil: "domcontentloaded", timeout: 45000 });
+    // A brand-new browser sees exactly the language entrance before homepage controls.
+    await page.getByRole("button", {name: /English/}).waitFor();
+    assert.equal(await page.locator("header select").count(), 0, "Public navigation must stay hidden until language selection");
+    assert.equal(await page.locator('button[lang="en"], button[lang="fa"], button[lang="ps"]').count(), 3);
+    await page.getByRole("button", {name: /English/}).click();
+    await page.locator("header select").first().waitFor();
+    assert.equal(await page.evaluate(() => localStorage.getItem("afghan-hub-site-language")), "en");
+    await page.reload({waitUntil:"domcontentloaded"});
+    await page.locator("header select").first().waitFor();
+    assert.equal(await page.locator('button[lang="en"]').count(), 0, "Returning visitors bypass entrance");
+    // An internal deep link remains accessible without any prior language preference.
+    const direct = await browser.newContext({viewport, reducedMotion:"reduce"});
+    try {
+      const linked = await direct.newPage();
+      await linked.goto(base + "/about", {waitUntil:"domcontentloaded"});
+      await linked.locator("main").first().waitFor();
+      assert.equal(await linked.locator('button[lang="en"]').count(), 0, "Deep links bypass entrance");
+    } finally {
+      await direct.close();
+    }
     for (const language of ["en", "fa", "ps"]) {
       await page.locator("header select").first().selectOption(language);
       const hero = page.locator("section[aria-labelledby='landing-title']");
