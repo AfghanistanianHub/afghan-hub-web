@@ -18,6 +18,11 @@ const publicHome = fs.readFileSync(
   new URL("../src/app/(public)/page.tsx", import.meta.url),
   "utf8",
 );
+// The homepage body moved into PublicHomeContent; the route page only supplies metadata.
+const publicHomeContent = fs.readFileSync(
+  new URL("../src/components/public/public-home-content.tsx", import.meta.url),
+  "utf8",
+);
 
 test("dashboard exposes community-wide goal-based navigation", () => {
   for (const label of [
@@ -51,7 +56,7 @@ test("search empty state offers visual goal navigation instead of a dead end", (
 test("public landing exposes all five community areas and discovery paths", () => {
   assert.match(publicHome, /One network/);
   assert.match(publicHome, /Many ways to/);
-  assert.match(publicHome, /<ScrollCategoryIntroduction \/>/);
+  assert.match(publicHomeContent, /<ScrollCategoryIntroduction\b/);
   const introduction = fs.readFileSync(new URL("../src/components/public/scroll-category-introduction.tsx", import.meta.url), "utf8");
   assert.match(introduction, /communityAreas/);
   assert.match(introduction, /href=\{area.href\}/);

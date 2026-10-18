@@ -5,7 +5,7 @@ import vm from 'node:vm';
 import ts from 'typescript';
 function load(file, storage) {
   const exports = {};
-  const window = { localStorage: storage, dispatchEvent() {}, addEventListener() {}, removeEventListener() {} };
+  const window = { location: { pathname: "/" }, localStorage: storage, dispatchEvent() {}, addEventListener() {}, removeEventListener() {} };
   const dependencies = {
     '@/lib/i18n/site-language': 'src/lib/i18n/site-language.ts',
     './navigator-language': 'src/lib/assistant/navigator-language.ts',
