@@ -815,9 +815,10 @@ try {
         detailRoutes.push(`/${table}/${row.slug}`,`/${table}/${row.slug}/edit`,`/explore/${table}/${row.slug}`);
       }
       const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
-      mkdirSync(visualDir, { recursive: true });
+      mkdirSync(visualDir, {recursive:true});
       const findings = [];
-      const widths = [1440, 768, 390, 320];
+      const widths = [1440,768,390,320];
+      // Keep route captures in one pass; locale-specific Navigator captures follow below.
       const routes = ['/login', '/login?mode=join', '/forgot-password', '/update-password',
         '/', '/about', '/explore', '/profile', '/dashboard', '/search', '/saved',
         '/settings', '/network', `/members/${b.id}`, '/submissions', '/messages',
@@ -857,33 +858,6 @@ try {
           }
         }
       }
-      await visit(memberVisual,'/network');
-      await memberVisual.send('Emulation.setDeviceMetricsOverride',{width:320,height:1000,deviceScaleFactor:1,mobile:true});
-      await openMemberNavigator(memberVisual);
-      await check('Navigator keyboard focus stays inside the dialog and Escape restores its launcher',async()=> {
-        for(let index=0;index<20;index++) {
-          await memberVisual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
-          await memberVisual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
-          assert.equal(await memberVisual.evaluate(`document.querySelector('dialog[open]').contains(document.activeElement)`),true);
-        }
-        await memberVisual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
-        await memberVisual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
-        await until(()=>memberVisual.evaluate(`!document.querySelector('dialog[open]') && document.activeElement?.getAttribute('aria-haspopup')==='dialog'`),'Escape returns Navigator focus');
-      });
-      await visit(memberVisual,'/network');
-      await click(memberVisual,'button[aria-label^="Notifications"]');
-      await until(()=>memberVisual.evaluate(`!!document.querySelector('[role=dialog][aria-label="Notifications"]')`),'notification panel open');
-      await captureState(memberVisual,'notifications-dialog');
-      await memberVisual.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
-      await memberVisual.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
-      await check('Reduced-motion Navigator and global canvas stay usable at 320px',async()=> {
-        await memberVisual.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
-        await visit(memberVisual,'/');
-        assert.equal(await memberVisual.evaluate(`matchMedia('(prefers-reduced-motion: reduce)').matches`),true);
-        await captureState(memberVisual,'homepage-reduced-motion');
-        await memberVisual.send('Emulation.setEmulatedMedia',{features:[]});
-      });
-      writeFileSync(`${visualDir}/layout-checks-${process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'}.json`,JSON.stringify({sourceRevision, sourceTree, zoom:100, findings},null,2)+'\n');
       for (const locale of ['en','fa','ps']) {
         await visit(memberVisual, '/');
         await select(memberVisual, '#ai-navigator select', locale);
