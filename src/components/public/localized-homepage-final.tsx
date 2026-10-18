@@ -12,8 +12,8 @@ const copy = {
   ps: { title: "د راتلونکي په جوړولو کې برخه واخلئ.", description: "له افغان هب سره یوځای شئ او د یوې تړلې، ملاتړې او خوځنده ټولنې په جوړولو کې ونډه واخلئ.", join: "پیل وکړئ", explore: "پلېټفارم وپلټئ" },
 } as const satisfies Record<SiteLanguage, Record<string, string>>;
 
-export function LocalizedHomepageFinal() {
-  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
+export function LocalizedHomepageFinal({ initialLanguage = "en" }: { initialLanguage?: SiteLanguage }) {
+  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => initialLanguage);
   const t = copy[language];
   const Arrow = language === "en" ? ArrowRight : ArrowLeft;
   return <section className={styles.final} data-home-finale aria-labelledby="join-heading" lang={language} dir={language === "en" ? "ltr" : "rtl"}>

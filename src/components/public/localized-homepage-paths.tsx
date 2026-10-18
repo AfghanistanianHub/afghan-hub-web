@@ -13,8 +13,8 @@ const copy = {
 
 const queries = ["Meet people", "Grow my work or business", "Find opportunities", "Connect with organizations", "Artists & Creatives", "Explore events"] as const;
 
-export function LocalizedHomepagePaths() {
-  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
+export function LocalizedHomepagePaths({ initialLanguage = "en" }: { initialLanguage?: SiteLanguage }) {
+  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => initialLanguage);
   const t = copy[language];
   return <section className={styles.paths} aria-labelledby="paths-heading" lang={language} dir={language === "en" ? "ltr" : "rtl"}>
     <div><p className={styles.eyebrow}>{t.eyebrow}</p><h2 id="paths-heading">{t.title}</h2><p>{t.description}</p></div>

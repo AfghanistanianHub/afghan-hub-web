@@ -37,8 +37,8 @@ const heroCopy = {
   },
 } as const satisfies Record<SiteLanguage, Record<string, string>>;
 
-export function LocalizedHomepageHero() {
-  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
+export function LocalizedHomepageHero({ initialLanguage = "en" }: { initialLanguage?: SiteLanguage }) {
+  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => initialLanguage);
   const copy = heroCopy[language];
   const Arrow = language === "en" ? ArrowRight : ArrowLeft;
   return <section className={styles.hero} aria-labelledby="landing-title" lang={language} dir={language === "en" ? "ltr" : "rtl"}>

@@ -37,6 +37,7 @@ export function FirstVisitLanguageGate({ children }: { children: ReactNode }) {
   function choose(language: SiteLanguage) {
     saveSiteLanguagePreference(language);
     setChosenThisSession(true);
+    window.location.assign(`/${language}`);
   }
 
   return (

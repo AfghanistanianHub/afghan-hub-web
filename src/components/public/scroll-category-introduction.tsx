@@ -20,8 +20,8 @@ const descriptions = {
 
 const areas = categoryOrder.map(key => communityAreas.find(area => area.key === key)!);
 
-export function ScrollCategoryIntroduction() {
-  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
+export function ScrollCategoryIntroduction({ initialLanguage = "en" }: { initialLanguage?: SiteLanguage }) {
+  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => initialLanguage);
   const copy = getSharedUiCopy(language);
   const t = translated[language];
   const sectionRef = useRef<HTMLElement>(null);
