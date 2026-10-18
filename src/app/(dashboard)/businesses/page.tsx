@@ -3,7 +3,7 @@ import { Building2 } from "lucide-react";
 import { BusinessDirectory } from "@/components/businesses/business-directory";
 import { MemberPageHeader, DirectoryEmptyState } from "@/components/catalog/member-page-header";
 import { createClient } from "@/lib/supabase/server";
-import { catalogCheckboxInputClass, catalogCheckboxLabelClass, catalogClearClass, catalogFieldClass, catalogFilterPanelClass, catalogSubmitClass } from "@/components/catalog/catalog-filter-styles";
+import { catalogCheckboxInputClass, catalogCheckboxLabelClass, catalogClearClass, catalogFieldClass, catalogFilterPanelClass, catalogPageContainerClass, catalogSubmitClass } from "@/components/catalog/catalog-filter-styles";
 
 type BusinessesPageProps = { searchParams: Promise<{ q?: string | string[]; category?: string | string[]; city?: string | string[]; hiring?: string | string[]; verified?: string | string[] }> };
 function getSearchValue(value: string | string[] | undefined, maxLength = 100) { return typeof value === "string" ? value.trim().slice(0, maxLength) : ""; }
@@ -27,7 +27,7 @@ export default async function BusinessesPage({ searchParams }: BusinessesPagePro
   const hasFilters = Boolean(search || category || city || hiring || verified);
 
   return (
-    <main className="mx-auto w-full max-w-[1500px] px-4 py-7 sm:px-6 md:px-8 lg:px-10 xl:px-12">
+    <main className={catalogPageContainerClass}>
       <MemberPageHeader title="Discover businesses" description="Support Afghan-owned businesses, services and entrepreneurs." icon={Building2}><Link href="/businesses/new" className={catalogSubmitClass}>Create business</Link></MemberPageHeader>
       <form action="/businesses" method="get" className={`${catalogFilterPanelClass} md:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_auto_auto_auto]`}>
         <label className="grid gap-2 text-sm font-medium">Search businesses<input type="search" name="q" defaultValue={search} placeholder="Business name" className={catalogFieldClass} /></label>

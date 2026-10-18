@@ -10,6 +10,7 @@ import {
   catalogClearClass,
   catalogFieldClass,
   catalogFilterPanelClass,
+  catalogPageContainerClass,
   catalogSubmitClass,
 } from "@/components/catalog/catalog-filter-styles";
 
@@ -123,7 +124,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
   const hasFilters = Boolean(search || city || type !== "all" || format !== "all");
 
   return (
-    <main data-illustration-focus-scope className="mx-auto w-full max-w-[1500px] px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
+    <main data-illustration-focus-scope className={catalogPageContainerClass}>
       <MemberPageHeader title="Opportunities" description="Find jobs, volunteering, scholarships, mentorship and community opportunities." icon={BriefcaseBusiness}><Link href="/opportunities/new" className={catalogSubmitClass}>Post opportunity</Link></MemberPageHeader>
 
       <form
@@ -205,7 +206,8 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
         ) : null}
       </div>
 
-      <div className="mt-4 divide-y divide-border border-y border-border bg-card">
+      {/* The bordered card wraps results only; the empty state keeps the page's shared panel rhythm. */}
+      <div className={opportunities?.length ? "mt-4 divide-y divide-border border-y border-border bg-card" : "mt-4"}>
         {error ? (
           <div role="alert" aria-live="assertive" className="relative overflow-hidden rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.05] p-8 text-center"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-destructive/[0.06] blur-3xl"/>
             <h2 className="text-xl font-semibold text-destructive">We could not load opportunities</h2>
