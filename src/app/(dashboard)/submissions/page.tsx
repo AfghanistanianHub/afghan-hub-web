@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BriefcaseBusiness, CircleCheck, Clock3, Pencil, XCircle } from "lucide-react";
 import { MemberPageHeader, DirectoryEmptyState } from "@/components/catalog/member-page-header";
+import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import { getUtcDateKey, hasOpportunityDeadlinePassed } from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
 
@@ -49,7 +50,7 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
   const createHref = selected === "All" ? "/opportunities/new" : `/${selected.toLowerCase()}/new`;
 
   return (
-    <main className="mx-auto w-full max-w-[1320px] px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
+    <main className={catalogPageContainerClass}>
       <MemberPageHeader title="My submissions" description="Track review status and manage the content you have shared." icon={BriefcaseBusiness}>
         <Link href="/opportunities/new" className={`inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground ${focusClass}`}>New opportunity</Link>
         <Link href="/events/new" className={`inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-border bg-card px-4 py-2.5 text-sm font-semibold ${focusClass}`}>New event</Link>

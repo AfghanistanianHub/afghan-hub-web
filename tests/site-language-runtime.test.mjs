@@ -5,6 +5,8 @@ async function setup({ blocked = false, initial = {} } = {}) {
   const store = new Map(Object.entries(initial));
   const listeners = new Map();
   const window = {
+    // Browser windows always expose location; route-locale detection reads its pathname.
+    location: { pathname: "/" },
     localStorage: {
       getItem(key) {
         if (blocked) throw new Error("Storage blocked");

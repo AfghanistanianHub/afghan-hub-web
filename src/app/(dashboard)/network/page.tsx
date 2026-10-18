@@ -5,6 +5,7 @@ import {
   UserPlus,
   UsersRound,
 } from "lucide-react";
+import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import { ConnectionRequests } from "@/components/network/connection-requests";
 import { MemberDirectory } from "@/components/network/member-directory";
 import { MyConnections } from "@/components/network/my-connections";
@@ -120,9 +121,9 @@ export default async function NetworkPage() {
   return (
     <main
       data-illustration-focus-scope
-      className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12"
+      className={catalogPageContainerClass}
     >
-      <div className="mx-auto w-full max-w-[1500px]">
+      <div>
         <section
           data-illustration-trigger
           className="relative border-b border-border/70 pb-9 pt-4 sm:pt-6"
