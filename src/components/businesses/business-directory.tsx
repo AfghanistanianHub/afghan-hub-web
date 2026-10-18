@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, MapPin } from "lucide-react";
 import { ExternalImage } from "@/components/ui/external-image";
+import { cleanPublicText } from "@/lib/public-content";
 import { VerificationBadge } from "@/components/ui/verification-badge";
 import { DirectoryEmptyState } from "@/components/catalog/member-page-header";
 
@@ -18,7 +19,7 @@ export function BusinessDirectory({ businesses }: { businesses: Business[] }) {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2"><h2 className="break-words text-lg font-semibold group-hover:text-primary">{business.name}</h2>{business.is_verified ? <VerificationBadge compact /> : null}{business.is_hiring ? <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-primary">Hiring now</span> : null}</div>
               <p className="mt-1 text-sm text-muted-foreground">{business.category}</p>
-              {business.short_description ? <p className="mt-2 line-clamp-2 break-words text-sm leading-6 text-muted-foreground">{business.short_description}</p> : null}
+              {cleanPublicText(business.short_description) ? <p className="mt-2 line-clamp-2 break-words text-sm leading-6 text-muted-foreground">{cleanPublicText(business.short_description)}</p> : null}
               {location ? <p className="mt-2 flex items-start gap-1.5 text-sm text-muted-foreground"><MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0" /><span className="break-words">{location}</span></p> : null}
               {business.services.length ? <p className="mt-2 break-words text-xs text-muted-foreground">{business.services.slice(0, 3).join(" · ")}</p> : null}
             </div>

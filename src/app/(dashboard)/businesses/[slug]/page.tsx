@@ -16,6 +16,7 @@ import { ExternalImage } from "@/components/ui/external-image";
 import { VerificationBadge, VerificationNote } from "@/components/ui/verification-badge";
 import { getMyAccessContext } from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
+import { cleanPublicText } from "@/lib/public-content";
 
 type BusinessPageProps={params:Promise<{slug:string}>;searchParams:Promise<{error?:string}>};
 export default async function BusinessPage({params,searchParams}:BusinessPageProps){
@@ -25,6 +26,8 @@ export default async function BusinessPage({params,searchParams}:BusinessPagePro
  const {data:{user}}=await supabase.auth.getUser();
  const {data:viewerProfile}=user?await getMyAccessContext(supabase,user.id):{data:null};
  const canEdit=user?.id===business.owner_id; const canVerify=viewerProfile?.role==="admin"&&business.status==="published";
+ // Placeholder copy such as "N/A" is not listing content; hide it rather than render it.
+ const shortDescription=cleanPublicText(business.short_description); const aboutText=cleanPublicText(business.description);
  const services=Array.isArray(business.services)?business.services.filter((service:unknown):service is string=>typeof service==="string"):[];
  const location=[business.city,business.province_state,business.country].filter(Boolean).join(", ");
  return <main data-illustration-focus-scope className="px-4 py-8 md:px-8"><div className="mx-auto max-w-6xl">
@@ -43,13 +46,13 @@ export default async function BusinessPage({params,searchParams}:BusinessPagePro
      </div>
      {canEdit||canVerify?<div className="flex shrink-0 flex-wrap gap-3 pb-1 sm:pt-5">{canEdit?<Link href={`/businesses/${business.slug}/edit`} className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius)] border border-border bg-background px-5 py-2.5 text-sm font-semibold text-foreground transition-colors motion-reduce:transition-none active:brightness-95 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Edit business</Link>:null}{canVerify?<form action={setBusinessVerification}><input type="hidden" name="business_id" value={business.id}/><input type="hidden" name="slug" value={business.slug}/><input type="hidden" name="verified" value={business.is_verified?"false":"true"}/><PendingSubmitButton pendingLabel="Updating…" className="inline-flex min-h-11 min-w-48 items-center justify-center rounded-[var(--radius)] border border-primary/25 bg-primary/5 px-5 py-2.5 text-sm font-semibold text-primary transition-colors motion-reduce:transition-none active:brightness-95 hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">{business.is_verified?"Remove verification":"Verify business"}</PendingSubmitButton></form>:null}</div>:null}
     </div>
-    {business.short_description?<p className="mt-7 max-w-3xl break-words text-lg leading-8 text-muted-foreground">{business.short_description}</p>:null}
+    {shortDescription?<p className="mt-7 max-w-3xl break-words text-lg leading-8 text-muted-foreground">{shortDescription}</p>:null}
     {business.is_verified?<VerificationNote/>:null}
    </div>
 
    <div className="grid border-t border-border/70 lg:grid-cols-[minmax(0,1fr)_340px]">
     <div className="space-y-8 px-6 py-8 md:px-10 md:py-10 lg:border-r lg:border-border/70">
-     {business.description?<section><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">About the business</p><p className="mt-5 whitespace-pre-line break-words text-[1.02rem] leading-8 text-foreground/88">{business.description}</p></section>:null}
+     {aboutText?<section><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">About the business</p><p className="mt-5 whitespace-pre-line break-words text-[1.02rem] leading-8 text-foreground/88">{aboutText}</p></section>:null}
      {services.length?<section className="border-t border-border/70 pt-8"><div className="flex items-center gap-3"><span className="flex size-10 items-center justify-center rounded-[var(--radius)] bg-secondary text-primary"><Sparkles aria-hidden="true" className="size-4.5"/></span><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">What they offer</p><h2 className="mt-1 text-xl font-semibold text-foreground">Services</h2></div></div><div className="mt-5 grid gap-3 sm:grid-cols-2">{services.map(service=><div key={service} className="break-words rounded-[var(--radius)] border border-border bg-muted/30 px-4 py-3.5 text-sm font-medium text-foreground">{service}</div>)}</div></section>:null}
     </div>
 
