@@ -103,33 +103,24 @@ async function check(name, fn) {
 }
 async function captureState(page, label) {
   if (process.env.LOCAL_QA_VISUAL !== '1') return;
-  const visualDir=process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
-  mkdirSync(visualDir,{recursive:true});
-  for (const width of [1440,768,390,320]) {
-  if(process.env.LOCAL_QA_VISUAL!=='1') return;
-  const visualDir=process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
-  mkdirSync(visualDir,{recursive:true});
-  for(const width of [1440,768,390,320]) {
-    await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
-    await page.send('Emulation.setPageScaleFactor',{pageScaleFactor:1});
-    const screenshot=await page.send('Page.captureScreenshot',{format:'png'});
-    writeFileSync(`${visualDir}/${label}-${width}.png`,Buffer.from(screenshot.data,'base64'));
-    const includeJpeg = process.env.LOCAL_QA_DESIGN_REVIEW==='1' ||
-      (width===390 && ['navigator-member-fa-results','navigator-member-ps-results','opportunities-filtered-results','opportunities-empty','businesses-outage'].includes(label)) ||
-      (width===1440 && ['submissions-owner-note','businesses-recovered'].includes(label));
+  const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
+  mkdirSync(visualDir, { recursive: true });
+  for (const width of [1440, 768, 390, 320]) {
+    await page.send('Emulation.setDeviceMetricsOverride', { width, height:1000, deviceScaleFactor:1, mobile:width<768 });
+    await page.send('Emulation.setPageScaleFactor', { pageScaleFactor:1 });
+    const screenshot = await page.send('Page.captureScreenshot', { format:'png' });
+    writeFileSync(`${visualDir}/${label}-${width}.png`, Buffer.from(screenshot.data, 'base64'));
+    const includeJpeg = process.env.LOCAL_QA_DESIGN_REVIEW === '1' ||
+      (width === 390 && ['navigator-member-fa-results','navigator-member-ps-results','opportunities-filtered-results','opportunities-empty','businesses-outage'].includes(label)) ||
+      (width === 1440 && ['submissions-owner-note','businesses-recovered'].includes(label));
     if (includeJpeg) {
-      const jpg=await page.send('Page.captureScreenshot',{format:'jpeg',quality:65});
-      const file=`${visualDir}/${label}-after-${width}.jpg`;
-      writeFileSync(file,Buffer.from(jpg.data,'base64'));
-      if (process.env.LOCAL_QA_DESIGN_REVIEW!=='1') reviewImages.push({label,width,file});
-    if(process.env.LOCAL_QA_DESIGN_REVIEW==='1' || (width===390 && ['navigator-member-fa-results','navigator-member-ps-results','opportunities-filtered-results','opportunities-empty','businesses-outage'].includes(label)) || (width===1440 && ['submissions-owner-note','businesses-recovered'].includes(label))) {
-      const jpg=await page.send('Page.captureScreenshot',{format:'jpeg',quality:65});
-      const file=`${visualDir}/${label}-after-${width}.jpg`;
-      writeFileSync(file,Buffer.from(jpg.data,'base64'));
-      if(process.env.LOCAL_QA_DESIGN_REVIEW!=='1') reviewImages.push({label,width,file});
+      const jpg = await page.send('Page.captureScreenshot', { format:'jpeg', quality:65 });
+      const file = `${visualDir}/${label}-after-${width}.jpg`;
+      writeFileSync(file, Buffer.from(jpg.data, 'base64'));
+      if (process.env.LOCAL_QA_DESIGN_REVIEW !== '1') reviewImages.push({ label, width, file });
     }
   }
-  await page.send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await page.send('Emulation.setDeviceMetricsOverride', { width:1440, height:1000, deviceScaleFactor:1, mobile:false });
 }
 function launch(command, args, env) {
   const child = spawn(command, args, { env, stdio: ['ignore', 'pipe', 'pipe'] });
@@ -205,20 +196,6 @@ async function visit(page, path, timeout = 20000) {
   assert.ok(!navigation.errorText, 'Native document navigation must not report a transport error');
   if (navigation.loaderId) await until(() => page.loadedDocuments.has(navigation.loaderId), 'requested document loaded', Math.max(1, deadline - Date.now()));
   await until(() => page.evaluate(`location.origin===${JSON.stringify(appUrl)} && document.readyState==='complete'`), 'local page', Math.max(1, deadline - Date.now()));
-}
-async function pathname(page, path) {
-  await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)}`), 'expected route');
-async function visit(page, path) {
-  assert.ok(path.startsWith('/') && !path.startsWith('//'));
-  const navigation = await page.send('Page.navigate', { url: appUrl + path });
-  assert.ok(!navigation.errorText, `Native navigation failed: ${navigation.errorText}`);
-  try {
-    if (navigation.loaderId) await until(() => page.loadedDocuments.has(navigation.loaderId), 'requested document loaded');
-    await until(() => page.evaluate(`location.origin===${JSON.stringify(appUrl)} && document.readyState==='complete'`), 'local page');
-  } catch (error) {
-    error.navigationState = await page.evaluate(`({requestedPath:${JSON.stringify(path.split('?')[0])},origin:location.origin,path:location.pathname,ready:document.readyState,visible:document.visibilityState,focused:document.hasFocus()})`).catch(()=>({unavailable:true}));
-    throw error;
-  }
 }
 async function pathname(page, path) {
   await until(() => page.evaluate(`location.pathname===${JSON.stringify(path)} && document.readyState==='complete'`), `expected route ${path}`, 30000);
@@ -420,7 +397,6 @@ try {
       await visit(pageA, '/dashboard'); await pathname(pageA, '/login');
     }
   });
-  await check('Real signup and delivered one-time email establish the browser session', async () => {
   await check('Real signup, local email delivery and PKCE callback establish the browser session', async () => {
     await visit(pageA, '/login?mode=join');
     await fill(pageA, '[name=email]', a.email); await fill(pageA, '[name=password]', password);
@@ -927,7 +903,6 @@ try {
       for (const route of ['/businesses','/organizations','/opportunities','/events','/submissions']) {
         const started = Date.now();
         try {
-          await visit(pageA, route);
           // Middleware, access-context and workspace reads each have their own
           // 10-second request deadline. Bound this whole outage navigation too;
           // a 20-second document limit cannot cover those sequential phases.
