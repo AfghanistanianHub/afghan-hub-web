@@ -126,13 +126,13 @@ export function LocalizedLoginContent({ error, message, mode }: { error?: string
 
           {error ? (
             <div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">
-              {error}
+              {feedbackText(error, language)}
             </div>
           ) : null}
 
           {message ? (
             <div role="status" aria-live="polite" className="mt-6 rounded-[var(--radius)] border border-primary/15 bg-primary/[0.06] p-3 text-sm text-primary">
-              {message}
+              {feedbackText(message, language)}
             </div>
           ) : null}
 
