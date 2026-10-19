@@ -156,7 +156,7 @@ export function LocalizedLoginContent({ error, message, mode }: { error?: string
               />
               {joining ? (
                 <p id="password-policy" className="mt-2 text-xs leading-5 text-muted-foreground">
-                  {language === "en" ? PASSWORD_POLICY_HINT : language === "fa" ? "رمز عبور باید دست‌کم ۸ نویسه داشته باشد." : "پټنوم باید لږ تر لږه ۸ توري ولري."}
+                  {language === "en" ? PASSWORD_POLICY_HINT : language === "fa" ? `رمز عبور باید دست‌کم ${PASSWORD_MIN_LENGTH} نویسه داشته باشد و شامل دست‌کم سه مورد از این چهار گروه باشد: حروف کوچک انگلیسی، حروف بزرگ انگلیسی، اعداد و نمادها.` : `پټنوم باید لږ تر لږه ${PASSWORD_MIN_LENGTH} توري ولري او له دې څلورو ډلو لږ تر لږه درې ولري: د انګلیسي کوچني توري، لوی توري، شمېرې او نښې.`}
                 </p>
               ) : null}
             </div>
