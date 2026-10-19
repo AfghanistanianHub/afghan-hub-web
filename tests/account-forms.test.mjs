@@ -68,3 +68,23 @@ test("submit control disables repeat submissions and announces progress only whi
   }
 });
 
+
+test("localized recovery and password update retain server-side security boundaries", () => {
+  const recoveryPage = fs.readFileSync(new URL("../src/app/forgot-password/page.tsx", import.meta.url), "utf8");
+  const recoveryView = fs.readFileSync(new URL("../src/app/forgot-password/localized-forgot-password-content.tsx", import.meta.url), "utf8");
+  const updatePage = fs.readFileSync(new URL("../src/app/update-password/page.tsx", import.meta.url), "utf8");
+  const updateView = fs.readFileSync(new URL("../src/app/update-password/localized-update-password-content.tsx", import.meta.url), "utf8");
+  assert.match(recoveryPage, /LocalizedForgotPasswordContent/);
+  assert.match(recoveryView, /action=\{requestPasswordReset\}/);
+  assert.match(updatePage, /supabase\.auth\.getUser\(\)/);
+  assert.match(updatePage, /if \(!user\)/);
+  assert.match(updateView, /action=\{updatePassword\}/);
+  assert.match(updateView, /minLength=\{PASSWORD_MIN_LENGTH\}/);
+  assert.match(updateView, /autoComplete="new-password"/);
+  assert.match(updateView, /aria-describedby="password-policy"/);
+  for (const source of [recoveryView, updateView]) {
+    assert.match(source, /en:/);
+    assert.match(source, /fa:/);
+    assert.match(source, /ps:/);
+  }
+});
