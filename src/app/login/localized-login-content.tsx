@@ -79,6 +79,10 @@ const labels = {
 } as const satisfies Record<SiteLanguage, Record<string,string>>;
 
 const authFeedback = {
+  "Password must include at least 3 of: lowercase letters, uppercase letters, numbers, symbols.": {
+    fa: "رمز عبور باید شامل دست‌کم سه مورد از چهار گروه باشد: حروف کوچک انگلیسی، حروف بزرگ انگلیسی، اعداد و نمادها.",
+    ps: "پټنوم باید له څلورو ډلو لږ تر لږه درې ولري: کوچني انګلیسي توري، لوی توري، شمېرې او نښې.",
+  },
   "We could not sign you in. Check your email and password and try again.": {
     fa: "ورود به حساب انجام نشد. نشانی ایمیل و رمز عبور را بررسی و دوباره تلاش کنید.",
     ps: "حساب ته ننوتل بریالي نه شول. خپل برېښنالیک او پټنوم وګورئ او بیا هڅه وکړئ.",
@@ -99,8 +103,18 @@ const authFeedback = {
 function feedbackText(value: string, language: SiteLanguage): string {
   if (language === "en") return value;
   const localized = authFeedback[value as keyof typeof authFeedback];
-  return localized?.[language] ?? value;
+  if (localized) return localized[language];
+  if (value === `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`) {
+    return language === "fa" ? `رمز عبور باید دست‌کم ${PASSWORD_MIN_LENGTH} نویسه داشته باشد.` : `پټنوم باید لږ تر لږه ${PASSWORD_MIN_LENGTH} توري ولري.`;
+  }
+  return value;
 }
+
+const legalNavigation = {
+  en: { privacy: "Privacy", terms: "Terms", support: "Support", navigation: "Privacy, terms and support" },
+  fa: { privacy: "حریم خصوصی", terms: "شرایط استفاده", support: "پشتیبانی", navigation: "حریم خصوصی، شرایط استفاده و پشتیبانی" },
+  ps: { privacy: "محرمیت", terms: "د کارولو شرطونه", support: "ملاتړ", navigation: "محرمیت، شرطونه او ملاتړ" },
+} as const satisfies Record<SiteLanguage, {privacy: string; terms: string; support: string; navigation: string}>;
 
 export function LocalizedLoginContent({ error, message, mode }: { error?: string; message?: string; mode?: string }) {
   const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
@@ -200,7 +214,7 @@ export function LocalizedLoginContent({ error, message, mode }: { error?: string
           </form>
 
           <div className="mt-7 border-t border-border pt-5">
-            <SupportLinks />
+            <SupportLinks labels={legalNavigation[language]} />
           </div>
         </div>
       </section>
