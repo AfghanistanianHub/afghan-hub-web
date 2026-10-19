@@ -19,6 +19,10 @@ test("member navigation uses one shared three-language dictionary on desktop and
     assert.match(component, /t\.unreadMessages/);
     assert.match(component, /t\.pendingModeration/);
   }
+  assert.match(desktop, /\{t\.workspace\}/);
+  assert.match(desktop, /\{t\.account\}/);
+  assert.match(mobile, /\{t\.workspace\}/);
+  assert.match(mobile, /\{t\.account\}/);
   assert.match(mobile, /dir=\{language === "en" \? "ltr" : "rtl"\}/);
   assert.match(mobile, /inset-y-0 start-0/);
 });
