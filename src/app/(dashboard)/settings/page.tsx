@@ -39,19 +39,19 @@ export default async function SettingsPage({
   const accountName =
     profile?.display_name?.trim() ||
     [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") ||
-    "Afghan Hub member";
-  const accountEmail = user.email || "Not available";
+    null;
+  const accountEmail = user.email;
 
   return (
     <main className={catalogPageContainerClass}>
       <div className="min-w-0">
         <SettingsPageHeader />
         <dl className="flex flex-wrap gap-x-8 gap-y-3 text-sm">
-          <div><dt className="text-muted-foreground"><SettingsText id="signedIn" /></dt><dd className="mt-1 break-words font-medium">{accountName}</dd></div>
+          <div><dt className="text-muted-foreground"><SettingsText id="signedIn" /></dt><dd className="mt-1 break-words font-medium">{accountName ?? <SettingsText id="member" />}</dd></div>
           <div><dt className="text-muted-foreground"><SettingsText id="directory" /></dt><dd className="mt-1 font-medium"><SettingsText id={(profile?.is_public ?? true) ? "visible" : "hidden"} /></dd></div>
         </dl>
 
-        {formError ? <div role="alert" aria-live="assertive" className="mt-6 rounded-sm border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">{formError}</div> : null}
+        {formError ? <div role="alert" aria-live="assertive" className="mt-6 rounded-sm border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive"><SettingsText id={formError === "profile-not-found" ? "missingProfileError" : "updateError"} /></div> : null}
         {saved === "1" ? <div role="status" aria-live="polite" className="mt-6 rounded-sm border border-primary/20 bg-primary/8 p-4 text-sm text-primary"><SettingsText id="saved" /></div> : null}
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -61,7 +61,7 @@ export default async function SettingsPage({
               <h2 className="mt-2 text-xl font-semibold text-card-foreground"><SettingsText id="account" /></h2>
               <dl className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-sm border border-border bg-muted/30 p-4"><dt className="text-xs text-muted-foreground"><SettingsText id="name" /></dt><dd className="mt-1 break-words font-semibold text-foreground">{accountName}</dd></div>
-                <div className="rounded-sm border border-border bg-muted/30 p-4"><dt className="text-xs text-muted-foreground"><SettingsText id="email" /></dt><dd className="mt-1 break-words font-semibold text-foreground">{accountEmail}</dd></div>
+                <div className="rounded-sm border border-border bg-muted/30 p-4"><dt className="text-xs text-muted-foreground"><SettingsText id="email" /></dt><dd className="mt-1 break-words font-semibold text-foreground">{accountEmail ?? <SettingsText id="missing" />}</dd></div>
               </dl>
               <Link href="/profile" className={`mt-6 inline-flex items-center border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-secondary ${styles.control}`}><SettingsText id="edit" /></Link>
             </section>
