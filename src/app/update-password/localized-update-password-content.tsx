@@ -20,6 +20,9 @@ function policyHint(language: SiteLanguage): string {
 }
 
 const errors: Record<string, Partial<Record<SiteLanguage, string>>> = {
+  "Passwords do not match.": { fa: "رمزهای عبور واردشده یکسان نیستند.", ps: "ورکړل شوي پټنومونه سره یو شان نه دي." },
+  "Password must include at least 3 of: lowercase letters, uppercase letters, numbers, symbols.": { fa: "رمز عبور باید شامل دست‌کم سه مورد از این چهار گروه باشد: حروف کوچک انگلیسی، حروف بزرگ انگلیسی، اعداد و نمادها.", ps: "پټنوم باید له څلورو ډلو لږ تر لږه درې ولري: کوچني انګلیسي توري، لوی توري، شمېرې او نښې." },
+  "We could not update your password right now. Request a new reset link and try again.": { fa: "فعلاً تغییر رمز عبور ممکن نیست. لینک بازیابی تازه‌ای درخواست کنید و دوباره تلاش کنید.", ps: "اوس پټنوم نه شي بدلېدای. نوی د بېرته ترلاسه کولو لینک وغواړئ او بیا هڅه وکړئ." },
   "Open a valid password reset link before choosing a new password.": {
     fa: "پیش از انتخاب رمز عبور جدید، یک لینک معتبر بازیابی رمز عبور را باز کنید.",
     ps: "د نوي پټنوم تر ټاکلو مخکې د پټنوم بېرته ترلاسه کولو معتبر لینک پرانیزئ.",
@@ -38,7 +41,7 @@ export function LocalizedUpdatePasswordContent({ error }: { error?: string }) {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{t.eyebrow}</p>
           <h1 className="mt-3 text-3xl font-medium tracking-[-0.03em] sm:text-4xl">{t.title}</h1>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">{t.description}</p>
-          {error ? <div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">{errors[error]?.[language] ?? error}</div> : null}
+          {error ? <div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.08] p-3 text-sm text-destructive">{errors[error]?.[language] ?? (language !== "en" && error === `Password must be at least ${PASSWORD_MIN_LENGTH} characters.` ? (language === "fa" ? `رمز عبور باید دست‌کم ${PASSWORD_MIN_LENGTH} نویسه داشته باشد.` : `پټنوم باید لږ تر لږه ${PASSWORD_MIN_LENGTH} توري ولري.`) : error)}</div> : null}
           <form action={updatePassword} className="mt-7 space-y-5">
             <div>
               <label htmlFor="password" className="mb-2 block text-sm font-medium">{t.password}</label>
