@@ -2,6 +2,8 @@
 
 import { useSyncExternalStore } from "react";
 import { Settings2 } from "lucide-react";
+import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
+import { SupportLinks } from "@/components/public/support-links";
 import { MemberPageHeader } from "@/components/catalog/member-page-header";
 import { readSiteLanguagePreference, subscribeSiteLanguagePreference, type SiteLanguage } from "@/lib/i18n/site-language";
 
@@ -28,6 +30,8 @@ const labels = {
     "data": "Your data",
     "take": "Take a copy with you",
     "downloadHelp": "Download your account details and profile as JSON. Messages, connections, contributions, saved items, RSVPs and uploaded files are outside this download.",
+    "contactIntro": "For a wider data request or account deletion, ",
+    "saving": "Saving settings…",
     "contact": "contact support",
     "help": "Need help?",
     "missing": "Not available",
@@ -55,6 +59,8 @@ const labels = {
     "data": "داده‌های شما",
     "take": "یک نسخه از اطلاعات خود دریافت کنید",
     "downloadHelp": "اطلاعات حساب و پروفایل خود را در قالب JSON دریافت کنید. پیام‌ها، ارتباطات، مشارکت‌ها، موارد ذخیره‌شده، پاسخ‌های حضور در رویدادها و فایل‌های بارگذاری‌شده در این نسخه گنجانده نمی‌شوند.",
+    "contactIntro": "برای درخواست گسترده‌تر داده‌ها یا حذف حساب، ",
+    "saving": "در حال ذخیره تنظیمات…",
     "contact": "با پشتیبانی تماس بگیرید",
     "help": "به کمک نیاز دارید؟",
     "missing": "در دسترس نیست",
@@ -82,6 +88,8 @@ const labels = {
     "data": "ستاسو معلومات",
     "take": "د خپلو معلوماتو یوه کاپي واخلئ",
     "downloadHelp": "د خپل حساب او پروفایل معلومات د JSON په بڼه ښکته کړئ. پیغامونه، اړیکې، ونډې، خوندي شوي توکي، د ګډون ځوابونه او پورته شوي فایلونه پکې نه شاملېږي.",
+    "contactIntro": "د نورو معلوماتو غوښتنې یا د حساب د ړنګولو لپاره، ",
+    "saving": "تنظیمات خوندي کېږي…",
     "contact": "له ملاتړ سره اړیکه ونیسئ",
     "help": "مرستې ته اړتیا لرئ؟",
     "missing": "شتون نه لري",
@@ -98,4 +106,20 @@ export function SettingsText({ id }: { id: SettingsTextKey }) {
 export function SettingsPageHeader() {
   const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
   return <div lang={language} dir={language === "en" ? "ltr" : "rtl"}><MemberPageHeader title={labels[language].heading} description={labels[language].description} icon={Settings2} /></div>;
+}
+
+export function SettingsSaveButton({ className }: { className: string }) {
+  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
+  return <PendingSubmitButton pendingLabel={labels[language].saving} className={className}><span lang={language} dir={language === "en" ? "ltr" : "rtl"}>{labels[language].save}</span></PendingSubmitButton>;
+}
+
+const supportLabels = {
+  en: { privacy: "Privacy", terms: "Terms", support: "Support", navigation: "Privacy, terms and support" },
+  fa: { privacy: "حریم خصوصی", terms: "شرایط استفاده", support: "پشتیبانی", navigation: "حریم خصوصی، شرایط استفاده و پشتیبانی" },
+  ps: { privacy: "محرمیت", terms: "د کارونې شرطونه", support: "ملاتړ", navigation: "محرمیت، شرطونه او ملاتړ" },
+} as const satisfies Record<SiteLanguage, { privacy: string; terms: string; support: string; navigation: string }>;
+
+export function SettingsSupportLinks() {
+  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
+  return <div lang={language} dir={language === "en" ? "ltr" : "rtl"}><SupportLinks labels={supportLabels[language]} /></div>;
 }
