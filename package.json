@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run test:typography && next build",
+    "build": "npm run test:localization && next build",
     "start": "next start",
     "lint": "eslint",
     "smoke:public": "node scripts/smoke-public.mjs",
@@ -22,7 +22,8 @@
     "acceptance:avatar-storage": "node scripts/avatar-storage-acceptance.mjs",
     "security:migration-grants": "node scripts/check-migration-api-grants.mjs",
     "security:qualify-target": "node scripts/qualify-isolated-target.mjs",
-    "security:profile-personas": "node scripts/security-profile-personas.mjs"
+    "security:profile-personas": "node scripts/security-profile-personas.mjs",
+    "test:localization": "node --test tests/multilingual-typography.test.mjs tests/site-language-runtime.test.mjs tests/dashboard-next-step-localization.test.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "4.0.89",
