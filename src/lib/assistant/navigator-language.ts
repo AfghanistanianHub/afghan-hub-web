@@ -2,7 +2,7 @@ import { normalizeSiteLanguage, readSiteLanguagePreference, saveSiteLanguagePref
 
 export const navigatorLocales = [
   { value: "en", label: "English" },
-  { value: "fa", label: "فارسی / Persian" },
+  { value: "fa", label: "فارسی / Farsi" },
   { value: "ps", label: "پښتو / Pashto" },
 ] as const;
 

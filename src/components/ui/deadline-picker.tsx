@@ -48,7 +48,7 @@ export function DeadlinePicker({
         type="button"
         onClick={() => setIsOpen((current) => !current)}
         aria-expanded={isOpen}
-        aria-controls={panelId}
+        aria-controls={isOpen ? panelId : undefined}
         aria-haspopup="dialog"
         className={`${styles.trigger} flex w-full items-center justify-between rounded-[var(--radius)] border border-input bg-background px-4 py-3 text-left outline-none transition hover:border-primary/35 focus:border-primary focus:ring-2 focus:ring-ring/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
       >

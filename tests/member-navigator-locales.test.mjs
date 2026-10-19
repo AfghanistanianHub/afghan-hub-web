@@ -21,7 +21,7 @@ function load(file, storage) {
 test('member Navigator exposes exactly three complete canonical resources', () => {
   const { memberNavigatorCopy: copy, memberNavigatorDialogue: dialogue, memberNavigatorPrompts: prompts, memberNavigatorLocales: locales, memberNavigatorUtility: utility } = load('src/lib/assistant/member-navigator-copy.ts');
   assert.deepEqual(Array.from(locales, x => x.value), ['en', 'fa', 'ps']);
-  assert.deepEqual(Array.from(locales, x => x.label), ['English', 'فارسی / Persian', 'پښتو / Pashto']);
+  assert.deepEqual(Array.from(locales, x => x.label), ['English', 'فارسی / Farsi', 'پښتو / Pashto']);
   for (const resource of [copy, dialogue, prompts, utility]) assert.deepEqual(Object.keys(resource).sort(), ['en', 'fa', 'ps']);
   for (const locale of ['fa', 'ps']) {
     assert.deepEqual(Object.keys(copy[locale]).sort(), Object.keys(copy.en).sort());
@@ -65,7 +65,7 @@ test('member Navigator retains complete Persian and Pashto copy', () => {
   const prompts = helper.memberNavigatorPrompts;
   const locales = helper.memberNavigatorLocales;
   const utility = helper.memberNavigatorUtility;
-  assert.deepEqual(Array.from(locales, (x) => x.label), ['English', 'فارسی / Persian', 'پښتو / Pashto']);
+  assert.deepEqual(Array.from(locales, (x) => x.label), ['English', 'فارسی / Farsi', 'پښتو / Pashto']);
   assert.deepEqual(Array.from(locales, (x) => x.value), ['en', 'fa', 'ps']);
   for (const locale of ['fa', 'ps']) {
     assert.deepEqual(Object.keys(copy[locale]).sort(), Object.keys(copy.en).sort());

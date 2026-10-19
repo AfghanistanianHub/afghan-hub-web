@@ -174,7 +174,7 @@ export function NotificationBell({
         type="button"
         aria-label={bellLabel}
         aria-expanded={isOpen}
-        aria-controls={panelId}
+        aria-controls={isOpen ? panelId : undefined}
         aria-haspopup="dialog"
         onClick={() => setIsOpen((current) => !current)}
         className={`relative flex size-11 items-center justify-center border border-border bg-card text-muted-foreground hover:border-primary/30 hover:bg-secondary hover:text-foreground ${styles.control}`}

@@ -815,13 +815,30 @@ try {
       execFileSync('docker',['exec','supabase_db_afghan-hub-local-journey','psql','-U','postgres','-d','postgres','-v','ON_ERROR_STOP=1','-c',`BEGIN; SELECT set_config('request.jwt.claim.role','service_role',true); UPDATE public.profiles SET role='admin',onboarding_completed=true WHERE id='${designReviewer.id}'; COMMIT;`],{stdio:'ignore'});
       const adminVisual=await page(); await login(adminVisual,designReviewer.email); await pathname(adminVisual,'/dashboard');
       const detailRoutes=[];
+      let visualEvent;
       for(const table of ['businesses','organizations','opportunities','events']) {
         const fixture=listings.filter(row=>row.table===table).at(-1);
         assert.ok(fixture,`Missing visual fixture: ${table}`);
         const row=await data(admin.from(table).select('slug,status').eq('id',fixture.id).single());
         assert.equal(row.status,'published','Public detail evidence requires a published synthetic fixture');
         detailRoutes.push(`/${table}/${row.slug}`,`/${table}/${row.slug}/edit`,`/explore/${table}/${row.slug}`);
+        if (table === 'events') {
+          visualEvent = {id:fixture.id,slug:row.slug};
+          detailRoutes.push(`/events/${row.slug}/attendees`);
+        }
       }
+      await check('Registration appears in host attendance tools through real member and owner UI', async () => {
+        assert.ok(visualEvent);
+        await visit(pageB, `/events/${visualEvent.slug}`);
+        await click(pageB, 'form:has(input[name=event_id]) button[type=submit]');
+        await until(() => pageB.evaluate(`document.querySelector('main [role=status]')?.textContent.includes('registered for this event')`), 'member registration confirmation');
+        assert.equal((await data(admin.from('event_rsvps').select('profile_id').eq('event_id',visualEvent.id).eq('profile_id',b.id))).length,1);
+        await visit(memberVisual, `/events/${visualEvent.slug}`);
+        await click(memberVisual, `a[href="/events/${visualEvent.slug}/attendees"]`);
+        await pathname(memberVisual, `/events/${visualEvent.slug}/attendees`);
+        await until(() => memberVisual.evaluate(`document.querySelector('main h1')?.textContent==='Event attendees' && !!document.querySelector('main a[href="/members/${b.id}"]')`), 'registered public member visible to host');
+        await captureState(memberVisual, 'event-attendees-populated');
+      });
       const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
       mkdirSync(visualDir, {recursive:true});
       const findings = [];
@@ -889,6 +906,9 @@ try {
         }
       }
       writeFileSync(`${visualDir}/layout-checks-after.json`, JSON.stringify({sourceRevision, sourceTree, baselineRevision:process.env.LOCAL_QA_COMPARE_SHA ?? null, zoom:100, widths, findings},null,2)+'\n');
+      if (process.env.LOCAL_QA_AXE_PATH) {
+        assert.equal(accessibility.flatMap(check => check.violations).length, 0, 'WCAG-tagged accessibility violations require review; see accessibility-after.json');
+      }
     });
   }
   await check('Directory and submission request failures remain visible without false empty counts', async () => {

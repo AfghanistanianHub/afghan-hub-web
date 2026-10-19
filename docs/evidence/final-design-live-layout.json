@@ -1,0 +1,1265 @@
+{
+  "applicationRevision": "310dcd11c6a98146669563496af96cd28ce71be4",
+  "runnerRevision": "52869048ea27710a487b7fb3e19d8023c6ef65fb",
+  "environment": "Signed-in Vercel preview; live DOM and keyboard checks; no content/account saves or message sends",
+  "widths": [
+    390,
+    768,
+    1280,
+    1440
+  ],
+  "notes": [
+    "Hidden file inputs are excluded; visible upload buttons are evaluated as controls.",
+    "Latest entry is retained when a route was rechecked after navigation readiness.",
+    "Farsi/Pashto entry flows preserve RTL direction, but many workspace labels remain English.",
+    "Evidence does not certify complete WCAG conformance."
+  ],
+  "surfaces": [
+    {
+      "label": "Search",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/search",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/search",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/search",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/search",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Saved",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/saved",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/saved",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/saved",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/saved",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Settings",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/settings",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/settings",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/settings",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/settings",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Network",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/network",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/network",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/network",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/network",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Member profile",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/members/:id",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/members/:id",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/members/:id",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/members/:id",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Messages",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/messages",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/messages",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/messages",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/messages",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Conversation",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/messages/:conversationId",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/messages/:conversationId",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/messages/:conversationId",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/messages/:conversationId",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Submissions",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/submissions",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/submissions",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/submissions",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/submissions",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Organization detail",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/organizations/:slug",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/organizations/:slug",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/organizations/:slug",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/organizations/:slug",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Organization edit",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/organizations/:slug/edit",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/organizations/:slug/edit",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/organizations/:slug/edit",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/organizations/:slug/edit",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Opportunities",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/opportunities",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/opportunities",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/opportunities",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/opportunities",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Opportunity create with long Farsi/Pashto content",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/opportunities/new",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/opportunities/new",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/opportunities/new",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/opportunities/new",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Events",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/events",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/events",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/events",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/events",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Event calendar",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/events",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/events",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/events",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/events",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "My events",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/events/my",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/events/my",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/events/my",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/events/my",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Event create",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/events/new",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/events/new",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/events/new",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/events/new",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Businesses",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/businesses",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/businesses",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/businesses",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/businesses",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Business detail",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/businesses/:slug",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/businesses/:slug",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/businesses/:slug",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/businesses/:slug",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Business create with long native content",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/businesses/new",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/businesses/new",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/businesses/new",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/businesses/new",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Organizations",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/organizations",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/organizations",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/organizations",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/organizations",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Organization create",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/organizations/new",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/organizations/new",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/organizations/new",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/organizations/new",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Profile edit",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/profile",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/profile",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1280,
+          "overflow": false,
+          "route": "/profile",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1440,
+          "overflow": false,
+          "route": "/profile",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Dashboard",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/dashboard",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/dashboard",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/dashboard",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/dashboard",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Notifications panel",
+      "rows": [
+        {
+          "left": 16,
+          "right": 374,
+          "width": 390
+        },
+        {
+          "left": 16,
+          "right": 752,
+          "width": 768
+        },
+        {
+          "left": 456,
+          "right": 840,
+          "width": 1280
+        },
+        {
+          "left": 616,
+          "right": 1000,
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Navigator fa",
+      "rows": [
+        {
+          "dir": "rtl",
+          "lang": "fa",
+          "left": 0,
+          "overflow": false,
+          "right": 390,
+          "width": 390
+        },
+        {
+          "dir": "rtl",
+          "lang": "fa",
+          "left": 48,
+          "overflow": false,
+          "right": 768,
+          "width": 768
+        },
+        {
+          "dir": "rtl",
+          "lang": "fa",
+          "left": 560,
+          "overflow": false,
+          "right": 1280,
+          "width": 1280
+        },
+        {
+          "dir": "rtl",
+          "lang": "fa",
+          "left": 720,
+          "overflow": false,
+          "right": 1440,
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Navigator ps",
+      "rows": [
+        {
+          "dir": "rtl",
+          "lang": "ps",
+          "left": 0,
+          "overflow": false,
+          "right": 390,
+          "width": 390
+        },
+        {
+          "dir": "rtl",
+          "lang": "ps",
+          "left": 48,
+          "overflow": false,
+          "right": 768,
+          "width": 768
+        },
+        {
+          "dir": "rtl",
+          "lang": "ps",
+          "left": 560,
+          "overflow": false,
+          "right": 1280,
+          "width": 1280
+        },
+        {
+          "dir": "rtl",
+          "lang": "ps",
+          "left": 720,
+          "overflow": false,
+          "right": 1440,
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Navigator en",
+      "rows": [
+        {
+          "dir": "ltr",
+          "lang": "en",
+          "left": 0,
+          "overflow": false,
+          "right": 390,
+          "width": 390
+        },
+        {
+          "dir": "ltr",
+          "lang": "en",
+          "left": 48,
+          "overflow": false,
+          "right": 768,
+          "width": 768
+        },
+        {
+          "dir": "ltr",
+          "lang": "en",
+          "left": 560,
+          "overflow": false,
+          "right": 1280,
+          "width": 1280
+        },
+        {
+          "dir": "ltr",
+          "lang": "en",
+          "left": 720,
+          "overflow": false,
+          "right": 1440,
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Network after Farsi entry",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/network",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/network",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/network",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/network",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Search after Farsi entry",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/search",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/search",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/search",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/search",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Settings after Farsi entry",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/settings",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/settings",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/settings",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/settings",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Network after Pashto entry",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/network",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/network",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/network",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/network",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Search after Pashto entry",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/search",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/search",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/search",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/search",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Opportunity owner detail",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/opportunities/:slug",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/opportunities/:slug",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/opportunities/:slug",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/opportunities/:slug",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    },
+    {
+      "label": "Opportunity edit",
+      "rows": [
+        {
+          "h1Count": 1,
+          "mainWidth": 390,
+          "overflow": false,
+          "route": "/opportunities/:slug/edit",
+          "smallControls": [],
+          "width": 390
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 768,
+          "overflow": false,
+          "route": "/opportunities/:slug/edit",
+          "smallControls": [],
+          "width": 768
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1024,
+          "overflow": false,
+          "route": "/opportunities/:slug/edit",
+          "smallControls": [],
+          "width": 1280
+        },
+        {
+          "h1Count": 1,
+          "mainWidth": 1184,
+          "overflow": false,
+          "route": "/opportunities/:slug/edit",
+          "smallControls": [],
+          "width": 1440
+        }
+      ]
+    }
+  ]
+}

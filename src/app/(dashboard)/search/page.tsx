@@ -401,7 +401,7 @@ export default async function SearchPage({
             <select
               name="intent"
               defaultValue={intent ?? ""}
-              className="rounded-[var(--radius-control)] border border-border/80 bg-background px-4 py-4 text-sm text-foreground outline-none transition hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
+              className="rounded-[var(--radius-control)] border border-input bg-background px-4 py-4 text-sm text-foreground outline-none transition hover:border-primary focus:border-primary focus:bg-background focus:ring-4 focus:ring-primary/10"
             >
               <option value="">Anything in the community</option>
               {phaseOneSearchIntents.map((option) => (
@@ -420,7 +420,7 @@ export default async function SearchPage({
               defaultValue={query}
               placeholder={intent ? "Optional keyword…" : "Name, skill, organization, service, opportunity…"}
               aria-label="Search Afghan Hub"
-              className="w-full rounded-[var(--radius-control)] border border-border/80 bg-background py-4 pl-12 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
+              className="w-full rounded-[var(--radius-control)] border border-input bg-background py-4 pl-12 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary focus:border-primary focus:bg-background focus:ring-4 focus:ring-primary/10"
             />
           </label>
           <button

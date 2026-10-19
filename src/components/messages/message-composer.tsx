@@ -57,7 +57,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
               formRef.current?.requestSubmit();
             }
           }}
-          className={`${styles.search} min-h-12 min-w-0 flex-1 resize-none border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground disabled:cursor-wait disabled:opacity-70`}
+          className={`${styles.search} min-h-12 min-w-0 flex-1 resize-none border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground disabled:cursor-wait disabled:opacity-70`}
         />
 
         <button

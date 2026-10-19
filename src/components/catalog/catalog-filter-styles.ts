@@ -3,7 +3,7 @@ export const catalogPageContainerClass =
   "mx-auto w-full max-w-[88rem] px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12";
 
 export const catalogFieldClass =
-  "min-h-11 min-w-0 rounded-[var(--radius-control)] border border-border/80 bg-card px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary/25 focus:border-primary focus:ring-4 focus:ring-primary/10";
+  "min-h-11 min-w-0 rounded-[var(--radius-control)] border border-input bg-card px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary focus:border-primary focus:ring-4 focus:ring-primary/10";
 
 export const catalogFilterPanelClass =
   "mt-5 grid grid-cols-2 items-end gap-3 [&>label:first-child]:col-span-2 md:[&>label:first-child]:col-span-1 border-b border-border pb-5";
