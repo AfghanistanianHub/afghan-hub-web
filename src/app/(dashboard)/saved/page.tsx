@@ -1,9 +1,9 @@
+import { MemberPageHeader } from "@/components/catalog/member-page-header";
 import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import Link from "next/link";
 import styles from "@/components/network/network-surfaces.module.css";
-import { CommunitySignature } from "@/components/public/community-signature";
 import { redirect } from "next/navigation";
-import { ArrowUpRight, Bookmark, MapPin, Sparkles } from "lucide-react";
+import { ArrowUpRight, Bookmark, MapPin } from "lucide-react";
 
 import {
   getUtcDateKey,
@@ -88,24 +88,7 @@ export default async function SavedOpportunitiesPage() {
   return (
     <main className={catalogPageContainerClass}>
       <div className="min-w-0">
-        <section className={`${styles.surface} relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8  md:px-8 md:py-10`}>
-          
-          
-          <CommunitySignature className={styles.signature} />
-          <div className="relative max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-              <Sparkles aria-hidden="true" className="size-3.5" />
-              Your collection
-            </div>
-            <h1 className="mt-5 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">
-              Saved opportunities
-            </h1>
-            <p className="mt-3 leading-7 text-muted-foreground">
-              Keep useful jobs, scholarships, volunteer roles, and programs in one
-              place.
-            </p>
-          </div>
-        </section>
+        <MemberPageHeader title="Saved opportunities" description="Keep useful jobs, scholarships, volunteer roles, and programs in one place." icon={Bookmark} />
 
         {error ? (
           <div role="alert" aria-live="assertive" className="relative mt-8 overflow-hidden rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive"><span className="relative">

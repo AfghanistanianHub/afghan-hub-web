@@ -1,3 +1,5 @@
+import { Settings2 } from "lucide-react";
+import { MemberPageHeader } from "@/components/catalog/member-page-header";
 import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import { CommunitySignature } from "@/components/public/community-signature";
 import styles from "@/components/network/network-surfaces.module.css";
@@ -46,20 +48,11 @@ export default async function SettingsPage({
   return (
     <main className={catalogPageContainerClass}>
       <div className="min-w-0">
-        <section className={`relative overflow-hidden border px-6 py-8 md:px-8 md:py-10 ${styles.surface}`}>
-          <CommunitySignature className={styles.signature} />
-          <div className="relative grid gap-7 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Your account</p>
-              <h1 className="mt-3 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">Settings</h1>
-              <p className="mt-3 max-w-xl leading-7 text-muted-foreground">Control how your profile appears, review your account identity, and access your data and support options.</p>
-            </div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div className="rounded-sm border border-border bg-background p-4"><p className="text-xs text-muted-foreground">Signed in as</p><p className="mt-1 break-words font-semibold text-foreground">{accountName}</p></div>
-              <div className="rounded-sm border border-border bg-background p-4"><p className="text-xs text-muted-foreground">Directory status</p><p className="mt-1 font-semibold text-foreground">{profile?.is_public ?? true ? "Visible" : "Hidden"}</p></div>
-            </div>
-          </div>
-        </section>
+        <MemberPageHeader title="Settings" description="Control how your profile appears, review your account identity, and access your data and support options." icon={Settings2} />
+        <dl className="flex flex-wrap gap-x-8 gap-y-3 text-sm">
+          <div><dt className="text-muted-foreground">Signed in as</dt><dd className="mt-1 break-words font-medium">{accountName}</dd></div>
+          <div><dt className="text-muted-foreground">Directory status</dt><dd className="mt-1 font-medium">{profile?.is_public ?? true ? "Visible" : "Hidden"}</dd></div>
+        </dl>
 
         {formError ? <div role="alert" aria-live="assertive" className="mt-6 rounded-sm border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">{formError}</div> : null}
         {saved === "1" ? <div role="status" aria-live="polite" className="mt-6 rounded-sm border border-primary/20 bg-primary/8 p-4 text-sm text-primary">Your settings have been saved.</div> : null}

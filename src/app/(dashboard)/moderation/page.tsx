@@ -1,3 +1,4 @@
+import { MemberPageHeader } from "@/components/catalog/member-page-header";
 import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -230,25 +231,9 @@ export default async function ModerationPage({
   return (
     <main className={catalogPageContainerClass}>
       <div className="min-w-0">
-        <section className="relative overflow-hidden workspace-surface px-5 py-6 md:px-6 md:py-8">
-          <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Admin tools</p>
-              <h1 className="mt-3 workspace-heading">Content moderation</h1>
-              <p className="mt-3 max-w-3xl text-muted-foreground">
-                Review opportunities, events, businesses, and organizations before they become visible to the community.
-              </p>
-            </div>
-            {accessContext.role === "admin" ? (
-              <Link
-                href="/moderation/team"
-                className="inline-flex min-h-11 w-fit items-center rounded-[var(--radius-control)] border border-border/80 bg-background/80 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-              >
-                Manage moderation team
-              </Link>
-            ) : null}
-          </div>
-        </section>
+        <MemberPageHeader title="Content moderation" description="Review opportunities, events, businesses, and organizations before they become visible to the community." icon={CircleCheck}>
+          {accessContext.role === "admin" ? <Link href="/moderation/team" className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-border bg-card px-4 py-2.5 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Manage moderation team</Link> : null}
+        </MemberPageHeader>
 
         {error ? (
           <div

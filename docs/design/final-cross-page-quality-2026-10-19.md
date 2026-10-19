@@ -58,3 +58,13 @@ Inspect candidate before/after evidence, resolve observed UI/a11y defects, inspe
 The Vercel preview for PR #511 is reachable. All three homepage languages were manually checked at 390/768/1280/1440px without horizontal overflow. The mobile menu opens, Escape closes it and restores summary focus. Explore search updates its URL and its Search button has a visible 2px keyboard outline. A measured 36px language selector and duplicate mobile footer 36px rule were corrected to 44px.
 
 Node CI passed on Node 22/24. The first design run passed 14/14 API/RLS scenarios but produced no screenshots: a second stale baseline assertion in the browser runner still required dad64a27 instead of the new immutable baseline. It now checks LOCAL_QA_COMPARE_SHA, retaining the legacy fallback for older workflows. Candidate browser/a11y acceptance remains pending. The multilingual smoke first timed out on the mobile Farsi-to-Pashto switch; a rerun is in progress. No full audit approval is implied.
+
+## Image review and additional targeted corrections
+
+Two independent authenticated runs on the first PR candidate each passed 52 real-browser scenarios. Pass 1 artifact 12162310744 contains 430 PNGs; its merge revision is 4b091bca2b7ea96e1168657c8fbbd3cf336e6398 and its source tree fed7e651e65d48a9fe84ca28a336f8e9eaf2b459 exactly matches candidate 42f5e584. This is historical evidence for that tree, not the latest candidate.
+
+Reviewed mobile contact sheets of 46 route captures, including private catalogue directories, forms, conversations, profile, Network, Search, Saved, Settings, submissions and moderation. These captures showed remaining boxed introductions on Search, Saved, Settings, My Events and Moderation. Those introductions now reuse MemberPageHeader with existing descriptions and actions; account identity/status remain visible. The approved Dashboard introduction stays intact.
+
+The review also caught an evidence defect: slug normalization happened after converting path separators, so edit captures overwrote detail captures. Slugs are now normalized before separators and duplicate capture paths fail explicitly. Capture scroll position resets and two layout frames settle after resize. Earlier detail images cannot be treated as separate detail evidence. The latest candidate requires fresh authenticated and paired before/after review.
+
+The first multilingual smoke retry passed without an application change, indicating the initial mobile locale timeout was intermittent. It remains recorded rather than concealed. Local checks after the shared-header changes: 445 tests passed, one skipped, zero failures; typecheck and build passed; lint zero errors, six warnings.

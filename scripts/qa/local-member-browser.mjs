@@ -820,6 +820,7 @@ try {
       const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
       mkdirSync(visualDir, {recursive:true});
       const findings = [];
+      const capturePaths = new Set();
       const accessibility = [];
       const widths = [1440,1280,768,390,320];
       // Keep route captures in one pass; locale-specific Navigator captures follow below.
@@ -855,9 +856,13 @@ try {
             }
             const label = route === '/' ? 'homepage' : route === conversationPath ? 'conversation'
               : route === `/members/${b.id}` ? 'member' : route === '/login?mode=join'
-              ? 'signup' : route.slice(1).replaceAll('/', '-').replace(/browser-[^/]+/g,'fixture');
+              ? 'signup' : route.slice(1).replace(/browser-[^/]+/g,'fixture').replaceAll('/', '-');
+            const capturePath = `${visualDir}/${label}-${phase}-${width}.png`;
+            assert.ok(!capturePaths.has(capturePath), `Duplicate visual capture: ${label}`);
+            capturePaths.add(capturePath);
+            await visual.evaluate('window.scrollTo({top:0,left:0,behavior:"instant"}); new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))');
             const screenshot = await visual.send('Page.captureScreenshot', { format:'png' });
-            writeFileSync(`${visualDir}/${label}-${phase}-${width}.png`, Buffer.from(screenshot.data, 'base64'));
+            writeFileSync(capturePath, Buffer.from(screenshot.data, 'base64'));
             findings.push({ phase, requested: route, width, ...state });
             if (phase === 'after' && width === 390 && process.env.LOCAL_QA_AXE_PATH) {
               await visual.evaluate(readFileSync(process.env.LOCAL_QA_AXE_PATH, 'utf8'));

@@ -1,3 +1,4 @@
+import { MemberPageHeader } from "@/components/catalog/member-page-header";
 import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import Link from "next/link";
 import {
@@ -6,7 +7,6 @@ import {
   Building2,
   CalendarDays,
   Search,
-  Sparkles,
   UserRound,
   UsersRound,
 } from "lucide-react";
@@ -393,20 +393,7 @@ export default async function SearchPage({
   return (
     <main className={catalogPageContainerClass}>
       <div className="min-w-0">
-        <section className="relative overflow-hidden workspace-surface px-5 py-6 md:px-6 md:py-8">
-          <div className="relative">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-              <Sparkles aria-hidden="true" className="size-3.5" />
-              Discover Afghan Hub
-            </div>
-            <h1 className="mt-5 workspace-heading">
-              Search with purpose.
-            </h1>
-            <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">
-              Choose what you are trying to do, then browse or add a keyword. Afghan Hub uses only explicit, public signals to prioritize relevant people and listings.
-            </p>
-          </div>
-        </section>
+        <MemberPageHeader title="Search with purpose." description="Choose what you are trying to do, then browse or add a keyword. Afghan Hub uses only explicit, public signals to prioritize relevant people and listings." icon={Search} />
 
         <form action="/search" role="search" className="relative mt-8 grid gap-3 rounded-[var(--radius)] border border-border/80 bg-card p-4 shadow-[0_1px_0_rgb(48_43_53/0.025)] md:grid-cols-[14rem_minmax(0,1fr)_auto] md:items-end">
           <label className="grid gap-2 text-sm font-medium text-foreground">
