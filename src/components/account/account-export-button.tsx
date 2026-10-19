@@ -2,9 +2,33 @@
 
 import styles from "@/components/network/network-surfaces.module.css";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
+import { readSiteLanguagePreference, subscribeSiteLanguagePreference, type SiteLanguage } from "@/lib/i18n/site-language";
+
+const downloadLabels = {
+  "en": {
+    "idle": "Download account and profile",
+    "pending": "Preparing download…",
+    "success": "Your account and profile download is ready.",
+    "error": "We could not download your data. Sign in again or try later."
+  },
+  "fa": {
+    "idle": "دریافت اطلاعات حساب و پروفایل",
+    "pending": "در حال آماده‌سازی دریافت…",
+    "success": "فایل اطلاعات حساب و پروفایل شما آماده است.",
+    "error": "دریافت اطلاعات ممکن نشد. دوباره وارد حساب شوید یا بعداً تلاش کنید."
+  },
+  "ps": {
+    "idle": "د حساب او پروفایل معلومات ښکته کړئ",
+    "pending": "د ښکته کولو لپاره چمتو کېږي…",
+    "success": "ستاسو د حساب او پروفایل فایل چمتو دی.",
+    "error": "ستاسو معلومات ښکته نه شول. بیا ننوځئ یا وروسته هڅه وکړئ."
+  }
+} as const satisfies Record<SiteLanguage, Record<string, string>>;
 
 export function AccountExportButton() {
+  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
+  const labels = downloadLabels[language];
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState("");
   const [failed, setFailed] = useState(false);
@@ -32,10 +56,10 @@ export function AccountExportButton() {
       link.click();
       link.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-      setMessage("Your account and profile download is ready.");
+      setMessage("success");
     } catch {
       setFailed(true);
-      setMessage("We could not download your data. Sign in again or try later.");
+      setMessage("error");
     } finally {
       setPending(false);
     }
@@ -45,7 +69,7 @@ export function AccountExportButton() {
     <div>
       <button type="button" onClick={download} disabled={pending} aria-busy={pending}
         className={`border border-border bg-background px-4 py-2.5 text-sm font-semibold hover:bg-secondary disabled:cursor-wait disabled:opacity-60 ${styles.control}`}>
-        {pending ? "Preparing download…" : "Download account and profile"}
+        {pending ? labels.pending : labels.idle}
       </button>
       {message ? (
         <p
@@ -57,7 +81,7 @@ export function AccountExportButton() {
               : "mt-3 rounded-sm border border-primary/15 bg-primary/[0.05] px-3 py-2 text-sm leading-6 text-primary"
           }
         >
-          {message}
+          {message === "success" ? labels.success : labels.error}
         </p>
       ) : null}
     </div>
