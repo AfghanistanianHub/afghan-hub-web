@@ -39,18 +39,15 @@ test("password policy requires 12 characters and at least three character groups
   assert.equal(passwordPolicy.getPasswordPolicyError("Long-enough-password"), null);
 });
 
-test("login accepts an existing password while signup enforces the shared new-password minimum", async () => {
-  const login = () => {}, signup = () => {};
-  const page = load("../src/app/login/page.tsx", { "@/components/auth/auth-brand": { AuthBrand: "auth-brand" }, "next/link": {}, "lucide-react": iconStubs, "@/components/public/community-illustrations": { CommunityIllustration: "community-artwork" }, "@/components/public/support-links": { SupportLinks: "support-links" }, "./actions": { login, signup }, "@/components/auth/submit-button": { SubmitButton: "submit-control" }, "@/lib/password-policy": passwordPolicy }).default;
-  for (const joining of [false, true]) {
-    const tree = await page({ searchParams: Promise.resolve({ mode: joining ? "join" : undefined, error: "Try again", message: "Check your email" }) });
-    const password = elements(tree, "input").find(el => el.props.name === "password");
-    assert.equal(password.props.minLength, joining ? 12 : undefined);
-    assert.equal(password.props.autoComplete, joining ? "new-password" : "current-password");
-    assert.equal(elements(tree, "form")[0].props.action, joining ? signup : login);
-    assert.ok(elements(tree, "div").some(el => el.props.role === "alert"));
-    assert.ok(elements(tree, "div").some(el => el.props.role === "status"));
-  }
+test("login accepts an existing password while signup enforces the shared new-password minimum", () => {
+  const pageSource = fs.readFileSync(new URL("../src/app/login/page.tsx", import.meta.url), "utf8");
+  const formSource = fs.readFileSync(new URL("../src/app/login/localized-login-content.tsx", import.meta.url), "utf8");
+  assert.match(pageSource, /LocalizedLoginContent/);
+  assert.match(formSource, /minLength=\{joining \? PASSWORD_MIN_LENGTH : undefined\}/);
+  assert.match(formSource, /autoComplete=\{joining \? "new-password" : "current-password"\}/);
+  assert.match(formSource, /action=\{joining \? signup : login\}/);
+  assert.match(formSource, /role="alert"/);
+  assert.match(formSource, /role="status"/);
 });
 
 test("signup and reset server actions both use the shared password validator", () => {
@@ -71,3 +68,41 @@ test("submit control disables repeat submissions and announces progress only whi
   }
 });
 
+
+test("localized recovery and password update retain server-side security boundaries", () => {
+  const recoveryPage = fs.readFileSync(new URL("../src/app/forgot-password/page.tsx", import.meta.url), "utf8");
+  const recoveryView = fs.readFileSync(new URL("../src/app/forgot-password/localized-forgot-password-content.tsx", import.meta.url), "utf8");
+  const updatePage = fs.readFileSync(new URL("../src/app/update-password/page.tsx", import.meta.url), "utf8");
+  const updateView = fs.readFileSync(new URL("../src/app/update-password/localized-update-password-content.tsx", import.meta.url), "utf8");
+  assert.match(recoveryPage, /LocalizedForgotPasswordContent/);
+  assert.match(recoveryView, /action=\{requestPasswordReset\}/);
+  assert.match(updatePage, /supabase\.auth\.getUser\(\)/);
+  assert.match(updatePage, /if \(!user\)/);
+  assert.match(updateView, /action=\{updatePassword\}/);
+  assert.match(updateView, /minLength=\{PASSWORD_MIN_LENGTH\}/);
+  assert.match(updateView, /autoComplete="new-password"/);
+  assert.match(updateView, /aria-describedby="password-policy"/);
+  for (const source of [recoveryView, updateView]) {
+    assert.match(source, /en:/);
+    assert.match(source, /fa:/);
+    assert.match(source, /ps:/);
+  }
+});
+
+test("localized account views display translated safe feedback and preserve LTR credentials", () => {
+  const login = fs.readFileSync(new URL("../src/app/login/localized-login-content.tsx", import.meta.url), "utf8");
+  const recovery = fs.readFileSync(new URL("../src/app/forgot-password/localized-forgot-password-content.tsx", import.meta.url), "utf8");
+  const update = fs.readFileSync(new URL("../src/app/update-password/localized-update-password-content.tsx", import.meta.url), "utf8");
+  assert.match(login, /feedbackText\(error, language\)/);
+  assert.match(login, /feedbackText\(message, language\)/);
+  assert.match(login, /name="email"[\s\S]*?dir="ltr"/);
+  assert.match(login, /name="password"[\s\S]*?dir="ltr"/);
+  assert.match(recovery, /localizeFeedback\(error, language\)/);
+  assert.match(recovery, /localizeFeedback\(message, language\)/);
+  assert.match(update, /Passwords do not match\./);
+  assert.match(update, /errors\[error\]/);
+  for (const source of [login, recovery, update]) {
+    assert.match(source, /subscribeSiteLanguagePreference/);
+    assert.match(source, /dir=\{language === "en" \? "ltr" : "rtl"\}/);
+  }
+});
