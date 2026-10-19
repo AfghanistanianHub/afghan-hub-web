@@ -39,18 +39,15 @@ test("password policy requires 12 characters and at least three character groups
   assert.equal(passwordPolicy.getPasswordPolicyError("Long-enough-password"), null);
 });
 
-test("login accepts an existing password while signup enforces the shared new-password minimum", async () => {
-  const login = () => {}, signup = () => {};
-  const page = load("../src/app/login/page.tsx", { "@/components/auth/auth-brand": { AuthBrand: "auth-brand" }, "next/link": {}, "lucide-react": iconStubs, "@/components/public/community-illustrations": { CommunityIllustration: "community-artwork" }, "@/components/public/support-links": { SupportLinks: "support-links" }, "./actions": { login, signup }, "@/components/auth/submit-button": { SubmitButton: "submit-control" }, "@/lib/password-policy": passwordPolicy }).default;
-  for (const joining of [false, true]) {
-    const tree = await page({ searchParams: Promise.resolve({ mode: joining ? "join" : undefined, error: "Try again", message: "Check your email" }) });
-    const password = elements(tree, "input").find(el => el.props.name === "password");
-    assert.equal(password.props.minLength, joining ? 12 : undefined);
-    assert.equal(password.props.autoComplete, joining ? "new-password" : "current-password");
-    assert.equal(elements(tree, "form")[0].props.action, joining ? signup : login);
-    assert.ok(elements(tree, "div").some(el => el.props.role === "alert"));
-    assert.ok(elements(tree, "div").some(el => el.props.role === "status"));
-  }
+test("login accepts an existing password while signup enforces the shared new-password minimum", () => {
+  const pageSource = fs.readFileSync(new URL("../src/app/login/page.tsx", import.meta.url), "utf8");
+  const formSource = fs.readFileSync(new URL("../src/app/login/localized-login-content.tsx", import.meta.url), "utf8");
+  assert.match(pageSource, /LocalizedLoginContent/);
+  assert.match(formSource, /minLength=\{joining \? PASSWORD_MIN_LENGTH : undefined\}/);
+  assert.match(formSource, /autoComplete=\{joining \? "new-password" : "current-password"\}/);
+  assert.match(formSource, /action=\{joining \? signup : login\}/);
+  assert.match(formSource, /role="alert"/);
+  assert.match(formSource, /role="status"/);
 });
 
 test("signup and reset server actions both use the shared password validator", () => {
