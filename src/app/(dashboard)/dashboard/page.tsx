@@ -9,7 +9,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { RecommendedMembers } from "@/components/dashboard/recommended-members";
-import { DashboardText } from "@/components/dashboard/dashboard-text";
+import { DashboardText, type DashboardTextKey } from "@/components/dashboard/dashboard-text";
 import { GoalPaths } from "@/components/discovery/goal-paths";
 import { ProfileStrength } from "@/components/profile/profile-strength";
 import {
@@ -162,7 +162,7 @@ export default async function DashboardPage() {
   const missingStepTextId = missingKey && missingKey in missingStepKeys
     ? missingStepKeys[missingKey as keyof typeof missingStepKeys]
     : "complete";
-  const nextStep = profileStrength.complete
+  const nextStep: { titleId: DashboardTextKey; href: string } = profileStrength.complete
     ? { titleId: "network" as const, href: "/network" }
     : { titleId: missingStepTextId, href: "/profile" };
 
