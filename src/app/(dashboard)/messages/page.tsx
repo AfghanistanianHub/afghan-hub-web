@@ -1,3 +1,4 @@
+import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { MessageSquare } from "lucide-react";
@@ -10,7 +11,7 @@ export default async function MessagesPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-7 sm:px-6 md:px-8">
+    <main className={catalogPageContainerClass}>
       <MemberPageHeader title="Messages" description="Conversations with your Afghan Hub connections." icon={MessageSquare}><Link href="/network" className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-border bg-card px-4 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Find people</Link></MemberPageHeader>
       <div className="mt-5 border-y border-border bg-card"><ConversationNavigation currentUserId={user.id} /></div>
     </main>

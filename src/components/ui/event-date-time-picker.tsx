@@ -88,7 +88,7 @@ export function EventDateTimePicker({
         onClick={() => setIsOpen((current) => !current)}
         aria-label={`${label}: ${displayValue}`}
         aria-expanded={isOpen}
-        aria-controls={panelId}
+        aria-controls={isOpen ? panelId : undefined}
         aria-haspopup="dialog"
         className={`${styles.trigger} flex w-full items-center justify-between rounded-[var(--radius)] border border-input bg-background px-4 py-3 text-left text-foreground outline-none transition hover:border-primary/50 hover:bg-muted/40 focus:border-primary focus:ring-2 focus:ring-ring/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
       >

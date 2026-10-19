@@ -67,7 +67,7 @@
 .inputRow { display:flex; gap:8px; align-items:stretch; }
 .inputWrap { position:relative; flex:1; min-width:0; }
 .inputWrap > svg { position:absolute; inset-inline-start:13px; top:50%; transform:translateY(-50%); color:var(--muted-foreground); pointer-events:none; }
-.inputRow input { width:100%; min-width:0; min-height:var(--field-height); padding:12px 12px 12px 40px; border:1px solid var(--border); border-radius:var(--radius-control); background:var(--background); font-size:1rem; outline:none; }
+.inputRow input { width:100%; min-width:0; min-height:var(--field-height); padding:12px 12px 12px 40px; border:1px solid var(--input); border-radius:var(--radius-control); background:var(--background); font-size:1rem; outline:none; }
 [dir="rtl"] .inputRow input { padding:12px 40px 12px 12px; }
 .inputRow input:focus { border-color:var(--primary); box-shadow:0 0 0 3px color-mix(in srgb,var(--secondary) 80%,transparent); }
 .inputRow button { min-height:var(--field-height); padding:12px 17px; border-radius:var(--radius-control); background:var(--primary); color:var(--primary-foreground); font-size:var(--text-control); font-weight:650; box-shadow:0 6px 18px rgb(98 66 145 / .14); }

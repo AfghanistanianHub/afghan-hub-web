@@ -43,7 +43,7 @@ test("assistant interface uses shared canonical language choices and retains RTL
   assert.doesNotMatch(localeResources, /fa-AF|dariMember/);
   assert.match(component, /dir=\{language === "en" \? "ltr" : "rtl"\}/);
   const languages = fs.readFileSync(new URL("../src/lib/assistant/navigator-language.ts", import.meta.url), "utf8");
-  assert.match(languages, /فارسی \/ Persian/);
+  assert.match(languages, /فارسی \/ Farsi/);
   assert.match(component, /memberNavigatorLocales.map/);
   assert.match(languages, /پښتو \/ Pashto/);
 });

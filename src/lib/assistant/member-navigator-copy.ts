@@ -85,5 +85,5 @@ export const memberNavigatorDialogue = {
   ps: { retry: "بیا هڅه وکړئ", privacy: "ستاسو لټون د پایلو موندلو لپاره افغان هب ته لېږل کېږي. حساس معلومات مه لیکئ. تاریخچه یوازې په دې ناسته کې پاتې کېږي؛ پیغام یا غوښتنه نه لېږل کېږي.", title: "ټولنیز لارښود", you: "تاسو", matches: "د افغان هب پایلې", start: "نوی لټون", grounded: "د افغان هب د اعلانونو او عامه پروفایلونو پر بنسټ.", mentors: "لارښوونې ته چمتو غړي", mentees: "د لارښود په لټه کې غړي", preference: "لارښوونه د غړي خوښه ده، د وړتیا تایید نه دی.", follow: "موندنې ته دوام ورکړئ", organizations: "سازمانونه هم را وښیه", events: "غونډې هم را وښیه", people: "خلک هم را وښیه", anywhere: "هر ځای", partial: "د اړوندو غړو پایلې ترلاسه نه شوې.", types: { profile: "غړي", event: "غونډې", opportunity: "فرصتونه", organization: "سازمانونه", business: "کاروبارونه" } },
 } as const;
 
-export const memberNavigatorLocales = [{value:"en",label:"English"},{value:"fa",label:"فارسی / Persian"},{value:"ps",label:"پښتو / Pashto"}] as const;
+export const memberNavigatorLocales = [{value:"en",label:"English"},{value:"fa",label:"فارسی / Farsi"},{value:"ps",label:"پښتو / Pashto"}] as const;
 export const memberNavigatorUtility = {en:{close:"Close Community Navigator",privacy:"How your search works"},fa:{close:"بستن راهنما",privacy:"جست‌وجو چگونه کار می‌کند"},ps:{close:"لارښود بند کړئ",privacy:"لټون څنګه کار کوي"}};

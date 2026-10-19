@@ -1,3 +1,5 @@
+import { MemberPageHeader } from "@/components/catalog/member-page-header";
+import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -5,7 +7,6 @@ import {
   Building2,
   CalendarDays,
   Search,
-  Sparkles,
   UserRound,
   UsersRound,
 } from "lucide-react";
@@ -390,22 +391,9 @@ export default async function SearchPage({
     .filter((result): result is SearchResult => Boolean(result));
 
   return (
-    <main className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
-      <div className="mx-auto max-w-5xl">
-        <section className="relative overflow-hidden workspace-surface px-5 py-6 md:px-6 md:py-8">
-          <div className="relative">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-              <Sparkles aria-hidden="true" className="size-3.5" />
-              Discover Afghan Hub
-            </div>
-            <h1 className="mt-5 workspace-heading">
-              Search with purpose.
-            </h1>
-            <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">
-              Choose what you are trying to do, then browse or add a keyword. Afghan Hub uses only explicit, public signals to prioritize relevant people and listings.
-            </p>
-          </div>
-        </section>
+    <main className={catalogPageContainerClass}>
+      <div className="min-w-0">
+        <MemberPageHeader title="Search with purpose." description="Choose what you are trying to do, then browse or add a keyword. Afghan Hub uses only explicit, public signals to prioritize relevant people and listings." icon={Search} />
 
         <form action="/search" role="search" className="relative mt-8 grid gap-3 rounded-[var(--radius)] border border-border/80 bg-card p-4 shadow-[0_1px_0_rgb(48_43_53/0.025)] md:grid-cols-[14rem_minmax(0,1fr)_auto] md:items-end">
           <label className="grid gap-2 text-sm font-medium text-foreground">
@@ -413,7 +401,7 @@ export default async function SearchPage({
             <select
               name="intent"
               defaultValue={intent ?? ""}
-              className="rounded-[var(--radius-control)] border border-border/80 bg-background px-4 py-4 text-sm text-foreground outline-none transition hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
+              className="rounded-[var(--radius-control)] border border-input bg-background px-4 py-4 text-sm text-foreground outline-none transition hover:border-primary focus:border-primary focus:bg-background focus:ring-4 focus:ring-primary/10"
             >
               <option value="">Anything in the community</option>
               {phaseOneSearchIntents.map((option) => (
@@ -432,7 +420,7 @@ export default async function SearchPage({
               defaultValue={query}
               placeholder={intent ? "Optional keyword…" : "Name, skill, organization, service, opportunity…"}
               aria-label="Search Afghan Hub"
-              className="w-full rounded-[var(--radius-control)] border border-border/80 bg-background py-4 pl-12 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary/20 focus:border-primary/40 focus:bg-background focus:ring-4 focus:ring-primary/10"
+              className="w-full rounded-[var(--radius-control)] border border-input bg-background py-4 pl-12 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary focus:border-primary focus:bg-background focus:ring-4 focus:ring-primary/10"
             />
           </label>
           <button

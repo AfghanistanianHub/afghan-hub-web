@@ -105,7 +105,7 @@ async function captureState(page, label) {
   if (process.env.LOCAL_QA_VISUAL !== '1') return;
   const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
   mkdirSync(visualDir, { recursive: true });
-  for (const width of [1440, 768, 390, 320]) {
+  for (const width of [1440, 1280, 768, 390, 320]) {
     await page.send('Emulation.setDeviceMetricsOverride', { width, height:1000, deviceScaleFactor:1, mobile:width<768 });
     await page.send('Emulation.setPageScaleFactor', { pageScaleFactor:1 });
     const screenshot = await page.send('Page.captureScreenshot', { format:'png' });
@@ -122,8 +122,8 @@ async function captureState(page, label) {
   }
   await page.send('Emulation.setDeviceMetricsOverride', { width:1440, height:1000, deviceScaleFactor:1, mobile:false });
 }
-function launch(command, args, env) {
-  const child = spawn(command, args, { env, stdio: ['ignore', 'pipe', 'pipe'] });
+function launch(command, args, env, cwd = process.cwd()) {
+  const child = spawn(command, args, { env, cwd, stdio: ['ignore', 'pipe', 'pipe'] });
   // Do not retain or publish logs containing cookie/session/provider payloads.
   child.stdout.resume(); child.stderr.resume();
   children.push(child);
@@ -331,11 +331,19 @@ try {
   const compareUrl = requireLocalTarget('http://localhost:3102', 3102);
   if (process.env.LOCAL_QA_COMPARE_DIR) {
     const compareDir = resolve(process.env.LOCAL_QA_COMPARE_DIR);
-    assert.equal(execFileSync('git',['-C',compareDir,'rev-parse','HEAD'],{encoding:'utf8'}).trim(), 'dad64a27c09aebb32651149b5e33f8bf2534703f', 'Visual baseline must be pinned');
-    const baselineBuild=launch(process.execPath,[nextCli,'build',compareDir],env);
-    assert.equal(await new Promise((resolve,reject)=>{baselineBuild.once('exit',resolve);baselineBuild.once('error',reject);}),0,'Baseline production build failed');
+    step = 'pinned visual baseline';
+    const compareSha = process.env.LOCAL_QA_COMPARE_SHA ?? 'dad64a27c09aebb32651149b5e33f8bf2534703f';
+    assert.match(compareSha, /^[a-f0-9]{40}$/, 'Comparison requires an immutable baseline SHA');
+    assert.equal(execFileSync('git',['-C',compareDir,'rev-parse','HEAD'],{encoding:'utf8'}).trim(), compareSha, 'Visual baseline must be pinned');
+    const compareCli = join(compareDir, 'node_modules/next/dist/bin/next');
+    // The design workflow already built this immutable worktree. Legacy callers
+    // may only prepare a checkout, so build once there using its own cwd/CLI.
+    if (!existsSync(join(compareDir, '.next/BUILD_ID'))) {
+      const baselineBuild = launch(process.execPath, [compareCli, 'build'], env, compareDir);
+      assert.equal(await new Promise((resolve,reject)=>{baselineBuild.once('exit',resolve);baselineBuild.once('error',reject);}),0,'Baseline production build failed');
+    }
     assert.ok(existsSync(join(compareDir, '.next/BUILD_ID')), 'Comparison requires a prebuilt baseline checkout');
-    launch(process.execPath, [nextCli, 'start', compareDir, '--hostname', '127.0.0.1', '--port', '3102'], env);
+    launch(process.execPath, [compareCli, 'start', '--hostname', '127.0.0.1', '--port', '3102'], env, compareDir);
     await until(async () => (await fetch(compareUrl)).ok, 'baseline comparison server');
   }
   profile = await fs.mkdtemp(join(tmpdir(), 'afghan-member-browser-'));
@@ -807,24 +815,43 @@ try {
       execFileSync('docker',['exec','supabase_db_afghan-hub-local-journey','psql','-U','postgres','-d','postgres','-v','ON_ERROR_STOP=1','-c',`BEGIN; SELECT set_config('request.jwt.claim.role','service_role',true); UPDATE public.profiles SET role='admin',onboarding_completed=true WHERE id='${designReviewer.id}'; COMMIT;`],{stdio:'ignore'});
       const adminVisual=await page(); await login(adminVisual,designReviewer.email); await pathname(adminVisual,'/dashboard');
       const detailRoutes=[];
+      let visualEvent;
       for(const table of ['businesses','organizations','opportunities','events']) {
         const fixture=listings.filter(row=>row.table===table).at(-1);
         assert.ok(fixture,`Missing visual fixture: ${table}`);
         const row=await data(admin.from(table).select('slug,status').eq('id',fixture.id).single());
         assert.equal(row.status,'published','Public detail evidence requires a published synthetic fixture');
         detailRoutes.push(`/${table}/${row.slug}`,`/${table}/${row.slug}/edit`,`/explore/${table}/${row.slug}`);
+        if (table === 'events') {
+          visualEvent = {id:fixture.id,slug:row.slug};
+          detailRoutes.push(`/events/${row.slug}/attendees`);
+        }
       }
+      await check('Registration appears in host attendance tools through real member and owner UI', async () => {
+        assert.ok(visualEvent);
+        await visit(pageB, `/events/${visualEvent.slug}`);
+        await click(pageB, 'form:has(input[name=event_id]) button[type=submit]');
+        await until(() => pageB.evaluate(`document.querySelector('main [role=status]')?.textContent.includes('registered for this event')`), 'member registration confirmation');
+        assert.equal((await data(admin.from('event_rsvps').select('profile_id').eq('event_id',visualEvent.id).eq('profile_id',b.id))).length,1);
+        await visit(memberVisual, `/events/${visualEvent.slug}`);
+        await click(memberVisual, `a[href="/events/${visualEvent.slug}/attendees"]`);
+        await pathname(memberVisual, `/events/${visualEvent.slug}/attendees`);
+        await until(() => memberVisual.evaluate(`document.querySelector('main h1')?.textContent==='Event attendees' && !!document.querySelector('main a[href="/members/${b.id}"]')`), 'registered public member visible to host');
+        await captureState(memberVisual, 'event-attendees-populated');
+      });
       const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
       mkdirSync(visualDir, {recursive:true});
       const findings = [];
-      const widths = [1440,768,390,320];
+      const capturePaths = new Set();
+      const accessibility = [];
+      const widths = [1440,1280,768,390,320];
       // Keep route captures in one pass; locale-specific Navigator captures follow below.
       const routes = ['/login', '/login?mode=join', '/forgot-password', '/update-password',
-        '/', '/about', '/explore', '/profile', '/dashboard', '/search', '/saved',
+        '/', '/en', '/fa', '/ps', '/about', '/support', '/privacy', '/terms', '/explore', '/profile', '/dashboard', '/search', '/saved',
         '/settings', '/network', `/members/${b.id}`, '/submissions', '/messages',
         conversationPath, '/businesses', '/organizations', '/opportunities', '/events',
         '/businesses/new', '/organizations/new', '/opportunities/new', '/events/new',
-        '/moderation', '/moderation/team', ...detailRoutes, '/not-a-real-page'];
+        '/events/my', '/moderation', '/moderation/team', ...detailRoutes, '/not-a-real-page'];
       const phases = process.env.LOCAL_QA_COMPARE_DIR ? ['before', 'after'] : [process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'];
       for (const phase of phases) {
         for (const route of routes) {
@@ -851,10 +878,20 @@ try {
             }
             const label = route === '/' ? 'homepage' : route === conversationPath ? 'conversation'
               : route === `/members/${b.id}` ? 'member' : route === '/login?mode=join'
-              ? 'signup' : route.slice(1).replaceAll('/', '-').replace(/browser-[^/]+/g,'fixture');
+              ? 'signup' : route.slice(1).replace(/browser-[^/]+/g,'fixture').replaceAll('/', '-');
+            const capturePath = `${visualDir}/${label}-${phase}-${width}.png`;
+            assert.ok(!capturePaths.has(capturePath), `Duplicate visual capture: ${label}`);
+            capturePaths.add(capturePath);
+            await visual.evaluate('window.scrollTo({top:0,left:0,behavior:"instant"}); new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))');
             const screenshot = await visual.send('Page.captureScreenshot', { format:'png' });
-            writeFileSync(`${visualDir}/${label}-${phase}-${width}.png`, Buffer.from(screenshot.data, 'base64'));
+            writeFileSync(capturePath, Buffer.from(screenshot.data, 'base64'));
             findings.push({ phase, requested: route, width, ...state });
+            if (phase === 'after' && width === 390 && process.env.LOCAL_QA_AXE_PATH) {
+              await visual.evaluate(readFileSync(process.env.LOCAL_QA_AXE_PATH, 'utf8'));
+              const audit = await visual.evaluate(`axe.run(document, {runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(result => ({violations:result.violations.map(({id,impact,nodes}) => ({id,impact,targets:nodes.map(node=>node.target)})),incomplete:result.incomplete.map(({id,nodes})=>({id,targets:nodes.map(node=>node.target)}))}))`);
+              accessibility.push({route, width, ...audit});
+              writeFileSync(`${visualDir}/accessibility-after.json`, JSON.stringify({sourceRevision, checks:accessibility},null,2)+'\n');
+            }
           }
         }
       }
@@ -868,7 +905,10 @@ try {
           writeFileSync(`${visualDir}/navigator-${locale}-after-${width}.png`, Buffer.from(screenshot.data,'base64'));
         }
       }
-      writeFileSync(`${visualDir}/layout-checks-after.json`, JSON.stringify({sourceRevision, sourceTree, zoom:100, widths, findings},null,2)+'\n');
+      writeFileSync(`${visualDir}/layout-checks-after.json`, JSON.stringify({sourceRevision, sourceTree, baselineRevision:process.env.LOCAL_QA_COMPARE_SHA ?? null, zoom:100, widths, findings},null,2)+'\n');
+      if (process.env.LOCAL_QA_AXE_PATH) {
+        assert.equal(accessibility.flatMap(check => check.violations).length, 0, 'WCAG-tagged accessibility violations require review; see accessibility-after.json');
+      }
     });
   }
   await check('Directory and submission request failures remain visible without false empty counts', async () => {

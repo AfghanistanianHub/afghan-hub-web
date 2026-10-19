@@ -102,7 +102,7 @@ export function GoalPaths() {
                 <span className="flex size-9 items-center justify-center rounded-lg bg-secondary text-primary">
                   <Icon aria-hidden="true" className="size-4" />
                 </span>
-                <span aria-hidden="true" className="text-[0.62rem] font-semibold tracking-[0.16em] text-muted-foreground/60">
+                <span aria-hidden="true" className="text-[0.62rem] font-semibold tracking-[0.16em] text-muted-foreground">
                   {goal.number}
                 </span>
               </div>

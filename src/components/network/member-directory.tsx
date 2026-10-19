@@ -132,7 +132,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
             onChange={(event) => setSearchQuery(event.target.value)}
             aria-label="Search members"
             placeholder="Search people, skills, companies..."
-            className={`${styles.search} w-full border border-border bg-card py-3 ps-11 pe-4 text-sm text-foreground placeholder:text-muted-foreground hover:border-primary/40`}
+            className={`${styles.search} w-full border border-input bg-card py-3 ps-11 pe-4 text-sm text-foreground placeholder:text-muted-foreground hover:border-primary`}
           />
         </div>
       </div>

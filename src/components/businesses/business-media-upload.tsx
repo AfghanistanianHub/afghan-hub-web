@@ -104,7 +104,7 @@ export function BusinessMediaUpload({
             <div className="flex h-48 w-full items-center justify-center rounded-[var(--radius)] border border-dashed border-border bg-muted/45 text-sm text-muted-foreground">No cover image</div>
           )}
           <div className="mt-4">
-            <label className={uploadClass}><span role="status" aria-live="polite">{uploading ? "Uploading…" : "Upload cover"}</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading} aria-describedby="business-media-help business-media-message" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadImage(file, "cover", 8); }} /></label>
+            <label className={uploadClass}><span role="status" aria-live="polite">{uploading ? "Uploading…" : "Upload cover"}</span><input type="file" aria-label="Upload business cover image" accept="image/jpeg,image/png,image/webp" disabled={uploading} aria-describedby="business-media-help business-media-message" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadImage(file, "cover", 8); }} /></label>
             <p id="business-media-help" className="mt-2 text-xs text-muted-foreground">Recommended ratio: 3:1. Maximum size: 8 MB.</p>
           </div>
         </div>
@@ -113,7 +113,7 @@ export function BusinessMediaUpload({
         <h2 className="text-xl font-semibold">Business logo</h2>
         <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
           {currentLogoUrl ? <ExternalImage src={currentLogoUrl} alt={`${businessName} logo`} width={96} height={96} className="h-24 w-24 rounded-[var(--radius)] border border-border/70 object-cover " /> : <div className="flex h-24 w-24 items-center justify-center rounded-[var(--radius)] border border-border bg-primary/10 text-3xl font-bold text-primary ">{businessName.charAt(0).toUpperCase()}</div>}
-          <div><label className={uploadClass}><span role="status" aria-live="polite">{uploading ? "Uploading…" : "Upload logo"}</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading} aria-describedby="business-logo-help business-media-message" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadImage(file, "logo", 5); }} /></label><p id="business-logo-help" className="mt-2 text-xs text-muted-foreground">JPG, PNG, or WebP. Maximum size: 5 MB.</p></div>
+          <div><label className={uploadClass}><span role="status" aria-live="polite">{uploading ? "Uploading…" : "Upload logo"}</span><input type="file" aria-label="Upload business logo" accept="image/jpeg,image/png,image/webp" disabled={uploading} aria-describedby="business-logo-help business-media-message" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadImage(file, "logo", 5); }} /></label><p id="business-logo-help" className="mt-2 text-xs text-muted-foreground">JPG, PNG, or WebP. Maximum size: 5 MB.</p></div>
         </div>
       </section>
       {message ? <p id="business-media-message" role={message.kind === "error" ? "alert" : "status"} aria-live={message.kind === "error" ? "assertive" : "polite"} className={message.kind === "error" ? "rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm text-destructive" : "rounded-[var(--radius)] border border-primary/15 bg-primary/[0.05] px-3 py-2 text-sm text-primary"}>{message.text}</p> : null}

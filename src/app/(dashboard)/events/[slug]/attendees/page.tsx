@@ -1,3 +1,5 @@
+import { MemberPageHeader } from "@/components/catalog/member-page-header";
+import { catalogPageContainerClass, catalogClearClass } from "@/components/catalog/catalog-filter-styles";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
@@ -116,37 +118,19 @@ export default async function EventAttendeesPage({ params }: Props) {
     : [event.venue_name, event.city, event.country].filter(Boolean).join(", ");
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-10">
+    <main className={catalogPageContainerClass}>
       <Link
         href={`/events/${event.slug}`}
-        className="inline-flex items-center gap-2 rounded-sm text-sm font-medium text-muted-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+        className="inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-medium text-muted-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
         <ArrowLeft aria-hidden="true" className="size-4" />
         Back to event
       </Link>
 
-      <section className="relative mt-6 overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card p-6 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:p-8">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
-        <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-accent/45 blur-3xl" />
-        <div className="relative flex flex-wrap items-start justify-between gap-5">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
-              Host tools
-            </p>
-            <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">
-              Event attendees
-            </h1>
-            <p className="mt-3 text-lg text-muted-foreground">{event.title}</p>
-          </div>
-
-          <Link
-            href={`/events/${event.slug}/edit`}
-            className="rounded-[var(--radius-control)] border border-border/80 bg-background/80 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-          >
-            Edit event
-          </Link>
-        </div>
-
+      <MemberPageHeader title="Event attendees" description={event.title} icon={UsersRound}>
+        <Link href={`/events/${event.slug}/edit`} className={catalogClearClass}>Edit event</Link>
+      </MemberPageHeader>
+      <section className="border-b border-border pb-7">
         <div className="mt-6 flex flex-wrap gap-3 text-sm text-muted-foreground">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5">
             <CalendarDays aria-hidden="true" className="size-4 text-primary" />
@@ -162,9 +146,9 @@ export default async function EventAttendeesPage({ params }: Props) {
 
         <div className="mt-7 grid gap-4 sm:grid-cols-3">
           {[['Registered', attendeeCount], ['Capacity', event.capacity ?? 'Unlimited'], ['Remaining', remaining ?? 'Unlimited']].map(([label, value]) => (
-            <div key={String(label)} className="rounded-[var(--radius-control)] border border-border/80 bg-background/72 p-5 shadow-sm">
+            <div key={String(label)} className="border-s-2 border-border py-2 ps-4">
               <p className="text-sm text-muted-foreground">{label}</p>
-              <p className="mt-2 text-3xl font-bold text-foreground">{value}</p>
+              <p className="mt-2 text-3xl font-medium text-foreground">{value}</p>
             </div>
           ))}
         </div>
@@ -249,7 +233,7 @@ export default async function EventAttendeesPage({ params }: Props) {
 
                   <Link
                     href={`/members/${profile.id}`}
-                    className="rounded-[var(--radius-control)] border border-border/80 bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                    className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-border/80 bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                   >
                     View profile
                   </Link>

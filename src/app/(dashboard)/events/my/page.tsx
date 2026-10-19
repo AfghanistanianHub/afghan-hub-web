@@ -1,8 +1,9 @@
+import { MemberPageHeader } from "@/components/catalog/member-page-header";
+import { catalogPageContainerClass, catalogClearClass, catalogSubmitClass } from "@/components/catalog/catalog-filter-styles";
 import Link from "next/link";
 import styles from "@/components/network/network-surfaces.module.css";
-import { CommunitySignature } from "@/components/public/community-signature";
 import { redirect } from "next/navigation";
-import { ArrowUpRight, CalendarDays, MapPin, Sparkles } from "lucide-react";
+import { ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 function formatEventDate(value: string) {
@@ -131,34 +132,11 @@ export default async function MyEventsPage() {
     ) ?? [];
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
-      <section className={`${styles.surface} relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8  md:px-8 md:py-10`}>
-        
-        
-        <CommunitySignature className={styles.signature} />
-        <div className="relative flex flex-wrap items-end justify-between gap-5">
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary"><Sparkles aria-hidden="true" className="size-3.5"/>Events</div>
-          <h1 className="mt-5 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">My events</h1>
-          <p className="mt-3 max-w-2xl text-muted-foreground">Keep track of events you registered for and events you are hosting.</p>
-        </div>
-
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href="/events"
-            className={`${styles.control} inline-flex items-center rounded-[var(--radius)] border border-border/80 bg-background/80 px-5 py-3 font-semibold text-foreground transition  hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
-          >
-            Browse events
-          </Link>
-          <Link
-            href="/events/new"
-            className={`${styles.control} inline-flex items-center rounded-[var(--radius)] bg-primary px-5 py-3 font-semibold text-primary-foreground  transition  hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
-          >
-            Create Event
-          </Link>
-        </div>
-        </div>
-      </section>
+    <main className={catalogPageContainerClass}>
+      <MemberPageHeader title="My events" description="Keep track of events you registered for and events you are hosting." icon={CalendarDays}>
+        <Link href="/events" className={catalogClearClass}>Browse events</Link>
+        <Link href="/events/new" className={catalogSubmitClass}>Create Event</Link>
+      </MemberPageHeader>
 
       <section className="mt-10">
         <div>

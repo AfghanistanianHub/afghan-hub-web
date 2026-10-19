@@ -89,6 +89,7 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
         </span>
         <input
           type="file"
+          aria-label="Upload profile photo"
           accept="image/jpeg,image/png,image/webp"
           disabled={uploading}
           aria-describedby={message ? "avatar-upload-message" : undefined}
