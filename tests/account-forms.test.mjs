@@ -106,3 +106,13 @@ test("localized account views display translated safe feedback and preserve LTR 
     assert.match(source, /dir=\{language === "en" \? "ltr" : "rtl"\}/);
   }
 });
+
+test("auth translations cover password policy errors and localized footer navigation", () => {
+  const source = fs.readFileSync(new URL("../src/app/login/localized-login-content.tsx", import.meta.url), "utf8");
+  assert.match(source, /Password must include at least 3 of:/);
+  assert.match(source, /Password must be at least/);
+  assert.match(source, /<SupportLinks labels=\{legalNavigation\[language\]\} \/>/);
+  for (const name of ["privacy", "terms", "support", "navigation"]) {
+    assert.match(source, new RegExp(name + ":"));
+  }
+});
