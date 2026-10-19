@@ -51,6 +51,10 @@ export const metadata: Metadata = {
   },
 };
 
+// Runs before first paint so /fa and /ps (and a stored Farsi/Pashto choice) never flash English.
+// Mirrors normalizeSiteLanguage/readSiteLanguagePreference in src/lib/i18n/site-language.ts.
+const languageBootstrap = `(function(){try{var m=location.pathname.match(/^\\/(en|fa|ps)\\/?$/);var l=m&&m[1];if(!l){var s=localStorage.getItem('afghan-hub-site-language')||localStorage.getItem('afghan-hub-navigator-language')||'';s=s.trim().replace(/_/g,'-').toLowerCase();l=(s==='fa'||s.indexOf('fa-')===0||s==='prs'||s.indexOf('prs-')===0)?'fa':(s==='ps'||s.indexOf('ps-')===0)?'ps':'en';}document.documentElement.lang=l;document.documentElement.dir=l==='en'?'ltr':'rtl';}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -59,8 +63,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${estedad.variable} ${vazirmatn.variable} h-full antialiased`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: languageBootstrap }} />
+      </head>
       <body className="min-h-full flex flex-col">
         <GlobalNetworkBackground />
         <div className="app-content flex min-h-full flex-1 flex-col">
