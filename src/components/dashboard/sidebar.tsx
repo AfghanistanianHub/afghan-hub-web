@@ -55,7 +55,7 @@ export function Sidebar({
 
       <div className="relative shrink-0 px-5 pt-5">
         <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          Workspace
+          {t.workspace}
         </p>
       </div>
 
@@ -116,7 +116,7 @@ export function Sidebar({
 
       <div className="relative shrink-0 border-t border-border p-3">
         <p className="px-3 pb-2 pt-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          Account
+          {t.account}
         </p>
         <div className="space-y-1">
           <Link
