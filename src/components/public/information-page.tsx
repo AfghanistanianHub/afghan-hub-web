@@ -5,7 +5,7 @@ export function InformationPage({ title, description, sections, labels }: {
   title: string;
   description: string;
   sections: { title: string; text: string }[];
-  labels?: { contact: string; operator: string; support: string; warning: string };
+  labels?: { contact: string; operator: string; support: string; warning: string; navigation: { privacy: string; terms: string; support: string; navigation: string } };
 }) {
   return (
     <main id="main-content" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8 sm:py-20">
@@ -32,7 +32,7 @@ export function InformationPage({ title, description, sections, labels }: {
             <div><dt className="text-muted-foreground">{labels?.support ?? "Support and privacy questions"}</dt><dd className="mt-1"><a href={siteContact.mailto} className="break-all rounded-sm font-medium text-primary underline underline-offset-4 transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">{siteContact.email}</a></dd></div>
           </dl>
           <p className="mt-5 text-sm leading-6 text-muted-foreground">{labels?.warning ?? "Do not send passwords, sign-in links, session tokens or sensitive identity documents by email."}</p>
-          <div className="mt-6 border-t border-border pt-5"><SupportLinks /></div>
+          <div className="mt-6 border-t border-border pt-5"><SupportLinks labels={labels?.navigation} /></div>
         </aside>
       </div>
     </main>
