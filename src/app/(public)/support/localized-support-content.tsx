@@ -35,7 +35,7 @@ const copy = {
       { title: "د ځواب تمه", text: "ملاتړ د برېښنالیک له لارې ترلاسه کېږي. د ځواب لپاره ټاکلی وخت نه دی اعلان شوی. دا پته بیړني خدمات نه وړاندې کوي؛ د سمدستي خطر پر مهال له خپلو سیمه‌ییزو بیړنیو خدماتو سره اړیکه ونیسئ." },
     ],
   },
-} as const satisfies Record<SiteLanguage, {title: string; description: string; sections: readonly {title: string; text: string}[]; labels: {contact: string; operator: string; support: string; warning: string}}>;
+} as const satisfies Record<SiteLanguage, {title: string; description: string; sections: readonly {title: string; text: string}[]; labels: {contact: string; operator: string; support: string; warning: string; navigation: {privacy: string; terms: string; support: string; navigation: string}}}>;
 
 export function LocalizedSupportContent() {
   const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
