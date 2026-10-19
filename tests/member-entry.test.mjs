@@ -94,6 +94,7 @@ test("dashboard redirects signed-out requests before starting member queries", a
         "next/link",
         "lucide-react",
         "@/components/dashboard/recommended-members",
+        "@/components/dashboard/dashboard-text",
         "@/components/catalog/catalog-filter-styles",
         "@/components/discovery/goal-paths",
         "@/components/profile/profile-strength",
