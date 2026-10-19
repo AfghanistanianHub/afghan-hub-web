@@ -4,8 +4,8 @@ Review PR: #511. Baseline: `b7310c3978d431e76de550a23f9b171fdab8c4fa`, including
 
 ## Changes
 
-- Reuse PR #508's 88rem container on Dashboard, Search, Saved, Settings, Messages, Moderation, My Events and host attendance management. Keep focused auth, conversation and long-form columns purpose-specific.
-- Use the approved editorial MemberPageHeader on Search, Saved, Settings, My Events, Moderation and Event attendees. Remove their redundant intro cards, heavy shadows and decorative intro glows. Preserve actions, account status and attendance statistics.
+- Reuse PR #508's 88rem container on Dashboard, Search, Saved, Settings, Messages, Moderation, moderation-team administration, My Events and host attendance management. Keep focused auth, conversation and long-form columns purpose-specific.
+- Use the approved editorial MemberPageHeader on Search, Saved, Settings, My Events, Moderation, Moderation team and Event attendees. Remove their redundant intro cards, heavy shadows and decorative intro glows. Preserve actions, account status and attendance statistics.
 - Use logical inline spacing for Dashboard separators, allow heading actions to wrap, and align catalogue button icons with shared control radii and minimum heights.
 - Make the public language selector and mobile footer links at least 44px high.
 - Strengthen the input border token from `#b4aa9e` to `#91877a`: contrast against the page background increases from 2.10:1 to 3.24:1; against cards it is 3.38:1. Fields use the input token rather than decorative card borders. Card borders remain subtle.
@@ -68,7 +68,7 @@ Source-tagged gallery images show the actual canvas. Empty, populated, filtered,
 | `/messages/:conversationId` | Live populated thread/composer checks at all widths; synthetic send/read/offline/reconnect journeys. No live message was sent. |
 | Notifications | Live panel bounds at all four widths; Escape closes it and restores trigger focus. Synthetic unread/read/empty states retained. Closed-panel ARIA reference corrected. |
 | `/moderation` | Synthetic authorized moderator/admin interactions, pending/recent states and screenshots; editorial header and danger contrast corrected. |
-| `/moderation/team` | Synthetic admin role changes plus unauthorized refusal tests and screenshots. No live role changes were made. |
+| `/moderation/team` | Synthetic admin role changes plus unauthorized refusal tests and screenshots. Shared container/editorial heading replaces the old boxed glow. No live role changes were made. |
 | Community Navigator | Live English LTR, Farsi RTL and Pashto RTL panels at all four widths; no panel overflow; Escape restores focus. Synthetic structured-search/keyboard/reduced-motion scenarios retained. |
 
 ## Accessibility checks

@@ -1,3 +1,5 @@
+import { MemberPageHeader } from "@/components/catalog/member-page-header";
+import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ShieldCheck } from "lucide-react";
@@ -55,8 +57,7 @@ export default async function ModerationTeamPage({
     await getAdminMemberAccounts(supabase);
 
   return (
-    <main className="px-4 py-8 md:px-8">
-      <div className="mx-auto max-w-5xl">
+    <main className={catalogPageContainerClass}>
         <Link
           href="/moderation"
           className="inline-flex min-h-11 items-center text-sm font-medium text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
@@ -64,17 +65,13 @@ export default async function ModerationTeamPage({
           ← Back to moderation
         </Link>
 
-        <section className="relative mt-6 overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8 shadow-[0_18px_55px_rgb(15_23_42/0.045)] md:px-8 md:py-10">
-          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-primary/[0.07] blur-3xl" />
-          <div className="relative flex items-start gap-4">
-            <div className="rounded-[var(--radius-control)] bg-primary/10 p-3 text-primary"><ShieldCheck aria-hidden="true" className="size-6" /></div>
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Admin only</p>
-              <h1 className="mt-2 text-3xl font-bold tracking-[-0.035em] text-foreground md:text-5xl">Moderation team</h1>
-              <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">Promote trusted members to moderator or admin, or return them to the standard member role.</p>
-            </div>
-          </div>
-        </section>
+        <MemberPageHeader
+          title="Moderation team"
+          description="Promote trusted members to moderator or admin, or return them to the standard member role."
+          icon={ShieldCheck}
+        >
+          <span className="text-sm font-medium text-muted-foreground">Admin only</span>
+        </MemberPageHeader>
 
         {error ? (
           <div
@@ -169,7 +166,7 @@ export default async function ModerationTeamPage({
                           <select
                             name="role"
                             defaultValue={member.role}
-                            className="min-h-11 rounded-[var(--radius-control)] border border-border/80 bg-card px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-primary/50 focus:ring-4 focus:ring-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                            className="min-h-11 rounded-[var(--radius-control)] border border-input bg-card px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                           >
                             <option value="member">Member</option>
                             <option value="moderator">Moderator</option>
@@ -191,7 +188,6 @@ export default async function ModerationTeamPage({
             })}
           </div>
         )}
-      </div>
     </main>
   );
 }
