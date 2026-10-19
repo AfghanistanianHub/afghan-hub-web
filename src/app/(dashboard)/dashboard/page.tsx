@@ -9,6 +9,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { RecommendedMembers } from "@/components/dashboard/recommended-members";
+import { DashboardText } from "@/components/dashboard/dashboard-text";
 import { GoalPaths } from "@/components/discovery/goal-paths";
 import { ProfileStrength } from "@/components/profile/profile-strength";
 import {
@@ -165,14 +166,14 @@ export default async function DashboardPage() {
         <section className="border-s-2 border-primary/30 py-2 ps-5 md:ps-8">
           <div className="grid gap-8 xl:grid-cols-[1fr_390px] xl:items-end">
             <div className="max-w-3xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Your community, connected</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary"><DashboardText id="eyebrow" /></p>
 
               <h1 className="mt-5 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">
-                Welcome back, {displayName}
+                <DashboardText id="welcome" /> {" "}{displayName}
               </h1>
 
               <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground md:text-lg">
-                See what is moving, meet people relevant to you, and keep your next step close.
+                <DashboardText id="description" />
               </p>
 
               {profile?.headline || location ? (
@@ -204,7 +205,7 @@ export default async function DashboardPage() {
                   <ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground group-hover:text-primary" />
                 </div>
                 <p className="mt-5 text-2xl font-bold tracking-tight">{opportunityCount}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">relevant opportunities</p>
+                <p className="mt-0.5 text-xs text-muted-foreground"><DashboardText id="opportunities" /></p>
               </Link>
 
               <Link
@@ -218,7 +219,7 @@ export default async function DashboardPage() {
                   <ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground group-hover:text-primary" />
                 </div>
                 <p className="mt-5 text-2xl font-bold tracking-tight">{eventCount}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">events for you</p>
+                <p className="mt-0.5 text-xs text-muted-foreground"><DashboardText id="events" /></p>
               </Link>
 
               <Link
