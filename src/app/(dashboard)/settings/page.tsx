@@ -1,14 +1,12 @@
-import { SettingsPageHeader, SettingsText } from "@/components/settings/settings-text";
+import { SettingsPageHeader, SettingsText, SettingsSaveButton, SettingsSupportLinks } from "@/components/settings/settings-text";
 import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import { CommunitySignature } from "@/components/public/community-signature";
 import styles from "@/components/network/network-surfaces.module.css";
 import { AccountExportButton } from "@/components/account/account-export-button";
-import { SupportLinks } from "@/components/public/support-links";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { updateAccountSettings } from "@/app/(dashboard)/settings/actions";
-import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import { createClient } from "@/lib/supabase/server";
 
 type SettingsPageProps = {
@@ -50,7 +48,7 @@ export default async function SettingsPage({
         <SettingsPageHeader />
         <dl className="flex flex-wrap gap-x-8 gap-y-3 text-sm">
           <div><dt className="text-muted-foreground"><SettingsText id="signedIn" /></dt><dd className="mt-1 break-words font-medium">{accountName}</dd></div>
-          <div><dt className="text-muted-foreground"><SettingsText id="directory" /></dt><dd className="mt-1 font-medium">{profile?.is_public ?? true ? "Visible" : "Hidden"}</dd></div>
+          <div><dt className="text-muted-foreground"><SettingsText id="directory" /></dt><dd className="mt-1 font-medium"><SettingsText id={(profile?.is_public ?? true) ? "visible" : "hidden"} /></dd></div>
         </dl>
 
         {formError ? <div role="alert" aria-live="assertive" className="mt-6 rounded-sm border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">{formError}</div> : null}
@@ -78,7 +76,7 @@ export default async function SettingsPage({
                 <span className="min-w-0"><span className="block font-semibold text-foreground"><SettingsText id="show" /></span><span className="mt-1 block text-sm leading-6 text-muted-foreground"><SettingsText id="hideHelp" /></span></span>
               </label>
 
-              <div className="mt-6 flex justify-end"><PendingSubmitButton pendingLabel="Saving settings…" className={`bg-primary px-5 py-3 font-semibold text-primary-foreground hover:bg-primary/90 ${styles.control}`}><SettingsText id="save" /></PendingSubmitButton></div>
+              <div className="mt-6 flex justify-end"><SettingsSaveButton className={`bg-primary px-5 py-3 font-semibold text-primary-foreground hover:bg-primary/90 ${styles.control}`} /></div>
             </form>
           </div>
 
@@ -89,12 +87,12 @@ export default async function SettingsPage({
               <h2 className="relative mt-2 text-xl font-semibold"><SettingsText id="take" /></h2>
               <p className="relative mt-3 text-sm leading-6 text-muted-foreground"><SettingsText id="downloadHelp" /></p>
               <div className="relative mt-5"><AccountExportButton /></div>
-              <p className="relative mt-4 text-xs leading-5 text-muted-foreground">For a wider data request or account deletion, <Link href="/support" className="rounded-sm font-semibold text-primary underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"><SettingsText id="contact" /></Link>.</p>
+              <p className="relative mt-4 text-xs leading-5 text-muted-foreground"><SettingsText id="contactIntro" /><Link href="/support" className="rounded-sm font-semibold text-primary underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"><SettingsText id="contact" /></Link>.</p>
             </section>
 
             <section className={`border p-6 ${styles.surface}`}>
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary"><SettingsText id="help" /></p>
-              <div className="mt-4"><SupportLinks /></div>
+              <div className="mt-4"><SettingsSupportLinks /></div>
             </section>
           </aside>
         </div>
