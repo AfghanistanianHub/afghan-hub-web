@@ -4,6 +4,9 @@ import styles from "@/components/network/network-surfaces.module.css";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSyncExternalStore } from "react";
+import { readSiteLanguagePreference, subscribeSiteLanguagePreference, type SiteLanguage } from "@/lib/i18n/site-language";
+import { memberNavigationLabel, memberNavigationText } from "@/components/dashboard/member-navigation-i18n";
 import { usePathname } from "next/navigation";
 import { Dialog } from "@base-ui/react/dialog";
 import { Menu, Settings, UserRound, X } from "lucide-react";
@@ -31,6 +34,8 @@ export function MobileNavigation({
 }: MobileNavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
+  const t = memberNavigationText(language);
   const navigation = canModerate
     ? [...dashboardNavigation, moderationNavigation]
     : dashboardNavigation;
@@ -52,7 +57,7 @@ export function MobileNavigation({
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
       <Dialog.Trigger
         type="button"
-        aria-label="Open navigation"
+        aria-label={t.open}
         className={`flex size-11 items-center justify-center border border-border bg-card text-muted-foreground hover:border-primary/30 hover:bg-secondary hover:text-foreground lg:hidden ${styles.control}`}
       >
         <Menu aria-hidden="true" className="size-5" />
@@ -62,8 +67,9 @@ export function MobileNavigation({
         <Dialog.Backdrop className="fixed inset-0 z-50 bg-foreground/20" />
 
         <Dialog.Popup
-          aria-label="Main navigation"
-          className="fixed inset-y-0 left-0 z-50 flex h-dvh w-[min(20rem,88vw)] flex-col overflow-hidden border-r border-border bg-background shadow-[8px_0_24px_#302b3512]"
+          aria-label={t.navigation}
+          dir={language === "en" ? "ltr" : "rtl"}
+          className="fixed inset-y-0 start-0 z-50 flex h-dvh w-[min(20rem,88vw)] flex-col overflow-hidden border-e border-border bg-background shadow-lg"
         >
           <div className="relative flex h-20 shrink-0 items-center justify-between border-b border-border px-5">
             <Link
@@ -76,13 +82,13 @@ export function MobileNavigation({
               </span>
               <span>
                 <span className="block text-sm font-semibold tracking-[0.16em] text-foreground">AFGHAN HUB</span>
-                <span className="mt-0.5 block text-[0.65rem] text-muted-foreground">Community workspace</span>
+                <span className="mt-0.5 block text-[0.65rem] text-muted-foreground">{t.communityWorkspace}</span>
               </span>
             </Link>
 
             <Dialog.Close
               type="button"
-              aria-label="Close navigation"
+              aria-label={t.close}
               className={`relative flex size-11 items-center justify-center border border-transparent text-muted-foreground hover:border-border hover:bg-card hover:text-foreground ${styles.control}`}
             >
               <X aria-hidden="true" className="size-5" />
@@ -90,10 +96,10 @@ export function MobileNavigation({
           </div>
 
           <div className="px-5 pt-5">
-            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Workspace</p>
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">{t.workspace}</p>
           </div>
 
-          <nav aria-label="Main navigation" className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-3">
+          <nav aria-label={t.navigation} className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-3">
             {navigation.map((item) => {
               const Icon = item.icon;
               const active = isActivePath(pathname, item.href);
@@ -110,7 +116,7 @@ export function MobileNavigation({
                       : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   }`}
                 >
-                  {active ? <span aria-hidden="true" className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-primary" /> : null}
+                  {active ? <span aria-hidden="true" className="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-primary" /> : null}
                   <span
                     className={`flex size-9 items-center justify-center rounded-[var(--radius)] ${
                       active ? "text-primary" : "bg-transparent text-muted-foreground"
@@ -118,12 +124,12 @@ export function MobileNavigation({
                   >
                     <Icon aria-hidden="true" className="size-4.5" />
                   </span>
-                  <span className="min-w-0 flex-1 break-words">{item.label}</span>
+                  <span className="min-w-0 flex-1 break-words">{memberNavigationLabel(language, item.href, item.label)}</span>
 
                   {item.href === "/messages" && unreadMessageCount > 0 ? (
                     <span
-                      aria-label={`${unreadMessageCount} unread messages`}
-                      className="ml-auto flex min-w-6 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-foreground"
+                      aria-label={`${unreadMessageCount} ${t.unreadMessages}`}
+                      className="ms-auto flex min-w-6 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-foreground"
                     >
                       {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
                     </span>
@@ -131,8 +137,8 @@ export function MobileNavigation({
 
                   {item.href === "/moderation" && pendingModerationCount > 0 ? (
                     <span
-                      aria-label={`${pendingModerationCount} submissions pending moderation`}
-                      className="ml-auto flex min-w-6 shrink-0 items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-xs font-bold text-accent-foreground"
+                      aria-label={`${pendingModerationCount} ${t.pendingModeration}`}
+                      className="ms-auto flex min-w-6 shrink-0 items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-xs font-bold text-accent-foreground"
                     >
                       {pendingModerationCount > 99 ? "99+" : pendingModerationCount}
                     </span>
@@ -143,7 +149,7 @@ export function MobileNavigation({
           </nav>
 
           <div className="relative shrink-0 border-t border-border bg-background p-3">
-            <p className="px-3 pb-2 pt-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Account</p>
+            <p className="px-3 pb-2 pt-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">{t.account}</p>
             <div className="space-y-1">
               <Link
                 href="/profile"
@@ -154,7 +160,7 @@ export function MobileNavigation({
                 }`}
               >
                 <UserRound aria-hidden="true" className="size-5" />
-                Edit profile
+                {t.editProfile}
               </Link>
 
               <Link
@@ -166,7 +172,7 @@ export function MobileNavigation({
                 }`}
               >
                 <Settings aria-hidden="true" className="size-5" />
-                Settings
+                {t.settings}
               </Link>
             </div>
           </div>
