@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useSyncExternalStore } from "react";
+import { readSiteLanguagePreference, subscribeSiteLanguagePreference, type SiteLanguage } from "@/lib/i18n/site-language";
+import { memberNavigationLabel, memberNavigationText } from "@/components/dashboard/member-navigation-i18n";
 import { usePathname } from "next/navigation";
 import { Settings, UserRound } from "lucide-react";
 
@@ -26,6 +29,8 @@ export function Sidebar({
   unreadMessageCount,
 }: SidebarProps) {
   const pathname = usePathname();
+  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
+  const t = memberNavigationText(language);
   const navigation = canModerate
     ? [...dashboardNavigation, moderationNavigation]
     : dashboardNavigation;
@@ -42,7 +47,7 @@ export function Sidebar({
               AFGHAN HUB
             </span>
             <span className="mt-0.5 block text-[0.65rem] font-medium tracking-wide text-muted-foreground">
-              Community & opportunity
+              {t.community}
             </span>
           </span>
         </Link>
@@ -54,7 +59,7 @@ export function Sidebar({
         </p>
       </div>
 
-      <nav aria-label="Main navigation" className="relative min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-3">
+      <nav aria-label={t.navigation} className="relative min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-3">
         {navigation.map((item) => {
           const Icon = item.icon;
           const active = isActivePath(pathname, item.href);
@@ -85,11 +90,11 @@ export function Sidebar({
               >
                 <Icon aria-hidden="true" className="size-4.5" />
               </span>
-              <span className="min-w-0 flex-1 break-words">{item.label}</span>
+              <span className="min-w-0 flex-1 break-words">{memberNavigationLabel(language, item.href, item.label)}</span>
 
               {item.href === "/messages" && unreadMessageCount > 0 ? (
                 <span
-                  aria-label={`${unreadMessageCount} unread messages`}
+                  aria-label={`${unreadMessageCount} ${t.unreadMessages}`}
                   className="ms-auto flex min-w-6 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-foreground"
                 >
                   {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
@@ -98,7 +103,7 @@ export function Sidebar({
 
               {item.href === "/moderation" && pendingModerationCount > 0 ? (
                 <span
-                  aria-label={`${pendingModerationCount} submissions pending moderation`}
+                  aria-label={`${pendingModerationCount} ${t.pendingModeration}`}
                   className="ms-auto flex min-w-6 shrink-0 items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-xs font-bold text-accent-foreground"
                 >
                   {pendingModerationCount > 99 ? "99+" : pendingModerationCount}
@@ -124,7 +129,7 @@ export function Sidebar({
             }`}
           >
             <UserRound aria-hidden="true" className="size-5" />
-            Edit profile
+            {t.editProfile}
           </Link>
 
           <Link
@@ -137,7 +142,7 @@ export function Sidebar({
             }`}
           >
             <Settings aria-hidden="true" className="size-5" />
-            Settings
+            {t.settings}
           </Link>
         </div>
       </div>
