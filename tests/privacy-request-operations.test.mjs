@@ -5,7 +5,7 @@ import test from "node:test";
 const runbook = readFileSync(new URL("../docs/privacy/privacy-request-operations.md", import.meta.url), "utf8");
 const deletionRunbook = readFileSync(new URL("../docs/privacy/account-deletion-operations.md", import.meta.url), "utf8");
 const privacyPage = readFileSync(new URL("../src/app/(public)/privacy/page.tsx", import.meta.url), "utf8");
-const supportPage = readFileSync(new URL("../src/app/(public)/support/page.tsx", import.meta.url), "utf8");
+const supportPage = readFileSync(new URL("../src/app/(public)/support/localized-support-content.tsx", import.meta.url), "utf8");
 const exportRoute = readFileSync(new URL("../src/app/api/account/export/route.ts", import.meta.url), "utf8");
 
 test("privacy request runbook keeps verification and secret-minimization boundaries", () => {
