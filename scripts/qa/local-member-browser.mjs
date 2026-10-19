@@ -122,8 +122,8 @@ async function captureState(page, label) {
   }
   await page.send('Emulation.setDeviceMetricsOverride', { width:1440, height:1000, deviceScaleFactor:1, mobile:false });
 }
-function launch(command, args, env) {
-  const child = spawn(command, args, { env, stdio: ['ignore', 'pipe', 'pipe'] });
+function launch(command, args, env, cwd = process.cwd()) {
+  const child = spawn(command, args, { env, cwd, stdio: ['ignore', 'pipe', 'pipe'] });
   // Do not retain or publish logs containing cookie/session/provider payloads.
   child.stdout.resume(); child.stderr.resume();
   children.push(child);
@@ -335,10 +335,15 @@ try {
     const compareSha = process.env.LOCAL_QA_COMPARE_SHA ?? 'dad64a27c09aebb32651149b5e33f8bf2534703f';
     assert.match(compareSha, /^[a-f0-9]{40}$/, 'Comparison requires an immutable baseline SHA');
     assert.equal(execFileSync('git',['-C',compareDir,'rev-parse','HEAD'],{encoding:'utf8'}).trim(), compareSha, 'Visual baseline must be pinned');
-    const baselineBuild=launch(process.execPath,[nextCli,'build',compareDir],env);
-    assert.equal(await new Promise((resolve,reject)=>{baselineBuild.once('exit',resolve);baselineBuild.once('error',reject);}),0,'Baseline production build failed');
+    const compareCli = join(compareDir, 'node_modules/next/dist/bin/next');
+    // The design workflow already built this immutable worktree. Legacy callers
+    // may only prepare a checkout, so build once there using its own cwd/CLI.
+    if (!existsSync(join(compareDir, '.next/BUILD_ID'))) {
+      const baselineBuild = launch(process.execPath, [compareCli, 'build'], env, compareDir);
+      assert.equal(await new Promise((resolve,reject)=>{baselineBuild.once('exit',resolve);baselineBuild.once('error',reject);}),0,'Baseline production build failed');
+    }
     assert.ok(existsSync(join(compareDir, '.next/BUILD_ID')), 'Comparison requires a prebuilt baseline checkout');
-    launch(process.execPath, [nextCli, 'start', compareDir, '--hostname', '127.0.0.1', '--port', '3102'], env);
+    launch(process.execPath, [compareCli, 'start', '--hostname', '127.0.0.1', '--port', '3102'], env, compareDir);
     await until(async () => (await fetch(compareUrl)).ok, 'baseline comparison server');
   }
   profile = await fs.mkdtemp(join(tmpdir(), 'afghan-member-browser-'));
