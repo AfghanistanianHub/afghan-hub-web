@@ -88,3 +88,21 @@ test("localized recovery and password update retain server-side security boundar
     assert.match(source, /ps:/);
   }
 });
+
+test("localized account views display translated safe feedback and preserve LTR credentials", () => {
+  const login = fs.readFileSync(new URL("../src/app/login/localized-login-content.tsx", import.meta.url), "utf8");
+  const recovery = fs.readFileSync(new URL("../src/app/forgot-password/localized-forgot-password-content.tsx", import.meta.url), "utf8");
+  const update = fs.readFileSync(new URL("../src/app/update-password/localized-update-password-content.tsx", import.meta.url), "utf8");
+  assert.match(login, /feedbackText\(error, language\)/);
+  assert.match(login, /feedbackText\(message, language\)/);
+  assert.match(login, /name="email"[\s\S]*?dir="ltr"/);
+  assert.match(login, /name="password"[\s\S]*?dir="ltr"/);
+  assert.match(recovery, /localizeFeedback\(error, language\)/);
+  assert.match(recovery, /localizeFeedback\(message, language\)/);
+  assert.match(update, /Passwords do not match\./);
+  assert.match(update, /errors\[error\]/);
+  for (const source of [login, recovery, update]) {
+    assert.match(source, /subscribeSiteLanguagePreference/);
+    assert.match(source, /dir=\{language === "en" \? "ltr" : "rtl"\}/);
+  }
+});
