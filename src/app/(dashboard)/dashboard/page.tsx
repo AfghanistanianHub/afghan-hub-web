@@ -9,7 +9,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { RecommendedMembers } from "@/components/dashboard/recommended-members";
-import { DashboardText } from "@/components/dashboard/dashboard-text";
+import { DashboardText, type DashboardTextKey } from "@/components/dashboard/dashboard-text";
 import { GoalPaths } from "@/components/discovery/goal-paths";
 import { ProfileStrength } from "@/components/profile/profile-strength";
 import {
@@ -148,17 +148,23 @@ export default async function DashboardPage() {
     profile,
     memberCandidates ?? [],
   );
-  const nextStep = profileStrength.complete
-    ? {
-        kicker: "Next best step",
-        title: "Grow your network",
-        href: "/network",
-      }
-    : {
-        kicker: "Next best step",
-        title: profileStrength.missing[0]?.label ?? "Complete your profile",
-        href: "/profile",
-      };
+  const missingStepKeys = {
+    identity: "step_identity",
+    avatar: "step_avatar",
+    headline: "step_headline",
+    bio: "step_bio",
+    professional: "step_professional",
+    skills: "step_skills",
+    location: "step_location",
+    discovery: "step_discovery",
+  } as const;
+  const missingKey = profileStrength.missing[0]?.key;
+  const missingStepTextId = missingKey && missingKey in missingStepKeys
+    ? missingStepKeys[missingKey as keyof typeof missingStepKeys]
+    : "complete";
+  const nextStep: { titleId: DashboardTextKey; href: string } = profileStrength.complete
+    ? { titleId: "network" as const, href: "/network" }
+    : { titleId: missingStepTextId, href: "/profile" };
 
   return (
     <main className={catalogPageContainerClass}>
@@ -227,8 +233,8 @@ export default async function DashboardPage() {
                 className="group col-span-2 flex items-center justify-between gap-4 rounded-[var(--radius-control)] bg-primary px-5 py-4 text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:col-span-1 xl:col-span-2"
               >
                 <div>
-                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] opacity-70">{nextStep.kicker}</p>
-                  <p className="mt-1 font-semibold">{nextStep.title}</p>
+                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] opacity-70"><DashboardText id="nextStep" /></p>
+                  <p className="mt-1 font-semibold"><DashboardText id={nextStep.titleId} /></p>
                 </div>
                 <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
