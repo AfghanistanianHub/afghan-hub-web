@@ -3,7 +3,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { appendFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { requireLocalTarget } from './local-target.mjs';
-const sha = '472a4dda64204b68f47957b4769f963fa97add1a';
+const sha = 'b7310c3978d431e76de550a23f9b171fdab8c4fa';
 const dir = resolve(process.env.RUNNER_TEMP, 'design-before');
 const status = JSON.parse(execFileSync('supabase', ['status', '-o', 'json'], {cwd:process.env.LOCAL_QA_DIR,encoding:'utf8',stdio:['ignore','pipe','pipe']}));
 const apiUrl = requireLocalTarget(status.API_URL);

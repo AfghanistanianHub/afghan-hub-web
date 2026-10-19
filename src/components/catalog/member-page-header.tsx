@@ -25,7 +25,7 @@ export function MemberPageHeader({ title, description, icon: Icon, children }: {
           </h1>
           <p className="mt-4 max-w-[60ch] text-pretty text-base leading-7 text-muted-foreground">{description}</p>
         </div>
-        {children ? <div className="flex shrink-0 flex-wrap items-center gap-2 pb-1">{children}</div> : null}
+        {children ? <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2 pb-1">{children}</div> : null}
       </div>
     </header>
   );

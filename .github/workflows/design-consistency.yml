@@ -1,8 +1,9 @@
 name: Cross-page design review
 on:
   pull_request:
-    branches: [feat/member-page-workspaces]
+    branches: [main, feat/member-page-workspaces]
     paths: ['src/**', 'scripts/qa/**', '.github/workflows/design-consistency.yml']
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:
@@ -10,12 +11,13 @@ concurrency:
   cancel-in-progress: true
 jobs:
   review:
+    if: startsWith(github.head_ref || github.ref_name, 'design/final-cross-page-quality-')
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
       - uses: actions/setup-node@v5
         with:

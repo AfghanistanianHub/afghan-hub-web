@@ -1,3 +1,4 @@
+import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
@@ -227,8 +228,8 @@ export default async function ModerationPage({
     .slice(0, 40);
 
   return (
-    <main className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
-      <div className="mx-auto max-w-6xl">
+    <main className={catalogPageContainerClass}>
+      <div className="min-w-0">
         <section className="relative overflow-hidden workspace-surface px-5 py-6 md:px-6 md:py-8">
           <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>

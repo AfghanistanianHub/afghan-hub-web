@@ -1,3 +1,4 @@
+import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
@@ -159,9 +160,9 @@ export default async function DashboardPage() {
       };
 
   return (
-    <main className="px-4 py-7 sm:px-6 md:px-8 md:py-10 lg:px-10 xl:px-12">
-      <div className="mx-auto w-full max-w-[1500px] space-y-8">
-        <section className="border-l-2 border-primary/30 py-2 pl-5 md:pl-8">
+    <main className={catalogPageContainerClass}>
+      <div className="min-w-0 space-y-8">
+        <section className="border-s-2 border-primary/30 py-2 ps-5 md:ps-8">
           <div className="grid gap-8 xl:grid-cols-[1fr_390px] xl:items-end">
             <div className="max-w-3xl">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Your community, connected</p>
@@ -177,13 +178,13 @@ export default async function DashboardPage() {
               {profile?.headline || location ? (
                 <div className="mt-5 flex flex-wrap gap-2 text-sm">
                   {profile?.headline ? (
-                    <span className="max-w-full break-words border-l border-border pl-3 text-foreground">
+                    <span className="max-w-full break-words border-s border-border ps-3 text-foreground">
                       {profile.headline}
                     </span>
                   ) : null}
 
                   {location ? (
-                    <span className="max-w-full break-words border-l border-border pl-3 text-muted-foreground">
+                    <span className="max-w-full break-words border-s border-border ps-3 text-muted-foreground">
                       {location}
                     </span>
                   ) : null}

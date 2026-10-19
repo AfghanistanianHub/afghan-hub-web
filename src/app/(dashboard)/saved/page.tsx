@@ -1,3 +1,4 @@
+import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import Link from "next/link";
 import styles from "@/components/network/network-surfaces.module.css";
 import { CommunitySignature } from "@/components/public/community-signature";
@@ -85,8 +86,8 @@ export default async function SavedOpportunitiesPage() {
     );
 
   return (
-    <main className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
-      <div className="mx-auto max-w-5xl">
+    <main className={catalogPageContainerClass}>
+      <div className="min-w-0">
         <section className={`${styles.surface} relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8  md:px-8 md:py-10`}>
           
           

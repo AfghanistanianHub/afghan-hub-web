@@ -1,3 +1,4 @@
+import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -390,8 +391,8 @@ export default async function SearchPage({
     .filter((result): result is SearchResult => Boolean(result));
 
   return (
-    <main className="px-4 py-8 sm:px-6 md:px-8 lg:px-10 xl:px-12">
-      <div className="mx-auto max-w-5xl">
+    <main className={catalogPageContainerClass}>
+      <div className="min-w-0">
         <section className="relative overflow-hidden workspace-surface px-5 py-6 md:px-6 md:py-8">
           <div className="relative">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">

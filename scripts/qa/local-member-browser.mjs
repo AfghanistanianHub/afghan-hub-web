@@ -105,7 +105,7 @@ async function captureState(page, label) {
   if (process.env.LOCAL_QA_VISUAL !== '1') return;
   const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
   mkdirSync(visualDir, { recursive: true });
-  for (const width of [1440, 768, 390, 320]) {
+  for (const width of [1440, 1280, 768, 390, 320]) {
     await page.send('Emulation.setDeviceMetricsOverride', { width, height:1000, deviceScaleFactor:1, mobile:width<768 });
     await page.send('Emulation.setPageScaleFactor', { pageScaleFactor:1 });
     const screenshot = await page.send('Page.captureScreenshot', { format:'png' });
@@ -817,14 +817,15 @@ try {
       const visualDir = process.env.LOCAL_QA_VISUAL_DIR ?? 'reports/visual';
       mkdirSync(visualDir, {recursive:true});
       const findings = [];
-      const widths = [1440,768,390,320];
+      const accessibility = [];
+      const widths = [1440,1280,768,390,320];
       // Keep route captures in one pass; locale-specific Navigator captures follow below.
       const routes = ['/login', '/login?mode=join', '/forgot-password', '/update-password',
-        '/', '/about', '/explore', '/profile', '/dashboard', '/search', '/saved',
+        '/', '/en', '/fa', '/ps', '/about', '/support', '/privacy', '/terms', '/explore', '/profile', '/dashboard', '/search', '/saved',
         '/settings', '/network', `/members/${b.id}`, '/submissions', '/messages',
         conversationPath, '/businesses', '/organizations', '/opportunities', '/events',
         '/businesses/new', '/organizations/new', '/opportunities/new', '/events/new',
-        '/moderation', '/moderation/team', ...detailRoutes, '/not-a-real-page'];
+        '/events/my', '/moderation', '/moderation/team', ...detailRoutes, '/not-a-real-page'];
       const phases = process.env.LOCAL_QA_COMPARE_DIR ? ['before', 'after'] : [process.env.LOCAL_QA_VISUAL_PHASE ?? 'after'];
       for (const phase of phases) {
         for (const route of routes) {
@@ -855,6 +856,12 @@ try {
             const screenshot = await visual.send('Page.captureScreenshot', { format:'png' });
             writeFileSync(`${visualDir}/${label}-${phase}-${width}.png`, Buffer.from(screenshot.data, 'base64'));
             findings.push({ phase, requested: route, width, ...state });
+            if (phase === 'after' && width === 390 && process.env.LOCAL_QA_AXE_PATH) {
+              await visual.evaluate(readFileSync(process.env.LOCAL_QA_AXE_PATH, 'utf8'));
+              const audit = await visual.evaluate(`axe.run(document, {runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(result => ({violations:result.violations.map(({id,impact,nodes}) => ({id,impact,targets:nodes.map(node=>node.target)})),incomplete:result.incomplete.map(({id,nodes})=>({id,targets:nodes.map(node=>node.target)}))}))`);
+              accessibility.push({route, width, ...audit});
+              writeFileSync(`${visualDir}/accessibility-after.json`, JSON.stringify({sourceRevision, checks:accessibility},null,2)+'\n');
+            }
           }
         }
       }
@@ -868,7 +875,7 @@ try {
           writeFileSync(`${visualDir}/navigator-${locale}-after-${width}.png`, Buffer.from(screenshot.data,'base64'));
         }
       }
-      writeFileSync(`${visualDir}/layout-checks-after.json`, JSON.stringify({sourceRevision, sourceTree, zoom:100, widths, findings},null,2)+'\n');
+      writeFileSync(`${visualDir}/layout-checks-after.json`, JSON.stringify({sourceRevision, sourceTree, baselineRevision:process.env.LOCAL_QA_COMPARE_SHA ?? null, zoom:100, widths, findings},null,2)+'\n');
     });
   }
   await check('Directory and submission request failures remain visible without false empty counts', async () => {

@@ -1,3 +1,4 @@
+import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import Link from "next/link";
 import styles from "@/components/network/network-surfaces.module.css";
 import { CommunitySignature } from "@/components/public/community-signature";
@@ -131,7 +132,7 @@ export default async function MyEventsPage() {
     ) ?? [];
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
+    <main className={catalogPageContainerClass}>
       <section className={`${styles.surface} relative overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8  md:px-8 md:py-10`}>
         
         
