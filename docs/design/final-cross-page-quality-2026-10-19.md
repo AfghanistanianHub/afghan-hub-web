@@ -52,3 +52,9 @@ The fixture runner signs in real synthetic users against a disposable loopback S
 ## Remaining acceptance gates
 
 Inspect candidate before/after evidence, resolve observed UI/a11y defects, inspect all private routes including attendance/application management and loading/error states, capture application-wide RTL with longer native content, verify focus/keyboard/touch/contrast manually, and confirm a reachable authenticated Vercel preview. Screenshot collection is not pixel-difference regression approval. This work must remain draft until those gates pass.
+
+## Browser findings and first CI attempt
+
+The Vercel preview for PR #511 is reachable. All three homepage languages were manually checked at 390/768/1280/1440px without horizontal overflow. The mobile menu opens, Escape closes it and restores summary focus. Explore search updates its URL and its Search button has a visible 2px keyboard outline. A measured 36px language selector and duplicate mobile footer 36px rule were corrected to 44px.
+
+Node CI passed on Node 22/24. The first design run passed 14/14 API/RLS scenarios but produced no screenshots: a second stale baseline assertion in the browser runner still required dad64a27 instead of the new immutable baseline. It now checks LOCAL_QA_COMPARE_SHA, retaining the legacy fallback for older workflows. Candidate browser/a11y acceptance remains pending. The multilingual smoke first timed out on the mobile Farsi-to-Pashto switch; a rerun is in progress. No full audit approval is implied.

@@ -331,7 +331,10 @@ try {
   const compareUrl = requireLocalTarget('http://localhost:3102', 3102);
   if (process.env.LOCAL_QA_COMPARE_DIR) {
     const compareDir = resolve(process.env.LOCAL_QA_COMPARE_DIR);
-    assert.equal(execFileSync('git',['-C',compareDir,'rev-parse','HEAD'],{encoding:'utf8'}).trim(), 'dad64a27c09aebb32651149b5e33f8bf2534703f', 'Visual baseline must be pinned');
+    step = 'pinned visual baseline';
+    const compareSha = process.env.LOCAL_QA_COMPARE_SHA ?? 'dad64a27c09aebb32651149b5e33f8bf2534703f';
+    assert.match(compareSha, /^[a-f0-9]{40}$/, 'Comparison requires an immutable baseline SHA');
+    assert.equal(execFileSync('git',['-C',compareDir,'rev-parse','HEAD'],{encoding:'utf8'}).trim(), compareSha, 'Visual baseline must be pinned');
     const baselineBuild=launch(process.execPath,[nextCli,'build',compareDir],env);
     assert.equal(await new Promise((resolve,reject)=>{baselineBuild.once('exit',resolve);baselineBuild.once('error',reject);}),0,'Baseline production build failed');
     assert.ok(existsSync(join(compareDir, '.next/BUILD_ID')), 'Comparison requires a prebuilt baseline checkout');

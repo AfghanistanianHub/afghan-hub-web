@@ -34,13 +34,13 @@
   .footer { grid-template-columns:2fr 1fr 1fr; } .footer>div { grid-column:1/-1; }
 }
 @media(max-width:480px) { .bar { padding:14px 16px; gap:4px; } .brand { font-size:22px; gap:8px; } .brandMark { width:23px; height:27px; } .join { display:none; } .footer { padding:28px 20px; gap:22px 10px; grid-template-columns:1fr 1fr; } .footer nav:last-of-type { grid-column:1/-1; } .footer nav a { min-height:var(--control-height); } }
-@media(max-width:480px) { .bar { padding:14px 16px; gap:4px; } .brand { font-size:22px; gap:8px; } .brandMark { width:23px; height:27px; } .join { display:none; } .footer { padding:28px 20px; gap:22px 10px; grid-template-columns:1fr 1fr; } .footer nav:last-of-type { grid-column:1/-1; } .footer nav a { min-height:36px; } }
+@media(max-width:480px) { .bar { padding:14px 16px; gap:4px; } .brand { font-size:22px; gap:8px; } .brandMark { width:23px; height:27px; } .join { display:none; } .footer { padding:28px 20px; gap:22px 10px; grid-template-columns:1fr 1fr; } .footer nav:last-of-type { grid-column:1/-1; } .footer nav a { min-height:44px; } }
 
 /* Native language names remain readable regardless of the selected UI language. */
 .languageControl { display:inline-flex; align-items:center; min-height:44px; }
 .languageControl select {
   max-width:120px;
-  min-height:36px;
+  min-height:44px;
   padding:0 34px 0 12px;
   border:1px solid #dfd6e6;
   border-radius:8px;
