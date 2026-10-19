@@ -34,6 +34,8 @@ const labels = {
     "saving": "Saving settings…",
     "contact": "contact support",
     "help": "Need help?",
+    "updateError": "We could not update your settings right now. Please try again shortly.",
+    "missingProfileError": "Unable to update your settings.",
     "missing": "Not available",
     "member": "Afghan Hub member"
   },
@@ -63,6 +65,8 @@ const labels = {
     "saving": "در حال ذخیره تنظیمات…",
     "contact": "با پشتیبانی تماس بگیرید",
     "help": "به کمک نیاز دارید؟",
+    "updateError": "در حال حاضر ذخیره تنظیمات ممکن نیست. لطفاً کمی بعد دوباره تلاش کنید.",
+    "missingProfileError": "تنظیمات شما به‌روزرسانی نشد.",
     "missing": "در دسترس نیست",
     "member": "عضو افغان هاب"
   },
@@ -92,6 +96,8 @@ const labels = {
     "saving": "تنظیمات خوندي کېږي…",
     "contact": "له ملاتړ سره اړیکه ونیسئ",
     "help": "مرستې ته اړتیا لرئ؟",
+    "updateError": "اوس ستاسو تنظیمات نه شو خوندي کولای. مهرباني وکړئ لږ وروسته بیا هڅه وکړئ.",
+    "missingProfileError": "ستاسو تنظیمات نوي نه شول.",
     "missing": "شتون نه لري",
     "member": "د افغان هاب غړی"
   }
