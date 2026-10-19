@@ -78,6 +78,27 @@ const labels = {
   }
 } as const satisfies Record<SiteLanguage, Record<string,string>>;
 
+const authFeedback = {
+  "We could not sign you in. Check your email and password and try again.": {
+    fa: "ورود به حساب انجام نشد. نشانی ایمیل و رمز عبور را بررسی و دوباره تلاش کنید.",
+    ps: "حساب ته ننوتل بریالي نه شول. خپل برېښنالیک او پټنوم وګورئ او بیا هڅه وکړئ.",
+  },
+  "We could not create your account right now. Please try again shortly.": {
+    fa: "در حال حاضر ایجاد حساب امکان‌پذیر نیست. لطفاً کمی بعد دوباره تلاش کنید.",
+    ps: "اوس مهال حساب نه شي جوړېدای. مهرباني وکړئ لږ وروسته بیا هڅه وکړئ.",
+  },
+  "Account created. Check your email if confirmation is required.": {
+    fa: "حساب ایجاد شد. اگر تأیید ایمیل لازم باشد، صندوق ورودی خود را بررسی کنید.",
+    ps: "حساب جوړ شو. که د برېښنالیک تایید اړین وي، خپل برېښنالیک وګورئ.",
+  },
+} as const;
+
+function feedbackText(value: string, language: SiteLanguage): string {
+  if (language === "en") return value;
+  const localized = authFeedback[value as keyof typeof authFeedback];
+  return localized?.[language] ?? value;
+}
+
 export function LocalizedLoginContent({ error, message, mode }: { error?: string; message?: string; mode?: string }) {
   const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
   const t = labels[language];
@@ -126,6 +147,7 @@ export function LocalizedLoginContent({ error, message, mode }: { error?: string
                 type="email"
                 required
                 autoComplete="email"
+                dir="ltr"
                 placeholder="you@example.com"
                 className={fieldClassName}
               />
@@ -146,6 +168,7 @@ export function LocalizedLoginContent({ error, message, mode }: { error?: string
               <input
                 id="password"
                 name="password"
+                dir="ltr"
                 type="password"
                 required
                 minLength={joining ? PASSWORD_MIN_LENGTH : undefined}
