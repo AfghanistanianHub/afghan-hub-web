@@ -12,15 +12,18 @@ function compile(file, imports, globals = {}) {
 }
 const icons = new Proxy({}, {get: (_, name) => String(name)});
 const navigation = compile('navigation.ts', {'lucide-react': icons});
+const localizedNavigation = compile('member-navigation-i18n.ts', {});
 function harness(matches = false) {
   let open = false, effect;
   const callbacks = new Map();
   const media = { matches, addEventListener: (key, fn) => callbacks.set(key, fn), removeEventListener: key => callbacks.delete(key) };
   const { MobileNavigation } = compile('mobile-navigation.tsx', {
-    react: { useState: () => [open, value => {open = value;}], useEffect: fn => {effect = fn;} },
+    react: { useState: () => [open, value => {open = value;}], useEffect: fn => {effect = fn;}, useSyncExternalStore: (_subscribe, _snapshot, serverSnapshot) => serverSnapshot() },
     'next/link': {default:'link'}, 'next/navigation': {usePathname:()=>'/events/sample'},
     '@base-ui/react/dialog': {Dialog:Object.fromEntries(['Root','Trigger','Portal','Backdrop','Popup','Close'].map(key=>[key,key]))},
     'lucide-react':icons, '@/components/dashboard/navigation':navigation,
+    '@/components/dashboard/member-navigation-i18n':localizedNavigation,
+    '@/lib/i18n/site-language': { subscribeSiteLanguagePreference: () => () => {}, readSiteLanguagePreference: () => 'en' },
     '@/components/network/network-surfaces.module.css':{default:{}},
   }, {window:{matchMedia:()=>media}});
   const render = canModerate => MobileNavigation({canModerate,pendingModerationCount:2,unreadMessageCount:3});
