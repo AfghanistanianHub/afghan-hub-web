@@ -11,6 +11,7 @@ test("settings reads account email from auth, not the profiles table", () => {
   const profileSelect = source.match(/\.from\("profiles"\)[\s\S]*?\.select\("([^"]+)"\)/)?.[1];
   assert.ok(profileSelect, "Expected an explicit profiles select in settings");
   assert.doesNotMatch(profileSelect, /(^|,\s*)email(\s*,|$)/);
-  assert.match(source, /const accountEmail = user\.email \|\| "Not available";/);
+  assert.match(source, /const accountEmail = user\.email;/);
+  assert.match(source, /accountEmail \?\? <SettingsText id="missing" \/>/);
   assert.doesNotMatch(source, /profile\?\.email/);
 });
