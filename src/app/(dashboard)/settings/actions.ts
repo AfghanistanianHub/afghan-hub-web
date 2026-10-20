@@ -27,7 +27,7 @@ export async function updateAccountSettings(formData: FormData) {
     .maybeSingle();
 
   if (error) {
-    redirect(`/settings?error=${"update-failed"}`);
+    redirect("/settings?error=update-failed");
   }
 
   if (!updatedProfile) {
