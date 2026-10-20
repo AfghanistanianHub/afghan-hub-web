@@ -60,7 +60,7 @@ test("visibility can change using only the permitted column and authenticated ow
 
 test("zero-row visibility updates cannot report success", async () => {
   const h = await settingsHarness({ data: null, error: null });
-  await assert.rejects(h.save(new FormData()), /Unable%20to%20update/);
+  await assert.rejects(h.save(new FormData()), /\/settings\?error=profile-not-found/);
   assert.equal(h.revalidations.length, 0);
 });
 

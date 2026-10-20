@@ -10,6 +10,7 @@ const settingsSource = fs.readFileSync(
   new URL("../src/app/(dashboard)/settings/page.tsx", import.meta.url),
   "utf8",
 );
+const settingsTextSource = fs.readFileSync(new URL("../src/components/settings/settings-text.tsx", import.meta.url), "utf8");
 const submitSource = fs.readFileSync(
   new URL("../src/components/forms/pending-submit-button.tsx", import.meta.url),
   "utf8",
@@ -31,8 +32,9 @@ test("settings feedback is announced and save action exposes pending state", () 
   assert.match(settingsSource, /aria-live="assertive"/);
   assert.match(settingsSource, /role="status"/);
   assert.match(settingsSource, /aria-live="polite"/);
-  assert.match(settingsSource, /<PendingSubmitButton/);
-  assert.match(settingsSource, /pendingLabel="Saving settings…"/);
+  assert.match(settingsSource, /<SettingsSaveButton/);
+  assert.match(settingsTextSource, /<PendingSubmitButton/);
+  assert.match(settingsTextSource, /pendingLabel=\{labels\[language\]\.saving\}/);
 });
 
 test("pending submit button prevents repeat submission while announcing progress", () => {

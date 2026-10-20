@@ -5,9 +5,6 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 
-const settingsUpdateErrorMessage =
-  "We could not update your settings right now. Please try again shortly.";
-
 export async function updateAccountSettings(formData: FormData) {
   const supabase = await createClient();
 
@@ -30,11 +27,11 @@ export async function updateAccountSettings(formData: FormData) {
     .maybeSingle();
 
   if (error) {
-    redirect(`/settings?error=${encodeURIComponent(settingsUpdateErrorMessage)}`);
+    redirect("/settings?error=update-failed");
   }
 
   if (!updatedProfile) {
-    redirect("/settings?error=Unable%20to%20update%20your%20settings");
+    redirect("/settings?error=profile-not-found");
   }
 
   revalidatePath("/", "layout");
