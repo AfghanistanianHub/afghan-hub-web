@@ -21,5 +21,7 @@ test("account actions do not expose provider or database error messages", () => 
   assert.match(login, /signupErrorMessage/);
   assert.match(forgotPassword, /resetRequestErrorMessage/);
   assert.match(updatePassword, /passwordUpdateErrorMessage/);
-  assert.match(settings, /settingsUpdateErrorMessage/);
+  assert.match(settings, /error=update-failed/);
+  assert.match(settings, /error=profile-not-found/);
+  assert.doesNotMatch(settings, /error\.message/);
 });
