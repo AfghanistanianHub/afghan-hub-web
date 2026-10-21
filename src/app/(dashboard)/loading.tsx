@@ -1,4 +1,16 @@
+"use client";
+
+import { useSyncExternalStore } from "react";
+import { readSiteLanguagePreference, subscribeSiteLanguagePreference, type SiteLanguage } from "@/lib/i18n/site-language";
+
+const loadingAnnouncements: Record<SiteLanguage, string> = {
+  en: "Loading your Afghan Hub workspace.",
+  fa: "در حال بارگذاری فضای کار شما در افغان هاب.",
+  ps: "په افغان هاب کې ستاسو کاري پاڼه بارېږي.",
+};
+
 export default function DashboardLoading() {
+  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
   const pulse = "animate-pulse bg-muted motion-reduce:animate-none";
 
   return (
@@ -6,9 +18,11 @@ export default function DashboardLoading() {
       id="main-content"
       className="mx-auto w-full max-w-[1500px] px-4 py-8 sm:px-6 sm:py-10 md:px-8 lg:px-10 xl:px-12"
       aria-busy="true"
+      lang={language}
+      dir={language === "en" ? "ltr" : "rtl"}
     >
       <div role="status" aria-live="polite" className="space-y-8">
-        <span className="sr-only">Loading your Afghan Hub workspace.</span>
+        <span className="sr-only">{loadingAnnouncements[language]}</span>
 
         <section className="relative overflow-hidden rounded-[var(--radius)] border border-border/70 bg-card px-6 py-7 sm:px-8 sm:py-9">
           <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-16 size-56 rounded-full border border-primary/10" />
