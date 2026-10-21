@@ -10,54 +10,65 @@ import {
   Search,
   UsersRound,
 } from "lucide-react";
+import type { SiteLanguage } from "@/lib/i18n/site-language";
 
 export const dashboardNavigation = [
   {
+    key: "home",
     label: "Home",
     href: "/dashboard",
     icon: House,
   },
   {
+    key: "network",
     label: "Network",
     href: "/network",
     icon: UsersRound,
   },
   {
+    key: "search",
     label: "Search",
     href: "/search",
     icon: Search,
   },
   {
+    key: "opportunities",
     label: "Opportunities",
     href: "/opportunities",
     icon: BriefcaseBusiness,
   },
   {
+    key: "saved",
     label: "Saved",
     href: "/saved",
     icon: Bookmark,
   },
   {
+    key: "mySubmissions",
     label: "My submissions",
     href: "/submissions",
     icon: FileClock,
   },
   {
+    key: "businesses",
     label: "Businesses",
     href: "/businesses",
     icon: Building2,
   },
   {
+    key: "organizations",
     label: "Organizations",
     href: "/organizations",
     icon: UsersRound,
   },
   {
+    key: "events",
     label: "Events",
     href: "/events",
     icon: CalendarDays,
   },
   {
+    key: "messages",
     label: "Messages",
     href: "/messages",
     icon: MessageSquare,
@@ -65,7 +76,65 @@ export const dashboardNavigation = [
 ] as const;
 
 export const moderationNavigation = {
+  key: "moderation",
   label: "Moderation",
   href: "/moderation",
   icon: ClipboardCheck,
 } as const;
+
+export const navLabelsByLanguage: Record<SiteLanguage, Record<string, string>> = {
+  en: {
+    home: "Home",
+    network: "Network",
+    search: "Search",
+    opportunities: "Opportunities",
+    saved: "Saved",
+    mySubmissions: "My submissions",
+    businesses: "Businesses",
+    organizations: "Organizations",
+    events: "Events",
+    messages: "Messages",
+    moderation: "Moderation",
+    workspace: "Workspace",
+    account: "Account",
+    editProfile: "Edit profile",
+    settings: "Settings",
+    communityWorkspace: "Community workspace",
+  },
+  fa: {
+    home: "خانه",
+    network: "شبکه",
+    search: "جست‌وجو",
+    opportunities: "فرصت‌ها",
+    saved: "ذخیره‌شده‌ها",
+    mySubmissions: "ارسال‌های من",
+    businesses: "کسب‌وکارها",
+    organizations: "سازمان‌ها",
+    events: "رویدادها",
+    messages: "پیام‌ها",
+    moderation: "مدیریت و نظارت",
+    workspace: "فضای کاری",
+    account: "حساب کاربری",
+    editProfile: "ویرایش پروفایل",
+    settings: "تنظیمات",
+    communityWorkspace: "فضای کاری جامعه",
+  },
+  ps: {
+    home: "کور",
+    network: "شبکه",
+    search: "لټون",
+    opportunities: "فرصتونه",
+    saved: "خوندي شوي",
+    mySubmissions: "زما استول شوي",
+    businesses: "سوداګرۍ",
+    organizations: "سازمانونه",
+    events: "پېښې",
+    messages: "پیغامونه",
+    moderation: "څارنه او سمون",
+    workspace: "کاري چاپېریال",
+    account: "حساب",
+    editProfile: "د پروفایل سمون",
+    settings: "ترتیبات",
+    communityWorkspace: "د ټولنې کاري ځای",
+  },
+};

@@ -39,6 +39,10 @@ export function saveSiteLanguagePreference(value: unknown): SiteLanguage {
   } catch {
     // Storage may be unavailable; keep the in-page selection.
   }
+  if (typeof document !== "undefined" && document.documentElement) {
+    document.documentElement.lang = language;
+    document.documentElement.dir = language === "en" ? "ltr" : "rtl";
+  }
   window.dispatchEvent(new Event(siteLanguageChangeEvent));
   return language;
 }
@@ -58,3 +62,4 @@ export function subscribeSiteLanguagePreference(onChange: () => void): () => voi
     window.removeEventListener(siteLanguageChangeEvent, onChange);
   };
 }
+
