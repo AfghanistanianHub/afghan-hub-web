@@ -27,10 +27,10 @@ try {
     page.on("pageerror", error => errors.push(error.message));
     await page.goto(base, { waitUntil: "domcontentloaded", timeout: 45000 });
     // A brand-new browser sees exactly the language entrance before homepage controls.
-    await page.getByRole("button", {name: /English/}).waitFor();
+    await page.getByRole("link", {name: /English/}).waitFor();
     assert.equal(await page.locator("header select").count(), 0, "Public navigation must stay hidden until language selection");
     assert.equal(await page.locator('button[lang="en"], button[lang="fa"], button[lang="ps"]').count(), 3);
-    await page.getByRole("button", {name: /English/}).click();
+    await page.getByRole("link", {name: /English/}).click();
     await page.waitForURL(url => url.pathname === "/en", { timeout: 45000 });
     const entryState = await page.evaluate(() => ({
       url: location.href,
