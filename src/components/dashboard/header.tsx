@@ -1,3 +1,6 @@
+"use client";
+
+import { useSyncExternalStore } from "react";
 import { CommunityNavigator } from "@/components/assistant/community-navigator";
 import { SignOutSubmit } from "@/components/dashboard/action-submit";
 import styles from "@/components/network/network-surfaces.module.css";
@@ -9,6 +12,8 @@ import {
   NotificationBell,
   type NotificationSummary,
 } from "@/components/dashboard/notification-bell";
+import { readSiteLanguagePreference, saveSiteLanguagePreference, subscribeSiteLanguagePreference, type SiteLanguage } from "@/lib/i18n/site-language";
+import { getSharedUiCopy } from "@/lib/i18n/shared-ui-copy";
 
 type HeaderProps = {
   canModerate: boolean;
@@ -31,10 +36,12 @@ export function Header({
   unreadNotificationCount,
   unreadMessageCount,
 }: HeaderProps) {
+  const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
+  const copy = getSharedUiCopy(language);
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
-    <header className="sticky top-0 z-20 flex h-20 items-center justify-between gap-2 border-b border-border/70 bg-background px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12">
+    <header lang={language} dir={language === "en" ? "ltr" : "rtl"} className="sticky top-0 z-20 flex h-20 items-center justify-between gap-2 border-b border-border/70 bg-background px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <div className="flex min-w-0 items-center gap-2 sm:gap-3 md:flex-1">
         <MobileNavigation
           canModerate={canModerate}
@@ -55,19 +62,33 @@ export function Header({
           role="search"
           className="relative hidden min-w-0 max-w-[28rem] flex-1 md:block"
         >
-          <Search aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Search aria-hidden="true" className="pointer-events-none absolute start-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
 
           <input
             name="q"
             type="search"
-            placeholder="Search people, organizations, opportunities..."
-            aria-label="Search Afghan Hub"
-            className={`${styles.search} w-full border border-border bg-card py-3 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground`}
+            placeholder={copy.searchPlaceholder}
+            aria-label={copy.searchAfghanHub}
+            className={`${styles.search} w-full border border-border bg-card py-3 ps-11 pe-4 text-sm text-foreground placeholder:text-muted-foreground`}
           />
         </form>
       </div>
 
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <label className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span className="sr-only">{copy.language}</span>
+          <select
+            aria-label={copy.language}
+            value={language}
+            onChange={(e) => saveSiteLanguagePreference(e.target.value)}
+            className="rounded border border-border bg-background px-2 py-1 text-xs text-foreground focus-visible:outline-2 focus-visible:outline-primary"
+          >
+            <option value="en" lang="en">English</option>
+            <option value="fa" lang="fa">فارسی</option>
+            <option value="ps" lang="ps">پښتو</option>
+          </select>
+        </label>
+
         <CommunityNavigator />
         <NotificationBell
           currentUserId={currentUserId}
@@ -85,7 +106,13 @@ export function Header({
         </div>
 
         <form action={logout}>
-          <SignOutSubmit className={`inline-flex size-11 items-center justify-center gap-2 border border-border bg-card px-3 text-sm font-semibold text-foreground hover:border-primary/30 hover:bg-secondary sm:w-32 sm:px-4 ${styles.control}`} />
+          <SignOutSubmit
+            label={copy.signOut}
+            pendingLabel={copy.signingOut}
+            ariaLabel="Sign out"
+            signingOutAriaLabel="Signing out"
+            className={`inline-flex size-11 items-center justify-center gap-2 border border-border bg-card px-3 text-sm font-semibold text-foreground hover:border-primary/30 hover:bg-secondary sm:w-32 sm:px-4 ${styles.control}`}
+          />
         </form>
       </div>
     </header>
