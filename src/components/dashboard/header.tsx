@@ -109,7 +109,8 @@ export function Header({
           <SignOutSubmit
             label={copy.signOut}
             pendingLabel={copy.signingOut}
-            signingOutAriaLabel={copy.signingOut}
+            ariaLabel="Sign out"
+            signingOutAriaLabel="Signing out"
             className={`inline-flex size-11 items-center justify-center gap-2 border border-border bg-card px-3 text-sm font-semibold text-foreground hover:border-primary/30 hover:bg-secondary sm:w-32 sm:px-4 ${styles.control}`}
           />
         </form>

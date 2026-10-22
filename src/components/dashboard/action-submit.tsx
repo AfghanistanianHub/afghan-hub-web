@@ -7,11 +7,13 @@ export function SignOutSubmit({
   className,
   label = "Sign out",
   pendingLabel = "Signing out…",
+  ariaLabel = "Sign out",
   signingOutAriaLabel = "Signing out",
 }: {
   className: string;
   label?: string;
   pendingLabel?: string;
+  ariaLabel?: string;
   signingOutAriaLabel?: string;
 }) {
   const { pending } = useFormStatus();
@@ -20,7 +22,7 @@ export function SignOutSubmit({
     <button
       type="submit"
       disabled={pending}
-      aria-label={pending ? signingOutAriaLabel : label}
+      aria-label={pending ? signingOutAriaLabel : ariaLabel}
       className={`${className} disabled:cursor-wait disabled:opacity-60`}
     >
       <LogOut aria-hidden="true" className="size-4 sm:hidden" />
