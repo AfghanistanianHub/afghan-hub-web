@@ -23,8 +23,13 @@ test("profile editor exposes explicit opt-in mentorship fields", () => {
   assert.match(profilePage, /name="open_to_mentoring"/);
   assert.match(profilePage, /name="looking_for_mentor"/);
   assert.match(profilePage, /name="mentorship_topics"/);
-  assert.match(profilePage, /up to 12 topics, 60 characters each/i);
-  assert.match(profilePage, /not credentials or endorsements by Afghan Hub/i);
+  assert.match(profilePage, /\{t\.topicsHint\}/);
+  assert.match(profilePage, /\{t\.mentorshipHint\}/);
+  const copy = fs.readFileSync(new URL("../src/lib/i18n/onboarding-copy.ts", import.meta.url), "utf8");
+  assert.match(copy, /up to 12 topics, 60 characters each/i);
+  assert.match(copy, /not credentials or endorsements by Afghan Hub/i);
+  assert.match(copy, /حداکثر ۱۲ موضوع/);
+  assert.match(copy, /تر ۱۲ موضوعاتو/);
 });
 
 test("profile action keeps mentorship topics bounded before database write", () => {
