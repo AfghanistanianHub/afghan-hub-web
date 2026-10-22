@@ -5,9 +5,17 @@ import { useState } from "react";
 
 import { ExternalImage } from "@/components/ui/external-image";
 import { createClient } from "@/lib/supabase/client";
+import type { SiteLanguage } from "@/lib/i18n/site-language";
+
+const copy = {
+  en: { alt: "Profile avatar", empty: "No photo", uploading: "Uploading…", upload: "Upload photo", label: "Upload profile photo", failed: "We could not upload your profile photo. Please try again.", partial: "The photo uploaded, but we could not update your profile. Please try again.", success: "Profile photo updated successfully." },
+  fa: { alt: "عکس پروفایل", empty: "بدون عکس", uploading: "در حال بارگذاری…", upload: "بارگذاری عکس", label: "بارگذاری عکس پروفایل", failed: "عکس پروفایل بارگذاری نشد. دوباره تلاش کنید.", partial: "عکس بارگذاری شد، اما پروفایل به‌روز نشد. دوباره تلاش کنید.", success: "عکس پروفایل با موفقیت به‌روز شد." },
+  ps: { alt: "د پروفایل انځور", empty: "انځور نشته", uploading: "پورته کېږي…", upload: "انځور پورته کړئ", label: "د پروفایل انځور پورته کړئ", failed: "د پروفایل انځور پورته نه شو. بیا هڅه وکړئ.", partial: "انځور پورته شو، خو پروفایل تازه نه شو. بیا هڅه وکړئ.", success: "د پروفایل انځور په بریالیتوب تازه شو." },
+} as const;
 
 type AvatarUploadProps = {
   userId: string;
+  language?: SiteLanguage;
   currentAvatarUrl?: string | null;
 };
 
@@ -16,7 +24,8 @@ type UploadMessage = {
   kind:"success" |"error";
 } | null;
 
-export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadProps) {
+export default function AvatarUpload({ userId, currentAvatarUrl, language = "en" }: AvatarUploadProps) {
+  const t = copy[language];
   const router = useRouter();
   const supabase = createClient();
   const [uploading, setUploading] = useState(false);
@@ -35,7 +44,7 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
 
     if (uploadError) {
       setMessage({
-        text:"We could not upload your profile photo. Please try again.",
+        text: t.failed,
         kind:"error",
       });
       setUploading(false);
@@ -55,14 +64,14 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
 
     if (profileError || !updatedProfile) {
       setMessage({
-        text:"The photo uploaded, but we could not update your profile. Please try again.",
+        text: t.partial,
         kind:"error",
       });
       setUploading(false);
       return;
     }
 
-    setMessage({ text:"Profile photo updated successfully.", kind:"success" });
+    setMessage({ text: t.success, kind:"success" });
     setUploading(false);
     router.refresh();
   }
@@ -72,24 +81,24 @@ export default function AvatarUpload({ userId, currentAvatarUrl }: AvatarUploadP
       {currentAvatarUrl ? (
         <ExternalImage
           src={currentAvatarUrl}
-          alt="Profile avatar"
+          alt={t.alt}
           width={96}
           height={96}
           className="relative size-24 rounded-[var(--radius)] border-4 border-card object-cover"
         />
       ) : (
         <div className="relative flex size-24 items-center justify-center rounded-[var(--radius)] border border-dashed border-border bg-muted/60 text-sm text-muted-foreground">
-          No photo
+          {t.empty}
         </div>
       )}
 
       <label className={`relative inline-flex min-h-11 cursor-pointer items-center justify-center rounded-[var(--radius)] bg-primary px-4 py-2 font-medium text-primary-foreground  transition-[background,border-color,box-shadow] duration-[var(--motion-fast)] motion-reduce:transition-none active:shadow-[inset_0_2px_4px_#302b3520] hover:bg-primary/90 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-primary`}>
         <span role="status" aria-live="polite">
-          {uploading ?"Uploading…" :"Upload photo"}
+          {uploading ? t.uploading : t.upload}
         </span>
         <input
           type="file"
-          aria-label="Upload profile photo"
+          aria-label={t.label}
           accept="image/jpeg,image/png,image/webp"
           disabled={uploading}
           aria-describedby={message ? "avatar-upload-message" : undefined}
