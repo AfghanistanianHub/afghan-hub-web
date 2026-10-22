@@ -10,9 +10,10 @@ function callback({ exchangeError = null, siteUrl = "https://app.apnbc.ca" } = {
   vm.runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, {
     exports,
     URL,
-    Set,
+    Set, process,
     require(name) {
-      if (name === "next/server") return { NextResponse: { redirect: url => ({ location: url.toString() }) } };
+      if (name === "@/lib/auth-navigation") return { authLanguageCookie: "afghan-hub-auth-language", getAuthLanguage: value => value === "fa" || value === "ps" ? value : "en", getAuthDestination: value => ["/dashboard", "/messages"].includes(value) ? value : "/dashboard" };
+      if (name === "next/server") return { NextResponse: { redirect: (url, status) => ({ location: url.toString(), status, headers: new Headers(), cookies: { set() {} } }) } };
       if (name === "@/lib/supabase/server") return { createClient: async () => ({ auth: { exchangeCodeForSession: async () => ({ error: exchangeError }) } }) };
       if (name === "@/lib/site-url") return { getSiteUrl: () => siteUrl };
       throw new Error(name);
@@ -32,7 +33,7 @@ test("recovery callback accepts only the password update destination", async () 
 });
 
 test("callback falls back to dashboard for unapproved next destinations", async () => {
-  for (const next of ["/messages", "//evil.example", "https://evil.example"]) {
+  for (const next of ["/auth/callback", "//evil.example", "https://evil.example"]) {
     const result = await callback()(request(`/auth/callback?code=good&next=${encodeURIComponent(next)}`));
     assert.equal(result.location, "https://app.apnbc.ca/dashboard");
   }
