@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database";
+import { getAuthDestination } from "@/lib/auth-navigation";
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({
@@ -32,7 +33,17 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
+  const destination = getAuthDestination(request.nextUrl.pathname);
+  if (!user && (destination !== "/dashboard" || request.nextUrl.pathname === "/dashboard")) {
+    const login = request.nextUrl.clone();
+    login.pathname = "/login";
+    login.search = new URLSearchParams({ next: destination }).toString();
+    const redirect = NextResponse.redirect(login);
+    response.cookies.getAll().forEach(cookie => redirect.cookies.set(cookie));
+    redirect.headers.set("Cache-Control", "private, no-store");
+    return redirect;
+  }
 
   return response;
 }

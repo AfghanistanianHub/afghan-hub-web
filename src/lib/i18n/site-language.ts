@@ -21,6 +21,16 @@ export function readSiteLanguagePreference(): SiteLanguage {
     volatileLanguage = routeLocale;
     return routeLocale;
   }
+  // A callback may run on another trusted Preview origin or in another browser.
+  const queryLanguage = typeof window.location.search === "string" ? new URLSearchParams(window.location.search).get("lang") : null;
+  if (queryLanguage === "en" || queryLanguage === "fa" || queryLanguage === "ps") {
+    volatileLanguage = queryLanguage;
+    try { window.localStorage.setItem(siteLanguagePreferenceKey, queryLanguage); } catch { /* Preference remains usable without storage. */ }
+    if (typeof document !== "undefined") document.cookie = `afghan-hub-auth-language=${queryLanguage}; Path=/; Max-Age=2592000; SameSite=Lax${window.location.protocol === "https:" ? "; Secure" : ""}`;
+    return queryLanguage;
+  }
+  const callbackLanguage = typeof document !== "undefined" ? document.cookie?.match(/(?:^|;\s*)afghan-hub-auth-language=(en|fa|ps)(?:;|$)/)?.[1] : undefined;
+  if (callbackLanguage) return normalizeSiteLanguage(callbackLanguage);
   try {
     const selected = window.localStorage.getItem(siteLanguagePreferenceKey);
     const legacy = window.localStorage.getItem("afghan-hub-navigator-language");
@@ -34,10 +44,18 @@ export function saveSiteLanguagePreference(value: unknown): SiteLanguage {
   const language = normalizeSiteLanguage(value);
   if (typeof window === "undefined") return language;
   volatileLanguage = language;
+  if (window.history && window.location.href) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("lang");
+    window.history.replaceState(null, "", url);
+  }
   try {
     window.localStorage.setItem(siteLanguagePreferenceKey, language);
   } catch {
     // Storage may be unavailable; keep the in-page selection.
+  }
+  if (typeof document !== "undefined") {
+    document.cookie = `afghan-hub-auth-language=${language}; Path=/; Max-Age=2592000; SameSite=Lax${window.location.protocol === "https:" ? "; Secure" : ""}`;
   }
   if (typeof document !== "undefined" && document.documentElement) {
     document.documentElement.lang = language;
