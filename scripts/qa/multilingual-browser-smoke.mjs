@@ -27,10 +27,27 @@ try {
     page.on("pageerror", error => errors.push(error.message));
     await page.goto(base, { waitUntil: "domcontentloaded", timeout: 45000 });
     // A brand-new browser sees exactly the language entrance before homepage controls.
-    await page.getByRole("button", {name: /English/}).waitFor();
+    await page.getByRole("link", {name: /English/}).waitFor();
     assert.equal(await page.locator("header select").count(), 0, "Public navigation must stay hidden until language selection");
-    assert.equal(await page.locator('button[lang="en"], button[lang="fa"], button[lang="ps"]').count(), 3);
-    await page.getByRole("button", {name: /English/}).click();
+    assert.equal(await page.locator('a[hreflang="en"], a[hreflang="fa"], a[hreflang="ps"]').count(), 3);
+    // Exercise the entrance for all three languages in isolated first-visit contexts.
+    // This also captures the design before navigation, not only the homepage.
+    await page.screenshot({ path: `${output}/${viewport.name}-language-entrance.png`, fullPage: true });
+    for (const selected of ["fa", "ps"]) {
+      const visitor = await browser.newContext({ viewport, reducedMotion: "reduce" });
+      try {
+        const languagePage = await visitor.newPage();
+        await languagePage.goto(base, { waitUntil: "domcontentloaded", timeout: 45000 });
+        const link = languagePage.locator(`main a[hreflang="${selected}"]`);
+        await link.waitFor();
+        await link.click();
+        await languagePage.waitForURL(url => url.pathname === `/${selected}`, { timeout: 45000 });
+        assert.equal(await languagePage.evaluate(() => localStorage.getItem("afghan-hub-site-language")), selected);
+      } finally {
+        await visitor.close();
+      }
+    }
+    await page.getByRole("link", {name: /English/}).click();
     await page.waitForURL(url => url.pathname === "/en", { timeout: 45000 });
     const entryState = await page.evaluate(() => ({
       url: location.href,
@@ -46,14 +63,14 @@ try {
     assert.equal(await page.evaluate(() => localStorage.getItem("afghan-hub-site-language")), "en");
     await page.reload({waitUntil:"domcontentloaded"});
     await page.locator("header select").first().waitFor();
-    assert.equal(await page.locator('button[lang="en"]').count(), 0, "Returning visitors bypass entrance");
+    assert.equal(await page.locator('a[hreflang="en"]').count(), 0, "Returning visitors bypass entrance");
     // An internal deep link remains accessible without any prior language preference.
     const direct = await browser.newContext({viewport, reducedMotion:"reduce"});
     try {
       const linked = await direct.newPage();
       await linked.goto(base + "/about", {waitUntil:"domcontentloaded"});
       await linked.locator("main").first().waitFor();
-      assert.equal(await linked.locator('button[lang="en"]').count(), 0, "Deep links bypass entrance");
+      assert.equal(await linked.locator('a[hreflang="en"]').count(), 0, "Deep links bypass entrance");
     } finally {
       await direct.close();
     }
