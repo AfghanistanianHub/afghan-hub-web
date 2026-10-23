@@ -802,7 +802,8 @@ try {
     assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-labelledby="conversation-navigation-label"]')).display!=='none'`), true);
     await pageA.send('Emulation.setDeviceMetricsOverride', { width:390, height:1000, deviceScaleFactor:1, mobile:true });
     assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-labelledby="conversation-navigation-label"]')).display`), 'none');
-    await click(pageA, 'a[aria-label="Back to messages"]'); await pathname(pageA, '/messages');
+    // The back control now exposes its localized name through an sr-only span.
+    await click(pageA, 'header a[href="/messages"]'); await pathname(pageA, '/messages');
     await visit(pageA, `/members/${b.id}`);
     assert.equal(await pageA.evaluate(`!!document.querySelector('[data-hero-layer="architecture"]') || !!document.querySelector('main svg[data-illustration-kind]')`), false);
     assert.equal(await pageA.evaluate(`document.documentElement.scrollWidth>innerWidth`), false);
