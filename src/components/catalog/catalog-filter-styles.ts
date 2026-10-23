@@ -6,7 +6,7 @@ export const catalogFieldClass =
   "min-h-11 min-w-0 rounded-[var(--radius-control)] border border-input bg-card px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary focus:border-primary focus:ring-4 focus:ring-primary/10";
 
 export const catalogFilterPanelClass =
-  "mt-5 grid grid-cols-2 items-end gap-3 [&>label:first-child]:col-span-2 md:[&>label:first-child]:col-span-1 border-b border-border pb-5";
+  "mt-5 grid grid-cols-1 items-end gap-3 border-b border-border pb-5 sm:grid-cols-2 sm:[&>label:first-child]:col-span-2 md:[&>label:first-child]:col-span-1";
 
 export const catalogSubmitClass =
   "inline-flex min-h-11 max-w-full items-center justify-center gap-2 rounded-[var(--radius-control)] bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary";

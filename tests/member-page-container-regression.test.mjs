@@ -34,3 +34,30 @@ test("opportunities keeps the bordered card only around actual results", () => {
   const source = read("src/app/(dashboard)/opportunities/page.tsx");
   assert.match(source, /opportunities\?\.length \? "mt-4 divide-y divide-border border-y border-border bg-card" : "mt-4"/);
 });
+
+test("global spacing scale has stable values and does not override the approved container", () => {
+  const css = read("src/app/globals.css");
+  const expected = {
+    1: "0.25rem",
+    2: "0.5rem",
+    3: "0.75rem",
+    4: "1rem",
+    6: "1.5rem",
+    8: "2rem",
+    12: "3rem",
+    16: "4rem",
+    24: "6rem",
+  };
+  for (const [step, value] of Object.entries(expected)) {
+    assert.ok(css.includes(`--space-${step}: ${value};`));
+  }
+  assert.match(css, /\.member-shell main \{ width:100%; max-width:88rem; margin-inline:auto; \}/);
+});
+
+test("catalogue filters give mobile controls a full row before tablet columns", () => {
+  const styles = read("src/components/catalog/catalog-filter-styles.ts");
+  assert.match(styles, /grid-cols-1 items-end gap-3/);
+  assert.match(styles, /sm:grid-cols-2/);
+  assert.ok(styles.includes("sm:[&>label:first-child]:col-span-2"));
+  assert.ok(styles.includes("md:[&>label:first-child]:col-span-1"));
+});
