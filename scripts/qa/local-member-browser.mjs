@@ -437,7 +437,7 @@ try {
     await until(() => pageB.evaluate(`document.querySelector('main h2')?.textContent==='No submissions yet'`), 'empty submissions streamed content');
     assert.equal(await pageB.evaluate(`document.querySelectorAll('main article').length`), 0);
     assert.equal(await pageB.evaluate(`!!document.querySelector('main [role=alert]')`), false);
-    assert.deepEqual(await pageB.evaluate(`[...document.querySelectorAll('nav[aria-label="Submission categories"] span')].map(node=>node.textContent)`), ['0','0','0','0','0']);
+    assert.deepEqual(await pageB.evaluate(`[...document.querySelectorAll('nav[aria-labelledby="submission-categories-label"] span[aria-hidden="true"]')].map(node=>node.textContent)`), ['0','0','0','0','0']);
     await captureState(pageB,'submissions-empty');
   });
   await check('Member Navigator exposes the same three languages and RTL without changing profile languages', async () => {
@@ -783,7 +783,7 @@ try {
   });
   await check('Member workspaces: category links, permitted inbox search and responsive identity', async () => {
     await visit(pageA, '/submissions');
-    const nav = 'nav[aria-label="Submission categories"]';
+    const nav = 'nav[aria-labelledby="submission-categories-label"]';
     assert.equal(await pageA.evaluate(`document.querySelectorAll('${nav} a').length`), 5);
     await click(pageA, `${nav} a[href="/submissions?category=businesses"]`);
     await until(() => pageA.evaluate(`location.search==='?category=businesses'`), 'business submissions category');
@@ -799,9 +799,9 @@ try {
     await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
     assert.equal(await pageA.evaluate(`!!document.querySelector(${JSON.stringify(`main a[href="${conversationPath}"]`)})`),false,'Filtered inbox must hide the real conversation');
     await visit(pageA, conversationPath);
-    assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-label="Conversation navigation"]')).display!=='none'`), true);
+    assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-labelledby="conversation-navigation-label"]')).display!=='none'`), true);
     await pageA.send('Emulation.setDeviceMetricsOverride', { width:390, height:1000, deviceScaleFactor:1, mobile:true });
-    assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-label="Conversation navigation"]')).display`), 'none');
+    assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-labelledby="conversation-navigation-label"]')).display`), 'none');
     await click(pageA, 'a[aria-label="Back to messages"]'); await pathname(pageA, '/messages');
     await visit(pageA, `/members/${b.id}`);
     assert.equal(await pageA.evaluate(`!!document.querySelector('[data-hero-layer="architecture"]') || !!document.querySelector('main svg[data-illustration-kind]')`), false);
