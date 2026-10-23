@@ -317,7 +317,9 @@ async function member(label) {
 const message = text => `Synthetic browser ${stamp} ${text}`;
 async function send(page, text) {
   await fill(page, 'textarea[name=message]', text);
-  await click(page, 'button[aria-label="Send message"]');
+  // Select the composer submit button structurally: its accessible name follows
+  // the selected site language, which this journey changes on purpose.
+  await click(page, 'form:has(textarea[name=message]) button[type=submit]');
   await until(() => page.evaluate(`document.body.innerText.includes(${JSON.stringify(text)}) && document.querySelector('textarea[name=message]')?.value===''`), 'message persisted');
 }
 try {
