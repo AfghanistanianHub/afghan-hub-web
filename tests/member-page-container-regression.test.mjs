@@ -49,7 +49,7 @@ test("global spacing scale has stable values and does not override the approved 
     24: "6rem",
   };
   for (const [step, value] of Object.entries(expected)) {
-    assert.match(css, new RegExp(`--space-${step}:\\s*${value.replace(".", "\\.")};`));
+    assert.ok(css.includes(`--space-${step}: ${value};`));
   }
   assert.match(css, /\.member-shell main \{ width:100%; max-width:88rem; margin-inline:auto; \}/);
 });
