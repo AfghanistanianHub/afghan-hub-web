@@ -53,3 +53,11 @@ test("global spacing scale has stable values and does not override the approved 
   }
   assert.match(css, /\.member-shell main \{ width:100%; max-width:88rem; margin-inline:auto; \}/);
 });
+
+test("catalogue filters give mobile controls a full row before tablet columns", () => {
+  const styles = read("src/components/catalog/catalog-filter-styles.ts");
+  assert.match(styles, /grid-cols-1 items-end gap-3/);
+  assert.match(styles, /sm:grid-cols-2/);
+  assert.match(styles, /sm:\\[&>label:first-child\\]:col-span-2/);
+  assert.match(styles, /md:\\[&>label:first-child\\]:col-span-1/);
+});
