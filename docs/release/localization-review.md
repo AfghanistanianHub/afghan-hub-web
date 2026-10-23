@@ -142,10 +142,14 @@ Fixes made in this pass:
 
 ## Remaining verification required before Issue #514 can close
 
-- Signed-in browser matrix (en/fa/ps at 390/768/1280/1440) for `/network`, `/saved`,
-  `/submissions`, `/messages`, `/messages/[conversationId]`, `/settings` and `/dashboard`. This
-  audit has no Supabase project or acceptance credentials in the local checkout, so those routes
-  were verified by source, typecheck and contract tests only.
+- Signed-in **three-language** browser matrix (en/fa/ps at 390/768/1280/1440) for `/network`,
+  `/saved`, `/submissions`, `/messages`, `/messages/[conversationId]`, `/settings`,
+  `/profile` and the create/edit forms. The CI `journeys` and `Independent acceptance` jobs run
+  real authenticated Chrome journeys against a local Supabase stack and pass on commit
+  `685644b`, including owner create/edit for businesses, organizations, opportunities and
+  events, submissions, messaging, moderation and connection flows — but those journeys assert
+  English copy on the authenticated surfaces. A signed-in pass that switches each of those
+  routes through Farsi and Pashto is still outstanding.
 - Localize the remaining listing/detail surfaces, search, moderation, event registration,
   attendee lists, member detail, 404/error boundaries and the avatar/profile-strength and
   media-upload widgets listed as English-only or partial above.
@@ -154,6 +158,7 @@ Fixes made in this pass:
 - Localize page titles/metadata through a deliberate routing or cookie decision.
 - Native Farsi and Pashto editorial sign-off recorded with reviewer, date and commit SHA.
 - Full `npm run lint`, `npx tsc --noEmit`, `node --test tests/*.test.mjs`, `npm run build` and the
-  CI browser workflows on the final candidate SHA.
+  CI browser workflows on the final candidate SHA. On `685644b` these pass locally, and the CI
+  `build`, `typography`, `browser`, `journeys` and `Independent acceptance` jobs all pass.
 
 Issue #514 remains open. This document records partial, code-backed progress, not completion.
