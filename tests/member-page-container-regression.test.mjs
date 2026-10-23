@@ -58,6 +58,6 @@ test("catalogue filters give mobile controls a full row before tablet columns", 
   const styles = read("src/components/catalog/catalog-filter-styles.ts");
   assert.match(styles, /grid-cols-1 items-end gap-3/);
   assert.match(styles, /sm:grid-cols-2/);
-  assert.match(styles, /sm:\\[&>label:first-child\\]:col-span-2/);
-  assert.match(styles, /md:\\[&>label:first-child\\]:col-span-1/);
+  assert.ok(styles.includes("sm:[&>label:first-child]:col-span-2"));
+  assert.ok(styles.includes("md:[&>label:first-child]:col-span-1"));
 });
