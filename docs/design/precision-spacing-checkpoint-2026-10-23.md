@@ -14,7 +14,7 @@ This is a **partial, draft** implementation of the precision design-system brief
 | --- | --- | --- |
 | `src/app/globals.css` | Define `--space-1/2/3/4/6/8/12/16/24` as 4/8/12/16/24/32/48/64/96px | None yet: reference tokens only; existing component spacings remain |
 | `tests/member-page-container-regression.test.mjs` | Assert spacing token values and the established member width | Test only |
-| Components | No component edits pending visual defect verification | None |
+| Shared catalogue filters | Stack controls into a single column below 640px; restore two columns at the `sm` breakpoint and existing first-label spanning at `md` | Real layout adjustment; requires new responsive screenshots before approval |
 
 ## Gate before completion
 
@@ -26,4 +26,4 @@ This is a **partial, draft** implementation of the precision design-system brief
 6. Only mark specific audit findings resolved after browser proof; otherwise leave PR draft. Do not merge or deploy based solely on tokens or stale screenshots.
 
 ## Not yet completed
-No new browser captures, component visual corrections, full lint/type/build validation or final approval were performed for this branch. Existing evidence is historical, not proof of this commit.
+A narrow-screen catalogue filter grid correction was made from source inspection. No new browser captures, full lint/type/build validation or final approval were performed for this branch. Existing evidence is historical, not proof of this commit.
