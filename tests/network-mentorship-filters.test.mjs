@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
+import { uiCopy } from "../src/lib/i18n/ui-copy.ts";
 
 const page = fs.readFileSync(
   new URL("../src/app/(dashboard)/network/page.tsx", import.meta.url),
@@ -22,8 +23,10 @@ test("network loads only explicit mentorship discovery signals", () => {
 
 test("member directory exposes explicit mentorship availability filters", () => {
   assert.match(directory, /type MentorshipFilter = "all" \| "mentors" \| "mentees"/);
-  assert.match(directory, /Open to mentoring/);
-  assert.match(directory, /Looking for a mentor/);
+  assert.match(directory, /t\("network\.openToMentoring"\)/);
+  assert.match(directory, /t\("network\.lookingForMentor"\)/);
+  assert.equal(uiCopy.en.network.openToMentoring, 'Open to mentoring');
+  assert.equal(uiCopy.en.network.lookingForMentor, 'Looking for a mentor');
   assert.match(directory, /aria-pressed=\{selected\}/);
   assert.match(directory, /member\.open_to_mentoring/);
   assert.match(directory, /member\.looking_for_mentor/);
@@ -38,5 +41,6 @@ test("text search includes mentorship topics without inferring availability", ()
 test("empty state and reset account for both search and mentorship filters", () => {
   assert.match(directory, /hasSearchQuery \|\| hasMentorshipFilter/);
   assert.match(directory, /setMentorshipFilter\("all"\)/);
-  assert.match(directory, /Clear filters/);
+  assert.match(directory, /t\("network\.clearFilters"\)/);
+  assert.equal(uiCopy.en.network.clearFilters, 'Clear filters');
 });

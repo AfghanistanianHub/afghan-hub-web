@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import test from 'node:test';
+import { formatCopy, getUiCopy } from '../src/lib/i18n/ui-copy.ts';
 const require = createRequire(import.meta.url);
 const ts = require('typescript');
 test('request responses retain one shared form, trusted request ID and distinct submitter decisions', () => {
@@ -15,6 +16,7 @@ test('request responses retain one shared form, trusted request ID and distinct 
     '@/components/public/community-signature': { CommunitySignature: () => null },
     '@/components/ui/external-image': { ExternalImage: () => null },
     '@/components/forms/pending-submit-button': { PendingSubmitButton: control },
+    '@/components/i18n/localized': { useUiCopy: () => ({ language: 'en', t: (key, values) => formatCopy(getUiCopy('en', key), values) }) },
     '@/app/(dashboard)/network/actions': { respondConnectionRequest: action },
   };
   const exports = {};

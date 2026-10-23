@@ -20,6 +20,7 @@ const defaultUiLabels = {
     operatorLabel: "Responsible operator",
     supportLabel: "Support and privacy questions",
     disclaimer: "Do not send passwords, sign-in links, session tokens or sensitive identity documents by email.",
+    navigation: { privacy: "Privacy", terms: "Terms", support: "Support", navigation: "Privacy, terms and support" },
   },
   fa: {
     badge: "افغان هاب",
@@ -27,6 +28,7 @@ const defaultUiLabels = {
     operatorLabel: "مسئول اجرایی",
     supportLabel: "پرسش‌های پشتیبانی و حریم خصوصی",
     disclaimer: "از ارسال گذرواژه، لینک‌های ورود، توکن‌های نشست یا مدارک هویتی حساس از طریق ایمیل خودداری کنید.",
+    navigation: { privacy: "حریم خصوصی", terms: "شرایط استفاده", support: "پشتیبانی", navigation: "حریم خصوصی، شرایط استفاده و پشتیبانی" },
   },
   ps: {
     badge: "افغان هب",
@@ -34,6 +36,7 @@ const defaultUiLabels = {
     operatorLabel: "مسؤل چلونکی",
     supportLabel: "د ملاتړ او محرمیت پوښتنې",
     disclaimer: "د برېښنالیک له لارې پټ نومونه، د ننوتلو لېنکونه، یا حساس اسناد مه استوئ.",
+    navigation: { privacy: "محرمیت", terms: "د کارونې شرطونه", support: "ملاتړ", navigation: "محرمیت، شرطونه او ملاتړ" },
   },
 } as const;
 
@@ -94,7 +97,7 @@ export function InformationPage({
           </dl>
           <p className="mt-5 text-sm leading-6 text-muted-foreground">{disclaimerText}</p>
           <div className="mt-6 border-t border-border pt-5">
-            <SupportLinks labels={labels?.navigation} />
+            <SupportLinks labels={labels?.navigation ?? fallbackLabels.navigation} />
           </div>
         </aside>
       </div>

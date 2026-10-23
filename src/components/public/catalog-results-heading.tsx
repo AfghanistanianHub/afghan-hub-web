@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 // Streaming can deliver this anchor after the browser's initial fragment lookup.
-export function CatalogResultsHeading({ title }: { title: string }) {
+export function CatalogResultsHeading({ title }: { title: ReactNode }) {
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     if (location.hash !== "#results-heading") return;

@@ -1,11 +1,12 @@
 "use client";
 
 import { Sparkles } from "lucide-react";
+import type { ReactNode } from "react";
 
 export const ASSISTANT_OPEN_EVENT = "afghan-hub:assistant-open";
 
 type ContextualAssistantPromptProps = {
-  label: string;
+  label: ReactNode;
   query: string;
   className?: string;
 };

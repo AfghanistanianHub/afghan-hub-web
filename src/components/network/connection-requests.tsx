@@ -1,3 +1,5 @@
+"use client";
+
 import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import Link from "next/link";
 import { CommunitySignature } from "@/components/public/community-signature";
@@ -6,6 +8,7 @@ import styles from "./network-surfaces.module.css";
 import { UserRound } from "lucide-react";
 import { ExternalImage } from "@/components/ui/external-image";
 import { respondConnectionRequest } from "@/app/(dashboard)/network/actions";
+import { useUiCopy } from "@/components/i18n/localized";
 
 type Requester = {
   id: string;
@@ -25,19 +28,20 @@ type ConnectionRequestsProps = {
   requests: ConnectionRequest[];
 };
 
-function getName(requester: Requester) {
+function getMemberName(requester: Requester) {
   return (
     requester.display_name?.trim() ||
     [requester.first_name, requester.last_name]
       .filter(Boolean)
       .join(" ") ||
-    "Afghan Hub Member"
+    null
   );
 }
 
 export function ConnectionRequests({
   requests,
 }: ConnectionRequestsProps) {
+  const { t } = useUiCopy();
   if (requests.length === 0) {
     return null;
   }
@@ -45,7 +49,7 @@ export function ConnectionRequests({
   return (
     <section className={`relative overflow-hidden border p-5 sm:p-6 ${styles.surface}`}>
       <CommunitySignature className={styles.signature} />
-      <div className="relative"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">New activity</p><h2 className="mt-1 text-xl font-bold text-foreground">Connection requests</h2></div>
+      <div className="relative"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{t("network.newActivity")}</p><h2 className="mt-1 text-xl font-bold text-foreground">{t("network.connectionRequests")}</h2></div>
 
       <div className="mt-4 space-y-3">
         {requests.map((request) => {
@@ -57,7 +61,7 @@ export function ConnectionRequests({
             return null;
           }
 
-          const name = getName(requester);
+          const name = getMemberName(requester) ?? t("network.memberFallback");
 
           return (
             <div
@@ -103,19 +107,19 @@ export function ConnectionRequests({
                 <PendingSubmitButton
                   name="decision"
                   value="accepted"
-                  pendingLabel="Accepting…"
+                  pendingLabel={t("network.accepting")}
                   className={`min-w-28 bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 ${styles.control}`}
                 >
-                  Accept
+                  {t("network.accept")}
                 </PendingSubmitButton>
 
                 <PendingSubmitButton
                   name="decision"
                   value="declined"
-                  pendingLabel="Declining…"
+                  pendingLabel={t("network.declining")}
                   className={`min-w-28 border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted ${styles.control}`}
                 >
-                  Decline
+                  {t("network.decline")}
                 </PendingSubmitButton>
               </form>
             </div>

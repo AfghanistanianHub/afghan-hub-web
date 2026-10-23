@@ -6,10 +6,17 @@ import styles from "./calendar-field.module.css";
 import { format, parseISO } from "date-fns";
 import { DayPicker } from "@daypicker/react";
 import "@daypicker/react/style.css";
+import { useSiteLanguage } from "@/components/i18n/localized";
+import { useWorkspaceCopy } from "@/components/i18n/workspace";
+import type { WorkspaceCopyKey } from "@/lib/i18n/workspace-copy";
+import { formatSiteDate } from "@/lib/i18n/format";
 
 type EventDateTimePickerProps = {
   name: string;
-  label: string;
+  /** Catalog key for the placeholder and accessible name. */
+  labelKey?: WorkspaceCopyKey;
+  /** Literal fallback for a server-provided label that is already localized. */
+  label?: string;
   defaultValue?: string | null;
   required?: boolean;
 };
@@ -42,6 +49,7 @@ function toTwentyFourHourTime(hour: string, minute: string, period: string) {
 
 export function EventDateTimePicker({
   name,
+  labelKey,
   label,
   defaultValue,
   required = false,
@@ -61,13 +69,17 @@ export function EventDateTimePicker({
     trigger.current?.focus();
   };
 
+  const language = useSiteLanguage();
+  const { t } = useWorkspaceCopy();
+  const resolvedLabel = labelKey ? t(labelKey) : label ?? "";
   const twentyFourHourTime = toTwentyFourHourTime(hour, minute, period);
   const hiddenValue = selectedDate && twentyFourHourTime
     ? `${format(selectedDate, "yyyy-MM-dd")}T${twentyFourHourTime}`
     : "";
+  const periodLabel = period === "AM" ? t("eventPicker.am") : t("eventPicker.pm");
   const displayValue = selectedDate && hour && minute
-    ? `${format(selectedDate, "MMMM d, yyyy")} at ${hour}:${minute} ${period}`
-    : label;
+    ? `${formatSiteDate(language, selectedDate, { year: "numeric", month: "long", day: "numeric" })} ${t("eventPicker.at")} ${hour}:${minute} ${periodLabel}`
+    : resolvedLabel;
 
   const fieldClass =
     "w-full rounded-[var(--radius)] border border-input bg-background px-3 py-3 text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/20";
@@ -86,7 +98,7 @@ export function EventDateTimePicker({
         ref={trigger}
         type="button"
         onClick={() => setIsOpen((current) => !current)}
-        aria-label={`${label}: ${displayValue}`}
+        aria-label={`${resolvedLabel}: ${displayValue}`}
         aria-expanded={isOpen}
         aria-controls={isOpen ? panelId : undefined}
         aria-haspopup="dialog"
@@ -99,7 +111,7 @@ export function EventDateTimePicker({
       </button>
 
       {isOpen ? (
-        <div id={panelId} role="dialog" aria-label={`${label} date and time`} className={styles.panel}>
+        <div id={panelId} role="dialog" aria-label={`${resolvedLabel} ${t("eventPicker.dateTime")}`} className={styles.panel}>
           <DayPicker
             autoFocus
             mode="single"
@@ -109,10 +121,10 @@ export function EventDateTimePicker({
           />
 
           <div className="mt-4 border-t border-border pt-4">
-            <p className="text-sm font-semibold">Time</p>
+            <p className="text-sm font-semibold">{t("eventPicker.time")}</p>
             <div className="mt-2 grid grid-cols-3 gap-3">
               <div>
-                <label htmlFor={`${name}-hour`} className="mb-1 block text-xs text-muted-foreground">Hour</label>
+                <label htmlFor={`${name}-hour`} className="mb-1 block text-xs text-muted-foreground">{t("eventPicker.hour")}</label>
                 <select id={`${name}-hour`} value={hour} onChange={(event) => setHour(event.target.value)} className={fieldClass}>
                   <option value="">--</option>
                   {Array.from({ length: 12 }, (_, index) => {
@@ -123,7 +135,7 @@ export function EventDateTimePicker({
               </div>
 
               <div>
-                <label htmlFor={`${name}-minute`} className="mb-1 block text-xs text-muted-foreground">Minute</label>
+                <label htmlFor={`${name}-minute`} className="mb-1 block text-xs text-muted-foreground">{t("eventPicker.minute")}</label>
                 <select id={`${name}-minute`} value={minute} onChange={(event) => setMinute(event.target.value)} className={fieldClass}>
                   <option value="">--</option>
                   {["00", "15", "30", "45"].map((value) => <option key={value} value={value}>{value}</option>)}
@@ -131,10 +143,10 @@ export function EventDateTimePicker({
               </div>
 
               <div>
-                <label htmlFor={`${name}-period`} className="mb-1 block text-xs text-muted-foreground">AM / PM</label>
+                <label htmlFor={`${name}-period`} className="mb-1 block text-xs text-muted-foreground">{t("eventPicker.period")}</label>
                 <select id={`${name}-period`} value={period} onChange={(event) => setPeriod(event.target.value)} className={fieldClass}>
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
+                  <option value="AM">{t("eventPicker.am")}</option>
+                  <option value="PM">{t("eventPicker.pm")}</option>
                 </select>
               </div>
             </div>
@@ -152,7 +164,7 @@ export function EventDateTimePicker({
               }}
               className={`${styles.control} rounded-[var(--radius)] px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
             >
-              Clear
+              {t("eventPicker.clear")}
             </button>
 
             <button
@@ -161,7 +173,7 @@ export function EventDateTimePicker({
               onClick={closePanel}
               className={`${styles.control} rounded-[var(--radius)] bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition  hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-50`}
             >
-              Done
+              {t("eventPicker.done")}
             </button>
           </div>
         </div>

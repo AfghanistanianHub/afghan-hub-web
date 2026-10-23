@@ -256,6 +256,25 @@
   direction: ltr;
 }
 
+/* Directional icons (arrows, chevrons) mirror as a whole in right-to-left text. */
+:dir(rtl) [data-flip-rtl] {
+  transform: scaleX(-1);
+}
+
+/* URLs, codes and technical identifiers stay left-to-right inside RTL copy. */
+:where(code, kbd, samp, [data-technical-identifier]) {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Native-script UI needs room for diacritics and descenders at large text sizes. */
+:is(:lang(fa), :lang(ps)) :where(p, li, dd, dt) {
+  line-height: 1.85;
+}
+:is(:lang(fa), :lang(ps)) :where(h1, h2, h3) {
+  text-wrap: balance;
+}
+
 /* Workspace headings share directory rhythm; homepage headings remain independent. */
 @layer utilities {
   .workspace-heading { font-size:1.875rem; font-weight:500; line-height:1.2; letter-spacing:-0.025em; color:var(--foreground); }

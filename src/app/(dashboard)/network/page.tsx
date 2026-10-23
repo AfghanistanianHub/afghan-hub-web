@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import { ConnectionRequests } from "@/components/network/connection-requests";
+import { Localized } from "@/components/i18n/localized";
 import { MemberDirectory } from "@/components/network/member-directory";
 import { MyConnections } from "@/components/network/my-connections";
 import { createClient } from "@/lib/supabase/server";
@@ -99,21 +100,18 @@ export default async function NetworkPage() {
 
   const stats = [
     {
-      label: "Members",
+      labelKey: "network.members" as const,
       value: memberCount,
-      helper: "visible",
       icon: UsersRound,
     },
     {
-      label: "Connections",
+      labelKey: "network.connections" as const,
       value: connectionCount,
-      helper: "connected",
       icon: ArrowRight,
     },
     {
-      label: "Requests",
+      labelKey: "network.requests" as const,
       value: requestCount,
-      helper: "new",
       icon: UserPlus,
     },
   ];
@@ -131,39 +129,39 @@ export default async function NetworkPage() {
           <div className="relative min-w-0">
             <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
               <Sparkles aria-hidden="true" className="size-3.5" />
-              Community network
+              <Localized k="network.eyebrow" />
             </div>
 
             <h1 className="mt-4 max-w-[22ch] text-balance text-[clamp(2.1rem,3.8vw,3.6rem)] font-medium leading-[1.08] tracking-[-0.045em] text-foreground">
-              Your network
+              <Localized k="network.title" />
             </h1>
 
             <p className="mt-5 max-w-[65ch] text-base leading-7 text-muted-foreground">
-              Find professionals, entrepreneurs, artists, students, and community leaders — then turn discovery into a real connection.
+              <Localized k="network.description" />
             </p>
 
             <div className="mt-5 flex flex-wrap gap-2">
               <ContextualAssistantPrompt
-                label="Find tech professionals"
+                label={<Localized k="network.findTech" />}
                 query="Find professionals working in technology"
               />
               <ContextualAssistantPrompt
-                label="Find artists"
+                label={<Localized k="network.findArtists" />}
                 query="Find artists working in arts and culture"
               />
               <ContextualAssistantPrompt
-                label="Find mentors"
+                label={<Localized k="network.findMentors" />}
                 query="Find mentors in the community"
               />
             </div>
 
             <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3 border-t border-border/70 pt-5">
-              {stats.map(({ label, value, icon: Icon }) => (
+              {stats.map(({ labelKey, value, icon: Icon }) => (
                 <div
-                  key={label}
+                  key={labelKey}
                   className="flex min-h-11 items-center gap-2 text-sm"
                 >
-                  <Icon aria-hidden="true" className="size-4 text-primary" /><span className="font-semibold">{value}</span><span className="text-muted-foreground">{label}</span>
+                  <Icon aria-hidden="true" className="size-4 text-primary" /><span className="font-semibold">{value}</span><span className="text-muted-foreground"><Localized k={labelKey} /></span>
                 </div>
               ))}
             </div>
@@ -178,7 +176,7 @@ export default async function NetworkPage() {
               aria-live="assertive"
               className="relative overflow-hidden rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.05] p-4 text-sm text-destructive"
             >
-              We could not load your connection requests right now. Please try again shortly.
+              <Localized k="network.requestsError" />
             </div>
           ) : (
             <ConnectionRequests requests={incomingRequests ?? []} />
@@ -191,7 +189,7 @@ export default async function NetworkPage() {
                 aria-live="assertive"
                 className="relative overflow-hidden rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.05] p-4 text-sm text-destructive"
               >
-                We could not load your connections right now. Please try again shortly.
+                <Localized k="network.connectionsError" />
               </div>
             ) : (
               <MyConnections currentUserId={user.id} connections={acceptedConnections ?? []} />
@@ -205,7 +203,7 @@ export default async function NetworkPage() {
               className="relative overflow-hidden rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.05] p-4 text-sm text-destructive"
             >
               <span className="relative">
-                We could not load the member directory right now. Please try again shortly.
+                <Localized k="network.directoryError" />
               </span>
             </div>
           ) : (

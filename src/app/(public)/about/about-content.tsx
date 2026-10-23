@@ -82,9 +82,9 @@ export function AboutContent() {
               <h2 className="mt-3 text-3xl font-semibold tracking-tight">{copy.participationTitle}</h2>
               <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">{copy.participationDescription}</p>
             </div>
-            <div className="flex shrink-0 flex-wrap gap-3">
-              <Link href="/explore" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">{copy.explore}<ArrowRight aria-hidden="true" className="size-4 rtl:rotate-180" /></Link>
-              <Link href="/login?mode=join" className="rounded-md border border-border bg-background px-5 py-3 text-sm font-semibold transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">{copy.join}</Link>
+            <div className="flex min-w-0 flex-wrap gap-3">
+              <Link href="/explore" className="inline-flex min-w-0 max-w-full flex-wrap items-center justify-center gap-2 rounded-md bg-primary px-5 py-3 text-center text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"><span className="min-w-0">{copy.explore}</span><ArrowRight aria-hidden="true" className="size-4 shrink-0 rtl:rotate-180" /></Link>
+              <Link href="/login?mode=join" className="inline-flex min-w-0 max-w-full flex-wrap items-center justify-center rounded-md border border-border bg-background px-5 py-3 text-center text-sm font-semibold transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">{copy.join}</Link>
             </div>
           </div>
         </div>

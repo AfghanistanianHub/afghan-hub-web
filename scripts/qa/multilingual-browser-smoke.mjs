@@ -18,6 +18,34 @@ for (const locale of ["en", "fa", "ps"]) {
   assert.ok(hero.includes(`dir="${locale === "en" ? "ltr" : "rtl"}"`), `homepage hero direction: ${locale}`);
 }
 const browser = await chromium.launch({ headless: true });
+
+/**
+ * The header is server-rendered in the default language and only follows the
+ * stored preference once hydrated. A change dispatched before that reaches no
+ * React listener and is discarded, so re-select until a navigation is observed.
+ */
+async function switchLanguage(page, language) {
+  const target = `/${language}`;
+  const select = page.locator("header select").first();
+  await select.waitFor();
+  for (let attempt = 0; attempt < 10; attempt++) {
+    await select.selectOption(language);
+    try {
+      await page.waitForURL(url => url.pathname === target, { timeout: 5000 });
+      return;
+    } catch {
+      // Not hydrated yet; try again once the page finishes loading.
+      await page.waitForFunction(() => document.readyState === "complete", null, { timeout: 15000 }).catch(() => {});
+    }
+  }
+  throw new Error(`language switch to ${target} never navigated (still ${page.url()})`);
+}
+
+const exploreHeadings = {
+  en: "Find your next connection.",
+  fa: "پیوند بعدی خود را پیدا کنید.",
+  ps: "خپله راتلونکې اړیکه ومومئ.",
+};
 let failures = [];
 try {
   for (const viewport of [{ name: "desktop", width: 1440, height: 900 }, { name: "mobile", width: 390, height: 844 }]) {
@@ -59,8 +87,7 @@ try {
     }
     for (const language of ["en", "fa", "ps"]) {
       if (new URL(page.url()).pathname !== `/${language}`) {
-        await page.locator("header select").first().selectOption(language);
-        await page.waitForURL(url => url.pathname === `/${language}`, { timeout: 45000 });
+        await switchLanguage(page, language);
       }
       const hero = page.locator("section[aria-labelledby='landing-title']");
       await hero.locator("h1[data-hero-headline]").waitFor();
@@ -89,6 +116,44 @@ try {
       assert.ok(state.scrollWidth <= state.clientWidth + 3, `horizontal overflow ${viewport.name}/${language}: ${JSON.stringify(state)}`);
       await page.screenshot({ path: `${output}/${viewport.name}-${language}.png`, fullPage: true });
       console.log(JSON.stringify({ viewport: viewport.name, ...state }));
+
+      // Explore is a shared public surface outside the homepage shell. Its localized
+      // headings, empty/unavailable states and filters must render at large text too.
+      await page.goto(`${base}/explore`, { waitUntil: "domcontentloaded", timeout: 45000 });
+      await page.locator(`main [lang="${language}"]`).first().waitFor({ timeout: 45000 });
+      await page.evaluate(() => document.fonts.ready);
+      const exploreState = await page.evaluate(() => {
+        const heading = document.querySelector("main h1");
+        const doc = document.documentElement;
+        doc.style.fontSize = "200%";
+        const zoomed = doc.scrollWidth > doc.clientWidth + 2;
+        const clipped = [...document.querySelectorAll("main h1, main h2, main h3, main p, main button, main a")]
+          .filter(element => element.scrollWidth > element.clientWidth + 2).length;
+        doc.style.fontSize = "";
+        return {
+          h1: heading?.textContent?.trim(),
+          lang: doc.lang,
+          dir: doc.dir,
+          overflow: doc.scrollWidth > doc.clientWidth + 2,
+          zoomed,
+          clipped,
+          font: heading ? getComputedStyle(heading).fontFamily : "",
+        };
+      });
+      assert.equal(exploreState.lang, language, `explore document language: ${language}`);
+      assert.equal(exploreState.dir, language === "en" ? "ltr" : "rtl", `explore direction: ${language}`);
+      assert.equal(exploreState.h1, exploreHeadings[language], `explore heading: ${language}`);
+      assert.equal(exploreState.overflow, false, `explore overflow: ${viewport.name}/${language}`);
+      assert.equal(exploreState.zoomed, false, `explore overflow at 200% text: ${viewport.name}/${language}`);
+      assert.equal(exploreState.clipped, 0, `explore clipped controls at 200% text: ${viewport.name}/${language}`);
+      if (language === "fa") assert.match(exploreState.font, /Estedad/i);
+      if (language === "ps") assert.match(exploreState.font, /Vazirmatn/i);
+      await page.screenshot({ path: `${output}/${viewport.name}-${language}-explore.png`, fullPage: true });
+      console.log(JSON.stringify({ viewport: viewport.name, language, explore: exploreState }));
+
+      // Return to the localized home so the next iteration still exercises the selector.
+      await page.goto(`${base}/${language}`, { waitUntil: "domcontentloaded", timeout: 45000 });
+      await page.locator("section[aria-labelledby='landing-title'] h1[data-hero-headline]").waitFor();
     }
     assert.deepEqual(errors, [], `client-side errors at ${viewport.name}`);
     await context.close();

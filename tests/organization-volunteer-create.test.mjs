@@ -10,10 +10,15 @@ const actions = fs.readFileSync(
   new URL("../src/app/(dashboard)/organizations/actions.ts", import.meta.url),
   "utf8",
 );
+const workspaceCopy = fs.readFileSync(
+  new URL("../src/lib/i18n/workspace-copy.ts", import.meta.url),
+  "utf8",
+);
 
 test("organization creation exposes and persists volunteer availability", () => {
   assert.match(newPage, /name="is_accepting_volunteers"/);
-  assert.match(newPage, /Accepting volunteers/);
+  assert.match(newPage, /labelKey="organization.volunteers"/);
+  assert.match(workspaceCopy, /"organization.volunteers": "Accepting volunteers"/);
   assert.match(actions, /formData\.get\("is_accepting_volunteers"\) === "on"/);
   assert.match(actions, /is_accepting_volunteers:\s*isAcceptingVolunteers/);
 });

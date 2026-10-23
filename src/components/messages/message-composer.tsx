@@ -9,6 +9,15 @@ import {
   sendMessage,
   type SendMessageState,
 } from "@/app/(dashboard)/messages/actions";
+import { useUiCopy } from "@/components/i18n/localized";
+import type { UiCopyKey } from "@/lib/i18n/ui-copy";
+
+const errorKeys: Record<string, UiCopyKey> = {
+  "Unable to identify this conversation.": "messages.errorConversation",
+  "Enter a message between 1 and 4,000 characters.": "messages.errorLength",
+  "You no longer have access to this conversation.": "messages.errorAccess",
+  "Your message could not be sent. Please try again.": "messages.errorSend",
+};
 
 type MessageComposerProps = {
   conversationId: string;
@@ -20,6 +29,7 @@ const initialState: SendMessageState = {
 };
 
 export function MessageComposer({ conversationId }: MessageComposerProps) {
+  const { language, t } = useUiCopy();
   const [state, formAction, isPending] = useActionState(sendMessage, initialState);
   const formRef = useRef<HTMLFormElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -39,13 +49,15 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         <textarea
           ref={textareaRef}
           name="message"
-          aria-label="Message"
+          aria-label={t("messages.messageAria")}
           required
           maxLength={4000}
           rows={1}
           disabled={isPending}
           aria-describedby={state.error ? "message-error" : undefined}
-          placeholder="Write a message..."
+          placeholder={t("messages.composerPlaceholder")}
+          lang={language}
+          dir={language === "en" ? "ltr" : "rtl"}
           onKeyDown={(event) => {
             if (
               event.key === "Enter" &&
@@ -63,7 +75,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         <button
           type="submit"
           disabled={isPending}
-          aria-label={isPending ? "Sending message" : "Send message"}
+          aria-label={isPending ? t("messages.sending") : t("messages.send")}
           className={`flex size-12 shrink-0 items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 disabled:cursor-wait disabled:opacity-60 ${styles.control}`}
         >
           {isPending ? (
@@ -77,12 +89,12 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       <div className="mt-2 flex flex-col items-start gap-1.5 text-xs sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         {state.error ? (
           <p id="message-error" role="alert" aria-live="assertive" className="rounded-sm border border-destructive/20 bg-destructive/[0.05] px-2.5 py-1.5 text-destructive">
-            {state.error}
+            {errorKeys[state.error] ? t(errorKeys[state.error]) : state.error}
           </p>
         ) : (
-          <p className="text-muted-foreground">Enter to send · Shift+Enter for a new line</p>
+          <p className="text-muted-foreground">{t("messages.composerHint")}</p>
         )}
-        <span className="text-muted-foreground sm:ml-auto">Maximum 4,000 characters</span>
+        <span className="text-muted-foreground sm:ms-auto">{t("messages.maxChars")}</span>
       </div>
     </form>
   );

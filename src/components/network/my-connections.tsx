@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import styles from "./network-surfaces.module.css";
 
-import { ArrowUpRight, MapPin, UserRound } from "lucide-react";
+import { ArrowUpLeft, ArrowUpRight, MapPin, UserRound } from "lucide-react";
 import { ExternalImage } from "@/components/ui/external-image";
+import { useUiCopy } from "@/components/i18n/localized";
 
 type Member = {
   id: string;
@@ -27,11 +30,11 @@ type MyConnectionsProps = {
   connections: AcceptedConnection[];
 };
 
-function getName(member: Member) {
+function getMemberName(member: Member) {
   return (
     member.display_name?.trim() ||
     [member.first_name, member.last_name].filter(Boolean).join(" ") ||
-    "Afghan Hub Member"
+    null
   );
 }
 
@@ -43,6 +46,8 @@ export function MyConnections({
   currentUserId,
   connections,
 }: MyConnectionsProps) {
+  const { language, t } = useUiCopy();
+  const Arrow = language === "en" ? ArrowUpRight : ArrowUpLeft;
   const members = connections
     .map((connection) =>
       normalizeMember(
@@ -62,21 +67,21 @@ export function MyConnections({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-            Your network
+            {t("network.title")}
           </p>
           <h2 className="mt-1.5 text-xl font-bold tracking-tight text-foreground">
-            My connections
+            {t("network.myConnections")}
           </h2>
         </div>
 
         <span className="text-sm font-medium text-muted-foreground">
-          {members.length} connected
+          {t("network.connectedCount", { count: members.length })}
         </span>
       </div>
 
       <div className="mt-4 grid items-start gap-4 md:grid-cols-2">
         {members.map((member) => {
-          const name = getName(member);
+          const name = getMemberName(member) ?? t("network.memberFallback");
           const location = [member.city, member.country]
             .filter(Boolean)
             .join(", ");
@@ -115,12 +120,12 @@ export function MyConnections({
                     </p>
                   ) : (
                     <p className="mt-0.5 text-sm leading-5 text-muted-foreground">
-                      Community member
+                      {t("network.communityMember")}
                     </p>
                   )}
                 </div>
 
-                <ArrowUpRight
+                <Arrow
                   aria-hidden="true"
                   data-profile-arrow
                   className="size-4 shrink-0 text-muted-foreground"

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
+import { uiCopy } from "../src/lib/i18n/ui-copy.ts";
 
 const launcher = fs.readFileSync(
   new URL("../src/components/assistant/contextual-assistant-prompt.tsx", import.meta.url),
@@ -35,10 +36,13 @@ test("contextual prompts are available on opportunity, event and network surface
   assert.match(opportunity, /Find people in this field/);
   assert.match(eventPage, /Find similar events/);
   assert.match(eventPage, /Find related organizations/);
-  assert.match(network, /Find tech professionals/);
-  assert.match(network, /Find artists/);
+  assert.match(network, /network\.findTech/);
+  assert.match(network, /network\.findArtists/);
   assert.match(network, /Find artists working in arts and culture/);
-  assert.match(network, /Find mentors/);
+  assert.match(network, /network\.findMentors/);
+  assert.match(uiCopy.en.network.findTech, /Find tech professionals/);
+  assert.match(uiCopy.en.network.findArtists, /Find artists/);
+  assert.match(uiCopy.en.network.findMentors, /Find mentors/);
 });
 
 test("contextual prompt contract does not add write actions", () => {
