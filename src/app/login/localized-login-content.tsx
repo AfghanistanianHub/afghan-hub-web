@@ -94,6 +94,10 @@ const authFeedback = {
   "Your password reset session has expired. Request a new link.": { fa: "نشست بازیابی رمز عبور منقضی شده است. لینک جدیدی درخواست کنید.", ps: "ستاسو د پټنوم بېرته ترلاسه کولو ناسته پای ته رسېدلې ده. نوی لینک وغواړئ." },
   "Open a valid password reset link before choosing a new password.": { fa: "پیش از انتخاب رمز عبور جدید، لینک معتبر بازیابی را باز کنید.", ps: "د نوي پټنوم تر ټاکلو مخکې د بېرته ترلاسه کولو معتبر لینک پرانیزئ." },
   "Password updated successfully. Sign in with your new password.": { fa: "رمز عبور با موفقیت تغییر کرد. با رمز عبور جدید وارد شوید.", ps: "پټنوم په بریالیتوب بدل شو. په خپل نوي پټنوم ننوځئ." },
+  "The confirmation link is invalid or has expired. Please sign in if your account is already confirmed, or create the account again.": {
+    fa: "لینک تأیید نامعتبر یا منقضی شده است. اگر حساب شما قبلاً تأیید شده، وارد شوید؛ در غیر این صورت حساب را دوباره ایجاد کنید.",
+    ps: "د تایید لینک ناسم یا پای ته رسېدلی دی. که ستاسو حساب مخکې تایید شوی وي، ننوځئ؛ که نه، حساب بیا جوړ کړئ.",
+  },
   "Account created. Check your email if confirmation is required.": {
     fa: "حساب ایجاد شد. اگر تأیید ایمیل لازم باشد، صندوق ورودی خود را بررسی کنید.",
     ps: "حساب جوړ شو. که د برېښنالیک تایید اړین وي، خپل برېښنالیک وګورئ.",
