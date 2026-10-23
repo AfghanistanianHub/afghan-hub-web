@@ -1,0 +1,606 @@
+[
+  {
+    "source": "src/app/(dashboard)/businesses/[slug]/edit/page.tsx",
+    "route": "/businesses/[slug]/edit",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/businesses/[slug]/not-found.tsx",
+    "route": "/businesses/[slug]",
+    "kind": "boundary",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked."
+  },
+  {
+    "source": "src/app/(dashboard)/businesses/[slug]/page.tsx",
+    "route": "/businesses/[slug]",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/businesses/new/page.tsx",
+    "route": "/businesses/new",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/businesses/page.tsx",
+    "route": "/businesses",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/dashboard/page.tsx",
+    "route": "/dashboard",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/events/[slug]/attendees/page.tsx",
+    "route": "/events/[slug]/attendees",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/events/[slug]/calendar/route.ts",
+    "route": "/events/[slug]/calendar",
+    "kind": "handler",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked."
+  },
+  {
+    "source": "src/app/(dashboard)/events/[slug]/edit/page.tsx",
+    "route": "/events/[slug]/edit",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/events/[slug]/page.tsx",
+    "route": "/events/[slug]",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/events/my/page.tsx",
+    "route": "/events/my",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/events/new/page.tsx",
+    "route": "/events/new",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/events/page.tsx",
+    "route": "/events",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/loading.tsx",
+    "route": "/",
+    "kind": "boundary",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked."
+  },
+  {
+    "source": "src/app/(dashboard)/members/[id]/not-found.tsx",
+    "route": "/members/[id]",
+    "kind": "boundary",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked."
+  },
+  {
+    "source": "src/app/(dashboard)/members/[id]/page.tsx",
+    "route": "/members/[id]",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/messages/[conversationId]/page.tsx",
+    "route": "/messages/[conversationId]",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/messages/page.tsx",
+    "route": "/messages",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/moderation/page.tsx",
+    "route": "/moderation",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/moderation/team/page.tsx",
+    "route": "/moderation/team",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/network/page.tsx",
+    "route": "/network",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/opportunities/[slug]/edit/page.tsx",
+    "route": "/opportunities/[slug]/edit",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/opportunities/[slug]/page.tsx",
+    "route": "/opportunities/[slug]",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/opportunities/new/page.tsx",
+    "route": "/opportunities/new",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/opportunities/page.tsx",
+    "route": "/opportunities",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/organizations/[slug]/edit/page.tsx",
+    "route": "/organizations/[slug]/edit",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/organizations/[slug]/not-found.tsx",
+    "route": "/organizations/[slug]",
+    "kind": "boundary",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked."
+  },
+  {
+    "source": "src/app/(dashboard)/organizations/[slug]/page.tsx",
+    "route": "/organizations/[slug]",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/organizations/new/page.tsx",
+    "route": "/organizations/new",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/organizations/page.tsx",
+    "route": "/organizations",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/saved/page.tsx",
+    "route": "/saved",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/search/page.tsx",
+    "route": "/search",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/settings/page.tsx",
+    "route": "/settings",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(dashboard)/submissions/page.tsx",
+    "route": "/submissions",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/(public)/[locale]/page.tsx",
+    "route": "/[locale]",
+    "kind": "page",
+    "access": "public",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "See per-case ledger. Public opportunity/event details captured with synthetic isolated fixtures; hosted natural-content review still pending."
+  },
+  {
+    "source": "src/app/(public)/about/page.tsx",
+    "route": "/about",
+    "kind": "page",
+    "access": "public",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "See per-case ledger. Public opportunity/event details captured with synthetic isolated fixtures; hosted natural-content review still pending."
+  },
+  {
+    "source": "src/app/(public)/explore/[kind]/[slug]/not-found.tsx",
+    "route": "/explore/[kind]/[slug]",
+    "kind": "boundary",
+    "access": "public",
+    "status": "BLOCKED",
+    "reason": "Representative public 404 captured; this boundary requires its own fixture/state to approve individually."
+  },
+  {
+    "source": "src/app/(public)/explore/[kind]/[slug]/page.tsx",
+    "route": "/explore/[kind]/[slug]",
+    "kind": "page",
+    "access": "public",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "See per-case ledger. Public opportunity/event details captured with synthetic isolated fixtures; hosted natural-content review still pending."
+  },
+  {
+    "source": "src/app/(public)/explore/loading.tsx",
+    "route": "/explore",
+    "kind": "boundary",
+    "access": "public",
+    "status": "BLOCKED",
+    "reason": "Transient loading/error boundary not deterministically exercised; do not inject a fake passing page."
+  },
+  {
+    "source": "src/app/(public)/explore/page.tsx",
+    "route": "/explore",
+    "kind": "page",
+    "access": "public",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "See per-case ledger. Public opportunity/event details captured with synthetic isolated fixtures; hosted natural-content review still pending."
+  },
+  {
+    "source": "src/app/(public)/page.tsx",
+    "route": "/",
+    "kind": "page",
+    "access": "public",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "See per-case ledger. Public opportunity/event details captured with synthetic isolated fixtures; hosted natural-content review still pending."
+  },
+  {
+    "source": "src/app/(public)/privacy/page.tsx",
+    "route": "/privacy",
+    "kind": "page",
+    "access": "public",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "See per-case ledger. Public opportunity/event details captured with synthetic isolated fixtures; hosted natural-content review still pending."
+  },
+  {
+    "source": "src/app/(public)/support/page.tsx",
+    "route": "/support",
+    "kind": "page",
+    "access": "public",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "See per-case ledger. Public opportunity/event details captured with synthetic isolated fixtures; hosted natural-content review still pending."
+  },
+  {
+    "source": "src/app/(public)/terms/page.tsx",
+    "route": "/terms",
+    "kind": "page",
+    "access": "public",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "See per-case ledger. Public opportunity/event details captured with synthetic isolated fixtures; hosted natural-content review still pending."
+  },
+  {
+    "source": "src/app/api/account/export/route.ts",
+    "route": "/api/account/export",
+    "kind": "handler",
+    "access": "public",
+    "status": "BLOCKED",
+    "reason": "Non-page handler/metadata inventory only; intended response/content-type/data-privacy behavior not exercised in this visual audit."
+  },
+  {
+    "source": "src/app/api/assistant/analytics/route.ts",
+    "route": "/api/assistant/analytics",
+    "kind": "handler",
+    "access": "public",
+    "status": "BLOCKED",
+    "reason": "Non-page handler/metadata inventory only; intended response/content-type/data-privacy behavior not exercised in this visual audit."
+  },
+  {
+    "source": "src/app/api/assistant/public-search/route.ts",
+    "route": "/api/assistant/public-search",
+    "kind": "handler",
+    "access": "public",
+    "status": "BLOCKED",
+    "reason": "Non-page handler/metadata inventory only; intended response/content-type/data-privacy behavior not exercised in this visual audit."
+  },
+  {
+    "source": "src/app/api/assistant/search/route.ts",
+    "route": "/api/assistant/search",
+    "kind": "handler",
+    "access": "public",
+    "status": "BLOCKED",
+    "reason": "Non-page handler/metadata inventory only; intended response/content-type/data-privacy behavior not exercised in this visual audit."
+  },
+  {
+    "source": "src/app/auth/callback/route.ts",
+    "route": "/auth/callback",
+    "kind": "handler",
+    "access": "public",
+    "status": "BLOCKED",
+    "reason": "Invalid-link redirect UI captured; successful confirmation/session requires disposable valid auth flow."
+  },
+  {
+    "source": "src/app/auth/confirm/route.ts",
+    "route": "/auth/confirm",
+    "kind": "handler",
+    "access": "public",
+    "status": "BLOCKED",
+    "reason": "Invalid-link redirect UI captured; successful confirmation/session requires disposable valid auth flow."
+  },
+  {
+    "source": "src/app/error.tsx",
+    "route": "/",
+    "kind": "boundary",
+    "access": "public",
+    "status": "BLOCKED",
+    "reason": "Transient loading/error boundary not deterministically exercised; do not inject a fake passing page."
+  },
+  {
+    "source": "src/app/forgot-password/page.tsx",
+    "route": "/forgot-password",
+    "kind": "page",
+    "access": "public",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "See per-case ledger. Public opportunity/event details captured with synthetic isolated fixtures; hosted natural-content review still pending."
+  },
+  {
+    "source": "src/app/global-error.tsx",
+    "route": "/",
+    "kind": "boundary",
+    "access": "public",
+    "status": "BLOCKED",
+    "reason": "Transient loading/error boundary not deterministically exercised; do not inject a fake passing page."
+  },
+  {
+    "source": "src/app/login/page.tsx",
+    "route": "/login",
+    "kind": "page",
+    "access": "public",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "See per-case ledger. Public opportunity/event details captured with synthetic isolated fixtures; hosted natural-content review still pending."
+  },
+  {
+    "source": "src/app/not-found.tsx",
+    "route": "/",
+    "kind": "boundary",
+    "access": "public",
+    "status": "BLOCKED",
+    "reason": "Representative public 404 captured; this boundary requires its own fixture/state to approve individually."
+  },
+  {
+    "source": "src/app/opengraph-image.tsx",
+    "route": "/",
+    "kind": "metadata",
+    "access": "public",
+    "status": "BLOCKED",
+    "reason": "Non-page handler/metadata inventory only; intended response/content-type/data-privacy behavior not exercised in this visual audit."
+  },
+  {
+    "source": "src/app/profile/page.tsx",
+    "route": "/profile",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  },
+  {
+    "source": "src/app/robots.ts",
+    "route": "/",
+    "kind": "metadata",
+    "access": "public",
+    "status": "BLOCKED",
+    "reason": "Non-page handler/metadata inventory only; intended response/content-type/data-privacy behavior not exercised in this visual audit."
+  },
+  {
+    "source": "src/app/sitemap.ts",
+    "route": "/",
+    "kind": "metadata",
+    "access": "public",
+    "status": "BLOCKED",
+    "reason": "Non-page handler/metadata inventory only; intended response/content-type/data-privacy behavior not exercised in this visual audit."
+  },
+  {
+    "source": "src/app/update-password/page.tsx",
+    "route": "/update-password",
+    "kind": "page",
+    "access": "authenticated",
+    "status": "CAPTURED_NOT_SIGNED_OFF",
+    "reason": "Intended authenticated states captured with synthetic disposable personas on a Cloud-equivalent local baseline (RLS enforced, 15/15 matrix). See per-case ledger; special dialogs/success/error states remain individually blocked.",
+    "signedOutProbe": {
+      "httpStatus": 200,
+      "finalPath": "/login"
+    }
+  }
+]
