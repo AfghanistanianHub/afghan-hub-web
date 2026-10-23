@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {writeFileSync,readFileSync} from 'node:fs';
+import {writeFileSync,readFileSync,mkdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 const {chromium}=await import(pathToFileURL(resolve(process.env.AUDIT_PLAYWRIGHT_MODULE??'node_modules/playwright/index.mjs')));
+mkdirSync('docs/evidence/visual-audit-2026-10/screenshots',{recursive:true});
 const browser=await chromium.launch({channel:'chrome',headless:true,chromiumSandbox:true});
 const results=[];
 try {
