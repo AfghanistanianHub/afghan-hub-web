@@ -1,5 +1,7 @@
+"use client";
 import Link from "next/link";
 import styles from "./network-surfaces.module.css";
+import { useNetworkCopy } from "./use-network-copy";
 
 import { ArrowUpRight, MapPin, UserRound } from "lucide-react";
 import { ExternalImage } from "@/components/ui/external-image";
@@ -43,6 +45,7 @@ export function MyConnections({
   currentUserId,
   connections,
 }: MyConnectionsProps) {
+  const { language, copy } = useNetworkCopy();
   const members = connections
     .map((connection) =>
       normalizeMember(
@@ -58,23 +61,23 @@ export function MyConnections({
   }
 
   return (
-    <section>
+    <section lang={language} dir={language === "en" ? "ltr" : "rtl"}>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-            Your network
+            {copy.yourNetwork}
           </p>
           <h2 className="mt-1.5 text-xl font-bold tracking-tight text-foreground">
-            My connections
+            {copy.myConnections}
           </h2>
         </div>
 
         <span className="text-sm font-medium text-muted-foreground">
-          {members.length} connected
+          <b dir="ltr" className="tabular-nums">{members.length}</b> {copy.connected}
         </span>
       </div>
 
-      <div className="mt-4 grid items-start gap-4 md:grid-cols-2">
+      <div className="mt-3 grid items-start gap-3 md:grid-cols-2">
         {members.map((member) => {
           const name = getName(member);
           const location = [member.city, member.country]
@@ -85,7 +88,7 @@ export function MyConnections({
             <Link
               key={member.id}
               href={"/members/" + member.id}
-              className={`group relative overflow-hidden border px-5 py-4 ${styles.surface} ${styles.profile}`}
+              className={`group relative overflow-hidden border px-4 py-3.5 ${styles.surface} ${styles.profile}`}
             >
               <div className="relative flex items-center gap-3">
                 {member.avatar_url ? (
@@ -115,7 +118,7 @@ export function MyConnections({
                     </p>
                   ) : (
                     <p className="mt-0.5 text-sm leading-5 text-muted-foreground">
-                      Community member
+                      {copy.communityMember}
                     </p>
                   )}
                 </div>
@@ -128,12 +131,12 @@ export function MyConnections({
               </div>
 
               {location ? (
-                <p className="relative mt-3 flex items-start gap-2 border-t border-border/70 pt-3 text-xs leading-5 text-muted-foreground">
+                <p className="relative mt-2.5 flex items-start gap-2 border-t border-border/70 pt-2.5 text-xs leading-5 text-muted-foreground">
                   <MapPin
                     aria-hidden="true"
                     className="mt-0.5 size-3.5 shrink-0 text-primary"
                   />
-                  <span className="min-w-0 truncate">{location}</span>
+                  <span dir="auto" className="min-w-0 truncate">{location}</span>
                 </p>
               ) : null}
             </Link>
