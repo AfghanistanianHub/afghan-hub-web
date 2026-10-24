@@ -706,7 +706,8 @@ try {
         await click(reviewerPage, `${form} summary`);
         await fill(reviewerPage, `${form} textarea[name=moderation_note]`, 'short');
         await click(reviewerPage, `${form} button[value=reject]`);
-        await until(() => reviewerPage.evaluate(`location.search.includes('error=') && document.querySelector('main [role=alert]')?.textContent.includes('between 10 and 1000')`), 'invalid rejection reason refused server-side');
+        // The refusal travels as a stable code and the visible hint is localized.
+        await until(() => reviewerPage.evaluate(`location.search.includes('error=invalid-reason') && document.querySelector('main [role=alert]')?.textContent.includes('between 10 and 1,000')`), 'invalid rejection reason refused server-side');
         assert.equal((await data(admin.from(table).select('status').eq('id',row.id).single())).status,'draft');
         await click(reviewerPage, `${form} summary`);
         const reason = `Synthetic ${role} review: please clarify the listing details.`;
