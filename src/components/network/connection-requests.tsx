@@ -1,3 +1,5 @@
+"use client";
+import { useNetworkCopy } from "./use-network-copy";
 import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import Link from "next/link";
 import { CommunitySignature } from "@/components/public/community-signature";
@@ -38,14 +40,15 @@ function getName(requester: Requester) {
 export function ConnectionRequests({
   requests,
 }: ConnectionRequestsProps) {
+  const { language, copy } = useNetworkCopy();
   if (requests.length === 0) {
     return null;
   }
 
   return (
-    <section className={`relative overflow-hidden border p-5 sm:p-6 ${styles.surface}`}>
+    <section lang={language} dir={language === "en" ? "ltr" : "rtl"} className={`relative overflow-hidden border p-5 sm:p-6 ${styles.surface}`}>
       <CommunitySignature className={styles.signature} />
-      <div className="relative"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">New activity</p><h2 className="mt-1 text-xl font-bold text-foreground">Connection requests</h2></div>
+      <div className="relative"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{copy.activity}</p><h2 className="mt-1 text-xl font-bold text-foreground">{copy.requestTitle}</h2></div>
 
       <div className="mt-4 space-y-3">
         {requests.map((request) => {
@@ -103,19 +106,19 @@ export function ConnectionRequests({
                 <PendingSubmitButton
                   name="decision"
                   value="accepted"
-                  pendingLabel="Accepting…"
+                  pendingLabel={copy.accepting}
                   className={`min-w-28 bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 ${styles.control}`}
                 >
-                  Accept
+                  {copy.accept}
                 </PendingSubmitButton>
 
                 <PendingSubmitButton
                   name="decision"
                   value="declined"
-                  pendingLabel="Declining…"
+                  pendingLabel={copy.declining}
                   className={`min-w-28 border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted ${styles.control}`}
                 >
-                  Decline
+                  {copy.decline}
                 </PendingSubmitButton>
               </form>
             </div>

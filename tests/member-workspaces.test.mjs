@@ -33,8 +33,8 @@ test('member identity removes decorative cover without modifying stored profile 
   assert.match(profile, /rounded-full/);
   assert.match(profile, /profile\.languages\.filter\(meaningful\)/);
   assert.match(profile, /\.eq\("is_public",true\)\.eq\("onboarding_completed",true\)/);
-  const network = await source('src/app/(dashboard)/network/page.tsx');
-  assert.match(network, /label="Find artists"/);
+  const network = await source('src/components/network/network-overview.tsx');
+  assert.match(network, /label=\{copy\.artists\}/);
   assert.match(network, /query="Find artists working in arts and culture"/);
 });
 

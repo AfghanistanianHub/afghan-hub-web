@@ -168,3 +168,16 @@
     transform: none;
   }
 }
+
+/* Direction-aware profile affordances keep their motion within the reading flow. */
+:global([dir="rtl"]) .profile:is(:hover, :focus-visible) [data-profile-arrow],
+:global([dir="rtl"]) .inboxRow:is(:hover, :focus-visible) [data-profile-arrow] {
+  transform: translate(-3px, -3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global([dir="rtl"]) .profile:is(:hover, :focus-visible) [data-profile-arrow],
+  :global([dir="rtl"]) .inboxRow:is(:hover, :focus-visible) [data-profile-arrow] {
+    transform: none;
+  }
+}

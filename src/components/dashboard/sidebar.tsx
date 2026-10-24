@@ -36,7 +36,7 @@ export function Sidebar({
     : dashboardNavigation;
 
   return (
-    <aside className="sticky top-0 hidden h-dvh min-h-0 w-64 shrink-0 overflow-hidden border-e border-border bg-card lg:flex lg:flex-col">
+    <aside lang={language} dir={language === "en" ? "ltr" : "rtl"} className="sticky top-0 hidden h-dvh min-h-0 w-64 shrink-0 overflow-hidden border-e border-border bg-card lg:flex lg:flex-col">
       <div className="relative flex h-20 shrink-0 items-center border-b border-border px-5">
         <Link href="/dashboard" className="group inline-flex items-center gap-3 rounded-[var(--radius)] px-1 py-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
           <span className="flex size-9 items-center justify-center rounded-[var(--radius)] border border-primary-foreground/10 bg-primary text-sm font-medium text-primary-foreground transition-colors motion-reduce:transition-none group-hover:bg-primary/90">
@@ -78,7 +78,7 @@ export function Sidebar({
               {active ? (
                 <span
                   aria-hidden="true"
-                  className="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-primary"
+                  className="absolute start-1 top-1/2 h-5 w-1 -translate-y-1/2 rounded-full bg-primary"
                 />
               ) : null}
               <span
