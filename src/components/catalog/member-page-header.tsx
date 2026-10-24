@@ -7,8 +7,8 @@ import type { ReactNode } from "react";
  * Functional page actions stay visible and can wrap beneath the introduction.
  */
 export function MemberPageHeader({ title, description, icon: Icon, children }: {
-  title: string;
-  description: string;
+  title: ReactNode;
+  description: ReactNode;
   icon: LucideIcon;
   children?: ReactNode;
 }) {
@@ -32,10 +32,10 @@ export function MemberPageHeader({ title, description, icon: Icon, children }: {
 }
 
 export function DirectoryEmptyState({ title, description, href, action }: {
-  title: string;
-  description: string;
+  title: ReactNode;
+  description: ReactNode;
   href: string;
-  action: string;
+  action: ReactNode;
 }) {
   return (
     <section className="mt-8 flex min-h-52 flex-col items-start justify-center border-y border-border/70 py-9 sm:py-12">

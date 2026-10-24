@@ -22,6 +22,16 @@ async function harness(file, exported, props = {}) {
     '@daypicker/react/style.css': {},
     './calendar-field.module.css': { default: {} },
     'lucide-react': { CalendarDays: () => null },
+    // Picker copy now comes from the shared workspace catalog; English mock
+    // keeps the structural assertions readable.
+    '@/components/i18n/localized': { useSiteLanguage: () => 'en' },
+    '@/components/i18n/workspace': {
+      useWorkspaceCopy: () => ({
+        language: 'en',
+        t: key => ({ 'eventPicker.clear': 'Clear', 'eventPicker.done': 'Done' })[key] ?? key,
+      }),
+    },
+    '@/lib/i18n/format': { formatSiteDate: () => 'February 29, 2028' },
   };
   const exports = {};
   new Function('require', 'exports', ts.transpileModule(source, { compilerOptions: {

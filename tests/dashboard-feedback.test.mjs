@@ -55,6 +55,8 @@ test('notification opening focuses the panel; Escape closes and restores the tri
     'next/navigation': { useRouter: () => ({refresh(){}}) },
     'lucide-react': { Bell:'bell', CircleCheck:'approved', CircleX:'declined', UserRound:'person' },
     '@/components/dashboard/action-submit': {},
+    '@/components/i18n/localized': { useUiCopy: () => ({ language: 'en', t: key => key }) },
+    '@/lib/i18n/format': { formatSiteDate: () => 'date' },
     '@/components/network/network-surfaces.module.css': { default: {} },
     '@/components/ui/external-image': {},
     '@/app/(dashboard)/notifications/actions': {},

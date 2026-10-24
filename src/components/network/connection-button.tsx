@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
+import { useUiCopy } from "@/components/i18n/localized";
 import styles from "./network-surfaces.module.css";
 import { startConversation } from "@/app/(dashboard)/messages/actions";
 import {
@@ -25,6 +26,7 @@ export function ConnectionButton({
   memberId,
   connection,
 }: ConnectionButtonProps) {
+  const { t } = useUiCopy();
   if (currentUserId === memberId) return null;
 
   const primaryButton =
@@ -36,7 +38,7 @@ export function ConnectionButton({
     return (
       <form action={sendConnectionRequest}>
         <input type="hidden" name="recipient_id" value={memberId} />
-        <PendingSubmitButton pendingLabel="Sending…" className={`${primaryButton} min-w-32`}>Connect</PendingSubmitButton>
+        <PendingSubmitButton pendingLabel={t("network.sending")} className={`${primaryButton} min-w-32`}>{t("network.connect")}</PendingSubmitButton>
       </form>
     );
   }
@@ -45,26 +47,26 @@ export function ConnectionButton({
     return (
       <div className="flex flex-wrap items-center gap-2.5">
         <span className="inline-flex min-h-11 items-center rounded-full bg-primary/[0.07] px-4 py-2.5 text-sm font-semibold text-primary">
-          Connected
+          {t("network.connected")}
         </span>
 
         <form action={startConversation}>
           <input type="hidden" name="member_id" value={memberId} />
-          <PendingSubmitButton pendingLabel="Opening…" className={`${primaryButton} min-w-32`}>Message</PendingSubmitButton>
+          <PendingSubmitButton pendingLabel={t("network.opening")} className={`${primaryButton} min-w-32`}>{t("network.message")}</PendingSubmitButton>
         </form>
 
         <form
           action={removeConnection}
           onSubmit={(event) => {
-            if (!window.confirm("Remove this connection?")) event.preventDefault();
+            if (!window.confirm(t("network.disconnectConfirm"))) event.preventDefault();
           }}
         >
           <input type="hidden" name="connection_id" value={connection.id} />
           <PendingSubmitButton
-            pendingLabel="Disconnecting…"
+            pendingLabel={t("network.disconnecting")}
             className={`inline-flex items-center justify-center px-3 py-2.5 text-sm text-muted-foreground underline underline-offset-4 hover:text-destructive ${styles.control}`}
           >
-            Disconnect
+            {t("network.disconnect")}
           </PendingSubmitButton>
         </form>
       </div>
@@ -76,12 +78,12 @@ export function ConnectionButton({
       return (
         <div className="flex flex-wrap items-center gap-2.5">
           <span className="inline-flex min-h-11 items-center rounded-sm border border-border bg-muted/70 px-4 py-2.5 text-sm font-semibold text-muted-foreground">
-            Request sent
+            {t("network.requestSent")}
           </span>
 
           <form action={removeConnection}>
             <input type="hidden" name="connection_id" value={connection.id} />
-            <PendingSubmitButton pendingLabel="Cancelling…" className={`${secondaryButton} min-w-40`}>Cancel request</PendingSubmitButton>
+            <PendingSubmitButton pendingLabel={t("network.cancelling")} className={`${secondaryButton} min-w-40`}>{t("network.cancelRequest")}</PendingSubmitButton>
           </form>
         </div>
       );
@@ -89,7 +91,7 @@ export function ConnectionButton({
 
     return (
       <Link href="/network" className={primaryButton}>
-        Respond to request
+        {t("network.respondRequest")}
       </Link>
     );
   }
@@ -97,7 +99,7 @@ export function ConnectionButton({
   if (connection.status === "declined") {
     return (
       <span className="inline-flex min-h-11 items-center rounded-sm border border-border bg-muted/60 px-4 py-2.5 text-sm font-semibold text-muted-foreground">
-        Request declined
+        {t("network.requestDeclined")}
       </span>
     );
   }

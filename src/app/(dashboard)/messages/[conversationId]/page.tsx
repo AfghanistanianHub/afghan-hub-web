@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { ArrowLeft, CheckCheck, MessageSquare, UserRound } from "lucide-react";
 
 import { ConversationNavigation } from "@/components/messages/conversation-navigation";
+import { Localized } from "@/components/i18n/localized";
+import { LocalizedDate } from "@/components/i18n/localized-date";
 import { MarkConversationRead } from "@/components/messages/mark-conversation-read";
 import { MessageComposer } from "@/components/messages/message-composer";
 import { MessageThread } from "@/components/messages/message-thread";
@@ -24,17 +26,8 @@ function getMemberName(profile: {
   return (
     profile.display_name?.trim() ||
     [profile.first_name, profile.last_name].filter(Boolean).join(" ") ||
-    "Afghan Hub Member"
+    null
   );
-}
-
-function formatMessageTime(value: string) {
-  return new Intl.DateTimeFormat("en-CA", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(value));
 }
 
 export default async function ConversationPage({ params, searchParams }: ConversationPageProps) {
@@ -91,7 +84,7 @@ export default async function ConversationPage({ params, searchParams }: Convers
         .maybeSingle()
     : { data: null };
 
-  const memberName = otherMember ? getMemberName(otherMember) : "Afghan Hub Member";
+  const memberName = otherMember ? getMemberName(otherMember) : null;
 
   const hasUnreadMessages = messages.some(
     (message) =>
@@ -114,15 +107,16 @@ export default async function ConversationPage({ params, searchParams }: Convers
       <RealtimeReadReceiptRefresh conversationId={conversationId} />
 
       <div className="mx-auto grid w-full max-w-[1400px] flex-1 grid-cols-1 overflow-hidden border border-border bg-card lg:grid-cols-[300px_minmax(0,1fr)]">
-        <aside aria-label="Conversation navigation" className="hidden min-w-0 border-e border-border lg:block"><h2 className="px-4 pt-5 text-lg font-semibold">Messages</h2><ConversationNavigation currentUserId={user.id} activeId={conversationId} /></aside>
+        <span id="conversation-navigation-label" className="sr-only"><Localized k="messages.conversationNavigation" /></span>
+        <aside aria-labelledby="conversation-navigation-label" className="hidden min-w-0 border-e border-border lg:block"><h2 className="px-4 pt-5 text-lg font-semibold"><Localized k="messages.title" /></h2><ConversationNavigation currentUserId={user.id} activeId={conversationId} /></aside>
         <div className="flex min-w-0 flex-col">
         <header className="relative flex items-center gap-3 border-b border-border bg-background px-4 py-4 sm:gap-4 sm:px-5">
           <Link
             href="/messages"
-            aria-label="Back to messages"
             className={`relative flex size-11 shrink-0 items-center justify-center border border-transparent text-muted-foreground hover:border-border hover:bg-card hover:text-foreground ${styles.control}`}
           >
-            <ArrowLeft aria-hidden="true" className="size-5" />
+            <span className="sr-only"><Localized k="messages.backToMessages" /></span>
+            <ArrowLeft aria-hidden="true" data-flip-rtl className="size-5" />
           </Link>
 
           {otherMember?.avatar_url ? (
@@ -146,16 +140,16 @@ export default async function ConversationPage({ params, searchParams }: Convers
                 href={`/members/${otherMemberId}`}
                 className="line-clamp-2 break-words rounded-sm font-semibold leading-5 text-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
-                {memberName}
+                {memberName ?? <Localized k="messages.memberFallback" />}
               </Link>
             ) : (
-              <p className="line-clamp-2 break-words font-semibold leading-5 text-foreground">{memberName}</p>
+              <p className="line-clamp-2 break-words font-semibold leading-5 text-foreground">{memberName ?? <Localized k="messages.memberFallback" />}</p>
             )}
 
             </h1>
 
             <p className="mt-0.5 line-clamp-2 break-words text-sm leading-5 text-muted-foreground">
-              {otherMember?.headline || "Afghan Hub member"}
+              {otherMember?.headline || <Localized k="messages.memberFallback" />}
             </p>
           </div>
         </header>
@@ -169,11 +163,11 @@ export default async function ConversationPage({ params, searchParams }: Convers
                     href={`/messages/${conversationId}?limit=${nextMessageLimit}`}
                     className={`inline-flex items-center border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground hover:bg-accent ${styles.control}`}
                   >
-                    Load earlier messages
+                    <Localized k="messages.loadEarlier" />
                   </Link>
                 ) : null
               ) : hasEarlierMessages ? (
-                <p className="text-xs text-muted-foreground">Showing the latest 1,000 messages.</p>
+                <p className="text-xs text-muted-foreground"><Localized k="messages.showingLatest" /></p>
               ) : null}
 
               {messageLimit > 100 ? (
@@ -181,7 +175,7 @@ export default async function ConversationPage({ params, searchParams }: Convers
                   href={`/messages/${conversationId}`}
                   className={`inline-flex items-center border border-primary/20 bg-primary/5 px-4 py-2 text-xs font-semibold text-primary hover:bg-primary/10 ${styles.control}`}
                 >
-                  Back to latest
+                  <Localized k="messages.backToLatest" />
                 </Link>
               ) : null}
             </div>
@@ -194,8 +188,8 @@ export default async function ConversationPage({ params, searchParams }: Convers
                 <span className="relative mx-auto flex size-14 items-center justify-center rounded-full bg-secondary text-primary">
                   <MessageSquare aria-hidden="true" className="size-7" />
                 </span>
-                <h2 className="relative mt-5 text-lg font-semibold text-foreground">Start your conversation</h2>
-                <p className="relative mt-2 break-words text-sm leading-6 text-muted-foreground">Send a message to {memberName}.</p>
+                <h2 className="relative mt-5 text-lg font-semibold text-foreground"><Localized k="messages.startTitle" /></h2>
+                <p className="relative mt-2 break-words text-sm leading-6 text-muted-foreground"><Localized k="messages.startBody" /></p>
               </div>
             </div>
           ) : (
@@ -218,10 +212,10 @@ export default async function ConversationPage({ params, searchParams }: Convers
                         isMine ? "text-primary-foreground" : "text-muted-foreground"
                       }`}
                     >
-                      {formatMessageTime(message.created_at)}
+                      <LocalizedDate value={message.created_at} mode="datetime" />
                       {isMine && message.id === latestSentMessage?.id && latestSentMessageIsSeen ? (
                         <span className="ms-2 inline-flex items-center gap-1 font-medium">
-                          <CheckCheck aria-hidden="true" className="size-3.5" /> Seen
+                          <CheckCheck aria-hidden="true" className="size-3.5" /> <Localized k="messages.seen" />
                         </span>
                       ) : null}
                     </p>

@@ -2,6 +2,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BriefcaseBusiness, CircleCheck, Clock3, Pencil, XCircle } from "lucide-react";
 import { MemberPageHeader, DirectoryEmptyState } from "@/components/catalog/member-page-header";
+import { Localized } from "@/components/i18n/localized";
+import { LocalizedDate } from "@/components/i18n/localized-date";
+import type { UiCopyKey } from "@/lib/i18n/ui-copy";
 import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import { getUtcDateKey, hasOpportunityDeadlinePassed } from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
@@ -9,14 +12,19 @@ import { createClient } from "@/lib/supabase/server";
 const categories = ["All", "Opportunities", "Businesses", "Organizations", "Events"] as const;
 const focusClass = "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary";
 
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "short", day: "numeric" }).format(new Date(value));
+function categoryLabelKey(category: (typeof categories)[number]): UiCopyKey {
+  if (category === "All") return "submissions.all";
+  return `categories.${category.toLowerCase()}.label` as UiCopyKey;
+}
+
+function categorySingularKey(category: string): UiCopyKey {
+  return `categories.${category.toLowerCase()}.singular` as UiCopyKey;
 }
 
 function getStatusPresentation(status: string) {
-  if (status === "published") return { label: "Published", className: "bg-secondary text-primary", icon: CircleCheck };
-  if (status === "draft") return { label: "Pending review", className: "bg-muted text-muted-foreground", icon: Clock3 };
-  return { label: status === "expired" ? "Expired" : "Not approved", className: "bg-destructive/[0.08] text-destructive", icon: XCircle };
+  if (status === "published") return { key: "submissions.statusPublished" as const, rejected: false, className: "bg-secondary text-primary", icon: CircleCheck };
+  if (status === "draft") return { key: "submissions.statusPending" as const, rejected: false, className: "bg-muted text-muted-foreground", icon: Clock3 };
+  return { key: status === "expired" ? "submissions.statusExpired" as const : "submissions.statusRejected" as const, rejected: status !== "expired", className: "bg-destructive/[0.08] text-destructive", icon: XCircle };
 }
 
 export default async function SubmissionsPage({ searchParams }: { searchParams: Promise<{ category?: string | string[] }> }) {
@@ -51,16 +59,17 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
 
   return (
     <main className={catalogPageContainerClass}>
-      <MemberPageHeader title="My submissions" description="Track review status and manage the content you have shared." icon={BriefcaseBusiness}>
-        <Link href="/opportunities/new" className={`inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground ${focusClass}`}>New opportunity</Link>
-        <Link href="/events/new" className={`inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-border bg-card px-4 py-2.5 text-sm font-semibold ${focusClass}`}>New event</Link>
+      <MemberPageHeader title={<Localized k="submissions.title" />} description={<Localized k="submissions.description" />} icon={BriefcaseBusiness}>
+        <Link href="/opportunities/new" className={`inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground ${focusClass}`}><Localized k="submissions.newOpportunity" /></Link>
+        <Link href="/events/new" className={`inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-border bg-card px-4 py-2.5 text-sm font-semibold ${focusClass}`}><Localized k="submissions.newEvent" /></Link>
       </MemberPageHeader>
-      {hasError ? <div role="alert" aria-live="assertive" className="mt-5 border border-destructive/25 bg-card p-4 text-sm text-destructive">We could not load all of your submissions. Please try again. Counts for unavailable categories are unknown.</div> : null}
-      <nav aria-label="Submission categories" className="mt-5 flex flex-wrap gap-1 border-b border-border pb-3">
+      {hasError ? <div role="alert" aria-live="assertive" className="mt-5 border border-destructive/25 bg-card p-4 text-sm text-destructive"><Localized k="submissions.loadError" /></div> : null}
+      <span id="submission-categories-label" className="sr-only"><Localized k="submissions.categories" /></span>
+      <nav aria-labelledby="submission-categories-label" className="mt-5 flex flex-wrap gap-1 border-b border-border pb-3">
         {categories.map((category) => {
           const unavailable = category === "All" ? hasError : Boolean(errors[category]);
           const count = category === "All" ? submissions.length : submissions.filter((item) => item.category === category).length;
-          return <Link key={category} href={category === "All" ? "/submissions" : `/submissions?category=${category.toLowerCase()}`} aria-current={category === selected ? "page" : undefined} className={`inline-flex min-h-11 items-center gap-2 rounded-[var(--radius-control)] px-3 py-2 text-sm font-semibold ${focusClass} ${category === selected ? "bg-secondary text-primary" : "hover:bg-muted"}`}>{category}<span className="text-xs" aria-label={unavailable ? "Count unavailable" : `${count} submissions`}>{unavailable ? "—" : count}</span></Link>;
+          return <Link key={category} href={category === "All" ? "/submissions" : `/submissions?category=${category.toLowerCase()}`} aria-current={category === selected ? "page" : undefined} className={`inline-flex min-h-11 items-center gap-2 rounded-[var(--radius-control)] px-3 py-2 text-sm font-semibold ${focusClass} ${category === selected ? "bg-secondary text-primary" : "hover:bg-muted"}`}><Localized k={categoryLabelKey(category)} /><span className="text-xs" aria-hidden="true">{unavailable ? "—" : count}</span><span className="sr-only">{unavailable ? <Localized k="submissions.countUnavailable" /> : <Localized k="submissions.count" values={{ count }} />}</span></Link>;
         })}
       </nav>
       {visible.length ? <div className="mt-6 grid gap-3 md:grid-cols-2">
@@ -69,14 +78,14 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
           const StatusIcon = presentation.icon;
           return <article key={`${item.category}-${item.id}`} className="min-w-0 rounded-[var(--radius-card)] border border-border bg-card p-5 transition-colors hover:border-primary/40 focus-within:border-primary/50 sm:p-6">
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0 basis-full sm:basis-auto sm:flex-1"><p className="text-xs font-medium text-muted-foreground">{item.type}</p><Link href={item.path} className={`mt-1 inline-flex min-h-11 items-center break-words text-lg font-semibold hover:text-primary ${focusClass}`}>{item.title}</Link><p className="mt-1 text-xs text-muted-foreground">Updated <time dateTime={item.updatedAt}>{formatDate(item.updatedAt)}</time></p></div>
-              <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${presentation.className}`}><StatusIcon aria-hidden="true" className="size-3.5" />{presentation.label}</span>
-              <div className="flex items-center gap-2"><Link href={item.path} className={`inline-flex min-h-11 items-center px-3 text-sm font-semibold text-primary ${focusClass}`}>View</Link><Link href={`${item.path}/edit`} className={`inline-flex min-h-11 items-center gap-1.5 rounded-[var(--radius-control)] border border-border px-3 text-sm font-semibold ${focusClass}`}><Pencil aria-hidden="true" className="size-3.5" />Edit</Link></div>
+              <div className="min-w-0 basis-full sm:basis-auto sm:flex-1"><p className="text-xs font-medium text-muted-foreground"><Localized k={categorySingularKey(item.category)} /></p><Link href={item.path} className={`mt-1 inline-flex min-h-11 items-center break-words text-lg font-semibold hover:text-primary ${focusClass}`}>{item.title}</Link><p className="mt-1 text-xs text-muted-foreground"><Localized k="submissions.updated" /> <LocalizedDate value={item.updatedAt} /></p></div>
+              <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${presentation.className}`}><StatusIcon aria-hidden="true" className="size-3.5" /><Localized k={presentation.key} /></span>
+              <div className="flex items-center gap-2"><Link href={item.path} className={`inline-flex min-h-11 items-center px-3 text-sm font-semibold text-primary ${focusClass}`}><Localized k="submissions.view" /></Link><Link href={`${item.path}/edit`} className={`inline-flex min-h-11 items-center gap-1.5 rounded-[var(--radius-control)] border border-border px-3 text-sm font-semibold ${focusClass}`}><Pencil aria-hidden="true" className="size-3.5" /><Localized k="submissions.edit" /></Link></div>
             </div>
-            {presentation.label === "Not approved" && item.moderationNote ? <p className="mt-3 border-s-2 border-destructive/40 ps-3 text-sm leading-6 text-destructive"><span className="font-semibold">Moderator note:</span> {item.moderationNote}</p> : null}
+            {presentation.rejected && item.moderationNote ? <p className="mt-3 border-s-2 border-destructive/40 ps-3 text-sm leading-6 text-destructive"><span className="font-semibold"><Localized k="submissions.moderatorNote" /></span> {item.moderationNote}</p> : null}
           </article>;
         })}
-      </div> : selectedFailed || (selected === "All" && hasError) ? <p role="status" className="py-6 text-sm text-muted-foreground">Your submissions are temporarily unavailable. Refresh the page or try again shortly.</p> : <DirectoryEmptyState title={selected === "All" ? "No submissions yet" : `No ${selected.toLowerCase()} submitted`} description="Create a listing to share it with the community and track its review here." href={createHref} action="Create a submission" />}
+      </div> : selectedFailed || (selected === "All" && hasError) ? <p role="status" className="py-6 text-sm text-muted-foreground"><Localized k="submissions.unavailable" /></p> : <DirectoryEmptyState title={selected === "All" ? <Localized k="submissions.emptyAll" /> : <Localized k="submissions.emptyFiltered" />} description={<Localized k="submissions.emptyDescription" />} href={createHref} action={<Localized k="submissions.create" />} />}
     </main>
   );
 }

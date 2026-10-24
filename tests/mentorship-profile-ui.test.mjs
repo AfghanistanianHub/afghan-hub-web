@@ -18,13 +18,19 @@ const databaseTypes = fs.readFileSync(
   new URL("../src/types/database.ts", import.meta.url),
   "utf8",
 );
+const workspaceCopy = fs.readFileSync(
+  new URL("../src/lib/i18n/workspace-copy.ts", import.meta.url),
+  "utf8",
+);
 
 test("profile editor exposes explicit opt-in mentorship fields", () => {
   assert.match(profilePage, /name="open_to_mentoring"/);
   assert.match(profilePage, /name="looking_for_mentor"/);
   assert.match(profilePage, /name="mentorship_topics"/);
-  assert.match(profilePage, /up to 12 topics, 60 characters each/i);
-  assert.match(profilePage, /not credentials or endorsements by Afghan Hub/i);
+  assert.match(profilePage, /hintKey="profile.mentorshipTopicsHint"/);
+  assert.match(profilePage, /k="profile.mentorshipNote"/);
+  assert.match(workspaceCopy, /up to 12 topics, 60 characters each/i);
+  assert.match(workspaceCopy, /not credentials or endorsements by Afghan Hub/i);
 });
 
 test("profile action keeps mentorship topics bounded before database write", () => {
