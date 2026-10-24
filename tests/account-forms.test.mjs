@@ -68,6 +68,19 @@ test("submit control disables repeat submissions and announces progress only whi
   }
 });
 
+test("Google sign-in button disables itself and announces progress while the OAuth request is pending", () => {
+  const source = fs.readFileSync(new URL("../src/app/login/localized-login-content.tsx", import.meta.url), "utf8");
+  assert.match(source, /import \{ useFormStatus \} from "react-dom";/);
+  assert.match(source, /function GoogleSignInButton\(/);
+  assert.match(source, /const \{ pending \} = useFormStatus\(\);/);
+  assert.match(source, /disabled=\{pending\}[\s\S]*?aria-disabled=\{pending\}/);
+  assert.match(source, /<span role="status" aria-live="polite">\{pending \? pendingLabel : label\}<\/span>/);
+  assert.match(source, /<GoogleSignInButton label=\{t\.google\} pendingLabel=\{t\.googleConnecting\} \/>/);
+  for (const language of ["en", "fa", "ps"]) {
+    const block = source.match(new RegExp(`"${language}": \\{[\\s\\S]*?\\n  \\}`))?.[0] ?? "";
+    assert.match(block, /"googleConnecting": "[^"]+"/, `${language} needs a googleConnecting label`);
+  }
+});
 
 test("localized recovery and password update retain server-side security boundaries", () => {
   const recoveryPage = fs.readFileSync(new URL("../src/app/forgot-password/page.tsx", import.meta.url), "utf8");
