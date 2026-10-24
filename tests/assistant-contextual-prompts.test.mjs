@@ -21,7 +21,7 @@ const eventPage = fs.readFileSync(
   "utf8",
 );
 const network = fs.readFileSync(
-  new URL("../src/app/(dashboard)/network/page.tsx", import.meta.url),
+  new URL("../src/components/network/network-overview.tsx", import.meta.url),
   "utf8",
 );
 
@@ -41,10 +41,10 @@ test("contextual prompts are available on opportunity, event and network surface
   assert.equal(browseCopy.en["opportunityDetail.findPeople"], "Find people in this field");
   assert.equal(browseCopy.en["eventDetail.findSimilar"], "Find similar events");
   assert.equal(browseCopy.en["eventDetail.findOrganizations"], "Find related organizations");
-  assert.match(network, /network\.findTech/);
-  assert.match(network, /network\.findArtists/);
+  assert.match(network, /label=\{copy\.tech\}/);
+  assert.match(network, /label=\{copy\.artists\}/);
   assert.match(network, /Find artists working in arts and culture/);
-  assert.match(network, /network\.findMentors/);
+  assert.match(network, /label=\{copy\.mentors\}/);
   assert.match(uiCopy.en.network.findTech, /Find tech professionals/);
   assert.match(uiCopy.en.network.findArtists, /Find artists/);
   assert.match(uiCopy.en.network.findMentors, /Find mentors/);
