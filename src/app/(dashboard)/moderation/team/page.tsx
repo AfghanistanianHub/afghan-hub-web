@@ -6,6 +6,9 @@ import { ShieldCheck } from "lucide-react";
 
 import { updateMemberRole } from "@/app/(dashboard)/moderation/team/actions";
 import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
+import { B } from "@/components/i18n/browse";
+import { MemberRoleSelect } from "@/components/moderation/member-role-select";
+import type { BrowseCopyKey } from "@/lib/i18n/browse-copy";
 import {
   getAdminMemberAccounts,
   getMyAccessContext,
@@ -19,6 +22,17 @@ type ModerationTeamPageProps = {
   }>;
 };
 
+const roleKeys: Record<string, BrowseCopyKey> = {
+  member: "team.roleMember",
+  moderator: "team.roleModerator",
+  admin: "team.roleAdmin",
+};
+
+const errorMessages: Record<string, BrowseCopyKey> = {
+  "invalid-role": "team.errorInvalidRole",
+  "update-failed": "team.errorUpdateFailed",
+};
+
 function memberName(member: {
   display_name: string | null;
   first_name: string | null;
@@ -28,8 +42,7 @@ function memberName(member: {
   return (
     member.display_name?.trim() ||
     [member.first_name, member.last_name].filter(Boolean).join(" ") ||
-    member.email ||
-    "Afghan Hub member"
+    member.email
   );
 }
 
@@ -58,136 +71,132 @@ export default async function ModerationTeamPage({
 
   return (
     <main className={catalogPageContainerClass}>
-        <Link
-          href="/moderation"
-          className="inline-flex min-h-11 items-center text-sm font-medium text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+      <Link
+        href="/moderation"
+        className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+      >
+        <span aria-hidden="true">←</span>
+        <B k="team.back" />
+      </Link>
+
+      <MemberPageHeader
+        title={<B k="team.title" />}
+        description={<B k="team.description" />}
+        icon={ShieldCheck}
+      >
+        <span className="text-sm font-medium text-muted-foreground">
+          <B k="team.adminOnly" />
+        </span>
+      </MemberPageHeader>
+
+      {error ? (
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="mt-6 rounded-[var(--radius-control)] border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive"
         >
-          ← Back to moderation
-        </Link>
+          <B k={errorMessages[error] ?? "team.errorUpdateFailed"} />
+        </div>
+      ) : null}
 
-        <MemberPageHeader
-          title="Moderation team"
-          description="Promote trusted members to moderator or admin, or return them to the standard member role."
-          icon={ShieldCheck}
+      {saved === "1" ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className="mt-6 rounded-[var(--radius-control)] border border-primary/20 bg-primary/8 p-4 text-sm text-primary"
         >
-          <span className="text-sm font-medium text-muted-foreground">Admin only</span>
-        </MemberPageHeader>
+          <B k="team.roleUpdated" />
+        </div>
+      ) : null}
 
-        {error ? (
-          <div
-            role="alert"
-            aria-live="assertive"
-            className="mt-6 rounded-[var(--radius-control)] border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive"
-          >
-            {error}
+      {membersError ? (
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="mt-8 rounded-[var(--radius-control)] border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive"
+        >
+          <B k="team.loadError" />
+        </div>
+      ) : (members ?? []).length === 0 ? (
+        <section className="mt-8 rounded-[var(--radius)] border border-dashed border-border/80 bg-muted/25 p-8 text-center sm:p-10">
+          <div className="mx-auto flex size-12 items-center justify-center rounded-[var(--radius-control)] bg-primary/10 text-primary">
+            <ShieldCheck aria-hidden="true" className="size-5" />
           </div>
-        ) : null}
+          <h2 className="mt-4 text-lg font-semibold text-foreground">
+            <B k="team.empty" />
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+            <B k="team.emptyBody" />
+          </p>
+        </section>
+      ) : (
+        <div className="mt-8 space-y-4">
+          {(members ?? []).map((member) => {
+            const isCurrentAdmin = member.id === user.id;
+            const roleKey = roleKeys[member.role] ?? "team.roleMember";
 
-        {saved === "1" ? (
-          <div
-            role="status"
-            aria-live="polite"
-            className="mt-6 rounded-[var(--radius-control)] border border-primary/20 bg-primary/8 p-4 text-sm text-primary"
-          >
-            Member role updated.
-          </div>
-        ) : null}
-
-        {membersError ? (
-          <div
-            role="alert"
-            aria-live="assertive"
-            className="mt-8 rounded-[var(--radius-control)] border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive"
-          >
-            We could not load members. Please try again.
-          </div>
-        ) : (members ?? []).length === 0 ? (
-          <section className="mt-8 rounded-[var(--radius)] border border-dashed border-border/80 bg-muted/25 p-8 text-center sm:p-10">
-            <div className="mx-auto flex size-12 items-center justify-center rounded-[var(--radius-control)] bg-primary/10 text-primary">
-              <ShieldCheck aria-hidden="true" className="size-5" />
-            </div>
-            <h2 className="mt-4 text-lg font-semibold text-foreground">
-              No member accounts to manage
-            </h2>
-            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-              Member accounts will appear here once they are available to the admin directory.
-            </p>
-          </section>
-        ) : (
-          <div className="mt-8 space-y-4">
-            {(members ?? []).map((member) => {
-              const isCurrentAdmin = member.id === user.id;
-
-              return (
-                <article
-                  key={member.id}
-                  className="surface-panel rounded-[var(--radius)] p-5 transition hover:border-primary/25 hover:shadow-[0_12px_30px_rgb(15_23_42/0.045)]"
-                >
-                  <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="break-words font-semibold text-foreground">
-                          {memberName(member)}
-                        </h2>
-                        <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold capitalize text-secondary-foreground">
-                          {member.role}
+            return (
+              <article
+                key={member.id}
+                className="surface-panel rounded-[var(--radius)] p-5 transition hover:border-primary/25 hover:shadow-[0_12px_30px_rgb(15_23_42/0.045)]"
+              >
+                <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="break-words font-semibold text-foreground">
+                        {memberName(member) || <B k="team.memberFallback" />}
+                      </h2>
+                      <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-secondary-foreground">
+                        <B k={roleKey} />
+                      </span>
+                      {!member.onboarding_completed ? (
+                        <span className="rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-700">
+                          <B k="team.onboardingIncomplete" />
                         </span>
-                        {!member.onboarding_completed ? (
-                          <span className="rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-700">
-                            Onboarding incomplete
-                          </span>
-                        ) : null}
-                      </div>
-
-                      {member.email ? (
-                        <p className="mt-1 break-words text-sm text-muted-foreground">
-                          {member.email}
-                        </p>
                       ) : null}
                     </div>
 
-                    {isCurrentAdmin ? (
-                      <p className="text-sm text-muted-foreground">
-                        Your own role cannot be changed here.
-                      </p>
-                    ) : (
-                      <form
-                        action={updateMemberRole}
-                        className="flex flex-wrap items-center gap-3"
+                    {member.email ? (
+                      <p
+                        dir="ltr"
+                        className="mt-1 break-words text-start text-sm text-muted-foreground"
                       >
-                        <input
-                          type="hidden"
-                          name="profile_id"
-                          value={member.id}
-                        />
-
-                        <label className="text-sm text-muted-foreground">
-                          <span className="sr-only">Role</span>
-                          <select
-                            name="role"
-                            defaultValue={member.role}
-                            className="min-h-11 rounded-[var(--radius-control)] border border-input bg-card px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-                          >
-                            <option value="member">Member</option>
-                            <option value="moderator">Moderator</option>
-                            <option value="admin">Admin</option>
-                          </select>
-                        </label>
-
-                        <PendingSubmitButton
-                          pendingLabel="Saving role…"
-                          className="min-h-11 rounded-[var(--radius-control)] bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-                        >
-                          Save role
-                        </PendingSubmitButton>
-                      </form>
-                    )}
+                        {member.email}
+                      </p>
+                    ) : null}
                   </div>
-                </article>
-              );
-            })}
-          </div>
-        )}
+
+                  {isCurrentAdmin ? (
+                    <p className="text-sm text-muted-foreground">
+                      <B k="team.ownRole" />
+                    </p>
+                  ) : (
+                    <form
+                      action={updateMemberRole}
+                      className="flex flex-wrap items-center gap-3"
+                    >
+                      <input
+                        type="hidden"
+                        name="profile_id"
+                        value={member.id}
+                      />
+
+                      <MemberRoleSelect defaultValue={member.role} />
+
+                      <PendingSubmitButton
+                        pendingLabel={<B k="team.savingRole" />}
+                        className="min-h-11 rounded-[var(--radius-control)] bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                      >
+                        <B k="team.saveRole" />
+                      </PendingSubmitButton>
+                    </form>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
     </main>
   );
 }

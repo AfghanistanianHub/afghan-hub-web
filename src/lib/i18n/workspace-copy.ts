@@ -139,6 +139,97 @@ export const workspaceCopy = {
     "business.settingsBody": "Keep your business profile accurate, useful, and easy to discover.",
     "business.editTitle": "Edit {name}",
 
+    "opportunity.newEyebrow": "Create an opportunity",
+    "opportunity.newTitle": "Post an Opportunity",
+    "opportunity.newBody":
+      "Share a job, scholarship, volunteer role, mentorship, or another opportunity.",
+    "opportunity.postedBy": "Posted by",
+    "opportunity.type": "Opportunity type",
+    "opportunity.remote": "Remote opportunity",
+    "opportunity.externalUrl": "Application or external link",
+    "opportunity.contactEmail": "Contact email",
+    "opportunity.typeJob": "Job",
+    "opportunity.typeVolunteer": "Volunteer",
+    "opportunity.typeScholarship": "Scholarship",
+    "opportunity.typeMentorship": "Mentorship",
+    "opportunity.typeInvestment": "Investment",
+    "opportunity.typeHousing": "Housing",
+    "opportunity.typeEvent": "Event",
+    "opportunity.typeEducation": "Education",
+    "opportunity.editEyebrow": "Opportunity editor",
+    "opportunity.editTitle": "Edit opportunity",
+    "opportunity.editBody": "Update the opportunity information below.",
+    "opportunity.editNotice":
+      "Saving changes submits this opportunity for moderator review.",
+    "opportunity.backToOpportunity": "Back to opportunity",
+    "opportunity.saveAndSubmit": "Save and submit for review",
+    "opportunityForm.errorTitleRequired": "Enter a title for this opportunity.",
+    "opportunityForm.errorSummaryRequired": "Enter a short summary.",
+    "opportunityForm.errorDescriptionRequired":
+      "Describe the opportunity so members know what it involves.",
+    "opportunityForm.errorTypeInvalid": "Choose a valid opportunity type.",
+    "opportunityForm.errorOrganizationInvalid":
+      "Choose an organization you own, or leave the field empty.",
+    "opportunityForm.errorUrlInvalid":
+      "Enter a full application link that starts with http:// or https://.",
+    "opportunityForm.errorEmailInvalid": "Enter a valid contact email address.",
+    "opportunityForm.errorDeadlineInvalid":
+      "Choose a valid deadline on or after today.",
+    "opportunityForm.errorCreateFailed":
+      "We could not create the opportunity. Please try again.",
+    "opportunityForm.errorUpdateFailed":
+      "We could not save the opportunity. Please try again.",
+    "opportunityForm.errorIncomplete":
+      "Complete the title, summary and description before saving.",
+    "opportunityForm.errorGeneric":
+      "Something went wrong with this form. Please review the fields and try again.",
+
+    "deadline.select": "Select a deadline",
+    "deadline.dialog": "Choose deadline",
+    "deadline.clear": "Clear",
+    "deadline.done": "Done",
+
+    "media.businessCover": "Business cover",
+    "media.businessLogo": "Business logo",
+    "media.organizationCover": "Organization cover",
+    "media.organizationLogo": "Organization logo",
+    "media.noCover": "No cover image",
+    "media.uploadCover": "Upload cover",
+    "media.uploadLogo": "Upload logo",
+    "media.uploading": "Uploading…",
+    "media.uploadBusinessCoverAria": "Upload business cover image",
+    "media.uploadBusinessLogoAria": "Upload business logo",
+    "media.uploadOrganizationCoverAria": "Upload organization cover image",
+    "media.uploadOrganizationLogoAria": "Upload organization logo",
+    "media.coverHelp": "Recommended ratio: 3:1. Maximum size: 8 MB.",
+    "media.logoHelp": "JPG, PNG, or WebP. Maximum size: 5 MB.",
+    "media.invalidType": "Please select a JPG, PNG, or WebP image.",
+    "media.tooLarge": "The image must be smaller than {size} MB.",
+    "media.businessCoverUploadFailed":
+      "We could not upload the business cover. Please try again.",
+    "media.businessLogoUploadFailed":
+      "We could not upload the business logo. Please try again.",
+    "media.organizationCoverUploadFailed":
+      "We could not upload the organization cover. Please try again.",
+    "media.organizationLogoUploadFailed":
+      "We could not upload the organization logo. Please try again.",
+    "media.businessCoverSaveFailed":
+      "The image uploaded, but we could not update the business cover. Please try again.",
+    "media.businessLogoSaveFailed":
+      "The image uploaded, but we could not update the business logo. Please try again.",
+    "media.organizationCoverSaveFailed":
+      "The image uploaded, but we could not update the organization cover. Please try again.",
+    "media.organizationLogoSaveFailed":
+      "The image uploaded, but we could not update the organization logo. Please try again.",
+    "media.businessCoverUpdated":
+      "Business cover updated. The listing has been resubmitted for review.",
+    "media.businessLogoUpdated":
+      "Business logo updated. The listing has been resubmitted for review.",
+    "media.organizationCoverUpdated":
+      "Organization cover updated. The listing has been resubmitted for review.",
+    "media.organizationLogoUpdated":
+      "Organization logo updated. The listing has been resubmitted for review.",
+
     "organization.newEyebrow": "Create an organization",
     "organization.newTitle": "Add your organization",
     "organization.newBody": "Create a public page for your nonprofit, association, cultural group, professional network, or community initiative.",
@@ -299,6 +390,97 @@ export const workspaceCopy = {
     "business.settingsEyebrow": "تنظیمات کسب‌وکار",
     "business.settingsBody": "پروفایل کسب‌وکار خود را دقیق، سودمند و آسان برای یافتن نگه دارید.",
     "business.editTitle": "ویرایش {name}",
+
+    "opportunity.newEyebrow": "ایجاد فرصت",
+    "opportunity.newTitle": "ثبت فرصت",
+    "opportunity.newBody":
+      "یک شغل، بورس تحصیلی، نقش داوطلبانه، راهنمایی یا فرصت دیگر را به اشتراک بگذارید.",
+    "opportunity.postedBy": "ثبت‌کننده",
+    "opportunity.type": "نوع فرصت",
+    "opportunity.remote": "فرصت دورکاری",
+    "opportunity.externalUrl": "پیوند درخواست یا پیوند بیرونی",
+    "opportunity.contactEmail": "ایمیل تماس",
+    "opportunity.typeJob": "شغل",
+    "opportunity.typeVolunteer": "داوطلبی",
+    "opportunity.typeScholarship": "بورس تحصیلی",
+    "opportunity.typeMentorship": "راهنمایی",
+    "opportunity.typeInvestment": "سرمایه‌گذاری",
+    "opportunity.typeHousing": "مسکن",
+    "opportunity.typeEvent": "رویداد",
+    "opportunity.typeEducation": "آموزش",
+    "opportunity.editEyebrow": "ویرایشگر فرصت",
+    "opportunity.editTitle": "ویرایش فرصت",
+    "opportunity.editBody": "اطلاعات فرصت را در زیر به‌روزرسانی کنید.",
+    "opportunity.editNotice":
+      "ذخیره تغییرات این فرصت را برای بررسی ناظر ارسال می‌کند.",
+    "opportunity.backToOpportunity": "بازگشت به فرصت",
+    "opportunity.saveAndSubmit": "ذخیره و ارسال برای بررسی",
+    "opportunityForm.errorTitleRequired": "عنوانی برای این فرصت وارد کنید.",
+    "opportunityForm.errorSummaryRequired": "خلاصه‌ای کوتاه وارد کنید.",
+    "opportunityForm.errorDescriptionRequired":
+      "فرصت را توصیف کنید تا اعضا بدانند چه چیزی در آن نهفته است.",
+    "opportunityForm.errorTypeInvalid": "یک نوع فرصت معتبر انتخاب کنید.",
+    "opportunityForm.errorOrganizationInvalid":
+      "سازمانی را انتخاب کنید که مالک آن هستید، یا این فیلد را خالی بگذارید.",
+    "opportunityForm.errorUrlInvalid":
+      "پیوند کامل درخواست را وارد کنید که با http:// یا https:// آغاز شود.",
+    "opportunityForm.errorEmailInvalid": "یک نشانی ایمیل معتبر برای تماس وارد کنید.",
+    "opportunityForm.errorDeadlineInvalid":
+      "یک مهلت معتبر در امروز یا پس از آن انتخاب کنید.",
+    "opportunityForm.errorCreateFailed":
+      "ایجاد این فرصت امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "opportunityForm.errorUpdateFailed":
+      "ذخیره این فرصت امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "opportunityForm.errorIncomplete":
+      "پیش از ذخیره، عنوان، خلاصه و توضیحات را کامل کنید.",
+    "opportunityForm.errorGeneric":
+      "در این فرم مشکلی رخ داد. لطفاً فیلدها را بررسی کنید و دوباره تلاش کنید.",
+
+    "deadline.select": "مهلتی را انتخاب کنید",
+    "deadline.dialog": "انتخاب مهلت",
+    "deadline.clear": "پاک کردن",
+    "deadline.done": "انجام شد",
+
+    "media.businessCover": "تصویر جلد کسب‌وکار",
+    "media.businessLogo": "نشان کسب‌وکار",
+    "media.organizationCover": "تصویر جلد سازمان",
+    "media.organizationLogo": "نشان سازمان",
+    "media.noCover": "تصویر جلدی وجود ندارد",
+    "media.uploadCover": "بارگذاری جلد",
+    "media.uploadLogo": "بارگذاری نشان",
+    "media.uploading": "در حال بارگذاری…",
+    "media.uploadBusinessCoverAria": "بارگذاری تصویر جلد کسب‌وکار",
+    "media.uploadBusinessLogoAria": "بارگذاری نشان کسب‌وکار",
+    "media.uploadOrganizationCoverAria": "بارگذاری تصویر جلد سازمان",
+    "media.uploadOrganizationLogoAria": "بارگذاری نشان سازمان",
+    "media.coverHelp": "نسبت پیشنهادی: ۳:۱. حداکثر اندازه: ۸ مگابایت.",
+    "media.logoHelp": "JPG، PNG یا WebP. حداکثر اندازه: ۵ مگابایت.",
+    "media.invalidType": "لطفاً یک تصویر JPG، PNG یا WebP انتخاب کنید.",
+    "media.tooLarge": "اندازه تصویر باید کمتر از {size} مگابایت باشد.",
+    "media.businessCoverUploadFailed":
+      "بارگذاری تصویر جلد کسب‌وکار امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "media.businessLogoUploadFailed":
+      "بارگذاری نشان کسب‌وکار امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "media.organizationCoverUploadFailed":
+      "بارگذاری تصویر جلد سازمان امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "media.organizationLogoUploadFailed":
+      "بارگذاری نشان سازمان امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "media.businessCoverSaveFailed":
+      "تصویر بارگذاری شد، اما به‌روزرسانی تصویر جلد کسب‌وکار انجام نشد. لطفاً دوباره تلاش کنید.",
+    "media.businessLogoSaveFailed":
+      "تصویر بارگذاری شد، اما به‌روزرسانی نشان کسب‌وکار انجام نشد. لطفاً دوباره تلاش کنید.",
+    "media.organizationCoverSaveFailed":
+      "تصویر بارگذاری شد، اما به‌روزرسانی تصویر جلد سازمان انجام نشد. لطفاً دوباره تلاش کنید.",
+    "media.organizationLogoSaveFailed":
+      "تصویر بارگذاری شد، اما به‌روزرسانی نشان سازمان انجام نشد. لطفاً دوباره تلاش کنید.",
+    "media.businessCoverUpdated":
+      "تصویر جلد کسب‌وکار به‌روزرسانی شد. آگهی برای بررسی دوباره ارسال شد.",
+    "media.businessLogoUpdated":
+      "نشان کسب‌وکار به‌روزرسانی شد. آگهی برای بررسی دوباره ارسال شد.",
+    "media.organizationCoverUpdated":
+      "تصویر جلد سازمان به‌روزرسانی شد. آگهی برای بررسی دوباره ارسال شد.",
+    "media.organizationLogoUpdated":
+      "نشان سازمان به‌روزرسانی شد. آگهی برای بررسی دوباره ارسال شد.",
 
     "organization.newEyebrow": "ایجاد سازمان",
     "organization.newTitle": "سازمان خود را اضافه کنید",
@@ -461,6 +643,97 @@ export const workspaceCopy = {
     "business.settingsBody": "خپل د سوداګرۍ پروفایل سم، ګټور او په اسانۍ موندل کېدونکی وساتئ.",
     "business.editTitle": "د {name} سمون",
 
+    "opportunity.newEyebrow": "فرصت جوړول",
+    "opportunity.newTitle": "فرصت خپور کړئ",
+    "opportunity.newBody":
+      "دنده، زده‌کړیزه بورس، رضاکارانه رول، لارښوونه یا بل فرصت شریک کړئ.",
+    "opportunity.postedBy": "خپروونکی",
+    "opportunity.type": "د فرصت ډول",
+    "opportunity.remote": "له لرې فرصت",
+    "opportunity.externalUrl": "د غوښتنلیک یا بهرنی لینک",
+    "opportunity.contactEmail": "د اړیکې برېښنالیک",
+    "opportunity.typeJob": "دنده",
+    "opportunity.typeVolunteer": "رضاکارانه",
+    "opportunity.typeScholarship": "زده‌کړیزه بورس",
+    "opportunity.typeMentorship": "لارښوونه",
+    "opportunity.typeInvestment": "پانګونه",
+    "opportunity.typeHousing": "کور",
+    "opportunity.typeEvent": "پېښه",
+    "opportunity.typeEducation": "زده‌کړه",
+    "opportunity.editEyebrow": "د فرصت سمون",
+    "opportunity.editTitle": "فرصت سمول",
+    "opportunity.editBody": "لاندې د فرصت معلومات تازه کړئ.",
+    "opportunity.editNotice":
+      "بدلونونو خوندي کول دا فرصت د څارونکي بیاکتنې ته لېږي.",
+    "opportunity.backToOpportunity": "فرصت ته بېرته",
+    "opportunity.saveAndSubmit": "خوندي کړئ او بیاکتنې ته یې ولېږئ",
+    "opportunityForm.errorTitleRequired": "د دې فرصت لپاره سرلیک ولیکئ.",
+    "opportunityForm.errorSummaryRequired": "لنډیز ولیکئ.",
+    "opportunityForm.errorDescriptionRequired":
+      "فرصت تشریح کړئ تر څو غړي پوه شي چې څه پکې شامل دي.",
+    "opportunityForm.errorTypeInvalid": "د فرصت سم ډول وټاکئ.",
+    "opportunityForm.errorOrganizationInvalid":
+      "هغه سازمان وټاکئ چې تاسو یې مالک یاست، یا دا ساحه خالي پرېږدئ.",
+    "opportunityForm.errorUrlInvalid":
+      "د غوښتنلیک بشپړه لینک ولیکئ چې په http:// یا https:// پیل کېږي.",
+    "opportunityForm.errorEmailInvalid": "د اړیکې لپاره سم برېښنالیک ولیکئ.",
+    "opportunityForm.errorDeadlineInvalid":
+      "د نن یا له هغې وروسته سمه پای نېټه وټاکئ.",
+    "opportunityForm.errorCreateFailed":
+      "دا فرصت جوړ نه شو. مهرباني وکړئ بیا هڅه وکړئ.",
+    "opportunityForm.errorUpdateFailed":
+      "دا فرصت خوندي نه شو. مهرباني وکړئ بیا هڅه وکړئ.",
+    "opportunityForm.errorIncomplete":
+      "له خوندي کولو دمخه سرلیک، لنډیز او تشریح بشپړ کړئ.",
+    "opportunityForm.errorGeneric":
+      "په دې فورمې کې ستونزه رامنځته شوه. مهرباني وکړئ ساحې وګورئ او بیا هڅه وکړئ.",
+
+    "deadline.select": "پای نېټه وټاکئ",
+    "deadline.dialog": "د پای نېټې ټاکل",
+    "deadline.clear": "پاکول",
+    "deadline.done": "شو",
+
+    "media.businessCover": "د سوداګرۍ پوښ",
+    "media.businessLogo": "د سوداګرۍ نښان",
+    "media.organizationCover": "د سازمان پوښ",
+    "media.organizationLogo": "د سازمان نښان",
+    "media.noCover": "د پوښ انځور نشته",
+    "media.uploadCover": "پوښ پورته کړئ",
+    "media.uploadLogo": "نښان پورته کړئ",
+    "media.uploading": "پورته کېږي…",
+    "media.uploadBusinessCoverAria": "د سوداګرۍ د پوښ انځور پورته کړئ",
+    "media.uploadBusinessLogoAria": "د سوداګرۍ نښان پورته کړئ",
+    "media.uploadOrganizationCoverAria": "د سازمان د پوښ انځور پورته کړئ",
+    "media.uploadOrganizationLogoAria": "د سازمان نښان پورته کړئ",
+    "media.coverHelp": "سپارښتل شوی تناسب: ۳:۱. تر ټولو زیات اندازه: ۸ مېګابایټ.",
+    "media.logoHelp": "JPG، PNG یا WebP. تر ټولو زیات اندازه: ۵ مېګابایټ.",
+    "media.invalidType": "مهرباني وکړئ د JPG، PNG یا WebP انځور وټاکئ.",
+    "media.tooLarge": "د انځور اندازه باید له {size} مېګابایټو کمه وي.",
+    "media.businessCoverUploadFailed":
+      "د سوداګرۍ پوښ ونه شو پورته کول. مهرباني وکړئ بیا هڅه وکړئ.",
+    "media.businessLogoUploadFailed":
+      "د سوداګرۍ نښان ونه شو پورته کول. مهرباني وکړئ بیا هڅه وکړئ.",
+    "media.organizationCoverUploadFailed":
+      "د سازمان پوښ ونه شو پورته کول. مهرباني وکړئ بیا هڅه وکړئ.",
+    "media.organizationLogoUploadFailed":
+      "د سازمان نښان ونه شو پورته کول. مهرباني وکړئ بیا هڅه وکړئ.",
+    "media.businessCoverSaveFailed":
+      "انځور پورته شو، مګر د سوداګرۍ پوښ تازه نه شو. مهرباني وکړئ بیا هڅه وکړئ.",
+    "media.businessLogoSaveFailed":
+      "انځور پورته شو، مګر د سوداګرۍ نښان تازه نه شو. مهرباني وکړئ بیا هڅه وکړئ.",
+    "media.organizationCoverSaveFailed":
+      "انځور پورته شو، مګر د سازمان پوښ تازه نه شو. مهرباني وکړئ بیا هڅه وکړئ.",
+    "media.organizationLogoSaveFailed":
+      "انځور پورته شو، مګر د سازمان نښان تازه نه شو. مهرباني وکړئ بیا هڅه وکړئ.",
+    "media.businessCoverUpdated":
+      "د سوداګرۍ پوښ تازه شو. لیست د بیاکتنې لپاره بیا لېږل شوی.",
+    "media.businessLogoUpdated":
+      "د سوداګرۍ نښان تازه شو. لیست د بیاکتنې لپاره بیا لېږل شوی.",
+    "media.organizationCoverUpdated":
+      "د سازمان پوښ تازه شو. لیست د بیاکتنې لپاره بیا لېږل شوی.",
+    "media.organizationLogoUpdated":
+      "د سازمان نښان تازه شو. لیست د بیاکتنې لپاره بیا لېږل شوی.",
+
     "organization.newEyebrow": "سازمان جوړول",
     "organization.newTitle": "خپل سازمان ورزیات کړئ",
     "organization.newBody": "د خپل غیرانتفاعي سازمان، ټولنې، کلتوري ډلې، مسلکي شبکې یا ټولنیز نوښت لپاره عامه پاڼه جوړه کړئ.",
@@ -508,3 +781,27 @@ export function getWorkspaceCopy(language: SiteLanguage, key: WorkspaceCopyKey):
 }
 
 export { copyKeys as workspaceCopyKeys };
+
+/**
+ * Form validation and save failures travel as stable codes in the `error`
+ * query parameter, so the visible message is always localized. Unknown codes
+ * fall back to the generic form message.
+ */
+const opportunityFormErrorKeys: Record<string, WorkspaceCopyKey> = {
+  "title-required": "opportunityForm.errorTitleRequired",
+  "summary-required": "opportunityForm.errorSummaryRequired",
+  "description-required": "opportunityForm.errorDescriptionRequired",
+  "invalid-type": "opportunityForm.errorTypeInvalid",
+  "invalid-organization": "opportunityForm.errorOrganizationInvalid",
+  "invalid-url": "opportunityForm.errorUrlInvalid",
+  "invalid-email": "opportunityForm.errorEmailInvalid",
+  "invalid-deadline": "opportunityForm.errorDeadlineInvalid",
+  "create-failed": "opportunityForm.errorCreateFailed",
+  "update-failed": "opportunityForm.errorUpdateFailed",
+  "incomplete-fields": "opportunityForm.errorIncomplete",
+};
+
+export function opportunityFormErrorKey(code: string | undefined): WorkspaceCopyKey {
+  if (!code) return "opportunityForm.errorGeneric";
+  return opportunityFormErrorKeys[code] ?? "opportunityForm.errorGeneric";
+}

@@ -22,8 +22,10 @@ test("event actions redact provider errors from user-facing redirects", () => {
 
 test("opportunity actions redact provider errors from user-facing redirects", () => {
   assert.doesNotMatch(opportunitySource, /encodeURIComponent\(error\.message\)/);
-  assert.match(opportunitySource, /could%20not%20create%20the%20opportunity/);
-  assert.match(opportunitySource, /could%20not%20save%20the%20opportunity/);
-  assert.match(opportunitySource, /could%20not%20delete%20the%20opportunity/);
-  assert.match(opportunitySource, /could%20not%20update%20your%20saved%20opportunities/);
+  // Failures redirect with stable codes; the visible copy is localized.
+  assert.match(opportunitySource, /error=create-failed/);
+  assert.match(opportunitySource, /error=update-failed/);
+  assert.match(opportunitySource, /error=delete-failed/);
+  assert.match(opportunitySource, /error=save-failed/);
+  assert.doesNotMatch(opportunitySource, /error=[A-Za-z]+%20/);
 });

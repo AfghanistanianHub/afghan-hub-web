@@ -138,6 +138,7 @@ type LocalizedSelectProps = {
   placeholderKey?: WorkspaceCopyKey;
   defaultValue?: string;
   id?: string;
+  required?: boolean;
 };
 
 /**
@@ -154,6 +155,7 @@ export function LocalizedSelect({
   placeholderKey,
   defaultValue,
   id,
+  required,
 }: LocalizedSelectProps) {
   const { t } = useWorkspaceCopy();
   return (
@@ -161,7 +163,7 @@ export function LocalizedSelect({
       <span className={labelClassName}>
         <W k={labelKey} />
       </span>
-      <select id={id} name={name} defaultValue={defaultValue} className={fieldClassName}>
+      <select id={id} name={name} defaultValue={defaultValue} required={required} className={fieldClassName}>
         {placeholderKey ? (
           <option value="">{t(placeholderKey)}</option>
         ) : null}

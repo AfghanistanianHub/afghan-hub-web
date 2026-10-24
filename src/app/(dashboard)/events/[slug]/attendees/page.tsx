@@ -10,6 +10,7 @@ import {
   UsersRound,
 } from "lucide-react";
 
+import { B, BDate } from "@/components/i18n/browse";
 import { ExternalImage } from "@/components/ui/external-image";
 import { createClient } from "@/lib/supabase/server";
 
@@ -19,17 +20,6 @@ type Props = {
   }>;
 };
 
-function formatDateTime(value: string) {
-  return new Intl.DateTimeFormat("en-CA", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  }).format(new Date(value));
-}
-
 function getMemberName(profile: {
   display_name: string | null;
   first_name: string | null;
@@ -37,8 +27,7 @@ function getMemberName(profile: {
 }) {
   return (
     profile.display_name?.trim() ||
-    [profile.first_name, profile.last_name].filter(Boolean).join(" ") ||
-    "Afghan Hub Member"
+    [profile.first_name, profile.last_name].filter(Boolean).join(" ")
   );
 }
 
@@ -113,9 +102,7 @@ export default async function EventAttendeesPage({ params }: Props) {
     event.capacity === null
       ? null
       : Math.max(event.capacity - attendeeCount, 0);
-  const location = event.is_online
-    ? "Online"
-    : [event.venue_name, event.city, event.country].filter(Boolean).join(", ");
+  const place = [event.venue_name, event.city, event.country].filter(Boolean).join(", ");
 
   return (
     <main className={catalogPageContainerClass}>
@@ -123,43 +110,68 @@ export default async function EventAttendeesPage({ params }: Props) {
         href={`/events/${event.slug}`}
         className="inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-medium text-muted-foreground transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
-        <ArrowLeft aria-hidden="true" className="size-4" />
-        Back to event
+        <ArrowLeft aria-hidden="true" className="size-4 rtl:rotate-180" />
+        <B k="attendees.back" />
       </Link>
 
-      <MemberPageHeader title="Event attendees" description={event.title} icon={UsersRound}>
-        <Link href={`/events/${event.slug}/edit`} className={catalogClearClass}>Edit event</Link>
+      <MemberPageHeader title={<B k="attendees.title" />} description={event.title} icon={UsersRound}>
+        <Link href={`/events/${event.slug}/edit`} className={catalogClearClass}>
+          <B k="attendees.edit" />
+        </Link>
       </MemberPageHeader>
       <section className="border-b border-border pb-7">
         <div className="mt-6 flex flex-wrap gap-3 text-sm text-muted-foreground">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5">
             <CalendarDays aria-hidden="true" className="size-4 text-primary" />
-            {formatDateTime(event.starts_at)}
+            <BDate value={event.starts_at} mode="datetime" />
           </span>
-          {location ? (
+          {event.is_online ? (
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5">
               <MapPin aria-hidden="true" className="size-4 text-primary" />
-              {location}
+              <B k="common.online" />
+            </span>
+          ) : place ? (
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5">
+              <MapPin aria-hidden="true" className="size-4 text-primary" />
+              {place}
             </span>
           ) : null}
         </div>
 
         <div className="mt-7 grid gap-4 sm:grid-cols-3">
-          {[['Registered', attendeeCount], ['Capacity', event.capacity ?? 'Unlimited'], ['Remaining', remaining ?? 'Unlimited']].map(([label, value]) => (
-            <div key={String(label)} className="border-s-2 border-border py-2 ps-4">
-              <p className="text-sm text-muted-foreground">{label}</p>
-              <p className="mt-2 text-3xl font-medium text-foreground">{value}</p>
-            </div>
-          ))}
+          <div className="border-s-2 border-border py-2 ps-4">
+            <p className="text-sm text-muted-foreground">
+              <B k="attendees.registered" />
+            </p>
+            <p className="mt-2 text-3xl font-medium text-foreground">{attendeeCount}</p>
+          </div>
+          <div className="border-s-2 border-border py-2 ps-4">
+            <p className="text-sm text-muted-foreground">
+              <B k="attendees.capacity" />
+            </p>
+            <p className="mt-2 text-3xl font-medium text-foreground">
+              {event.capacity ?? <B k="attendees.unlimited" />}
+            </p>
+          </div>
+          <div className="border-s-2 border-border py-2 ps-4">
+            <p className="text-sm text-muted-foreground">
+              <B k="attendees.remaining" />
+            </p>
+            <p className="mt-2 text-3xl font-medium text-foreground">
+              {remaining ?? <B k="attendees.unlimited" />}
+            </p>
+          </div>
         </div>
       </section>
 
       <section className="surface-panel mt-8 rounded-[var(--radius)] p-6 md:p-8">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold text-foreground">Registered members</h2>
+            <h2 className="text-xl font-bold text-foreground">
+              <B k="attendees.registeredHeading" />
+            </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Only public profile details are shown here. Private members remain anonymous.
+              <B k="attendees.privacy" />
             </p>
           </div>
           <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary">
@@ -183,9 +195,11 @@ export default async function EventAttendeesPage({ params }: Props) {
                       <UserRound aria-hidden="true" className="size-5" />
                     </div>
                     <div>
-                      <p className="font-semibold text-foreground">Private member</p>
+                      <p className="font-semibold text-foreground">
+                        <B k="attendees.privateMember" />
+                      </p>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        Registered {formatDateTime(registration.created_at)}
+                        <B k="attendees.registeredAt" values={{ date: registration.created_at }} />
                       </p>
                     </div>
                   </div>
@@ -196,6 +210,7 @@ export default async function EventAttendeesPage({ params }: Props) {
               const memberLocation = [profile.city, profile.country]
                 .filter(Boolean)
                 .join(", ");
+              const displayName = memberName || profile.id.slice(0, 8);
 
               return (
                 <div
@@ -206,27 +221,30 @@ export default async function EventAttendeesPage({ params }: Props) {
                     {profile.avatar_url ? (
                       <ExternalImage
                         src={profile.avatar_url}
-                        alt={memberName}
+                        alt={displayName}
                         width={48}
                         height={48}
                         className="size-12 rounded-[var(--radius-control)] border border-border/70 object-cover shadow-sm"
                       />
                     ) : (
                       <div className="flex size-12 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-secondary font-bold text-primary">
-                        {getInitials(memberName) || <UserRound aria-hidden="true" className="size-5" />}
+                        {getInitials(displayName) || <UserRound aria-hidden="true" className="size-5" />}
                       </div>
                     )}
 
                     <div className="min-w-0">
-                      <p className="break-words font-semibold text-foreground">{memberName}</p>
+                      <p className="break-words font-semibold text-foreground">{displayName}</p>
                       {profile.headline ? (
                         <p className="mt-1 line-clamp-2 break-words text-sm leading-5 text-muted-foreground">
                           {profile.headline}
                         </p>
                       ) : null}
                       <p className="mt-1 text-xs text-muted-foreground">
-                        {memberLocation ? `${memberLocation} · ` : ""}
-                        Registered {formatDateTime(registration.created_at)}
+                        {memberLocation ? `${memberLocation} · ` : null}
+                        <B
+                          k="attendees.registeredAt"
+                          values={{ date: registration.created_at }}
+                        />
                       </p>
                     </div>
                   </div>
@@ -235,7 +253,7 @@ export default async function EventAttendeesPage({ params }: Props) {
                     href={`/members/${profile.id}`}
                     className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-border/80 bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                   >
-                    View profile
+                    <B k="attendees.viewProfile" />
                   </Link>
                 </div>
               );
@@ -244,9 +262,11 @@ export default async function EventAttendeesPage({ params }: Props) {
         ) : (
           <div className="mt-6 rounded-[var(--radius-control)] border border-dashed border-border bg-muted/30 px-6 py-12 text-center">
             <UsersRound aria-hidden="true" className="mx-auto size-10 text-muted-foreground" />
-            <h3 className="mt-3 font-semibold text-foreground">No registrations yet</h3>
+            <h3 className="mt-3 font-semibold text-foreground">
+              <B k="attendees.noRegistrations" />
+            </h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              Members who register for this event will appear here.
+              <B k="attendees.noRegistrationsBody" />
             </p>
           </div>
         )}

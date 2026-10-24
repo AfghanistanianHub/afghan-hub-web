@@ -229,17 +229,20 @@ export function BDatePhrase({
   k,
   date,
   mode = "monthYear",
+  field = "month",
   className,
 }: {
   k: BrowseCopyKey;
   date: string | Date;
   mode?: BDateMode;
+  /** Placeholder name used by the catalogue sentence, e.g. {date}. */
+  field?: string;
   className?: string;
 }) {
   const { language, t } = useBrowseCopy();
   return (
     <span lang={language} dir={language === "en" ? "ltr" : "rtl"} className={className}>
-      {t(k, { month: formatSiteDate(language, date, dateOptions[mode]) })}
+      {t(k, { [field]: formatSiteDate(language, date, dateOptions[mode]) })}
     </span>
   );
 }

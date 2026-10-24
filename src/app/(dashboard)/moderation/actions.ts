@@ -34,13 +34,11 @@ export async function moderateContent(formData: FormData) {
     !entityTypes.includes(entityType as (typeof entityTypes)[number]) ||
     !decisions.includes(decision as (typeof decisions)[number])
   ) {
-    redirect("/moderation?error=Invalid%20moderation%20request");
+    redirect("/moderation?error=invalid-request");
   }
 
   if (decision === "reject" && (note.length < 10 || note.length > 1000)) {
-    redirect(
-      "/moderation?error=Please%20provide%20a%20rejection%20reason%20between%2010%20and%201000%20characters",
-    );
+    redirect("/moderation?error=invalid-reason");
   }
 
   const { data: accessContext } = await getMyAccessContext(supabase, user.id);
@@ -91,9 +89,7 @@ export async function moderateContent(formData: FormData) {
   }
 
   if (moderationFailed || !updated) {
-    redirect(
-      "/moderation?error=We%20could%20not%20apply%20that%20moderation%20decision.%20Please%20refresh%20and%20try%20again.",
-    );
+    redirect("/moderation?error=apply-failed");
   }
 
   revalidatePath("/moderation");

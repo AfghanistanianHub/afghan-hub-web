@@ -37,6 +37,10 @@ test("business and organization media controls stay keyboard accessible", () => 
 
 test("all media uploads use stable generic retry guidance", () => {
   assert.match(avatarSource, /We could not upload your profile photo\. Please try again\./);
-  assert.match(businessSource, /We could not upload the business/);
-  assert.match(organizationSource, /We could not upload the organization/);
+  // Business and organization uploads resolve retry guidance from the workspace
+  // catalogue, so every language states the same fixed, provider-free message.
+  assert.match(businessSource, /uploadFailed: "media\.business(?:Cover|Logo)UploadFailed"/);
+  assert.match(businessSource, /saveFailed: "media\.business(?:Cover|Logo)SaveFailed"/);
+  assert.match(organizationSource, /uploadFailed: "media\.organization(?:Cover|Logo)UploadFailed"/);
+  assert.match(organizationSource, /saveFailed: "media\.organization(?:Cover|Logo)SaveFailed"/);
 });

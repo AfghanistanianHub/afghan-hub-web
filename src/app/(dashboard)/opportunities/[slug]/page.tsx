@@ -19,7 +19,10 @@ import {
   Sparkles,
 } from "lucide-react";
 import { B, BDate, BDatePhrase } from "@/components/i18n/browse";
-import { opportunityTypeKey } from "@/lib/i18n/browse-copy";
+import {
+  opportunityActionErrorKey,
+  opportunityTypeKey,
+} from "@/lib/i18n/browse-copy";
 import { rankRelatedOpportunities } from "@/lib/listing-recommendations";
 import {
   getUtcDateKey,
@@ -123,7 +126,7 @@ export default async function OpportunityPage({
       <div className="mt-6 space-y-4">
         {actionError ? (
           <div role="alert" aria-live="assertive" className="rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.06] p-4 text-sm text-destructive">
-            {actionError}
+            <B k={opportunityActionErrorKey(actionError)} />
           </div>
         ) : null}
 

@@ -36,6 +36,10 @@ test("moderation actions do not expose raw database or RPC errors", async () => 
 
   assert.doesNotMatch(moderationSource, /encodeURIComponent\(.*error/);
   assert.doesNotMatch(teamSource, /error\?\.message|error\.message/);
-  assert.match(moderationSource, /We%20could%20not%20apply%20that%20moderation%20decision/);
-  assert.match(teamSource, /We%20could%20not%20update%20that%20member%20role/);
+  // Failures redirect with a stable code; the localized message lives in the
+  // catalogue, so no English copy is baked into the server action.
+  assert.match(moderationSource, /error=apply-failed/);
+  assert.match(teamSource, /error=update-failed/);
+  assert.doesNotMatch(moderationSource, /error=[A-Z]|error=[A-Za-z]+%20/);
+  assert.doesNotMatch(teamSource, /error=[A-Z]|error=[A-Za-z]+%20/);
 });

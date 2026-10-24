@@ -341,11 +341,123 @@ export const browseCopy = {
     "organizationDetail.connect": "Connect",
     "organizationDetail.visitWebsite": "Visit website",
 
+    "attendees.back": "Back to event",
+    "attendees.title": "Event attendees",
+    "attendees.edit": "Edit event",
+    "attendees.registered": "Registered",
+    "attendees.capacity": "Capacity",
+    "attendees.remaining": "Remaining",
+    "attendees.unlimited": "Unlimited",
+    "attendees.registeredHeading": "Registered members",
+    "attendees.privacy":
+      "Only public profile details are shown here. Private members remain anonymous.",
+    "attendees.privateMember": "Private member",
+    "attendees.registeredAt": "Registered {date}",
+    "attendees.noRegistrations": "No registrations yet",
+    "attendees.noRegistrationsBody":
+      "Members who register for this event will appear here.",
+    "attendees.viewProfile": "View profile",
+
+    "myEvents.title": "My events",
+    "myEvents.description":
+      "Keep track of events you registered for and events you are hosting.",
+    "myEvents.browse": "Browse events",
+    "myEvents.registered": "Registered",
+    "myEvents.registeredBody":
+      "Upcoming events you have confirmed you are attending.",
+    "myEvents.noUpcoming": "No upcoming registrations",
+    "myEvents.noUpcomingBody": "Register for an event and it will appear here.",
+    "myEvents.past": "Past registrations ({count})",
+    "myEvents.hosting": "Hosting",
+    "myEvents.hostingBody":
+      "Events you created, including items still under review.",
+    "myEvents.noHosting": "You are not hosting any events yet",
+    "myEvents.noHostingBody": "Create an event to submit it for moderation.",
+    "myEvents.statusDraft": "Pending review",
+    "myEvents.statusPublished": "Published",
+    "myEvents.statusClosed": "Closed",
+    "myEvents.statusRejected": "Not approved",
+
+    "moderation.entityOpportunity": "Opportunity",
+    "moderation.entityEvent": "Event",
+    "moderation.entityBusiness": "Business",
+    "moderation.entityOrganization": "Organization",
+    "moderation.title": "Content moderation",
+    "moderation.description":
+      "Review opportunities, events, businesses, and organizations before they become visible to the community.",
+    "moderation.manageTeam": "Manage moderation team",
+    "moderation.successApproved": "The submission was approved.",
+    "moderation.successRejected": "The submission was rejected.",
+    "moderation.successGeneric": "The submission review was recorded.",
+    "moderation.pendingTab": "Pending review",
+    "moderation.historyTab": "Recent decisions",
+    "moderation.pendingHeading": "Pending review",
+    "moderation.nothingPending": "Nothing waiting for review",
+    "moderation.nothingPendingBody":
+      "New submissions will appear here when they need moderator approval.",
+    "moderation.historyHeading": "Recent decisions",
+    "moderation.historyBody":
+      "The latest approved and rejected submissions across all moderated content.",
+    "moderation.noHistory": "No moderation history yet",
+    "moderation.noHistoryBody":
+      "Approved and rejected submissions will appear here after the first review decision.",
+    "moderation.approved": "Approved",
+    "moderation.rejected": "Rejected",
+    "moderation.reason": "Reason: {reason}",
+    "moderation.submitted": "Submitted {date}",
+    "moderation.starts": "Starts {date}",
+    "moderation.approve": "Approve",
+    "moderation.approving": "Approving…",
+    "moderation.rejectSummary": "Reject with a reason",
+    "moderation.rejectLabel": "Explain what should be corrected",
+    "moderation.reject": "Reject submission",
+    "moderation.rejecting": "Rejecting…",
+    "moderation.errorInvalidRequest":
+      "That moderation request was incomplete. Refreshing the queue and trying again usually fixes it.",
+    "moderation.errorInvalidReason":
+      "Rejections need a reason between 10 and 1,000 characters.",
+    "moderation.errorApplyFailed":
+      "We could not apply that moderation decision. Please refresh and try again.",
+
+    "team.back": "Back to moderation",
+    "team.title": "Moderation team",
+    "team.description":
+      "Promote trusted members to moderator or admin, or return them to the standard member role.",
+    "team.adminOnly": "Admin only",
+    "team.roleUpdated": "Member role updated.",
+    "team.loadError": "We could not load members. Please try again.",
+    "team.empty": "No member accounts to manage",
+    "team.emptyBody":
+      "Member accounts will appear here once they are available to the admin directory.",
+    "team.onboardingIncomplete": "Onboarding incomplete",
+    "team.ownRole": "Your own role cannot be changed here.",
+    "team.role": "Role",
+    "team.roleMember": "Member",
+    "team.roleModerator": "Moderator",
+    "team.roleAdmin": "Admin",
+    "team.saveRole": "Save role",
+    "team.savingRole": "Saving role…",
+    "team.memberFallback": "Afghan Hub member",
+    "team.errorInvalidRole": "That role request was not valid.",
+    "team.errorUpdateFailed":
+      "We could not update that member role. Please refresh and try again.",
+
     "verification.label": "Verified listing",
     "verification.explanation":
       "Afghan Hub administrators have marked this listing as verified. Verification is not an endorsement or guarantee.",
     "verification.meaning": "What verification means:",
     "verification.aria": "Verified listing. {explanation}",
+
+    "opportunityAction.errorExpired":
+      "This opportunity has expired, so it can no longer be saved.",
+    "opportunityAction.errorCannotDelete":
+      "You can only delete opportunities you created.",
+    "opportunityAction.errorDeleteFailed":
+      "We could not delete the opportunity. Please try again.",
+    "opportunityAction.errorSaveFailed":
+      "We could not update your saved opportunities. Please try again.",
+    "opportunityAction.errorGeneric":
+      "That action could not be completed. Please refresh and try again.",
 
     "delete.opportunityConfirm":
       "Are you sure you want to delete this opportunity? This action cannot be undone.",
@@ -680,11 +792,122 @@ export const browseCopy = {
     "organizationDetail.connect": "ارتباط",
     "organizationDetail.visitWebsite": "بازدید از وب‌سایت",
 
+    "attendees.back": "بازگشت به رویداد",
+    "attendees.title": "شرکت‌کنندگان رویداد",
+    "attendees.edit": "ویرایش رویداد",
+    "attendees.registered": "ثبت‌نام‌شده",
+    "attendees.capacity": "ظرفیت",
+    "attendees.remaining": "باقی‌مانده",
+    "attendees.unlimited": "نامحدود",
+    "attendees.registeredHeading": "اعضای ثبت‌نام‌شده",
+    "attendees.privacy":
+      "فقط جزئیات عمومی پروفایل در اینجا نمایش داده می‌شود. اعضای خصوصی ناشناس می‌مانند.",
+    "attendees.privateMember": "عضو خصوصی",
+    "attendees.registeredAt": "ثبت‌نام در {date}",
+    "attendees.noRegistrations": "هنوز ثبت‌نامی وجود ندارد",
+    "attendees.noRegistrationsBody":
+      "اعضایی که در این رویداد ثبت‌نام کنند در اینجا نمایش داده می‌شوند.",
+    "attendees.viewProfile": "مشاهده پروفایل",
+
+    "myEvents.title": "رویدادهای من",
+    "myEvents.description":
+      "رویدادهایی را که در آن‌ها ثبت‌نام کرده‌اید و رویدادهایی را که میزبانی می‌کنید پیگیری کنید.",
+    "myEvents.browse": "مرور رویدادها",
+    "myEvents.registered": "ثبت‌نام‌شده",
+    "myEvents.registeredBody": "رویدادهای آینده‌ای که حضور خود را تأیید کرده‌اید.",
+    "myEvents.noUpcoming": "ثبت‌نام آینده‌ای وجود ندارد",
+    "myEvents.noUpcomingBody": "در یک رویداد ثبت‌نام کنید تا در اینجا نمایش داده شود.",
+    "myEvents.past": "ثبت‌نام‌های گذشته ({count})",
+    "myEvents.hosting": "میزبانی",
+    "myEvents.hostingBody":
+      "رویدادهایی که ایجاد کرده‌اید، از جمله موارد در حال بررسی.",
+    "myEvents.noHosting": "هنوز میزبان هیچ رویدادی نیستید",
+    "myEvents.noHostingBody": "یک رویداد ایجاد کنید تا برای بررسی ارسال شود.",
+    "myEvents.statusDraft": "در انتظار بررسی",
+    "myEvents.statusPublished": "منتشرشده",
+    "myEvents.statusClosed": "بسته‌شده",
+    "myEvents.statusRejected": "تأییدنشده",
+
+    "moderation.entityOpportunity": "فرصت",
+    "moderation.entityEvent": "رویداد",
+    "moderation.entityBusiness": "کسب‌وکار",
+    "moderation.entityOrganization": "سازمان",
+    "moderation.title": "مدیریت محتوا",
+    "moderation.description":
+      "فرصت‌ها، رویدادها، کسب‌وکارها و سازمان‌ها را پیش از نمایش برای جامعه بررسی کنید.",
+    "moderation.manageTeam": "مدیریت تیم نظارت",
+    "moderation.successApproved": "این ارسال تأیید شد.",
+    "moderation.successRejected": "این ارسال رد شد.",
+    "moderation.successGeneric": "نتیجه بررسی ثبت شد.",
+    "moderation.pendingTab": "در انتظار بررسی",
+    "moderation.historyTab": "تصمیم‌های اخیر",
+    "moderation.pendingHeading": "در انتظار بررسی",
+    "moderation.nothingPending": "هیچ موردی در انتظار بررسی نیست",
+    "moderation.nothingPendingBody":
+      "ارسال‌های جدید هنگام نیاز به تأیید ناظر در اینجا نمایش داده می‌شوند.",
+    "moderation.historyHeading": "تصمیم‌های اخیر",
+    "moderation.historyBody":
+      "آخرین ارسال‌های تأییدشده و ردشده در همه محتوای تحت نظارت.",
+    "moderation.noHistory": "هنوز سابقه نظارتی وجود ندارد",
+    "moderation.noHistoryBody":
+      "ارسال‌های تأییدشده و ردشده پس از نخستین تصمیم بررسی در اینجا نمایش داده می‌شوند.",
+    "moderation.approved": "تأییدشده",
+    "moderation.rejected": "ردشده",
+    "moderation.reason": "دلیل: {reason}",
+    "moderation.submitted": "ارسال‌شده در {date}",
+    "moderation.starts": "آغاز {date}",
+    "moderation.approve": "تأیید",
+    "moderation.approving": "در حال تأیید…",
+    "moderation.rejectSummary": "رد با دلیل",
+    "moderation.rejectLabel": "توضیح دهید چه چیزی باید اصلاح شود",
+    "moderation.reject": "رد ارسال",
+    "moderation.rejecting": "در حال رد…",
+    "moderation.errorInvalidRequest":
+      "درخواست نظارت ناقص بود. با بازخوانی صفحه و تلاش دوباره معمولاً رفع می‌شود.",
+    "moderation.errorInvalidReason":
+      "رد کردن نیازمند دلیلی بین ۱۰ تا ۱۰۰۰ نویسه است.",
+    "moderation.errorApplyFailed":
+      "اعمال این تصمیم نظارتی امکان‌پذیر نبود. لطفاً صفحه را بازخوانی کنید و دوباره تلاش کنید.",
+
+    "team.back": "بازگشت به مدیریت",
+    "team.title": "تیم نظارت",
+    "team.description":
+      "اعضای مورد اعتماد را به ناظر یا مدیر ارتقا دهید یا به نقش عضو عادی بازگردانید.",
+    "team.adminOnly": "فقط مدیر",
+    "team.roleUpdated": "نقش عضو به‌روزرسانی شد.",
+    "team.loadError": "بارگیری اعضا امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "team.empty": "هیچ حساب عضوی برای مدیریت وجود ندارد",
+    "team.emptyBody":
+      "حساب‌های اعضا زمانی که در فهرست مدیر موجود باشند در اینجا نمایش داده می‌شوند.",
+    "team.onboardingIncomplete": "تکمیل پروفایل ناتمام",
+    "team.ownRole": "نقش خودتان در اینجا قابل تغییر نیست.",
+    "team.role": "نقش",
+    "team.roleMember": "عضو",
+    "team.roleModerator": "ناظر",
+    "team.roleAdmin": "مدیر",
+    "team.saveRole": "ذخیره نقش",
+    "team.savingRole": "در حال ذخیره نقش…",
+    "team.memberFallback": "عضو افغان هاب",
+    "team.errorInvalidRole": "درخواست نقش معتبر نبود.",
+    "team.errorUpdateFailed":
+      "به‌روزرسانی نقش این عضو امکان‌پذیر نبود. لطفاً صفحه را بازخوانی کنید و دوباره تلاش کنید.",
+
     "verification.label": "آگهی تأییدشده",
     "verification.explanation":
       "مدیران افغان هاب این آگهی را تأییدشده علامت‌گذاری کرده‌اند. تأیید به معنای توصیه یا تضمین نیست.",
     "verification.meaning": "معنای تأیید:",
     "verification.aria": "آگهی تأییدشده. {explanation}",
+
+    "opportunityAction.errorExpired":
+      "این فرصت منقضی شده است و دیگر قابل ذخیره نیست.",
+    "opportunityAction.errorCannotDelete":
+      "فقط فرصت‌هایی را می‌توانید حذف کنید که خودتان ایجاد کرده‌اید.",
+    "opportunityAction.errorDeleteFailed":
+      "حذف این فرصت امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "opportunityAction.errorSaveFailed":
+      "به‌روزرسانی فرصت‌های ذخیره‌شده امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "opportunityAction.errorGeneric":
+      "این اقدام انجام نشد. لطفاً صفحه را بازخوانی کنید و دوباره تلاش کنید.",
 
     "delete.opportunityConfirm":
       "آیا مطمئن هستید که می‌خواهید این فرصت را حذف کنید؟ این عمل قابل بازگشت نیست.",
@@ -1020,11 +1243,122 @@ export const browseCopy = {
     "organizationDetail.connect": "اړیکه",
     "organizationDetail.visitWebsite": "وېبپاڼې ته وګورئ",
 
+    "attendees.back": "پېښې ته بېرته",
+    "attendees.title": "د پېښې ګډون کوونکي",
+    "attendees.edit": "پېښه سمول",
+    "attendees.registered": "ثبت شوي",
+    "attendees.capacity": "ظرفیت",
+    "attendees.remaining": "پاتې",
+    "attendees.unlimited": "بې پایه",
+    "attendees.registeredHeading": "ثبت شوي غړي",
+    "attendees.privacy":
+      "یوازې عامه پروفایل معلومات دلته ښودل کېږي. شخصي غړي نا پېژندل شوي پاتې کېږي.",
+    "attendees.privateMember": "شخصي غړی",
+    "attendees.registeredAt": "په {date} کې ثبت شوی",
+    "attendees.noRegistrations": "تراوسه کوم ثبت نشته",
+    "attendees.noRegistrationsBody":
+      "هغه غړي چې دې پېښې ته ثبت شي به دلته ښکاره شي.",
+    "attendees.viewProfile": "پروفایل وګورئ",
+
+    "myEvents.title": "زما پېښې",
+    "myEvents.description":
+      "هغه پېښې چې تاسو په کې ثبت شوي او هغه چې تاسو یې کوربه یاست تعقیب کړئ.",
+    "myEvents.browse": "پېښې وګورئ",
+    "myEvents.registered": "ثبت شوي",
+    "myEvents.registeredBody": "راتلونکې پېښې چې تاسو ګډون تایید کړی.",
+    "myEvents.noUpcoming": "راتلونکی ثبت نشته",
+    "myEvents.noUpcomingBody": "یوې پېښې ته ثبت شئ او دا به دلته ښکاره شي.",
+    "myEvents.past": "پخواني ثبتونه ({count})",
+    "myEvents.hosting": "کوربه توب",
+    "myEvents.hostingBody":
+      "هغه پېښې چې تاسو جوړې کړې، په بیاکتنه کې موجودې هم شاملې دي.",
+    "myEvents.noHosting": "تاسو لا د کومې پېښې کوربه نه یاست",
+    "myEvents.noHostingBody": "پېښه جوړه کړئ څو بیاکتنې ته ولېږل شي.",
+    "myEvents.statusDraft": "د بیاکتنې په تمه",
+    "myEvents.statusPublished": "خپره شوې",
+    "myEvents.statusClosed": "بند شوې",
+    "myEvents.statusRejected": "نه منل شوې",
+
+    "moderation.entityOpportunity": "فرصت",
+    "moderation.entityEvent": "پېښه",
+    "moderation.entityBusiness": "سوداګري",
+    "moderation.entityOrganization": "سازمان",
+    "moderation.title": "د منځپانګې څارنه",
+    "moderation.description":
+      "فرصتونه، پېښې، سوداګرۍ او سازمانونه د ټولنې ښودلو دمخه وګورئ.",
+    "moderation.manageTeam": "د څارنې ټیم مدیریت",
+    "moderation.successApproved": "غوښتنلیک ومنل شو.",
+    "moderation.successRejected": "غوښتنلیک رد شو.",
+    "moderation.successGeneric": "د بیاکتنې پایله ثبت شوه.",
+    "moderation.pendingTab": "د بیاکتنې په تمه",
+    "moderation.historyTab": "وروستي پرېکړې",
+    "moderation.pendingHeading": "د بیاکتنې په تمه",
+    "moderation.nothingPending": "هېڅ څه د بیاکتنې په تمه ندي",
+    "moderation.nothingPendingBody":
+      "نوي غوښتنلیکونه به هغه وخت دلته ښکاره شي چې څارونکي تایید ته اړتیا ولري.",
+    "moderation.historyHeading": "وروستي پرېکړې",
+    "moderation.historyBody":
+      "په ټوله څارل شوې منځپانګه کې وروستي منل شوي او رد شوي غوښتنلیکونه.",
+    "moderation.noHistory": "تراوسه د څارنې تاریخ نشته",
+    "moderation.noHistoryBody":
+      "منل شوي او رد شوي غوښتنلیکونه به د لومړنۍ پرېکړې وروسته دلته ښکاره شي.",
+    "moderation.approved": "منل شوی",
+    "moderation.rejected": "رد شوی",
+    "moderation.reason": "دلیل: {reason}",
+    "moderation.submitted": "په {date} کې لېږل شوی",
+    "moderation.starts": "پیل {date}",
+    "moderation.approve": "منل",
+    "moderation.approving": "منل کېږي…",
+    "moderation.rejectSummary": "د دلیل سره ردول",
+    "moderation.rejectLabel": "تشریح کړئ چې څه باید سم شي",
+    "moderation.reject": "غوښتنلیک رد کړئ",
+    "moderation.rejecting": "ردول کېږي…",
+    "moderation.errorInvalidRequest":
+      "د څارنې غوښتنه نیمګړې وه. پاڼه بیا پرانیستل او بیا هڅه کول یې معمولاً سمول کېږي.",
+    "moderation.errorInvalidReason":
+      "رد کول د ۱۰ تر ۱۰۰۰ تورو پورې دلیل ته اړتیا لري.",
+    "moderation.errorApplyFailed":
+      "دا د څارنې پرېکړه پلي نه شوه. مهرباني وکړئ پاڼه بیا پرانیزئ او بیا هڅه وکړئ.",
+
+    "team.back": "څارنې ته بېرته",
+    "team.title": "د څارنې ټیم",
+    "team.description":
+      "باوري غړي څارونکي یا مدیرانو ته لوړ کړئ، یا یې عادي غړي رول ته بېرته راوګرځوئ.",
+    "team.adminOnly": "یوازې مدیر",
+    "team.roleUpdated": "د غړي رول تازه شو.",
+    "team.loadError": "غړي ونه شول بارول. مهرباني وکړئ بیا هڅه وکړئ.",
+    "team.empty": "د مدیریت لپاره کوم غړی حساب نشته",
+    "team.emptyBody":
+      "د غړو حسابونه به هغه وخت دلته ښکاره شي چې د مدیر نوملړ کې موجود وي.",
+    "team.onboardingIncomplete": "پروفایل نیمګړی",
+    "team.ownRole": "ستاسو خپل رول دلته نه شي بدلېدای.",
+    "team.role": "رول",
+    "team.roleMember": "غړی",
+    "team.roleModerator": "څارونکی",
+    "team.roleAdmin": "مدیر",
+    "team.saveRole": "رول خوندي کړئ",
+    "team.savingRole": "رول خوندي کېږي…",
+    "team.memberFallback": "د افغان هب غړی",
+    "team.errorInvalidRole": "د رول غوښتنه سمه نه وه.",
+    "team.errorUpdateFailed":
+      "د دې غړي رول تازه نه شو. مهرباني وکړئ پاڼه بیا پرانیزئ او بیا هڅه وکړئ.",
+
     "verification.label": "تایید شوې",
     "verification.explanation":
       "د افغان هب مدیرانو دا لیست تایید شوی ښودلی. تایید د سپارښتنې یا تضمین معنا نه لري.",
     "verification.meaning": "د تایید معنا:",
     "verification.aria": "تایید شوې. {explanation}",
+
+    "opportunityAction.errorExpired":
+      "دا فرصت پای ته رسېدلی، نو بیا خوندي کېدای نه شي.",
+    "opportunityAction.errorCannotDelete":
+      "یوازې هغه فرصتونه ړنګولای شئ چې تاسو جوړ کړي دي.",
+    "opportunityAction.errorDeleteFailed":
+      "دا فرصت ړنګ نه شو. مهرباني وکړئ بیا هڅه وکړئ.",
+    "opportunityAction.errorSaveFailed":
+      "ستاسو خوندي شوي فرصتونه تازه نه شول. مهرباني وکړئ بیا هڅه وکړئ.",
+    "opportunityAction.errorGeneric":
+      "دا کار بشپړ نه شو. مهرباني وکړئ پاڼه بیا پرانیزئ او بیا هڅه وکړئ.",
 
     "delete.opportunityConfirm":
       "ایا ډاډه یاست چې غواړئ دا فرصت ړنګ کړئ؟ دا کار بېرته نه شي کېدای.",
@@ -1051,6 +1385,22 @@ export { copyKeys as browseCopyKeys };
  * Catalogue key for an opportunity type token, or null when the stored value
  * is not one of the catalogue's known tokens (those stay as user data).
  */
+/**
+ * Opportunity detail actions report failures as stable codes; the visible
+ * message always comes from this catalogue.
+ */
+const opportunityActionErrorKeys: Record<string, BrowseCopyKey> = {
+  expired: "opportunityAction.errorExpired",
+  "cannot-delete": "opportunityAction.errorCannotDelete",
+  "delete-failed": "opportunityAction.errorDeleteFailed",
+  "save-failed": "opportunityAction.errorSaveFailed",
+};
+
+export function opportunityActionErrorKey(code: string | undefined): BrowseCopyKey {
+  if (!code) return "opportunityAction.errorGeneric";
+  return opportunityActionErrorKeys[code] ?? "opportunityAction.errorGeneric";
+}
+
 export function opportunityTypeKey(value: string | null | undefined): BrowseCopyKey | null {
   if (!value) return null;
   const key = `opportunityType.${value}`;

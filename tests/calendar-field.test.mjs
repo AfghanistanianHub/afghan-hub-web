@@ -32,6 +32,7 @@ async function harness(file, exported, props = {}) {
       }),
     },
     '@/lib/i18n/format': { formatSiteDate: () => 'February 29, 2028' },
+    '@/lib/i18n/calendar-locale': { getCalendarLocale: () => ({}) },
   };
   const exports = {};
   new Function('require', 'exports', ts.transpileModule(source, { compilerOptions: {
