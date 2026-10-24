@@ -56,34 +56,32 @@ export async function createEvent(formData: FormData) {
   const startsAtValue = getOptionalString(formData, "starts_at");
 
   if (!title) {
-    redirect("/events/new?error=Title%20is%20required");
+    redirect("/events/new?error=title-required");
   }
 
   if (!summary) {
-    redirect("/events/new?error=Summary%20is%20required");
+    redirect("/events/new?error=summary-required");
   }
 
   if (!description) {
-    redirect("/events/new?error=Description%20is%20required");
+    redirect("/events/new?error=description-required");
   }
 
   const startsAt = parseDateTime(startsAtValue);
 
   if (!startsAt) {
-    redirect("/events/new?error=Valid%20start%20date%20is%20required");
+    redirect("/events/new?error=start-invalid");
   }
 
   const endsAtValue = getOptionalString(formData, "ends_at");
   const endsAt = parseDateTime(endsAtValue);
 
   if (endsAtValue && !endsAt) {
-    redirect("/events/new?error=Invalid%20end%20date");
+    redirect("/events/new?error=end-invalid");
   }
 
   if (endsAt && new Date(endsAt) < new Date(startsAt)) {
-    redirect(
-      "/events/new?error=End%20date%20cannot%20be%20before%20start%20date",
-    );
+    redirect("/events/new?error=end-before-start");
   }
 
   const organizationId = getOptionalString(
@@ -101,14 +99,14 @@ export async function createEvent(formData: FormData) {
         .maybeSingle();
 
     if (organizationError || !organization) {
-      redirect("/events/new?error=Invalid%20organization");
+      redirect("/events/new?error=organization-invalid");
     }
   }
 
   const onlineUrl = getOptionalString(formData, "online_url");
 
   if (onlineUrl && !isValidHttpUrl(onlineUrl)) {
-    redirect("/events/new?error=Enter%20a%20valid%20online%20event%20URL");
+    redirect("/events/new?error=url-invalid");
   }
 
   const capacityValue = getOptionalString(formData, "capacity");
@@ -118,7 +116,7 @@ export async function createEvent(formData: FormData) {
     capacity = Number.parseInt(capacityValue, 10);
 
     if (!Number.isInteger(capacity) || capacity < 1) {
-      redirect("/events/new?error=Invalid%20capacity");
+      redirect("/events/new?error=capacity-invalid");
     }
   }
 
@@ -163,7 +161,7 @@ export async function createEvent(formData: FormData) {
   });
 
   if (error) {
-    redirect("/events/new?error=We%20could%20not%20create%20the%20event.%20Please%20try%20again.");
+    redirect("/events/new?error=create-failed");
   }
 
   redirect(`/events/${slug}`);
@@ -188,34 +186,28 @@ export async function updateEvent(formData: FormData) {
   const startsAtValue = getOptionalString(formData, "starts_at");
 
   if (!originalSlug) {
-    redirect("/events?error=Missing%20event");
+    redirect("/events");
   }
 
   if (!title || !summary || !description) {
-    redirect(
-      `/events/${originalSlug}/edit?error=Please%20complete%20all%20required%20fields`,
-    );
+    redirect(`/events/${originalSlug}/edit?error=incomplete-fields`);
   }
 
   const startsAt = parseDateTime(startsAtValue);
 
   if (!startsAt) {
-    redirect(
-      `/events/${originalSlug}/edit?error=Valid%20start%20date%20is%20required`,
-    );
+    redirect(`/events/${originalSlug}/edit?error=start-invalid`);
   }
 
   const endsAtValue = getOptionalString(formData, "ends_at");
   const endsAt = parseDateTime(endsAtValue);
 
   if (endsAtValue && !endsAt) {
-    redirect(`/events/${originalSlug}/edit?error=Invalid%20end%20date`);
+    redirect(`/events/${originalSlug}/edit?error=end-invalid`);
   }
 
   if (endsAt && new Date(endsAt) < new Date(startsAt)) {
-    redirect(
-      `/events/${originalSlug}/edit?error=End%20date%20cannot%20be%20before%20start%20date`,
-    );
+    redirect(`/events/${originalSlug}/edit?error=end-before-start`);
   }
 
   const { data: existingEvent } = await supabase
@@ -226,7 +218,7 @@ export async function updateEvent(formData: FormData) {
     .maybeSingle();
 
   if (!existingEvent) {
-    redirect("/events?error=Event%20not%20found");
+    redirect("/events");
   }
 
   const organizationId = getOptionalString(
@@ -243,18 +235,14 @@ export async function updateEvent(formData: FormData) {
       .maybeSingle();
 
     if (!organization) {
-      redirect(
-        `/events/${originalSlug}/edit?error=Invalid%20organization`,
-      );
+      redirect(`/events/${originalSlug}/edit?error=organization-invalid`);
     }
   }
 
   const onlineUrl = getOptionalString(formData, "online_url");
 
   if (onlineUrl && !isValidHttpUrl(onlineUrl)) {
-    redirect(
-      `/events/${originalSlug}/edit?error=Enter%20a%20valid%20online%20event%20URL`,
-    );
+    redirect(`/events/${originalSlug}/edit?error=url-invalid`);
   }
 
   const capacityValue = getOptionalString(formData, "capacity");
@@ -264,9 +252,7 @@ export async function updateEvent(formData: FormData) {
     capacity = Number.parseInt(capacityValue, 10);
 
     if (!Number.isInteger(capacity) || capacity < 1) {
-      redirect(
-        `/events/${originalSlug}/edit?error=Invalid%20capacity`,
-      );
+      redirect(`/events/${originalSlug}/edit?error=capacity-invalid`);
     }
   }
 
@@ -294,9 +280,7 @@ export async function updateEvent(formData: FormData) {
     .eq("creator_id", user.id);
 
   if (error) {
-    redirect(
-      `/events/${originalSlug}/edit?error=We%20could%20not%20save%20the%20event.%20Please%20try%20again.`,
-    );
+    redirect(`/events/${originalSlug}/edit?error=update-failed`);
   }
 
   redirect(`/events/${originalSlug}`);
@@ -317,7 +301,7 @@ export async function deleteEvent(formData: FormData) {
   const slug = getOptionalString(formData, "slug");
 
   if (!slug) {
-    redirect("/events?error=Missing%20event");
+    redirect("/events");
   }
 
   const { data: event } = await supabase
@@ -328,9 +312,7 @@ export async function deleteEvent(formData: FormData) {
     .maybeSingle();
 
   if (!event) {
-    redirect(
-      `/events/${slug}?error=You%20cannot%20delete%20this%20event`,
-    );
+    redirect(`/events/${slug}?error=cannot-delete`);
   }
 
   const { error } = await supabase
@@ -340,9 +322,7 @@ export async function deleteEvent(formData: FormData) {
     .eq("creator_id", user.id);
 
   if (error) {
-    redirect(
-      `/events/${slug}?error=We%20could%20not%20delete%20the%20event.%20Please%20try%20again.`,
-    );
+    redirect(`/events/${slug}?error=delete-failed`);
   }
 
   redirect("/events");

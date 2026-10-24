@@ -1,11 +1,9 @@
 import Link from "next/link";
 import { ArrowUpRight, BriefcaseBusiness, Search } from "lucide-react";
-import {
-  formatOpportunityDeadline,
-  getUtcDateKey,
-} from "@/lib/opportunities";
+import { getUtcDateKey } from "@/lib/opportunities";
 import { createClient } from "@/lib/supabase/server";
 import { MemberPageHeader, DirectoryEmptyState } from "@/components/catalog/member-page-header";
+import { B, BDate, BrowseField, BrowseSelect } from "@/components/i18n/browse";
 import {
   catalogClearClass,
   catalogFieldClass,
@@ -34,6 +32,26 @@ const OPPORTUNITY_TYPES = [
   "education",
 ] as const;
 
+const TYPE_OPTIONS = [
+  { value: "all", key: "common.allTypes" },
+  ...OPPORTUNITY_TYPES.map((type) => ({
+    value: type,
+    key: `opportunityType.${type}` as const,
+  })),
+] as const;
+
+const FORMAT_OPTIONS = [
+  { value: "all", key: "common.allFormats" },
+  { value: "remote", key: "common.remote" },
+  { value: "in-person", key: "common.inPerson" },
+] as const;
+
+function typeKey(type: string) {
+  return `opportunityType.${type}` as
+    | `opportunityType.${(typeof OPPORTUNITY_TYPES)[number]}`
+    | "opportunityType.job";
+}
+
 function getOrganizationName(
   organization: { name: string } | { name: string }[] | null,
 ) {
@@ -48,10 +66,6 @@ function getSearchValue(value: string | string[] | undefined, maxLength = 100) {
 
 function escapeLikePattern(value: string) {
   return value.replace(/[\\%_]/g, "\\$&");
-}
-
-function formatType(value: string) {
-  return value.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 export default async function OpportunitiesPage({ searchParams }: Props) {
@@ -122,65 +136,56 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
 
   const { data: opportunities, error } = await opportunitiesQuery;
   const hasFilters = Boolean(search || city || type !== "all" || format !== "all");
+  const count = opportunities?.length ?? 0;
 
   return (
     <main data-illustration-focus-scope className={catalogPageContainerClass}>
-      <MemberPageHeader title="Opportunities" description="Find jobs, volunteering, scholarships, mentorship and community opportunities." icon={BriefcaseBusiness}><Link href="/opportunities/new" className={catalogSubmitClass}>Post opportunity</Link></MemberPageHeader>
+      <MemberPageHeader title={<B k="opportunities.title" />} description={<B k="opportunities.description" />} icon={BriefcaseBusiness}><Link href="/opportunities/new" className={catalogSubmitClass}><B k="opportunities.post" /></Link></MemberPageHeader>
 
       <form
         action="/opportunities"
         method="get"
         className={`${catalogFilterPanelClass} md:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]`}
       >
-        <label className="grid gap-2 text-sm font-medium text-foreground">
-          <span className="inline-flex items-center gap-2"><Search aria-hidden="true" className="size-4 text-primary" /> Search opportunities</span>
-          <input
-            type="search"
-            name="q"
-            defaultValue={search}
-            placeholder="Search by title"
-            className={catalogFieldClass}
-          />
-        </label>
+        <BrowseField
+          labelKey="opportunities.search"
+          name="q"
+          defaultValue={search}
+          placeholderKey="opportunities.searchPlaceholder"
+          className={catalogFieldClass}
+          icon={<Search aria-hidden="true" className="size-4 text-primary" />}
+        />
 
-        <label className="grid gap-2 text-sm font-medium text-foreground">
-          Type
-          <select name="type" defaultValue={type} className={catalogFieldClass}>
-            <option value="all">All types</option>
-            {OPPORTUNITY_TYPES.map((opportunityType) => (
-              <option key={opportunityType} value={opportunityType}>
-                {formatType(opportunityType)}
-              </option>
-            ))}
-          </select>
-        </label>
+        <BrowseSelect
+          labelKey="common.type"
+          name="type"
+          defaultValue={type}
+          className={catalogFieldClass}
+          options={TYPE_OPTIONS}
+        />
 
-        <label className="grid gap-2 text-sm font-medium text-foreground">
-          Format
-          <select name="format" defaultValue={format} className={catalogFieldClass}>
-            <option value="all">All formats</option>
-            <option value="remote">Remote</option>
-            <option value="in-person">In person</option>
-          </select>
-        </label>
+        <BrowseSelect
+          labelKey="common.format"
+          name="format"
+          defaultValue={format}
+          className={catalogFieldClass}
+          options={FORMAT_OPTIONS}
+        />
 
-        <label className="grid gap-2 text-sm font-medium text-foreground">
-          City
-          <input
-            type="search"
-            name="city"
-            defaultValue={city}
-            placeholder="Any city"
-            className={catalogFieldClass}
-          />
-        </label>
+        <BrowseField
+          labelKey="common.city"
+          name="city"
+          defaultValue={city}
+          placeholderKey="common.anyCity"
+          className={catalogFieldClass}
+        />
 
         <div className="flex items-end gap-3">
           <button
             type="submit"
             className={catalogSubmitClass}
           >
-            Apply
+            <B k="common.apply" />
           </button>
 
           {hasFilters ? (
@@ -188,7 +193,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
               href="/opportunities"
               className={catalogClearClass}
             >
-              Clear
+              <B k="common.clear" />
             </Link>
           ) : null}
         </div>
@@ -196,13 +201,18 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
         <p className="text-sm text-muted-foreground">
-          {error
-            ? "Opportunities could not be loaded."
-            : `${opportunities?.length ?? 0} ${opportunities?.length === 1 ? "opportunity" : "opportunities"} found`}
+          {error ? (
+            <B k="opportunities.loadError" />
+          ) : (
+            <B
+              k={count === 1 ? "opportunities.countOne" : "opportunities.countMany"}
+              values={{ count }}
+            />
+          )}
         </p>
 
         {hasFilters ? (
-          <p className="text-xs text-muted-foreground">Filters are reflected in the URL, so this view can be shared.</p>
+          <p className="text-xs text-muted-foreground"><B k="common.filtersShared" /></p>
         ) : null}
       </div>
 
@@ -210,8 +220,8 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
       <div className={opportunities?.length ? "mt-4 divide-y divide-border border-y border-border bg-card" : "mt-4"}>
         {error ? (
           <div role="alert" aria-live="assertive" className="relative overflow-hidden rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.05] p-8 text-center"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-destructive/[0.06] blur-3xl"/>
-            <h2 className="text-xl font-semibold text-destructive">We could not load opportunities</h2>
-            <p className="mt-2 text-sm text-destructive/80">Please try again in a moment.</p>
+            <h2 className="text-xl font-semibold text-destructive"><B k="opportunities.loadErrorTitle" /></h2>
+            <p className="mt-2 text-sm text-destructive/80"><B k="opportunities.loadErrorBody" /></p>
           </div>
         ) : opportunities?.length ? (
           opportunities.map((opportunity) => (
@@ -222,10 +232,10 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
             >
               <div className="relative flex flex-wrap items-center gap-2">
                 <span className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-                  {formatType(opportunity.type)}
+                  <B k={typeKey(opportunity.type)} />
                 </span>
                 <span className="inline-flex rounded-full border border-border bg-muted/50 px-3 py-1 text-sm text-muted-foreground">
-                  {opportunity.is_remote ? "Remote" : "In person"}
+                  <B k={opportunity.is_remote ? "common.remote" : "common.inPerson"} />
                 </span>
               </div>
 
@@ -237,9 +247,9 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
               </div>
 
               {opportunity.organization ? (
-                <p className="relative mt-2 text-sm font-medium text-primary">Posted by {getOrganizationName(opportunity.organization)}</p>
+                <p className="relative mt-2 text-sm font-medium text-primary"><B k="opportunities.postedBy" values={{ name: getOrganizationName(opportunity.organization) ?? "" }} /></p>
               ) : (
-                <p className="relative mt-2 text-sm text-muted-foreground">Personal opportunity</p>
+                <p className="relative mt-2 text-sm text-muted-foreground"><B k="opportunities.personal" /></p>
               )}
 
               <p className="relative mt-3 line-clamp-3 break-words text-sm leading-7 text-muted-foreground md:text-base">{opportunity.summary}</p>
@@ -247,12 +257,12 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
               <div className="relative mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
                 {opportunity.city ? <span>{opportunity.city}</span> : null}
                 {opportunity.country ? <span>{opportunity.country}</span> : null}
-                {opportunity.deadline ? <span>Deadline {formatOpportunityDeadline(opportunity.deadline)}</span> : null}
+                {opportunity.deadline ? <span><B k="opportunities.deadlineLabel" /> <BDate value={opportunity.deadline} mode="shortDate" /></span> : null}
               </div>
             </Link>
           ))
         ) : (
-          <DirectoryEmptyState title={hasFilters ? "No opportunities match these filters" : "No opportunities yet"} description={hasFilters ? "Try adjusting or clearing your filters." : "Published opportunities will appear here."} href={hasFilters ? "/opportunities" : "/opportunities/new"} action={hasFilters ? "Clear filters" : "Post opportunity"} />
+          <DirectoryEmptyState title={<B k={hasFilters ? "opportunities.emptyFiltered" : "opportunities.empty"} />} description={<B k={hasFilters ? "opportunities.emptyFilteredBody" : "opportunities.emptyBody"} />} href={hasFilters ? "/opportunities" : "/opportunities/new"} action={<B k={hasFilters ? "common.clearFilters" : "opportunities.post"} />} />
         )}
       </div>
     </main>

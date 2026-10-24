@@ -28,7 +28,7 @@ export async function updateMemberRole(formData: FormData) {
     typeof requestedRole !== "string" ||
     !allowedRoles.includes(requestedRole as ManagedRole)
   ) {
-    redirect("/moderation/team?error=Invalid%20role%20request");
+    redirect("/moderation/team?error=invalid-role");
   }
 
   const { data: accessContext } = await getMyAccessContext(supabase, user.id);
@@ -43,9 +43,7 @@ export async function updateMemberRole(formData: FormData) {
   });
 
   if (error || !changed) {
-    redirect(
-      "/moderation/team?error=We%20could%20not%20update%20that%20member%20role.%20Please%20refresh%20and%20try%20again.",
-    );
+    redirect("/moderation/team?error=update-failed");
   }
 
   revalidatePath("/moderation/team");

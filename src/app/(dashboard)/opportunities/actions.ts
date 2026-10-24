@@ -58,15 +58,15 @@ export async function createOpportunity(formData: FormData) {
   const type = getOptionalString(formData, "type");
 
   if (!title) {
-    redirect("/opportunities/new?error=Title%20is%20required");
+    redirect("/opportunities/new?error=title-required");
   }
 
   if (!summary) {
-    redirect("/opportunities/new?error=Summary%20is%20required");
+    redirect("/opportunities/new?error=summary-required");
   }
 
   if (!description) {
-    redirect("/opportunities/new?error=Description%20is%20required");
+    redirect("/opportunities/new?error=description-required");
   }
 
   if (
@@ -75,7 +75,7 @@ export async function createOpportunity(formData: FormData) {
       type as (typeof opportunityTypes)[number],
     )
   ) {
-    redirect("/opportunities/new?error=Invalid%20opportunity%20type");
+    redirect("/opportunities/new?error=invalid-type");
   }
 
   const organizationId = getOptionalString(
@@ -94,7 +94,7 @@ export async function createOpportunity(formData: FormData) {
 
     if (organizationError || !organization) {
       redirect(
-        "/opportunities/new?error=Invalid%20organization",
+        "/opportunities/new?error=invalid-organization",
       );
     }
   }
@@ -103,11 +103,11 @@ export async function createOpportunity(formData: FormData) {
   const contactEmail = getOptionalString(formData, "contact_email");
 
   if (externalUrl && !isValidHttpUrl(externalUrl)) {
-    redirect("/opportunities/new?error=Enter%20a%20valid%20application%20URL");
+    redirect("/opportunities/new?error=invalid-url");
   }
 
   if (contactEmail && !isValidEmail(contactEmail)) {
-    redirect("/opportunities/new?error=Enter%20a%20valid%20contact%20email");
+    redirect("/opportunities/new?error=invalid-email");
   }
 
   const deadlineValue = getOptionalString(formData, "deadline");
@@ -117,7 +117,7 @@ export async function createOpportunity(formData: FormData) {
     deadline = normalizeOpportunityDeadline(deadlineValue);
 
     if (!deadline) {
-      redirect("/opportunities/new?error=Invalid%20deadline");
+      redirect("/opportunities/new?error=invalid-deadline");
     }
   }
 
@@ -161,7 +161,7 @@ export async function createOpportunity(formData: FormData) {
 
   if (error) {
     redirect(
-      "/opportunities/new?error=We%20could%20not%20create%20the%20opportunity.%20Please%20try%20again.",
+      "/opportunities/new?error=create-failed",
     );
   }
 
@@ -187,12 +187,12 @@ export async function updateOpportunity(formData: FormData) {
   const type = getOptionalString(formData, "type");
 
   if (!originalSlug) {
-    redirect("/opportunities?error=Missing%20opportunity");
+    redirect("/opportunities?error=missing-slug");
   }
 
   if (!title || !summary || !description) {
     redirect(
-      `/opportunities/${originalSlug}/edit?error=Please%20complete%20all%20required%20fields`,
+      `/opportunities/${originalSlug}/edit?error=incomplete-fields`,
     );
   }
 
@@ -203,7 +203,7 @@ export async function updateOpportunity(formData: FormData) {
     )
   ) {
     redirect(
-      `/opportunities/${originalSlug}/edit?error=Invalid%20opportunity%20type`,
+      `/opportunities/${originalSlug}/edit?error=invalid-type`,
     );
   }
 
@@ -215,7 +215,7 @@ export async function updateOpportunity(formData: FormData) {
     .maybeSingle();
 
   if (!existingOpportunity) {
-    redirect("/opportunities?error=Opportunity%20not%20found");
+    redirect("/opportunities?error=not-found");
   }
 
   const organizationId = getOptionalString(
@@ -233,7 +233,7 @@ export async function updateOpportunity(formData: FormData) {
 
     if (!organization) {
       redirect(
-        `/opportunities/${originalSlug}/edit?error=Invalid%20organization`,
+        `/opportunities/${originalSlug}/edit?error=invalid-organization`,
       );
     }
   }
@@ -243,13 +243,13 @@ export async function updateOpportunity(formData: FormData) {
 
   if (externalUrl && !isValidHttpUrl(externalUrl)) {
     redirect(
-      `/opportunities/${originalSlug}/edit?error=Enter%20a%20valid%20application%20URL`,
+      `/opportunities/${originalSlug}/edit?error=invalid-url`,
     );
   }
 
   if (contactEmail && !isValidEmail(contactEmail)) {
     redirect(
-      `/opportunities/${originalSlug}/edit?error=Enter%20a%20valid%20contact%20email`,
+      `/opportunities/${originalSlug}/edit?error=invalid-email`,
     );
   }
 
@@ -261,7 +261,7 @@ export async function updateOpportunity(formData: FormData) {
 
     if (!deadline) {
       redirect(
-        `/opportunities/${originalSlug}/edit?error=Invalid%20deadline`,
+        `/opportunities/${originalSlug}/edit?error=invalid-deadline`,
       );
     }
   }
@@ -289,7 +289,7 @@ export async function updateOpportunity(formData: FormData) {
 
   if (error) {
     redirect(
-      `/opportunities/${originalSlug}/edit?error=We%20could%20not%20save%20the%20opportunity.%20Please%20try%20again.`,
+      `/opportunities/${originalSlug}/edit?error=update-failed`,
     );
   }
 
@@ -311,7 +311,7 @@ export async function deleteOpportunity(formData: FormData) {
   const slug = getOptionalString(formData, "slug");
 
   if (!slug) {
-    redirect("/opportunities?error=Missing%20opportunity");
+    redirect("/opportunities?error=missing-slug");
   }
 
   const { data: opportunity } = await supabase
@@ -323,7 +323,7 @@ export async function deleteOpportunity(formData: FormData) {
 
   if (!opportunity) {
     redirect(
-      `/opportunities/${slug}?error=You%20cannot%20delete%20this%20opportunity`,
+      `/opportunities/${slug}?error=cannot-delete`,
     );
   }
 
@@ -335,7 +335,7 @@ export async function deleteOpportunity(formData: FormData) {
 
   if (error) {
     redirect(
-      `/opportunities/${slug}?error=We%20could%20not%20delete%20the%20opportunity.%20Please%20try%20again.`,
+      `/opportunities/${slug}?error=delete-failed`,
     );
   }
 
@@ -375,7 +375,7 @@ export async function toggleSavedOpportunity(formData: FormData) {
 
   if (hasOpportunityDeadlinePassed(opportunity.deadline, today)) {
     redirect(
-      `/opportunities/${opportunitySlug}?error=This%20opportunity%20has%20expired`,
+      `/opportunities/${opportunitySlug}?error=expired`,
     );
   }
 
@@ -399,7 +399,7 @@ export async function toggleSavedOpportunity(formData: FormData) {
 
   if (error) {
     redirect(
-      `/opportunities/${opportunitySlug}?error=We%20could%20not%20update%20your%20saved%20opportunities.%20Please%20try%20again.`,
+      `/opportunities/${opportunitySlug}?error=save-failed`,
     );
   }
 

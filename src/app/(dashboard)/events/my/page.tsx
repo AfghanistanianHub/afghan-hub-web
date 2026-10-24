@@ -4,18 +4,17 @@ import Link from "next/link";
 import styles from "@/components/network/network-surfaces.module.css";
 import { redirect } from "next/navigation";
 import { ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
+
+import { B, BDate } from "@/components/i18n/browse";
+import type { BrowseCopyKey } from "@/lib/i18n/browse-copy";
 import { createClient } from "@/lib/supabase/server";
 
-function formatEventDate(value: string) {
-  return new Intl.DateTimeFormat("en-CA", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  }).format(new Date(value));
-}
+const statusKeys: Record<string, BrowseCopyKey> = {
+  draft: "myEvents.statusDraft",
+  published: "myEvents.statusPublished",
+  closed: "myEvents.statusClosed",
+  rejected: "myEvents.statusRejected",
+};
 
 function getLocation(event: {
   is_online: boolean;
@@ -23,7 +22,7 @@ function getLocation(event: {
   city: string | null;
   country: string | null;
 }) {
-  if (event.is_online) return "Online";
+  if (event.is_online) return null;
 
   return [event.venue_name, event.city, event.country]
     .filter(Boolean)
@@ -58,17 +57,17 @@ function EventCard({
       
       <div className="relative flex flex-wrap items-center gap-2">
         <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-          {formatEventDate(event.starts_at)}
+          <BDate value={event.starts_at} mode="shortDate" />
         </span>
 
         {showStatus ? (
-          <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold capitalize text-muted-foreground">
-            {event.status}
+          <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+            <B k={statusKeys[event.status] ?? "myEvents.statusDraft"} />
           </span>
         ) : null}
       </div>
 
-      <div className="relative mt-3 flex items-start justify-between gap-3"><h3 className="break-words text-lg font-bold leading-6 text-foreground transition group-hover:text-primary">{event.title}</h3><ArrowUpRight data-profile-arrow aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground"/></div>
+      <div className="relative mt-3 flex items-start justify-between gap-3"><h3 className="break-words text-lg font-bold leading-6 text-foreground transition group-hover:text-primary">{event.title}</h3><ArrowUpRight data-profile-arrow aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground rtl:-scale-x-100"/></div>
 
       {event.summary ? (
         <p className="relative mt-2 line-clamp-2 break-words text-sm leading-6 text-muted-foreground">
@@ -76,12 +75,12 @@ function EventCard({
         </p>
       ) : null}
 
-      {location ? (
-        <p className="relative mt-4 flex items-start gap-2 border-t border-border/70 pt-4 text-sm text-muted-foreground">
-          <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-          <span className="min-w-0 break-words">{location}</span>
-        </p>
-      ) : null}
+      <p className="relative mt-4 flex items-start gap-2 border-t border-border/70 pt-4 text-sm text-muted-foreground">
+        <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+        <span className="min-w-0 break-words">
+          {location ? location : <B k="common.online" />}
+        </span>
+      </p>
     </Link>
   );
 }
@@ -133,16 +132,16 @@ export default async function MyEventsPage() {
 
   return (
     <main className={catalogPageContainerClass}>
-      <MemberPageHeader title="My events" description="Keep track of events you registered for and events you are hosting." icon={CalendarDays}>
-        <Link href="/events" className={catalogClearClass}>Browse events</Link>
-        <Link href="/events/new" className={catalogSubmitClass}>Create Event</Link>
+      <MemberPageHeader title={<B k="myEvents.title" />} description={<B k="myEvents.description" />} icon={CalendarDays}>
+        <Link href="/events" className={catalogClearClass}><B k="myEvents.browse" /></Link>
+        <Link href="/events/new" className={catalogSubmitClass}><B k="events.create" /></Link>
       </MemberPageHeader>
 
       <section className="mt-10">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Registered</h2>
+          <h2 className="text-2xl font-bold text-foreground"><B k="myEvents.registered" /></h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Upcoming events you have confirmed you are attending.
+            <B k="myEvents.registeredBody" />
           </p>
         </div>
 
@@ -156,10 +155,10 @@ export default async function MyEventsPage() {
           <div className="relative mt-5 overflow-hidden rounded-[var(--radius)] border border-dashed border-border/80 bg-muted/25 px-6 py-10 text-center ">
             <CalendarDays aria-hidden="true" className="relative mx-auto size-9 text-primary" />
             <h3 className="relative mt-3 font-semibold text-foreground">
-              No upcoming registrations
+              <B k="myEvents.noUpcoming" />
             </h3>
             <p className="relative mt-2 text-sm leading-6 text-muted-foreground">
-              Register for an event and it will appear here.
+              <B k="myEvents.noUpcomingBody" />
             </p>
           </div>
         )}
@@ -167,7 +166,7 @@ export default async function MyEventsPage() {
         {pastRegistered.length ? (
           <details className="mt-6 rounded-[var(--radius)] border border-border bg-muted/30 p-5">
             <summary className={`${styles.control} cursor-pointer rounded-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}>
-              Past registrations ({pastRegistered.length})
+              <B k="myEvents.past" values={{ count: pastRegistered.length }} />
             </summary>
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               {pastRegistered
@@ -183,9 +182,9 @@ export default async function MyEventsPage() {
 
       <section className="mt-12 border-t border-border pt-10">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Hosting</h2>
+          <h2 className="text-2xl font-bold text-foreground"><B k="myEvents.hosting" /></h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Events you created, including items still under review.
+            <B k="myEvents.hostingBody" />
           </p>
         </div>
 
@@ -199,10 +198,10 @@ export default async function MyEventsPage() {
           <div className="mt-5 rounded-[var(--radius)] border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
             <CalendarDays aria-hidden="true" className="relative mx-auto size-9 text-primary" />
             <h3 className="relative mt-3 font-semibold text-foreground">
-              You are not hosting any events yet
+              <B k="myEvents.noHosting" />
             </h3>
             <p className="relative mt-2 text-sm leading-6 text-muted-foreground">
-              Create an event to submit it for moderation.
+              <B k="myEvents.noHostingBody" />
             </p>
           </div>
         )}

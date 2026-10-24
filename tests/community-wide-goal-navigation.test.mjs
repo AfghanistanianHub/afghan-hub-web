@@ -47,9 +47,16 @@ test("goal cards route to explicit discovery intents where available", () => {
 });
 
 test("search empty state offers visual goal navigation instead of a dead end", () => {
-  assert.match(search, /Tell us what you are trying to do\./);
+  const catalog = fs.readFileSync(
+    new URL("../src/lib/i18n/browse-copy.ts", import.meta.url),
+    "utf8",
+  );
+  assert.match(search, /search\.startTitle/);
   assert.match(search, /discoveryIntentCards\.map/);
-  assert.match(search, /Search anything/);
+  assert.match(search, /goalCopyKeys\[goal\.href\]/);
+  assert.match(search, /search\.anythingTitle/);
+  assert.match(catalog, /"search\.startTitle": "Tell us what you are trying to do\."/);
+  assert.match(catalog, /"search\.anythingTitle": "Search anything"/);
 });
 
 

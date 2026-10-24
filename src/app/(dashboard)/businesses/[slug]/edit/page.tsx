@@ -12,6 +12,7 @@ import {
   W,
 } from "@/components/i18n/workspace";
 import { createClient } from "@/lib/supabase/server";
+import { businessFormErrorKey } from "@/lib/i18n/workspace-copy";
 import { updateBusiness } from "../../actions";
 
 type EditBusinessPageProps = {
@@ -99,7 +100,7 @@ export default async function EditBusinessPage({
 
         {formError ? (
           <div role="alert" aria-live="assertive" className="mt-8 rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.08] p-4 text-sm text-destructive">
-            {formError}
+            <W k={businessFormErrorKey(formError)} />
           </div>
         ) : null}
 

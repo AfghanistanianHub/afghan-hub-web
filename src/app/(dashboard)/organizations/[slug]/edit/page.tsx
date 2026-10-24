@@ -13,6 +13,7 @@ import {
   W,
 } from "@/components/i18n/workspace";
 import { createClient } from "@/lib/supabase/server";
+import { organizationFormErrorKey } from "@/lib/i18n/workspace-copy";
 import { updateOrganization } from "../../actions";
 
 type EditOrganizationPageProps = {
@@ -100,7 +101,7 @@ export default async function EditOrganizationPage({
 
         {formError ? (
           <div role="alert" aria-live="assertive" className="mt-8 rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">
-            {formError}
+            <W k={organizationFormErrorKey(formError)} />
           </div>
         ) : null}
 

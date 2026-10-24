@@ -9,10 +9,14 @@ import {
 } from "@/components/i18n/workspace";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { eventFormErrorKey } from "@/lib/i18n/workspace-copy";
 import { EventDateTimePicker } from "@/components/ui/event-date-time-picker";
 import { createEvent } from "../actions";
 
-export default async function NewEventPage() {
+type Props = { searchParams: Promise<{ error?: string }> };
+
+export default async function NewEventPage({ searchParams }: Props) {
+  const { error } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -38,6 +42,13 @@ export default async function NewEventPage() {
           </p>
         </div>
       </section>
+
+      {error ? (
+        <div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">
+          <W k={eventFormErrorKey(error)} />
+        </div>
+      ) : null}
+
       <form action={createEvent} className="surface-panel mt-8 space-y-8 rounded-[var(--radius)] p-6 md:p-8">
         <LocalizedField labelKey="event.title" name="title" required fieldClassName={field} labelClassName="block text-sm font-medium text-foreground" />
         <LocalizedChoiceField labelKey="event.hostedBy" name="organization_id" placeholderKey="common.personalOrganization" fieldClassName={field} labelClassName="block text-sm font-medium text-foreground">
