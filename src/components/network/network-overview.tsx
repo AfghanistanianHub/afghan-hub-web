@@ -6,7 +6,7 @@ export function NetworkOverview({memberCount,connectionCount,requestCount}:{memb
  const {language,copy}=useNetworkCopy();
  const stats=[{label:copy.members,value:memberCount,icon:UsersRound},{label:copy.connections,value:connectionCount,icon:ArrowRight},{label:copy.requests,value:requestCount,icon:UserPlus}];
  return <section lang={language} dir={language==="en"?"ltr":"rtl"} data-illustration-trigger className="relative border-b border-border/70 pb-6 pt-2 sm:pt-4">
-   <div className="relative max-w-4xl">
+   <div className="relative mx-auto w-full max-w-4xl">
      <p className="inline-flex items-center gap-2 text-xs font-semibold text-primary"><Sparkles aria-hidden="true" className="size-3.5"/>{copy.eyebrow}</p>
      <h1 className="mt-3 text-balance text-[clamp(2.1rem,3.8vw,3.6rem)] font-semibold leading-[1.18] tracking-tight text-foreground">{copy.title}</h1>
      <p className="mt-3 max-w-[65ch] text-base leading-7 text-muted-foreground">{copy.description}</p>
