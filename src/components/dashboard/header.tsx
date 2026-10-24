@@ -96,9 +96,9 @@ export function Header({
           unreadCount={unreadNotificationCount}
         />
 
-        <div className="hidden text-right xl:block">
-          <p className="max-w-28 truncate text-sm font-semibold text-foreground lg:max-w-48">{displayName}</p>
-          <p className="max-w-28 truncate text-xs text-muted-foreground">{email}</p>
+        <div className="hidden min-w-0 max-w-48 text-start xl:block">
+          <p className="max-w-48 truncate text-sm font-semibold text-foreground">{displayName}</p>
+          <p lang="en" dir="ltr" title={email} className="max-w-48 truncate text-start text-xs text-muted-foreground">{email}</p>
         </div>
 
         <div className="flex size-10 items-center justify-center rounded-full border border-primary/15 bg-primary font-bold text-primary-foreground ring-4 ring-primary/8 sm:size-11">

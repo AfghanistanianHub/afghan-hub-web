@@ -1,13 +1,7 @@
-import { ContextualAssistantPrompt } from "@/components/assistant/contextual-assistant-prompt";
-import {
-  ArrowRight,
-  Sparkles,
-  UserPlus,
-  UsersRound,
-} from "lucide-react";
+import { NetworkOverview } from "@/components/network/network-overview";
+import { NetworkError } from "@/components/network/network-error";
 import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import { ConnectionRequests } from "@/components/network/connection-requests";
-import { Localized } from "@/components/i18n/localized";
 import { MemberDirectory } from "@/components/network/member-directory";
 import { MyConnections } from "@/components/network/my-connections";
 import { createClient } from "@/lib/supabase/server";
@@ -98,23 +92,6 @@ export default async function NetworkPage() {
   const connectionCount = acceptedConnections?.length ?? 0;
   const requestCount = incomingRequests?.length ?? 0;
 
-  const stats = [
-    {
-      labelKey: "network.members" as const,
-      value: memberCount,
-      icon: UsersRound,
-    },
-    {
-      labelKey: "network.connections" as const,
-      value: connectionCount,
-      icon: ArrowRight,
-    },
-    {
-      labelKey: "network.requests" as const,
-      value: requestCount,
-      icon: UserPlus,
-    },
-  ];
 
   return (
     <main
@@ -122,61 +99,16 @@ export default async function NetworkPage() {
       className={catalogPageContainerClass}
     >
       <div>
-        <section
-          data-illustration-trigger
-          className="relative border-b border-border/70 pb-9 pt-4 sm:pt-6"
-        >
-          <div className="relative min-w-0">
-            <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-              <Sparkles aria-hidden="true" className="size-3.5" />
-              <Localized k="network.eyebrow" />
-            </div>
+        <NetworkOverview memberCount={memberCount} connectionCount={connectionCount} requestCount={requestCount} />
 
-            <h1 className="mt-4 max-w-[22ch] text-balance text-[clamp(2.1rem,3.8vw,3.6rem)] font-medium leading-[1.08] tracking-[-0.045em] text-foreground">
-              <Localized k="network.title" />
-            </h1>
-
-            <p className="mt-5 max-w-[65ch] text-base leading-7 text-muted-foreground">
-              <Localized k="network.description" />
-            </p>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              <ContextualAssistantPrompt
-                label={<Localized k="network.findTech" />}
-                query="Find professionals working in technology"
-              />
-              <ContextualAssistantPrompt
-                label={<Localized k="network.findArtists" />}
-                query="Find artists working in arts and culture"
-              />
-              <ContextualAssistantPrompt
-                label={<Localized k="network.findMentors" />}
-                query="Find mentors in the community"
-              />
-            </div>
-
-            <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3 border-t border-border/70 pt-5">
-              {stats.map(({ labelKey, value, icon: Icon }) => (
-                <div
-                  key={labelKey}
-                  className="flex min-h-11 items-center gap-2 text-sm"
-                >
-                  <Icon aria-hidden="true" className="size-4 text-primary" /><span className="font-semibold">{value}</span><span className="text-muted-foreground"><Localized k={labelKey} /></span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-        </section>
-
-        <div className="mt-7 space-y-7 lg:mt-8 lg:space-y-8">
+        <div className="mt-5 space-y-6 lg:mt-6 lg:space-y-7">
           {incomingRequestsError ? (
             <div
               role="alert"
               aria-live="assertive"
               className="relative overflow-hidden rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.05] p-4 text-sm text-destructive"
             >
-              <Localized k="network.requestsError" />
+              <NetworkError messageKey="requestsError" />
             </div>
           ) : (
             <ConnectionRequests requests={incomingRequests ?? []} />
@@ -189,7 +121,7 @@ export default async function NetworkPage() {
                 aria-live="assertive"
                 className="relative overflow-hidden rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.05] p-4 text-sm text-destructive"
               >
-                <Localized k="network.connectionsError" />
+                <NetworkError messageKey="connectionsError" />
               </div>
             ) : (
               <MyConnections currentUserId={user.id} connections={acceptedConnections ?? []} />
@@ -203,7 +135,7 @@ export default async function NetworkPage() {
               className="relative overflow-hidden rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.05] p-4 text-sm text-destructive"
             >
               <span className="relative">
-                <Localized k="network.directoryError" />
+                <NetworkError messageKey="directoryError" />
               </span>
             </div>
           ) : (

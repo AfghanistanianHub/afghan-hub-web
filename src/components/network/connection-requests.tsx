@@ -1,5 +1,5 @@
 "use client";
-
+import { useNetworkCopy } from "./use-network-copy";
 import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import Link from "next/link";
 import { CommunitySignature } from "@/components/public/community-signature";
@@ -8,7 +8,6 @@ import styles from "./network-surfaces.module.css";
 import { UserRound } from "lucide-react";
 import { ExternalImage } from "@/components/ui/external-image";
 import { respondConnectionRequest } from "@/app/(dashboard)/network/actions";
-import { useUiCopy } from "@/components/i18n/localized";
 
 type Requester = {
   id: string;
@@ -28,28 +27,28 @@ type ConnectionRequestsProps = {
   requests: ConnectionRequest[];
 };
 
-function getMemberName(requester: Requester) {
+function getName(requester: Requester) {
   return (
     requester.display_name?.trim() ||
     [requester.first_name, requester.last_name]
       .filter(Boolean)
       .join(" ") ||
-    null
+    "Afghan Hub Member"
   );
 }
 
 export function ConnectionRequests({
   requests,
 }: ConnectionRequestsProps) {
-  const { t } = useUiCopy();
+  const { language, copy } = useNetworkCopy();
   if (requests.length === 0) {
     return null;
   }
 
   return (
-    <section className={`relative overflow-hidden border p-5 sm:p-6 ${styles.surface}`}>
+    <section lang={language} dir={language === "en" ? "ltr" : "rtl"} className={`relative overflow-hidden border p-5 sm:p-6 ${styles.surface}`}>
       <CommunitySignature className={styles.signature} />
-      <div className="relative"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{t("network.newActivity")}</p><h2 className="mt-1 text-xl font-bold text-foreground">{t("network.connectionRequests")}</h2></div>
+      <div className="relative"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{copy.activity}</p><h2 className="mt-1 text-xl font-bold text-foreground">{copy.requestTitle}</h2></div>
 
       <div className="mt-4 space-y-3">
         {requests.map((request) => {
@@ -61,7 +60,7 @@ export function ConnectionRequests({
             return null;
           }
 
-          const name = getMemberName(requester) ?? t("network.memberFallback");
+          const name = getName(requester);
 
           return (
             <div
@@ -107,19 +106,19 @@ export function ConnectionRequests({
                 <PendingSubmitButton
                   name="decision"
                   value="accepted"
-                  pendingLabel={t("network.accepting")}
+                  pendingLabel={copy.accepting}
                   className={`min-w-28 bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 ${styles.control}`}
                 >
-                  {t("network.accept")}
+                  {copy.accept}
                 </PendingSubmitButton>
 
                 <PendingSubmitButton
                   name="decision"
                   value="declined"
-                  pendingLabel={t("network.declining")}
+                  pendingLabel={copy.declining}
                   className={`min-w-28 border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted ${styles.control}`}
                 >
-                  {t("network.decline")}
+                  {copy.decline}
                 </PendingSubmitButton>
               </form>
             </div>

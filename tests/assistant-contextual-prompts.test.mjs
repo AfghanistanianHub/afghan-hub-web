@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import { uiCopy } from "../src/lib/i18n/ui-copy.ts";
 
 const launcher = fs.readFileSync(
   new URL("../src/components/assistant/contextual-assistant-prompt.tsx", import.meta.url),
@@ -19,10 +18,8 @@ const eventPage = fs.readFileSync(
   new URL("../src/app/(dashboard)/events/[slug]/page.tsx", import.meta.url),
   "utf8",
 );
-const network = fs.readFileSync(
-  new URL("../src/app/(dashboard)/network/page.tsx", import.meta.url),
-  "utf8",
-);
+const network = fs.readFileSync(new URL("../src/components/network/network-overview.tsx", import.meta.url), "utf8");
+const networkCopy = fs.readFileSync(new URL("../src/components/network/network-copy.ts", import.meta.url), "utf8");
 
 test("contextual prompt launcher uses a shared non-navigation event contract", () => {
   assert.match(launcher, /afghan-hub:assistant-open/);
@@ -36,13 +33,13 @@ test("contextual prompts are available on opportunity, event and network surface
   assert.match(opportunity, /Find people in this field/);
   assert.match(eventPage, /Find similar events/);
   assert.match(eventPage, /Find related organizations/);
-  assert.match(network, /network\.findTech/);
-  assert.match(network, /network\.findArtists/);
+  assert.match(network, /label=\{copy\.tech\}/);
+  assert.match(networkCopy, /Find tech professionals/);
+  assert.match(network, /label=\{copy\.artists\}/);
+  assert.match(networkCopy, /Find artists/);
   assert.match(network, /Find artists working in arts and culture/);
-  assert.match(network, /network\.findMentors/);
-  assert.match(uiCopy.en.network.findTech, /Find tech professionals/);
-  assert.match(uiCopy.en.network.findArtists, /Find artists/);
-  assert.match(uiCopy.en.network.findMentors, /Find mentors/);
+  assert.match(network, /label=\{copy\.mentors\}/);
+  assert.match(networkCopy, /Find mentors/);
 });
 
 test("contextual prompt contract does not add write actions", () => {

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import {
-  ArrowUpLeft,
   ArrowUpRight,
   BriefcaseBusiness,
   MapPin,
@@ -13,8 +12,8 @@ import {
 
 import { CommunitySignature } from "@/components/public/community-signature";
 import { ExternalImage } from "@/components/ui/external-image";
-import { useUiCopy } from "@/components/i18n/localized";
 import styles from "./network-surfaces.module.css";
+import { useNetworkCopy } from "./use-network-copy";
 
 export type Member = {
   id: string;
@@ -42,7 +41,7 @@ function getMemberName(member: Member) {
   return (
     member.display_name?.trim() ||
     [member.first_name, member.last_name].filter(Boolean).join(" ") ||
-    null
+    "Afghan Hub Member"
   );
 }
 
@@ -58,8 +57,7 @@ function getInitials(name: string) {
 type MentorshipFilter = "all" | "mentors" | "mentees";
 
 export function MemberDirectory({ members }: MemberDirectoryProps) {
-  const { language, t } = useUiCopy();
-  const Arrow = language === "en" ? ArrowUpRight : ArrowUpLeft;
+  const { language, copy } = useNetworkCopy();
   const [searchQuery, setSearchQuery] = useState("");
   const [mentorshipFilter, setMentorshipFilter] =
     useState<MentorshipFilter>("all");
@@ -83,7 +81,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
       }
 
       const searchableContent = [
-        getMemberName(member) ?? "",
+        getMemberName(member),
         member.headline,
         member.profession,
         member.company,
@@ -108,18 +106,18 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
   }
 
   return (
-    <section className="border-t border-border/70 pt-7">
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(320px,460px)] lg:items-end">
+    <section lang={language} dir={language === "en" ? "ltr" : "rtl"} className="border-t border-border/70 pt-5">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,420px)] lg:items-end">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-            {t("network.memberDirectory")}
+            {copy.memberDirectory}
           </p>
           <div className="mt-1.5 flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <h2 className="text-2xl font-bold tracking-tight text-foreground">
-              {t("network.exploreCommunity")}
+              {copy.explore}
             </h2>
             <p className="text-sm text-muted-foreground" aria-live="polite">
-              {t("network.memberCount", { count: filteredMembers.length })}
+              <b dir="ltr" className="tabular-nums">{filteredMembers.length}</b> {filteredMembers.length === 1 ? copy.member : copy.memberPlural}
             </p>
           </div>
         </div>
@@ -134,18 +132,18 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
             type="search"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            aria-label={t("network.searchMembers")}
-            placeholder={t("network.searchPlaceholder")}
+            aria-label={copy.searchLabel}
+            placeholder={copy.search}
             className={`${styles.search} w-full border border-input bg-card py-3 ps-11 pe-4 text-sm text-foreground placeholder:text-muted-foreground hover:border-primary`}
           />
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label={t("network.mentorship")}>
+      <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label={copy.availability}>
         {[
-          { value: "all", label: t("network.allMembers") },
-          { value: "mentors", label: t("network.openToMentoring") },
-          { value: "mentees", label: t("network.lookingForMentor") },
+          { value: "all", label: copy.all },
+          { value: "mentors", label: copy.mentorFilter },
+          { value: "mentees", label: copy.menteeFilter },
         ].map((option) => {
           const selected = mentorshipFilter === option.value;
 
@@ -172,13 +170,13 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
       {filteredMembers.length > 0 ? (
         <div className="mt-4 grid items-start gap-3 md:grid-cols-2">
           {filteredMembers.map((member) => {
-            const memberName = getMemberName(member) ?? t("network.memberFallback");
+            const memberName = getMemberName(member);
             const location = [member.city, member.province_state, member.country]
               .filter(Boolean)
               .join(", ");
-            const professionalDetails = member.profession && member.company
-              ? t("network.atCompany", { profession: member.profession, company: member.company })
-              : member.profession ?? member.company ?? "";
+            const professionalDetails = [member.profession, member.company]
+              .filter(Boolean)
+              .join(" at ");
 
             return (
               <Link
@@ -214,12 +212,12 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                         </p>
                       ) : (
                         <p className="mt-0.5 text-sm leading-5 text-muted-foreground">
-                          {t("network.communityMember")}
+                          {copy.communityMember}
                         </p>
                       )}
                     </div>
 
-                    <Arrow
+                    <ArrowUpRight
                       aria-hidden="true"
                       data-profile-arrow
                       className="mt-1 size-4 shrink-0 text-muted-foreground"
@@ -234,7 +232,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                             aria-hidden="true"
                             className="mt-0.5 size-3.5 shrink-0 text-primary"
                           />
-                          <span className="min-w-0 truncate">{professionalDetails}</span>
+                          <span dir="auto" className="min-w-0 truncate">{professionalDetails}</span>
                         </div>
                       ) : null}
 
@@ -244,7 +242,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                             aria-hidden="true"
                             className="mt-0.5 size-3.5 shrink-0 text-primary"
                           />
-                          <span className="min-w-0 truncate">{location}</span>
+                          <span dir="auto" className="min-w-0 truncate">{location}</span>
                         </div>
                       ) : null}
                     </div>
@@ -256,12 +254,12 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                     <div className="relative mt-3 flex flex-wrap gap-1.5 border-t border-border/70 pt-3">
                       {member.open_to_mentoring ? (
                         <span className="rounded-full border border-primary/15 bg-primary/[0.07] px-2.5 py-1 text-[0.7rem] font-semibold text-primary">
-                          {t("network.openToMentoring")}
+                          {copy.mentorFilter}
                         </span>
                       ) : null}
                       {member.looking_for_mentor ? (
                         <span className="rounded-full border border-border bg-background px-2.5 py-1 text-[0.7rem] font-semibold text-foreground">
-                          {t("network.lookingForMentor")}
+                          {copy.menteeFilter}
                         </span>
                       ) : null}
                       {member.skills.slice(0, 2).map((skill) => (
@@ -289,13 +287,13 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
           </span>
           <h2 className="relative mt-4 text-lg font-bold text-foreground">
             {hasSearchQuery || hasMentorshipFilter
-              ? t("network.noMatch")
-              : t("network.noMembers")}
+              ? copy.noMatching
+              : copy.noPublic}
           </h2>
           <p className="relative mt-2 max-w-md text-sm leading-6 text-muted-foreground">
             {hasSearchQuery || hasMentorshipFilter
-              ? t("network.noMatchBody")
-              : t("network.noMembersBody")}
+              ? copy.tryAnother
+              : copy.growing}
           </p>
           {hasSearchQuery || hasMentorshipFilter ? (
             <button
@@ -303,7 +301,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
               onClick={clearFilters}
               className={`relative mt-5 inline-flex items-center justify-center border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted ${styles.control}`}
             >
-              {t("network.clearFilters")}
+              {copy.clear}
             </button>
           ) : null}
         </div>
