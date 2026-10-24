@@ -36,22 +36,22 @@ Translation status legend:
 | `/profile` | Translated | Identity, work/skills, mentorship, location and link sections, hints, placeholders, fallbacks and submit state localized in this audit; server action error strings and the avatar/profile-strength widgets remain English. |
 | `/dashboard` | Partial | Greeting, workspace header, next-step guidance and navigation are localized; recommended/suggested opportunity blocks remain English. |
 | `/network` | Translated | Heading, stats, directory, mentorship filters, connection actions and empty states localized in this audit; signed-in browser pass outstanding. |
-| `/search` | English-only | Search headings, filters, counts, empty and error states remain English. |
-| `/opportunities` | English-only | Listing heading, filters, cards, empty and error states. |
+| `/search` | Translated | Headings, intent selector and goal labels, keyword field, result counts, per-intent empty states, intent reasons, result type labels, goal cards and explorer card localized in this audit; server error strings and result titles stay as stored. |
+| `/opportunities` | Translated | Heading, search/type/format/city filters, counts, cards, localized type labels and locale-aware deadlines, empty and error states localized in this audit. |
 | `/opportunities/new` | English-only | Create form, validation and review notice. |
-| `/opportunities/[slug]` | English-only | Detail, deadline states, related cards and calls to action. |
+| `/opportunities/[slug]` | Translated | Detail chrome, status notices, deadline states, save/edit/delete controls, related cards and assistant prompts localized in this audit; server `error` query text stays English. |
 | `/opportunities/[slug]/edit` | English-only | Editor form and status copy. |
-| `/businesses` | English-only | Listing heading, category/city filters and empty states. |
+| `/businesses` | Translated | Heading, search/category/city filters, verification and hiring filters, counts, directory rows, empty and error states localized in this audit. |
 | `/businesses/new` | Translated | Full create form, hints, placeholders and submit state localized in this audit; server error banner text stays English. |
-| `/businesses/[slug]` | English-only | Detail, hiring state and calls to action. |
+| `/businesses/[slug]` | Translated | Detail chrome, status notices, hiring and verification states, contact sidebar, services, edit/verify controls and image alt text localized in this audit. |
 | `/businesses/[slug]/edit` | Translated | Editor headings, fields, hints and save state localized; media-upload chrome and server error banner remain English. |
-| `/organizations` | English-only | Listing heading, filters and empty states. |
+| `/organizations` | Translated | Heading, search/type/city filters, volunteer and verification filters, counts, directory rows, empty and error states localized in this audit. |
 | `/organizations/new` | Translated | Create form plus localized type options (canonical English values preserved) in this audit; server error banner text stays English. |
-| `/organizations/[slug]` | English-only | Detail, volunteer state and calls to action. |
+| `/organizations/[slug]` | Translated | Detail chrome, status notices, mission/programs sections, volunteer state, contact sidebar, edit/verify controls and image alt text localized in this audit. |
 | `/organizations/[slug]/edit` | Translated | Editor headings, fields, volunteer toggle and save state localized; media-upload chrome and server error banner remain English. |
-| `/events` | English-only | Listing heading, search, format filters and empty states. |
+| `/events` | Translated | Heading, search/format/city filters, counts, list and calendar views, weekday and month labels, localized event times, empty and error states localized in this audit. |
 | `/events/new` | Translated | Create form, review notice, date/time picker copy and submit state localized in this audit; server error banner text stays English. |
-| `/events/[slug]` | English-only | Detail, registration states and errors. |
+| `/events/[slug]` | Translated | Detail chrome, status notices, registration states and confirmations, attendance counts, calendar downloads, related cards and assistant prompts localized in this audit; server RSVP `error` text stays English. |
 | `/events/[slug]/edit` | Translated | Editor headings, fields, date/time picker copy and save state localized; server error banner text stays English. |
 | `/events/[slug]/attendees` | English-only | Attendee heading, privacy note and empty states. |
 | `/events/my` | English-only | Registered events heading, empty states and actions. |
@@ -83,6 +83,30 @@ forms for businesses, organizations and events. `src/components/i18n/workspace.t
   pending labels.
 - The event date/time picker now reads its copy and display date from the same catalog and
   locale-aware formatter instead of hardcoded English.
+
+## Discovery catalog (this slice)
+
+`src/lib/i18n/browse-copy.ts` is a third typed catalog for search, the four directories and their
+member-facing detail pages. `src/components/i18n/browse.tsx` provides `<B>`, `useBrowseCopy`,
+`BrowseField`, `BrowseSelect`, `BrowseCheckbox`, `BDate`, `BDatePhrase`, `BWeekdays` and `BNumber`.
+
+- Field labels, placeholders and filter options come from the catalog, so server pages never ship
+  English placeholder or aria copy.
+- `BDate` renders Gregorian dates with locale month names and digits (`monthYear`, `shortDate`,
+  `datetime`, `time`, `monthDay`, `monthShort`, `day`); the events calendar weekday headings are
+  generated with `Intl`, not hardcoded.
+- Result counts and dates interpolate through `formatSiteNumber`/`formatSiteDate`, so Farsi and
+  Pashto get local digits.
+- Stored canonical values (opportunity `type`, submission status, organization type) keep their
+  English token in the database; `opportunityTypeKey` maps known tokens to catalog copy and leaves
+  unknown or user-authored values untouched.
+- Back arrows and `ArrowUpRight` affordances mirror under RTL with `rtl:rotate-180` and
+  `rtl:-scale-x-100`; arrows previously pointed the wrong way in Farsi and Pashto.
+- Email and phone values render `dir="ltr"` inside RTL layouts; cover/logo images use empty alt
+  text because the adjacent heading already names the listing.
+- `tests/browse-copy-contract.test.mjs` enforces key parity, non-empty values, no English fallback,
+  interpolation, opportunity-type mapping, catalog usage on every localized route, removal of the
+  previously hardcoded English chrome, and locale-aware date/number helpers.
 
 Metadata and page titles are **English-only** on every route. Language preference is currently a
 client-side preference, so server `generateMetadata` cannot know it. Localizing titles and social
@@ -150,15 +174,17 @@ Fixes made in this pass:
   events, submissions, messaging, moderation and connection flows — but those journeys assert
   English copy on the authenticated surfaces. A signed-in pass that switches each of those
   routes through Farsi and Pashto is still outstanding.
-- Localize the remaining listing/detail surfaces, search, moderation, event registration,
-  attendee lists, member detail, 404/error boundaries and the avatar/profile-strength and
-  media-upload widgets listed as English-only or partial above.
+- Localize the remaining surfaces: opportunity create/edit, moderation, event attendee lists and
+  `/events/my`, member detail, 404/error boundaries, the avatar/profile-strength widgets and the
+  business/organization media-upload controls, all listed as English-only or partial above.
 - Localize server-side action error strings. They currently travel as English text in the `error`
   query parameter; converting them to message codes is a separate change.
 - Localize page titles/metadata through a deliberate routing or cookie decision.
 - Native Farsi and Pashto editorial sign-off recorded with reviewer, date and commit SHA.
 - Full `npm run lint`, `npx tsc --noEmit`, `node --test tests/*.test.mjs`, `npm run build` and the
   CI browser workflows on the final candidate SHA. On `685644b` these pass locally, and the CI
-  `build`, `typography`, `browser`, `journeys` and `Independent acceptance` jobs all pass.
+  `build`, `typography`, `browser`, `journeys` and `Independent acceptance` jobs all pass. The
+  discovery catalog slice is verified locally and by CI on its own candidate commit, which is
+  recorded in the pull request.
 
 Issue #514 remains open. This document records partial, code-backed progress, not completion.

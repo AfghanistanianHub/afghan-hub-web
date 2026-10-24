@@ -1,19 +1,25 @@
+"use client";
+
 import { BadgeCheck, ShieldCheck } from "lucide-react";
 
-export const VERIFICATION_EXPLANATION =
-  "Afghan Hub administrators have marked this listing as verified. Verification is not an endorsement or guarantee.";
+import { B, useBrowseCopy } from "@/components/i18n/browse";
 
 type VerificationBadgeProps = {
   compact?: boolean;
 };
 
 export function VerificationBadge({ compact = false }: VerificationBadgeProps) {
+  const { language, t } = useBrowseCopy();
+  const explanation = t("verification.explanation");
+  const label = t("verification.aria", { explanation });
+
   if (compact) {
     return (
       <span
+        lang={language}
         className="inline-flex shrink-0 items-center text-primary"
-        aria-label={`Verified listing. ${VERIFICATION_EXPLANATION}`}
-        title={VERIFICATION_EXPLANATION}
+        aria-label={label}
+        title={explanation}
       >
         <BadgeCheck aria-hidden="true" className="size-4" />
       </span>
@@ -22,11 +28,12 @@ export function VerificationBadge({ compact = false }: VerificationBadgeProps) {
 
   return (
     <span
+      lang={language}
       className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-background/90 px-3 py-1 text-xs font-semibold text-primary"
-      title={VERIFICATION_EXPLANATION}
+      title={explanation}
     >
       <BadgeCheck aria-hidden="true" className="size-4" />
-      Verified listing
+      <B k="verification.label" />
     </span>
   );
 }
@@ -38,8 +45,8 @@ export function VerificationNote() {
         <ShieldCheck aria-hidden="true" className="size-4" />
       </span>
       <p>
-        <span className="font-semibold text-foreground">What verification means: </span>
-        {VERIFICATION_EXPLANATION}
+        <B k="verification.meaning" className="font-semibold text-foreground" />{" "}
+        <B k="verification.explanation" />
       </p>
     </div>
   );

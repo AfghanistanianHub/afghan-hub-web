@@ -25,7 +25,9 @@ test("member search rechecks public and onboarding eligibility", () => {
 test("member search never renders an email-like title", () => {
   assert.match(source, /function getSafeResultTitle/);
   assert.match(source, /\/\\S\+@\\S\+\\\.\\S\+\//);
-  assert.match(source, /return "Afghan Hub member"/);
-  assert.match(source, /\{getSafeResultTitle\(result\)\}/);
+  // Email-like member names resolve to catalogue copy, not the stored value.
+  assert.match(source, /return null;/);
+  assert.match(source, /search\.memberFallback/);
+  assert.match(source, /\{safeTitle \?\? <B k="search\.memberFallback" \/>\}/);
   assert.doesNotMatch(source, /<h2[^>]*>\s*\{result\.title\}/);
 });
