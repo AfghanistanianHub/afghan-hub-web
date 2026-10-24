@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { useFormStatus } from "react-dom";
 import { readSiteLanguagePreference, subscribeSiteLanguagePreference, type SiteLanguage } from "@/lib/i18n/site-language";
 import { AuthBrand } from "@/components/auth/auth-brand";
 import { SupportLinks } from "@/components/public/support-links";
@@ -34,6 +35,7 @@ const labels = {
     "new": "New to Afghan Hub? ",
     "newAccount": "Create an account",
     "google": "Continue with Google",
+    "googleConnecting": "Connecting to Google…",
     "or": "or"
   },
   "fa": {
@@ -57,6 +59,7 @@ const labels = {
     "new": "تازه به افغان هاب آمده‌اید؟ ",
     "newAccount": "ایجاد حساب کاربری",
     "google": "ادامه با گوگل",
+    "googleConnecting": "در حال اتصال به گوگل…",
     "or": "یا"
   },
   "ps": {
@@ -80,6 +83,7 @@ const labels = {
     "new": "افغان هاب ته نوي یاست؟ ",
     "newAccount": "نوی حساب جوړ کړئ",
     "google": "د Google سره دوام ورکړئ",
+    "googleConnecting": "د Google سره نښلول کیږي…",
     "or": "یا"
   }
 } as const satisfies Record<SiteLanguage, Record<string,string>>;
@@ -113,6 +117,26 @@ const authFeedback = {
     ps: "حساب جوړ شو. که د برېښنالیک تایید اړین وي، خپل برېښنالیک وګورئ.",
   },
 } as const;
+
+function GoogleSignInButton({ label, pendingLabel }: { label: string; pendingLabel: string }) {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      aria-disabled={pending}
+      className="flex w-full items-center justify-center gap-3 rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 font-semibold text-foreground transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary disabled:cursor-wait disabled:opacity-60"
+    >
+      <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5">
+        <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.28 1.48-1.13 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z" />
+        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z" />
+        <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z" />
+        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z" />
+      </svg>
+      <span role="status" aria-live="polite">{pending ? pendingLabel : label}</span>
+    </button>
+  );
+}
 
 function feedbackText(value: string, language: SiteLanguage): string {
   if (language === "en") return value;
@@ -169,18 +193,7 @@ export function LocalizedLoginContent({ error, message, mode }: { error?: string
 
           <form action={signInWithGoogle} className="mt-7">
             <input type="hidden" name="flow" value={joining ? "join" : "login"} />
-            <button
-              type="submit"
-              className="flex w-full items-center justify-center gap-3 rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 font-semibold text-foreground transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-            >
-              <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5">
-                <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.28 1.48-1.13 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z" />
-                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z" />
-                <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z" />
-                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z" />
-              </svg>
-              <span>{t.google}</span>
-            </button>
+            <GoogleSignInButton label={t.google} pendingLabel={t.googleConnecting} />
           </form>
 
           <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-muted-foreground" aria-hidden="true">
