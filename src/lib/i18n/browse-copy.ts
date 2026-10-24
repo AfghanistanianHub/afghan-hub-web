@@ -459,6 +459,14 @@ export const browseCopy = {
     "opportunityAction.errorGeneric":
       "That action could not be completed. Please refresh and try again.",
 
+    "action.errorGeneric":
+      "That action could not be completed. Please refresh and try again.",
+    "verificationAction.errorUpdateFailed":
+      "We could not update verification. Please try again.",
+    "eventAction.errorCannotDelete": "You can only delete events you created.",
+    "eventAction.errorDeleteFailed":
+      "We could not delete the event. Please try again.",
+
     "delete.opportunityConfirm":
       "Are you sure you want to delete this opportunity? This action cannot be undone.",
     "delete.eventConfirm":
@@ -908,6 +916,15 @@ export const browseCopy = {
       "به‌روزرسانی فرصت‌های ذخیره‌شده امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
     "opportunityAction.errorGeneric":
       "این اقدام انجام نشد. لطفاً صفحه را بازخوانی کنید و دوباره تلاش کنید.",
+
+    "action.errorGeneric":
+      "این اقدام انجام نشد. لطفاً صفحه را بازخوانی کنید و دوباره تلاش کنید.",
+    "verificationAction.errorUpdateFailed":
+      "به‌روزرسانی وضعیت تأیید امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "eventAction.errorCannotDelete":
+      "فقط رویدادهایی را می‌توانید حذف کنید که خودتان ایجاد کرده‌اید.",
+    "eventAction.errorDeleteFailed":
+      "حذف این رویداد امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
 
     "delete.opportunityConfirm":
       "آیا مطمئن هستید که می‌خواهید این فرصت را حذف کنید؟ این عمل قابل بازگشت نیست.",
@@ -1360,6 +1377,15 @@ export const browseCopy = {
     "opportunityAction.errorGeneric":
       "دا کار بشپړ نه شو. مهرباني وکړئ پاڼه بیا پرانیزئ او بیا هڅه وکړئ.",
 
+    "action.errorGeneric":
+      "دا کار بشپړ نه شو. مهرباني وکړئ پاڼه بیا پرانیزئ او بیا هڅه وکړئ.",
+    "verificationAction.errorUpdateFailed":
+      "د تایید حالت تازه نه شو. مهرباني وکړئ بیا هڅه وکړئ.",
+    "eventAction.errorCannotDelete":
+      "یوازې هغه پېښې ړنګولای شئ چې تاسو جوړې کړې دي.",
+    "eventAction.errorDeleteFailed":
+      "دا پېښه ړنګه نه شوه. مهرباني وکړئ بیا هڅه وکړئ.",
+
     "delete.opportunityConfirm":
       "ایا ډاډه یاست چې غواړئ دا فرصت ړنګ کړئ؟ دا کار بېرته نه شي کېدای.",
     "delete.eventConfirm":
@@ -1399,6 +1425,27 @@ const opportunityActionErrorKeys: Record<string, BrowseCopyKey> = {
 export function opportunityActionErrorKey(code: string | undefined): BrowseCopyKey {
   if (!code) return "opportunityAction.errorGeneric";
   return opportunityActionErrorKeys[code] ?? "opportunityAction.errorGeneric";
+}
+
+const eventActionErrorKeys: Record<string, BrowseCopyKey> = {
+  "cannot-delete": "eventAction.errorCannotDelete",
+  "delete-failed": "eventAction.errorDeleteFailed",
+};
+
+/** Detail-page actions on an event report failures as stable codes. */
+export function eventActionErrorKey(code: string | undefined): BrowseCopyKey {
+  if (!code) return "action.errorGeneric";
+  return eventActionErrorKeys[code] ?? "action.errorGeneric";
+}
+
+const verificationActionErrorKeys: Record<string, BrowseCopyKey> = {
+  "verification-failed": "verificationAction.errorUpdateFailed",
+};
+
+/** Business and organization verification toggle failures. */
+export function verificationActionErrorKey(code: string | undefined): BrowseCopyKey {
+  if (!code) return "action.errorGeneric";
+  return verificationActionErrorKeys[code] ?? "action.errorGeneric";
 }
 
 export function opportunityTypeKey(value: string | null | undefined): BrowseCopyKey | null {

@@ -19,12 +19,13 @@ import {
   UsersRound,
 } from "lucide-react";
 import { B, BDate } from "@/components/i18n/browse";
+import { eventActionErrorKey } from "@/lib/i18n/browse-copy";
 import { createClient } from "@/lib/supabase/server";
 
-type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ rsvp?: string }> };
+type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ rsvp?: string; error?: string }> };
 
 export default async function EventPage({ params, searchParams }: Props) {
-  const [{ slug }, { rsvp }] = await Promise.all([params, searchParams]);
+  const [{ slug }, { rsvp, error: actionError }] = await Promise.all([params, searchParams]);
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const { data: event, error } = await supabase.from("events").select(`*,organization:organizations (name,slug)`).eq("slug", slug).single();
@@ -66,6 +67,7 @@ export default async function EventPage({ params, searchParams }: Props) {
       {rsvp === "cancelled" ? <div role="status" aria-live="polite" className="rounded-[var(--radius)] border border-border bg-muted/60 p-4 text-sm text-muted-foreground"><B k="eventDetail.rsvpCancelled" /></div> : null}
       {rsvp === "full" || rsvp === "started" ? <div role="status" aria-live="polite" className="rounded-[var(--radius)] border border-accent/50 bg-accent/40 p-4 text-sm text-accent-foreground"><B k={rsvp === "full" ? "eventDetail.rsvpFull" : "eventDetail.rsvpStarted"} /></div> : null}
       {rsvp === "error" ? <div role="alert" aria-live="assertive" className="rounded-[var(--radius)] border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"><B k="eventDetail.rsvpError" /></div> : null}
+      {actionError ? <div role="alert" aria-live="assertive" className="rounded-[var(--radius)] border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"><B k={eventActionErrorKey(actionError)} /></div> : null}
       {event.status !== "published" ? <div role="status" aria-live="polite" className="rounded-[var(--radius)] border border-accent/50 bg-accent/40 p-4 text-sm leading-6 text-accent-foreground">{event.status === "draft" ? <B k="eventDetail.draft" /> : event.moderation_note ? <B k="eventDetail.rejectedReason" values={{ reason: event.moderation_note }} /> : <B k="eventDetail.rejected" />}</div> : null}
     </div>
 

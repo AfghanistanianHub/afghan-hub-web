@@ -15,6 +15,7 @@ import {
 import { ExternalImage } from "@/components/ui/external-image";
 import { VerificationBadge, VerificationNote } from "@/components/ui/verification-badge";
 import { B } from "@/components/i18n/browse";
+import { verificationActionErrorKey } from "@/lib/i18n/browse-copy";
 import { getMyAccessContext } from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
 import { cleanPublicText } from "@/lib/public-content";
@@ -33,7 +34,7 @@ export default async function BusinessPage({params,searchParams}:BusinessPagePro
  const location=[business.city,business.province_state,business.country].filter(Boolean).join(", ");
  return <main data-illustration-focus-scope className="px-4 py-8 md:px-8"><div className="mx-auto max-w-6xl">
   <Link href="/businesses" className="inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-medium text-primary transition hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"><ArrowLeft aria-hidden="true" className="size-4 rtl:rotate-180"/><B k="detail.backToBusinesses" /></Link>
-  {actionError?<div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{actionError}</div>:null}
+  {actionError?<div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"><B k={verificationActionErrorKey(actionError)} /></div>:null}
   {business.status!=="published"?<div role="status" aria-live="polite" className="mt-6 rounded-[var(--radius)] border border-accent/50 bg-accent/40 p-4 text-sm leading-6 text-accent-foreground">{business.status==="draft"?<B k="businessDetail.draft" />:business.moderation_note?<B k="businessDetail.rejectedReason" values={{reason:business.moderation_note}} />:<B k="businessDetail.rejected" />}</div>:null}
 
   <section data-illustration-trigger className="relative mt-6 overflow-hidden rounded-sm border border-border bg-card">

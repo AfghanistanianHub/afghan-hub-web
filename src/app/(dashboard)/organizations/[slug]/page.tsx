@@ -16,6 +16,7 @@ import {
 import { ExternalImage } from "@/components/ui/external-image";
 import { VerificationBadge, VerificationNote } from "@/components/ui/verification-badge";
 import { B } from "@/components/i18n/browse";
+import { verificationActionErrorKey } from "@/lib/i18n/browse-copy";
 import { getMyAccessContext } from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
 
@@ -31,7 +32,7 @@ export default async function OrganizationPage({params,searchParams}:Organizatio
  const location=[organization.city,organization.province_state,organization.country].filter(Boolean).join(", ");
  return <main data-illustration-focus-scope className="px-4 py-8 md:px-8"><div className="mx-auto max-w-6xl">
   <Link href="/organizations" className="inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-medium text-primary transition hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"><ArrowLeft aria-hidden="true" className="size-4 rtl:rotate-180"/><B k="detail.backToOrganizations" /></Link>
-  {actionError?<div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{actionError}</div>:null}
+  {actionError?<div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"><B k={verificationActionErrorKey(actionError)} /></div>:null}
   {organization.status!=="published"?<div role="status" aria-live="polite" className="mt-6 rounded-[var(--radius)] border border-accent/50 bg-accent/40 p-4 text-sm leading-6 text-accent-foreground">{organization.status==="draft"?<B k="organizationDetail.draft" />:organization.moderation_note?<B k="organizationDetail.rejectedReason" values={{reason:organization.moderation_note}} />:<B k="organizationDetail.rejected" />}</div>:null}
 
   <section data-illustration-trigger className="relative mt-6 overflow-hidden rounded-sm border border-border bg-card">

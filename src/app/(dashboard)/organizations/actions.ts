@@ -40,7 +40,7 @@ export async function createOrganization(formData: FormData) {
   const name = getOptionalString(formData, "name");
 
   if (!name) {
-    redirect("/organizations/new?error=Organization%20name%20is%20required");
+    redirect("/organizations/new?error=name-required");
   }
 
   const shortDescription = getOptionalString(
@@ -63,11 +63,11 @@ export async function createOrganization(formData: FormData) {
     formData.get("is_accepting_volunteers") === "on";
 
   if (websiteUrl && !isValidHttpUrl(websiteUrl)) {
-    redirect("/organizations/new?error=Enter%20a%20valid%20website%20URL");
+    redirect("/organizations/new?error=url-invalid");
   }
 
   if (email && !isValidEmail(email)) {
-    redirect("/organizations/new?error=Enter%20a%20valid%20email%20address");
+    redirect("/organizations/new?error=email-invalid");
   }
 
   const programs =
@@ -116,9 +116,7 @@ export async function createOrganization(formData: FormData) {
   });
 
   if (error) {
-    redirect(
-      "/organizations/new?error=We%20could%20not%20create%20the%20organization.%20Please%20try%20again.",
-    );
+    redirect("/organizations/new?error=create-failed");
   }
 
   redirect(`/organizations/${slug}`);
@@ -141,22 +139,18 @@ export async function updateOrganization(formData: FormData) {
   const name = getOptionalString(formData, "name");
 
   if (!slug || !name) {
-    redirect("/organizations?error=Missing%20organization%20information");
+    redirect("/organizations");
   }
 
   const websiteUrl = getOptionalString(formData, "website_url");
   const email = getOptionalString(formData, "email");
 
   if (websiteUrl && !isValidHttpUrl(websiteUrl)) {
-    redirect(
-      `/organizations/${slug}/edit?error=Enter%20a%20valid%20website%20URL`,
-    );
+    redirect(`/organizations/${slug}/edit?error=url-invalid`);
   }
 
   if (email && !isValidEmail(email)) {
-    redirect(
-      `/organizations/${slug}/edit?error=Enter%20a%20valid%20email%20address`,
-    );
+    redirect(`/organizations/${slug}/edit?error=email-invalid`);
   }
 
   const programs =
@@ -191,9 +185,7 @@ export async function updateOrganization(formData: FormData) {
     .eq("owner_id", user.id);
 
   if (error) {
-    redirect(
-      `/organizations/${slug}/edit?error=We%20could%20not%20save%20the%20organization.%20Please%20try%20again.`,
-    );
+    redirect(`/organizations/${slug}/edit?error=update-failed`);
   }
 
   redirect(`/organizations/${slug}`);
@@ -236,9 +228,7 @@ export async function setOrganizationVerification(formData: FormData) {
     .maybeSingle();
 
   if (error || !organization) {
-    redirect(
-      `/organizations/${slug}?error=We%20could%20not%20update%20verification.%20Please%20try%20again.`,
-    );
+    redirect(`/organizations/${slug}?error=verification-failed`);
   }
 
   revalidatePath("/organizations");

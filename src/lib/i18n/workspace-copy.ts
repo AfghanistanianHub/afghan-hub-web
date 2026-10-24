@@ -184,6 +184,60 @@ export const workspaceCopy = {
     "opportunityForm.errorGeneric":
       "Something went wrong with this form. Please review the fields and try again.",
 
+    "eventForm.errorTitleRequired": "Enter a title for this event.",
+    "eventForm.errorSummaryRequired": "Enter a short summary.",
+    "eventForm.errorDescriptionRequired":
+      "Describe the event so members know what to expect.",
+    "eventForm.errorStartInvalid": "Enter a valid start date and time.",
+    "eventForm.errorEndInvalid": "Enter a valid end date and time.",
+    "eventForm.errorEndBeforeStart":
+      "The end date cannot be before the start date.",
+    "eventForm.errorOrganizationInvalid":
+      "Choose an organization you own, or leave the field empty.",
+    "eventForm.errorUrlInvalid":
+      "Enter a full event link that starts with http:// or https://.",
+    "eventForm.errorCapacityInvalid":
+      "Enter a capacity of one or more, or leave the field empty.",
+    "eventForm.errorCreateFailed":
+      "We could not create the event. Please try again.",
+    "eventForm.errorUpdateFailed":
+      "We could not save the event. Please try again.",
+    "eventForm.errorIncomplete":
+      "Complete the title, summary and description before saving.",
+    "eventForm.errorGeneric":
+      "Something went wrong with this form. Please review the fields and try again.",
+
+    "businessForm.errorNameInvalid":
+      "Business name must be 2–120 characters.",
+    "businessForm.errorCategoryInvalid": "Enter a business category.",
+    "businessForm.errorShortDescriptionTooLong":
+      "Short description must be 200 characters or fewer.",
+    "businessForm.errorUrlInvalid": "Enter a valid website URL.",
+    "businessForm.errorEmailInvalid": "Enter a valid email address.",
+    "businessForm.errorServicesInvalid":
+      "Add up to 20 services with 100 characters each.",
+    "businessForm.errorCreateFailed":
+      "We could not create the business. Please try again.",
+    "businessForm.errorUpdateFailed":
+      "We could not save the business. Please try again.",
+    "businessForm.errorSlugExhausted":
+      "We could not create a unique business link. Try a different name.",
+    "businessForm.errorGeneric":
+      "Something went wrong with this form. Please review the fields and try again.",
+
+    "organizationForm.errorNameRequired":
+      "Organization name is required.",
+    "organizationForm.errorUrlInvalid": "Enter a valid website URL.",
+    "organizationForm.errorEmailInvalid": "Enter a valid email address.",
+    "organizationForm.errorMissingInfo":
+      "Choose the organization again before saving.",
+    "organizationForm.errorCreateFailed":
+      "We could not create the organization. Please try again.",
+    "organizationForm.errorUpdateFailed":
+      "We could not save the organization. Please try again.",
+    "organizationForm.errorGeneric":
+      "Something went wrong with this form. Please review the fields and try again.",
+
     "deadline.select": "Select a deadline",
     "deadline.dialog": "Choose deadline",
     "deadline.clear": "Clear",
@@ -434,6 +488,61 @@ export const workspaceCopy = {
     "opportunityForm.errorIncomplete":
       "پیش از ذخیره، عنوان، خلاصه و توضیحات را کامل کنید.",
     "opportunityForm.errorGeneric":
+      "در این فرم مشکلی رخ داد. لطفاً فیلدها را بررسی کنید و دوباره تلاش کنید.",
+
+    "eventForm.errorTitleRequired": "عنوانی برای این رویداد وارد کنید.",
+    "eventForm.errorSummaryRequired": "خلاصه‌ای کوتاه وارد کنید.",
+    "eventForm.errorDescriptionRequired":
+      "رویداد را توصیف کنید تا اعضا بدانند چه انتظاری داشته باشند.",
+    "eventForm.errorStartInvalid":
+      "یک تاریخ و ساعت شروع معتبر وارد کنید.",
+    "eventForm.errorEndInvalid": "یک تاریخ و ساعت پایان معتبر وارد کنید.",
+    "eventForm.errorEndBeforeStart":
+      "تاریخ پایان نمی‌تواند پیش از تاریخ شروع باشد.",
+    "eventForm.errorOrganizationInvalid":
+      "سازمانی را انتخاب کنید که مالک آن هستید، یا این فیلد را خالی بگذارید.",
+    "eventForm.errorUrlInvalid":
+      "پیوند کامل رویداد را وارد کنید که با http:// یا https:// آغاز شود.",
+    "eventForm.errorCapacityInvalid":
+      "ظرفیتی برابر با یک یا بیشتر وارد کنید، یا این فیلد را خالی بگذارید.",
+    "eventForm.errorCreateFailed":
+      "ایجاد این رویداد امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "eventForm.errorUpdateFailed":
+      "ذخیره این رویداد امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "eventForm.errorIncomplete":
+      "پیش از ذخیره، عنوان، خلاصه و توضیحات را کامل کنید.",
+    "eventForm.errorGeneric":
+      "در این فرم مشکلی رخ داد. لطفاً فیلدها را بررسی کنید و دوباره تلاش کنید.",
+
+    "businessForm.errorNameInvalid":
+      "نام کسب‌وکار باید بین ۲ تا ۱۲۰ نویسه باشد.",
+    "businessForm.errorCategoryInvalid":
+      "دسته‌بندی کسب‌وکار را وارد کنید.",
+    "businessForm.errorShortDescriptionTooLong":
+      "توضیح کوتاه باید ۲۰۰ نویسه یا کمتر باشد.",
+    "businessForm.errorUrlInvalid": "یک نشانی وب‌سایت معتبر وارد کنید.",
+    "businessForm.errorEmailInvalid": "یک نشانی ایمیل معتبر وارد کنید.",
+    "businessForm.errorServicesInvalid":
+      "حداکثر ۲۰ خدمت با ۱۰۰ نویسه برای هر کدام اضافه کنید.",
+    "businessForm.errorCreateFailed":
+      "ایجاد این کسب‌وکار امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "businessForm.errorUpdateFailed":
+      "ذخیره این کسب‌وکار امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "businessForm.errorSlugExhausted":
+      "نشانی یکتایی برای این کسب‌وکار پیدا نشد. نام دیگری را امتحان کنید.",
+    "businessForm.errorGeneric":
+      "در این فرم مشکلی رخ داد. لطفاً فیلدها را بررسی کنید و دوباره تلاش کنید.",
+
+    "organizationForm.errorNameRequired": "نام سازمان الزامی است.",
+    "organizationForm.errorUrlInvalid": "یک نشانی وب‌سایت معتبر وارد کنید.",
+    "organizationForm.errorEmailInvalid": "یک نشانی ایمیل معتبر وارد کنید.",
+    "organizationForm.errorMissingInfo":
+      "پیش از ذخیره، سازمان را دوباره انتخاب کنید.",
+    "organizationForm.errorCreateFailed":
+      "ایجاد این سازمان امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "organizationForm.errorUpdateFailed":
+      "ذخیره این سازمان امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "organizationForm.errorGeneric":
       "در این فرم مشکلی رخ داد. لطفاً فیلدها را بررسی کنید و دوباره تلاش کنید.",
 
     "deadline.select": "مهلتی را انتخاب کنید",
@@ -688,6 +797,59 @@ export const workspaceCopy = {
     "opportunityForm.errorGeneric":
       "په دې فورمې کې ستونزه رامنځته شوه. مهرباني وکړئ ساحې وګورئ او بیا هڅه وکړئ.",
 
+    "eventForm.errorTitleRequired": "د دې پېښې لپاره سرلیک ولیکئ.",
+    "eventForm.errorSummaryRequired": "لنډیز ولیکئ.",
+    "eventForm.errorDescriptionRequired":
+      "پېښه تشریح کړئ تر څو غړي پوه شي چې څه تمه ولري.",
+    "eventForm.errorStartInvalid": "د پیل سمه نېټه او وخت ولیکئ.",
+    "eventForm.errorEndInvalid": "د پای سمه نېټه او وخت ولیکئ.",
+    "eventForm.errorEndBeforeStart":
+      "د پای نېټه نه شي کولای چې د پیل له نېټې مخکې وي.",
+    "eventForm.errorOrganizationInvalid":
+      "هغه سازمان وټاکئ چې تاسو یې مالک یاست، یا دا ساحه خالي پرېږدئ.",
+    "eventForm.errorUrlInvalid":
+      "د پېښې بشپړه لینک ولیکئ چې په http:// یا https:// پیل کېږي.",
+    "eventForm.errorCapacityInvalid":
+      "د یو یا ډېرو لپاره ظرفیت ولیکئ، یا دا ساحه خالي پرېږدئ.",
+    "eventForm.errorCreateFailed":
+      "دا پېښه جوړه نه شوه. مهرباني وکړئ بیا هڅه وکړئ.",
+    "eventForm.errorUpdateFailed":
+      "دا پېښه خوندي نه شوه. مهرباني وکړئ بیا هڅه وکړئ.",
+    "eventForm.errorIncomplete":
+      "له خوندي کولو دمخه سرلیک، لنډیز او تشریح بشپړ کړئ.",
+    "eventForm.errorGeneric":
+      "په دې فورمې کې ستونزه رامنځته شوه. مهرباني وکړئ ساحې وګورئ او بیا هڅه وکړئ.",
+
+    "businessForm.errorNameInvalid":
+      "د سوداګرۍ نوم باید له ۲ تر ۱۲۰ توري وي.",
+    "businessForm.errorCategoryInvalid": "د سوداګرۍ ډله ولیکئ.",
+    "businessForm.errorShortDescriptionTooLong":
+      "لنډ تشریح باید ۲۰۰ توري یا لږ وي.",
+    "businessForm.errorUrlInvalid": "د وېبپاڼې سمه پته ولیکئ.",
+    "businessForm.errorEmailInvalid": "سم برېښنالیک ولیکئ.",
+    "businessForm.errorServicesInvalid":
+      "تر ۲۰ خدماتو پورې ورزیات کړئ، هر یو تر ۱۰۰ تورو پورې.",
+    "businessForm.errorCreateFailed":
+      "دا سوداګري جوړه نه شوه. مهرباني وکړئ بیا هڅه وکړئ.",
+    "businessForm.errorUpdateFailed":
+      "دا سوداګري خوندي نه شوه. مهرباني وکړئ بیا هڅه وکړئ.",
+    "businessForm.errorSlugExhausted":
+      "د دې سوداګرۍ لپاره ځانګړې پته ونه موندل شوه. بل نوم وآزمویئ.",
+    "businessForm.errorGeneric":
+      "په دې فورمې کې ستونزه رامنځته شوه. مهرباني وکړئ ساحې وګورئ او بیا هڅه وکړئ.",
+
+    "organizationForm.errorNameRequired": "د سازمان نوم اړین دی.",
+    "organizationForm.errorUrlInvalid": "د وېبپاڼې سمه پته ولیکئ.",
+    "organizationForm.errorEmailInvalid": "سم برېښنالیک ولیکئ.",
+    "organizationForm.errorMissingInfo":
+      "له خوندي کولو دمخه سازمان بیا وټاکئ.",
+    "organizationForm.errorCreateFailed":
+      "دا سازمان جوړ نه شو. مهرباني وکړئ بیا هڅه وکړئ.",
+    "organizationForm.errorUpdateFailed":
+      "دا سازمان خوندي نه شو. مهرباني وکړئ بیا هڅه وکړئ.",
+    "organizationForm.errorGeneric":
+      "په دې فورمې کې ستونزه رامنځته شوه. مهرباني وکړئ ساحې وګورئ او بیا هڅه وکړئ.",
+
     "deadline.select": "پای نېټه وټاکئ",
     "deadline.dialog": "د پای نېټې ټاکل",
     "deadline.clear": "پاکول",
@@ -804,4 +966,55 @@ const opportunityFormErrorKeys: Record<string, WorkspaceCopyKey> = {
 export function opportunityFormErrorKey(code: string | undefined): WorkspaceCopyKey {
   if (!code) return "opportunityForm.errorGeneric";
   return opportunityFormErrorKeys[code] ?? "opportunityForm.errorGeneric";
+}
+
+const eventFormErrorKeys: Record<string, WorkspaceCopyKey> = {
+  "title-required": "eventForm.errorTitleRequired",
+  "summary-required": "eventForm.errorSummaryRequired",
+  "description-required": "eventForm.errorDescriptionRequired",
+  "start-invalid": "eventForm.errorStartInvalid",
+  "end-invalid": "eventForm.errorEndInvalid",
+  "end-before-start": "eventForm.errorEndBeforeStart",
+  "organization-invalid": "eventForm.errorOrganizationInvalid",
+  "url-invalid": "eventForm.errorUrlInvalid",
+  "capacity-invalid": "eventForm.errorCapacityInvalid",
+  "create-failed": "eventForm.errorCreateFailed",
+  "update-failed": "eventForm.errorUpdateFailed",
+  "incomplete-fields": "eventForm.errorIncomplete",
+};
+
+export function eventFormErrorKey(code: string | undefined): WorkspaceCopyKey {
+  if (!code) return "eventForm.errorGeneric";
+  return eventFormErrorKeys[code] ?? "eventForm.errorGeneric";
+}
+
+const businessFormErrorKeys: Record<string, WorkspaceCopyKey> = {
+  "name-invalid": "businessForm.errorNameInvalid",
+  "category-invalid": "businessForm.errorCategoryInvalid",
+  "short-description-too-long": "businessForm.errorShortDescriptionTooLong",
+  "url-invalid": "businessForm.errorUrlInvalid",
+  "email-invalid": "businessForm.errorEmailInvalid",
+  "services-invalid": "businessForm.errorServicesInvalid",
+  "create-failed": "businessForm.errorCreateFailed",
+  "update-failed": "businessForm.errorUpdateFailed",
+  "slug-exhausted": "businessForm.errorSlugExhausted",
+};
+
+export function businessFormErrorKey(code: string | undefined): WorkspaceCopyKey {
+  if (!code) return "businessForm.errorGeneric";
+  return businessFormErrorKeys[code] ?? "businessForm.errorGeneric";
+}
+
+const organizationFormErrorKeys: Record<string, WorkspaceCopyKey> = {
+  "name-required": "organizationForm.errorNameRequired",
+  "url-invalid": "organizationForm.errorUrlInvalid",
+  "email-invalid": "organizationForm.errorEmailInvalid",
+  "missing-info": "organizationForm.errorMissingInfo",
+  "create-failed": "organizationForm.errorCreateFailed",
+  "update-failed": "organizationForm.errorUpdateFailed",
+};
+
+export function organizationFormErrorKey(code: string | undefined): WorkspaceCopyKey {
+  if (!code) return "organizationForm.errorGeneric";
+  return organizationFormErrorKeys[code] ?? "organizationForm.errorGeneric";
 }

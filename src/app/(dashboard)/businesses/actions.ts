@@ -42,11 +42,11 @@ export async function createBusiness(formData: FormData) {
   const category = getOptionalString(formData, "category");
 
   if (!name || name.length < 2 || name.length > 120) {
-    redirect("/businesses/new?error=Business%20name%20must%20be%202%E2%80%93120%20characters");
+    redirect("/businesses/new?error=name-invalid");
   }
 
   if (!category || category.length > 120) {
-    redirect("/businesses/new?error=A%20valid%20business%20category%20is%20required");
+    redirect("/businesses/new?error=category-invalid");
   }
 
   const shortDescription = getOptionalString(
@@ -55,7 +55,7 @@ export async function createBusiness(formData: FormData) {
   );
 
   if (shortDescription && shortDescription.length > 200) {
-    redirect("/businesses/new?error=Short%20description%20must%20be%20200%20characters%20or%20fewer");
+    redirect("/businesses/new?error=short-description-too-long");
   }
 
   const description = getOptionalString(formData, "description");
@@ -63,11 +63,11 @@ export async function createBusiness(formData: FormData) {
   const email = getOptionalString(formData, "email");
 
   if (websiteUrl && !isValidHttpUrl(websiteUrl)) {
-    redirect("/businesses/new?error=Enter%20a%20valid%20website%20URL");
+    redirect("/businesses/new?error=url-invalid");
   }
 
   if (email && !isValidEmail(email)) {
-    redirect("/businesses/new?error=Enter%20a%20valid%20email%20address");
+    redirect("/businesses/new?error=email-invalid");
   }
 
   const services = (
@@ -81,7 +81,7 @@ export async function createBusiness(formData: FormData) {
     services.length > 20 ||
     services.some((service) => service.length > 100)
   ) {
-    redirect("/businesses/new?error=Add%20up%20to%2020%20services%20with%20100%20characters%20each");
+    redirect("/businesses/new?error=services-invalid");
   }
 
   const businessValues = {
@@ -117,13 +117,11 @@ export async function createBusiness(formData: FormData) {
     }
 
     if (error.code !== "23505") {
-      redirect(
-        "/businesses/new?error=We%20could%20not%20create%20the%20business.%20Please%20try%20again.",
-      );
+      redirect("/businesses/new?error=create-failed");
     }
   }
 
-  redirect("/businesses/new?error=Unable%20to%20create%20a%20unique%20business%20URL");
+  redirect("/businesses/new?error=slug-exhausted");
 }
 
 export async function updateBusiness(formData: FormData) {
@@ -149,15 +147,11 @@ export async function updateBusiness(formData: FormData) {
   const errorPath = `/businesses/${slug}/edit?error=`;
 
   if (!name || name.length < 2 || name.length > 120) {
-    redirect(
-      `${errorPath}Business%20name%20must%20be%202%E2%80%93120%20characters`,
-    );
+    redirect(`${errorPath}name-invalid`);
   }
 
   if (!category || category.length > 120) {
-    redirect(
-      `${errorPath}A%20valid%20business%20category%20is%20required`,
-    );
+    redirect(`${errorPath}category-invalid`);
   }
 
   const shortDescription = getOptionalString(
@@ -166,20 +160,18 @@ export async function updateBusiness(formData: FormData) {
   );
 
   if (shortDescription && shortDescription.length > 200) {
-    redirect(
-      `${errorPath}Short%20description%20must%20be%20200%20characters%20or%20fewer`,
-    );
+    redirect(`${errorPath}short-description-too-long`);
   }
 
   const websiteUrl = getOptionalString(formData, "website_url");
   const email = getOptionalString(formData, "email");
 
   if (websiteUrl && !isValidHttpUrl(websiteUrl)) {
-    redirect(`${errorPath}Enter%20a%20valid%20website%20URL`);
+    redirect(`${errorPath}url-invalid`);
   }
 
   if (email && !isValidEmail(email)) {
-    redirect(`${errorPath}Enter%20a%20valid%20email%20address`);
+    redirect(`${errorPath}email-invalid`);
   }
 
   const services =
@@ -192,9 +184,7 @@ export async function updateBusiness(formData: FormData) {
     services.length > 20 ||
     services.some((service) => service.length > 100)
   ) {
-    redirect(
-      `${errorPath}Add%20up%20to%2020%20services%20with%20100%20characters%20each`,
-    );
+    redirect(`${errorPath}services-invalid`);
   }
 
   const { data: updatedBusiness, error } = await supabase
@@ -222,9 +212,7 @@ export async function updateBusiness(formData: FormData) {
     .maybeSingle();
 
   if (error) {
-    redirect(
-      `${errorPath}We%20could%20not%20save%20the%20business.%20Please%20try%20again.`,
-    );
+    redirect(`${errorPath}update-failed`);
   }
 
   if (!updatedBusiness) {
@@ -271,9 +259,7 @@ export async function setBusinessVerification(formData: FormData) {
     .maybeSingle();
 
   if (error || !business) {
-    redirect(
-      `/businesses/${slug}?error=We%20could%20not%20update%20verification.%20Please%20try%20again.`,
-    );
+    redirect(`/businesses/${slug}?error=verification-failed`);
   }
 
   revalidatePath("/businesses");

@@ -9,6 +9,7 @@ import {
   W,
 } from "@/components/i18n/workspace";
 
+import { businessFormErrorKey } from "@/lib/i18n/workspace-copy";
 import { createBusiness } from "../actions";
 
 type NewBusinessPageProps = {
@@ -51,7 +52,7 @@ export default async function NewBusinessPage({
 
         {error ? (
           <div role="alert" aria-live="assertive" className="mt-8 rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">
-            {error}
+            <W k={businessFormErrorKey(error)} />
           </div>
         ) : null}
 

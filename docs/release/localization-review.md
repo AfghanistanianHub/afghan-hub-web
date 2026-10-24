@@ -42,17 +42,17 @@ Translation status legend:
 | `/opportunities/[slug]` | Translated | Detail chrome, status notices, deadline states, save/edit/delete controls, related cards, assistant prompts and the expired/delete/save action errors (mapped from codes) localized in this audit. |
 | `/opportunities/[slug]/edit` | Translated | Editor form, fields, deadline picker, submit state and validation banner localized in this audit; failures arrive as message codes. |
 | `/businesses` | Translated | Heading, search/category/city filters, verification and hiring filters, counts, directory rows, empty and error states localized in this audit. |
-| `/businesses/new` | Translated | Full create form, hints, placeholders and submit state localized in this audit; server error banner text stays English. |
-| `/businesses/[slug]` | Translated | Detail chrome, status notices, hiring and verification states, contact sidebar, services, edit/verify controls and image alt text localized in this audit. |
-| `/businesses/[slug]/edit` | Translated | Editor headings, fields, hints, save state and the cover/logo media-upload chrome localized; the server error banner still carries English text from the action. |
+| `/businesses/new` | Translated | Full create form, hints, placeholders, submit state and validation/save failures (mapped from action codes) localized in this audit. |
+| `/businesses/[slug]` | Translated | Detail chrome, status notices, hiring and verification states, contact sidebar, services, edit/verify controls, image alt text and verification failures localized in this audit. |
+| `/businesses/[slug]/edit` | Translated | Editor headings, fields, hints, save state, the cover/logo media-upload chrome and the validation banner (mapped from action codes) localized. |
 | `/organizations` | Translated | Heading, search/type/city filters, volunteer and verification filters, counts, directory rows, empty and error states localized in this audit. |
-| `/organizations/new` | Translated | Create form plus localized type options (canonical English values preserved) in this audit; server error banner text stays English. |
-| `/organizations/[slug]` | Translated | Detail chrome, status notices, mission/programs sections, volunteer state, contact sidebar, edit/verify controls and image alt text localized in this audit. |
-| `/organizations/[slug]/edit` | Translated | Editor headings, fields, volunteer toggle, save state and the cover/logo media-upload chrome localized; the server error banner still carries English text from the action. |
+| `/organizations/new` | Translated | Create form, localized type options (canonical English values preserved) and validation/save failures (mapped from action codes) in this audit. |
+| `/organizations/[slug]` | Translated | Detail chrome, status notices, mission/programs sections, volunteer state, contact sidebar, edit/verify controls, image alt text and verification failures localized in this audit. |
+| `/organizations/[slug]/edit` | Translated | Editor headings, fields, volunteer toggle, save state, the cover/logo media-upload chrome and the validation banner (mapped from action codes) localized. |
 | `/events` | Translated | Heading, search/format/city filters, counts, list and calendar views, weekday and month labels, localized event times, empty and error states localized in this audit. |
-| `/events/new` | Translated | Create form, review notice, date/time picker copy and submit state localized in this audit; server error banner text stays English. |
-| `/events/[slug]` | Translated | Detail chrome, status notices, registration states and confirmations, attendance counts, calendar downloads, related cards and assistant prompts localized in this audit; server RSVP `error` text stays English. |
-| `/events/[slug]/edit` | Translated | Editor headings, fields, date/time picker copy and save state localized; server error banner text stays English. |
+| `/events/new` | Translated | Create form, review notice, date/time picker copy, submit state and the validation banner (mapped from action codes) localized in this audit. |
+| `/events/[slug]` | Translated | Detail chrome, status notices, registration states and confirmations, attendance counts, calendar downloads, related cards, assistant prompts and delete failures (mapped from action codes) localized in this audit; RSVP failures use their own status tokens. |
+| `/events/[slug]/edit` | Translated | Editor headings, fields, date/time picker copy, save state and the validation banner (mapped from action codes) localized. |
 | `/events/[slug]/attendees` | Translated | Attendee heading, privacy note, table labels, registration states, dates and empty/error states localized in this audit; attendee names and emails stay as stored and render LTR. |
 | `/events/my` | Translated | Registered-events heading, table labels, status chips, dates, empty state and actions localized in this audit. |
 | `/members/[id]` | English-only | Profile detail headings, biography fallback, connection actions. |
@@ -109,9 +109,11 @@ member-facing detail pages. `src/components/i18n/browse.tsx` provides `<B>`, `us
   previously hardcoded English chrome, and locale-aware date/number helpers.
 - Server actions no longer put English sentences in the `error` query parameter. Failures redirect
   with stable codes (`title-required`, `create-failed`, `cannot-delete`, `invalid-role`, …) and the
-  page maps them through `opportunityFormErrorKey`, `opportunityActionErrorKey` or the moderation
-  code maps, so validation and failure text follows the active language. Unknown codes fall back to
-  a generic localized message instead of leaking provider text.
+  page maps them through `opportunityFormErrorKey`, `opportunityActionErrorKey`,
+  `eventFormErrorKey`, `businessFormErrorKey`, `organizationFormErrorKey`, `eventActionErrorKey`,
+  `verificationActionErrorKey` or the moderation code maps, so validation and failure text follows
+  the active language. Unknown codes fall back to a generic localized message instead of leaking
+  provider text.
 - `<option>` may only contain text, so localized role choices render through the small client
   component `src/components/moderation/member-role-select.tsx` while the stored tokens stay
   `member` / `moderator` / `admin`.
@@ -185,10 +187,13 @@ Fixes made in this pass:
 - Localize the remaining surfaces: `/members/[id]`, 404/error boundaries, the
   avatar/profile-strength widgets and the remaining dashboard recommendation blocks, all listed
   as English-only or partial above.
-- Localize the remaining server-side action error strings. Opportunity and moderation failures now
-  travel as message codes (`opportunityFormErrorKey`, `opportunityActionErrorKey`,
-  `moderation.error*`, `team.error*`); the `events`, `businesses` and `organizations` actions still
-  redirect with English text that their forms render verbatim.
+- Localize the remaining server-side action error strings. Opportunity, moderation, event,
+  business and organization failures now travel as message codes (`opportunityFormErrorKey`,
+  `opportunityActionErrorKey`, `moderation.error*`, `team.error*`, `eventFormErrorKey`,
+  `businessFormErrorKey`, `organizationFormErrorKey`, `eventActionErrorKey`,
+  `verificationActionErrorKey`); `src/app/profile/actions.ts` and
+  `src/app/(dashboard)/messages/actions.ts` still redirect with English text that their pages
+  render verbatim.
 - Localize page titles/metadata through a deliberate routing or cookie decision.
 - Native Farsi and Pashto editorial sign-off recorded with reviewer, date and commit SHA.
 - Full `npm run lint`, `npx tsc --noEmit`, `node --test tests/*.test.mjs`, `npm run build` and the

@@ -11,6 +11,7 @@ import {
 } from "@/components/i18n/workspace";
 import { organizationTypeOptions } from "@/components/organizations/organization-type-options";
 
+import { organizationFormErrorKey } from "@/lib/i18n/workspace-copy";
 import { createOrganization } from "../actions";
 
 type NewOrganizationPageProps = {
@@ -50,7 +51,7 @@ export default async function NewOrganizationPage({
         </section>
 
         {error ? (
-          <div role="alert" aria-live="assertive" className="mt-8 rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">{error}</div>
+          <div role="alert" aria-live="assertive" className="mt-8 rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive"><W k={organizationFormErrorKey(error)} /></div>
         ) : null}
 
         <form action={createOrganization} className="surface-panel mt-8 space-y-8 rounded-[var(--radius)] p-6 md:p-8">
