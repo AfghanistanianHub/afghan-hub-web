@@ -18,10 +18,8 @@ const eventPage = fs.readFileSync(
   new URL("../src/app/(dashboard)/events/[slug]/page.tsx", import.meta.url),
   "utf8",
 );
-const network = fs.readFileSync(
-  new URL("../src/app/(dashboard)/network/page.tsx", import.meta.url),
-  "utf8",
-);
+const network = fs.readFileSync(new URL("../src/components/network/network-overview.tsx", import.meta.url), "utf8");
+const networkCopy = fs.readFileSync(new URL("../src/components/network/network-copy.ts", import.meta.url), "utf8");
 
 test("contextual prompt launcher uses a shared non-navigation event contract", () => {
   assert.match(launcher, /afghan-hub:assistant-open/);
@@ -35,10 +33,13 @@ test("contextual prompts are available on opportunity, event and network surface
   assert.match(opportunity, /Find people in this field/);
   assert.match(eventPage, /Find similar events/);
   assert.match(eventPage, /Find related organizations/);
-  assert.match(network, /Find tech professionals/);
-  assert.match(network, /Find artists/);
+  assert.match(network, /label=\{copy\.tech\}/);
+  assert.match(networkCopy, /Find tech professionals/);
+  assert.match(network, /label=\{copy\.artists\}/);
+  assert.match(networkCopy, /Find artists/);
   assert.match(network, /Find artists working in arts and culture/);
-  assert.match(network, /Find mentors/);
+  assert.match(network, /label=\{copy\.mentors\}/);
+  assert.match(networkCopy, /Find mentors/);
 });
 
 test("contextual prompt contract does not add write actions", () => {
