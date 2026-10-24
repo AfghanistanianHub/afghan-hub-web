@@ -13,6 +13,7 @@ import {
 import { CommunitySignature } from "@/components/public/community-signature";
 import { ExternalImage } from "@/components/ui/external-image";
 import styles from "./network-surfaces.module.css";
+import { useNetworkCopy } from "./use-network-copy";
 
 export type Member = {
   id: string;
@@ -56,6 +57,7 @@ function getInitials(name: string) {
 type MentorshipFilter = "all" | "mentors" | "mentees";
 
 export function MemberDirectory({ members }: MemberDirectoryProps) {
+  const { language, copy } = useNetworkCopy();
   const [searchQuery, setSearchQuery] = useState("");
   const [mentorshipFilter, setMentorshipFilter] =
     useState<MentorshipFilter>("all");
@@ -104,18 +106,18 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
   }
 
   return (
-    <section className="border-t border-border/70 pt-7">
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(320px,460px)] lg:items-end">
+    <section lang={language} dir={language === "en" ? "ltr" : "rtl"} className="border-t border-border/70 pt-5">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,420px)] lg:items-end">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-            Member directory
+            {copy.memberDirectory}
           </p>
           <div className="mt-1.5 flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <h2 className="text-2xl font-bold tracking-tight text-foreground">
-              Explore the community
+              {copy.explore}
             </h2>
             <p className="text-sm text-muted-foreground" aria-live="polite">
-              {filteredMembers.length} {filteredMembers.length === 1 ? "member" : "members"}
+              <b dir="ltr" className="tabular-nums">{filteredMembers.length}</b> {filteredMembers.length === 1 ? copy.member : copy.memberPlural}
             </p>
           </div>
         </div>
@@ -130,18 +132,18 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
             type="search"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            aria-label="Search members"
-            placeholder="Search people, skills, companies..."
+            aria-label={copy.searchLabel}
+            placeholder={copy.search}
             className={`${styles.search} w-full border border-input bg-card py-3 ps-11 pe-4 text-sm text-foreground placeholder:text-muted-foreground hover:border-primary`}
           />
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="Mentorship availability">
+      <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label={copy.availability}>
         {[
-          { value: "all", label: "All members" },
-          { value: "mentors", label: "Open to mentoring" },
-          { value: "mentees", label: "Looking for a mentor" },
+          { value: "all", label: copy.all },
+          { value: "mentors", label: copy.mentorFilter },
+          { value: "mentees", label: copy.menteeFilter },
         ].map((option) => {
           const selected = mentorshipFilter === option.value;
 
@@ -210,7 +212,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                         </p>
                       ) : (
                         <p className="mt-0.5 text-sm leading-5 text-muted-foreground">
-                          Community member
+                          {copy.communityMember}
                         </p>
                       )}
                     </div>
@@ -230,7 +232,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                             aria-hidden="true"
                             className="mt-0.5 size-3.5 shrink-0 text-primary"
                           />
-                          <span className="min-w-0 truncate">{professionalDetails}</span>
+                          <span dir="auto" className="min-w-0 truncate">{professionalDetails}</span>
                         </div>
                       ) : null}
 
@@ -240,7 +242,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                             aria-hidden="true"
                             className="mt-0.5 size-3.5 shrink-0 text-primary"
                           />
-                          <span className="min-w-0 truncate">{location}</span>
+                          <span dir="auto" className="min-w-0 truncate">{location}</span>
                         </div>
                       ) : null}
                     </div>
@@ -252,12 +254,12 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
                     <div className="relative mt-3 flex flex-wrap gap-1.5 border-t border-border/70 pt-3">
                       {member.open_to_mentoring ? (
                         <span className="rounded-full border border-primary/15 bg-primary/[0.07] px-2.5 py-1 text-[0.7rem] font-semibold text-primary">
-                          Open to mentoring
+                          {copy.mentorFilter}
                         </span>
                       ) : null}
                       {member.looking_for_mentor ? (
                         <span className="rounded-full border border-border bg-background px-2.5 py-1 text-[0.7rem] font-semibold text-foreground">
-                          Looking for a mentor
+                          {copy.menteeFilter}
                         </span>
                       ) : null}
                       {member.skills.slice(0, 2).map((skill) => (
@@ -285,13 +287,13 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
           </span>
           <h2 className="relative mt-4 text-lg font-bold text-foreground">
             {hasSearchQuery || hasMentorshipFilter
-              ? "No matching members"
-              : "No public members yet"}
+              ? copy.noMatching
+              : copy.noPublic}
           </h2>
           <p className="relative mt-2 max-w-md text-sm leading-6 text-muted-foreground">
             {hasSearchQuery || hasMentorshipFilter
-              ? "Try another search or mentorship filter."
-              : "Public member profiles will appear here as the community grows."}
+              ? copy.tryAnother
+              : copy.growing}
           </p>
           {hasSearchQuery || hasMentorshipFilter ? (
             <button
@@ -299,7 +301,7 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
               onClick={clearFilters}
               className={`relative mt-5 inline-flex items-center justify-center border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted ${styles.control}`}
             >
-              Clear filters
+              {copy.clear}
             </button>
           ) : null}
         </div>
