@@ -313,7 +313,7 @@
 /* Shared native select geometry. Keep real <select> semantics, reserve an
    independent chevron gutter, and mirror it for Persian/Pashto RTL layouts.
    Controls with their own chevron opt out via data-custom-chevron. */
-select:not([multiple]):not([size]):not([data-custom-chevron]) {
+:where(select:not([multiple]):not([size]):not([data-custom-chevron])) {
   -webkit-appearance: none;
   appearance: none;
   padding-inline-end: max(2rem, 0.75em);
@@ -322,6 +322,6 @@ select:not([multiple]):not([size]):not([data-custom-chevron]) {
   background-size: 0.875rem 0.875rem;
   background-position: right 0.625rem center;
 }
-select:not([multiple]):not([size]):not([data-custom-chevron]):dir(rtl) {
+:where(select:not([multiple]):not([size]):not([data-custom-chevron])):dir(rtl) {
   background-position: left 0.625rem center;
 }
