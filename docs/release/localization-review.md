@@ -55,7 +55,7 @@ Translation status legend:
 | `/events/[slug]/edit` | Translated | Editor headings, fields, date/time picker copy, save state and the validation banner (mapped from action codes) localized. |
 | `/events/[slug]/attendees` | Translated | Attendee heading, privacy note, table labels, registration states, dates and empty/error states localized in this audit; attendee names and emails stay as stored and render LTR. |
 | `/events/my` | Translated | Registered-events heading, table labels, status chips, dates, empty state and actions localized in this audit. |
-| `/members/[id]` | English-only | Profile detail headings, biography fallback, connection actions. |
+| `/members/[id]` | Translated | Headings, biography/skills/languages fallbacks, mentorship signals, links, name fallback and the failed-conversation-start banner now come from the discovery catalogue (`member.*`, `memberActionErrorKey`); connection buttons use the network catalogue. |
 | `/messages` | Translated | Header, inbox search, counts, previews, dates, unread labels and empty states localized; message bodies are user content. |
 | `/messages/[conversationId]` | Translated | Thread chrome, read receipts, composer labels, limits and send failures (`messageActionErrorKey`) localized; message bodies untouched. |
 | `/saved` | Translated | Heading, description, load error, expired/empty states and CTA localized in this audit; signed-in browser pass outstanding. |
@@ -184,18 +184,17 @@ Fixes made in this pass:
   events, submissions, messaging, moderation and connection flows — but those journeys assert
   English copy on the authenticated surfaces. A signed-in pass that switches each of those
   routes through Farsi and Pashto is still outstanding.
-- Localize the remaining surfaces: `/members/[id]`, 404/error boundaries, the
-  avatar/profile-strength widgets and the remaining dashboard recommendation blocks, all listed
-  as English-only or partial above.
+- Localize the remaining surfaces: 404/error boundaries, the avatar/profile-strength widgets
+  and the remaining dashboard recommendation blocks, all listed as English-only or partial
+  above.
 - Localize the remaining server-side action error strings. Opportunity, moderation, event,
   business, organization, profile and messaging failures now travel as message codes
   (`opportunityFormErrorKey`, `opportunityActionErrorKey`, `moderation.error*`, `team.error*`,
   `eventFormErrorKey`, `businessFormErrorKey`, `organizationFormErrorKey`,
   `eventActionErrorKey`, `verificationActionErrorKey`, `profileFormErrorKey`,
-  `messageActionErrorKey`). `/profile` renders its banner from `profileFormErrorKey` and the
-  message composer from `messageActionErrorKey`. `/members/[id]` still ignores the
-  `?error=start-failed` code that a failed conversation start redirects to, so that page needs
-  its own localized banner alongside its remaining English chrome.
+  `messageActionErrorKey`, `memberActionErrorKey`). `/profile` renders its banner from
+  `profileFormErrorKey`, the message composer from `messageActionErrorKey`, and `/members/[id]`
+  renders the failed conversation start from `memberActionErrorKey`.
 - Localize page titles/metadata through a deliberate routing or cookie decision.
 - Native Farsi and Pashto editorial sign-off recorded with reviewer, date and commit SHA.
 - Full `npm run lint`, `npx tsc --noEmit`, `node --test tests/*.test.mjs`, `npm run build` and the
