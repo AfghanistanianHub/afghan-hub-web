@@ -47,16 +47,17 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
   ]);
   // Scoped RPC prevents unrelated members from reading moderation feedback.
   const ownerNoteTargets = [
-    ...(opportunities ?? []).map((item) => ({ entityType: "opportunity", id: item.id })),
-    ...(events ?? []).map((item) => ({ entityType: "event", id: item.id })),
-    ...(businesses ?? []).map((item) => ({ entityType: "business", id: item.id })),
-    ...(organizations ?? []).map((item) => ({ entityType: "organization", id: item.id })),
+    ...(opportunities ?? []).filter((item) => item.status !== "published" && item.status !== "draft").map((item) => ({ entityType: "opportunity", id: item.id })),
+    ...(events ?? []).filter((item) => item.status !== "published" && item.status !== "draft").map((item) => ({ entityType: "event", id: item.id })),
+    ...(businesses ?? []).filter((item) => item.status !== "published" && item.status !== "draft").map((item) => ({ entityType: "business", id: item.id })),
+    ...(organizations ?? []).filter((item) => item.status !== "published" && item.status !== "draft").map((item) => ({ entityType: "organization", id: item.id })),
   ];
   const ownerNotes = await Promise.all(ownerNoteTargets.map(async (item) => {
     const { data, error } = await supabase.rpc("get_owned_listing_moderation_note", {
       target_entity_type: item.entityType, target_entity_id: item.id,
     });
-    return { key: `${item.entityType}:${item.id}`, note: error ? null : data };
+    if (error) throw new Error("Owner moderation feedback could not be loaded");
+    return { key: `${item.entityType}:${item.id}`, note: data };
   }));
   const moderationNotes = new Map(ownerNotes.map((item) => [item.key, item.note]));
   const errors = { Opportunities: opportunitiesError, Businesses: businessesError, Organizations: organizationsError, Events: eventsError };
