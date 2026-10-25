@@ -309,3 +309,19 @@
   from { opacity: 0; transform: translateY(9px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Shared native select geometry. Keep real <select> semantics, reserve an
+   independent chevron gutter, and mirror it for Persian/Pashto RTL layouts.
+   Controls with their own chevron opt out via data-custom-chevron. */
+select:not([multiple]):not([size]):not([data-custom-chevron]) {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-inline-end: max(2rem, 0.75em);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23625b65' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 0.875rem 0.875rem;
+  background-position: right 0.625rem center;
+}
+select:not([multiple]):not([size]):not([data-custom-chevron]):dir(rtl) {
+  background-position: left 0.625rem center;
+}
