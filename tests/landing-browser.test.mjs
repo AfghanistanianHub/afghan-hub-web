@@ -174,7 +174,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   await page.send("Emulation.setScrollbarsHidden", {hidden:true});
   for (const width of [320,390,768,1024,1280,1440]) {
     await page.send("Emulation.setDeviceMetricsOverride", {width,height:1000,deviceScaleFactor:1,mobile:false});
-    await page.send("Page.navigate", {url:appUrl});
+    await page.send("Page.navigate", {url:new URL('/en', appUrl).href});
     await waitFor(() => page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-community-node]')"), `landing ${width}`);
     await page.evaluate("document.fonts.ready.then(()=>true)");
     await delay(950);
@@ -197,7 +197,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     console.log(`AFGHAN_HUB_BROWSER_RESULT ${width}: five usable destinations, no overflow, zero axe violations`);
   }
   await page.send("Emulation.setDeviceMetricsOverride", {width:1440,height:1000,deviceScaleFactor:1,mobile:false});
-  await page.send("Page.navigate",{url:appUrl});
+  await page.send("Page.navigate",{url:new URL('/en', appUrl).href});
   await waitFor(()=>page.evaluate("!!document.querySelector('[data-community-node]')"),"network focus");
   await delay(950);
   const bounds = await page.evaluate("document.querySelector('[data-hero-region]').getBoundingClientRect().toJSON()");
@@ -320,7 +320,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   await page.send("Emulation.setDeviceMetricsOverride",{width:390,height:1000,deviceScaleFactor:1,mobile:true});
   await page.send("Emulation.setTouchEmulationEnabled",{enabled:true});
   for(const key of ["people","organizations","businesses","events","opportunities"]) {
-    await page.send("Page.navigate",{url:appUrl});
+    await page.send("Page.navigate",{url:new URL('/en', appUrl).href});
     await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-community-node]')"),"touch landing");
     await delay(300);
     await page.evaluate(`document.querySelector('[data-community-node=${key}]').scrollIntoView({block:'center'})`);
@@ -338,7 +338,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     await page.send("Emulation.setTouchEmulationEnabled",{enabled:false});
     for(const kind of ['organizations','events','opportunities','businesses']) {
       await page.send('Emulation.setEmulatedMedia',{features:[]});
-      await page.send('Page.navigate',{url:appUrl+'/explore?type='+kind});
+      await page.send('Page.navigate',{url:new URL('/en', appUrl).href+'/explore?type='+kind});
       await waitFor(()=>page.evaluate(`document.readyState==='complete'&&!!document.querySelector('[data-category-illustration=${kind}]')`),'animated category '+kind);
       await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:8,y:8});
       await delay(650);
@@ -380,7 +380,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
       await page.evaluate("document.activeElement.blur();document.querySelector('article h3 a').focus()");
       const card=await page.evaluate(`(()=>{const e=document.querySelector('article');return {href:e.querySelector('h3 a').getAttribute('href'),motions:e.querySelectorAll('[data-motion]').length,focus:e.matches(':focus-within')}})()`);
       assert.equal(card.href,`/explore/${kind}/layout-sample-${kind}-0`);assert.ok(card.motions>0&&card.focus,'Listing cover has semantic link and animated artwork');
-      await page.send('Page.navigate',{url:appUrl+card.href});
+      await page.send('Page.navigate',{url:new URL('/en', appUrl).href+card.href});
       await waitFor(()=>page.evaluate(`document.readyState==='complete'&&!!document.querySelector('[data-category-illustration=${kind}]')`),'animated detail '+kind);
       await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:8,y:8});
       await page.send('Emulation.setEmulatedMedia',{features:[]});await delay(650);
@@ -398,7 +398,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     await page.send("Emulation.setDeviceMetricsOverride",{width,height:1000,deviceScaleFactor:1,mobile:width<640});
     await page.send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
     for (const route of ["/explore?type=organizations", "/explore/organizations/layout-sample-organizations-0", "/about", "/login", "/login?mode=join", "/forgot-password", "/support", "/privacy", "/terms"]) {
-      await page.send("Page.navigate",{url:appUrl+route});
+      await page.send("Page.navigate",{url:new URL('/en', appUrl).href+route});
       await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('h1')"),"public consistency route "+route);
       await delay(150);
       assert.ok(await page.evaluate("document.documentElement.scrollWidth<=innerWidth+1"),`No overflow ${route} at ${width}`);
@@ -416,7 +416,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     console.log(`AFGHAN_HUB_CONSISTENCY_RESULT ${width}: nine public/auth routes, no overflow, zero axe violations, shared violet passed`);
   }
   await page.send("Emulation.setDeviceMetricsOverride",{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
-  await page.send("Page.navigate",{url:appUrl+'/explore?type=organizations'});
+  await page.send("Page.navigate",{url:new URL('/en', appUrl).href+'/explore?type=organizations'});
   await waitFor(()=>page.evaluate("document.readyState==='complete'&&location.pathname==='/explore'&&location.search==='?type=organizations'&&!!document.querySelector('input[name=q]')"),"catalogue interactions");
   await waitFor(()=>page.evaluate("document.readyState==='complete'&&!!document.querySelector('input[name=q]')"),"catalogue interactions");
   await page.evaluate("document.fonts.ready.then(()=>true)");
@@ -480,7 +480,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   await page.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});
   await page.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});
   await waitFor(()=>page.evaluate("location.search==='?type=opportunities'&&document.querySelector('input[name=type]')?.value==='opportunities'"),'category keyboard navigation');
-  await page.send('Page.navigate',{url:appUrl+'/explore?type=organizations'});
+  await page.send('Page.navigate',{url:new URL('/en', appUrl).href+'/explore?type=organizations'});
   await waitFor(()=>page.evaluate("document.readyState==='complete'&&document.querySelector('input[name=type]')?.value==='organizations'"),'restore category search');
   await page.evaluate("document.querySelector('input[name=q]').value='no-match-verification';document.querySelector('form').requestSubmit()");
   await waitFor(()=>page.evaluate("location.search.includes('no-match-verification')&&document.body.textContent.includes('No listings match your search.')"),"search submits existing GET form");
@@ -519,7 +519,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   await page.send('Fetch.enable',{patterns:[{urlPattern:'*/api/assistant/search',requestStage:'Request'}]});
   for(const width of [320,390,768,1024,1440]) {
     await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
-    await page.send('Page.navigate',{url:appUrl+'/navigator-qa'});
+    await page.send('Page.navigate',{url:new URL('/en', appUrl).href+'/navigator-qa'});
     await waitFor(()=>page.evaluate("document.readyState==='complete'&&!!document.querySelector('header button[aria-label=\"Community Navigator\"]')"),'member-header fixture');
     assert.ok(await page.evaluate("document.documentElement.scrollWidth<=innerWidth+1"),`Integrated member header fits ${width}`);
     const rects=await page.evaluate("[...document.querySelectorAll('header button,header input,header a')].filter(e=>e.getClientRects().length).map(e=>{const r=e.getBoundingClientRect();return{label:e.getAttribute('aria-label')||e.textContent,width:r.width,left:r.left,right:r.right};})");
@@ -527,7 +527,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   }
   for (const width of [1440,390]) {
     await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
-    await page.send('Page.navigate',{url:appUrl+'/navigator-qa'});
+    await page.send('Page.navigate',{url:new URL('/en', appUrl).href+'/navigator-qa'});
     await waitFor(()=>page.evaluate("document.readyState==='complete'&&!![...document.querySelectorAll('button')].find(b=>b.textContent.includes('Community Navigator'))"),'navigator fixture hydration');
     await delay(300);
     const openerPoint=await page.evaluate("(()=>{const r=[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Community Navigator')).getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2};})()");
