@@ -259,3 +259,11 @@ test("Persian and Pashto fonts are bundled by Next.js instead of runtime Google 
   assert.ok(globals.includes("--font-fa-body: var(--font-vazirmatn)"));
   assert.ok(!globals.includes("fonts.googleapis.com/css2?family=Estedad"));
 });
+
+test("explore community heading uses Persian and Pashto typefaces instead of Georgia", () => {
+  const section = readFileSync(new URL("../src/components/public/scroll-category-introduction.tsx", import.meta.url), "utf8");
+  const css = readFileSync(new URL("../src/components/public/scroll-category-introduction.module.css", import.meta.url), "utf8");
+  assert.ok(section.includes('lang={language} dir={language === "en" ? "ltr" : "rtl"}'));
+  assert.match(css, /\.section:dir\(rtl\) \.heading h2 \{\s*font-family:var\(--font-fa-heading\)/);
+  assert.match(css, /\.section\[lang="ps"\] \.heading h2 \{\s*font-family:var\(--font-fa-body\)/);
+});
