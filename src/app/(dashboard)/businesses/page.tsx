@@ -1,3 +1,4 @@
+import { BusinessCategorySelect } from "@/components/businesses/business-category-select";
 import Link from "next/link";
 import { Building2 } from "lucide-react";
 import { BusinessDirectory } from "@/components/businesses/business-directory";
@@ -33,7 +34,7 @@ export default async function BusinessesPage({ searchParams }: BusinessesPagePro
       <MemberPageHeader title={<B k="businesses.title" />} description={<B k="businesses.description" />} icon={Building2}><Link href="/businesses/new" className={catalogSubmitClass}><B k="businesses.create" /></Link></MemberPageHeader>
       <form action="/businesses" method="get" className={`${catalogFilterPanelClass} md:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_auto_auto_auto]`}>
         <BrowseField labelKey="businesses.search" name="q" defaultValue={search} placeholderKey="businesses.searchPlaceholder" className={catalogFieldClass} labelClassName="grid gap-2 text-sm font-medium" />
-        <BrowseField labelKey="businesses.category" name="category" defaultValue={category} placeholderKey="businesses.anyCategory" className={catalogFieldClass} labelClassName="grid gap-2 text-sm font-medium" />
+        <BusinessCategorySelect filter defaultValue={category} className={catalogFieldClass} />
         <BrowseField labelKey="common.city" name="city" defaultValue={city} placeholderKey="common.anyCity" className={catalogFieldClass} labelClassName="grid gap-2 text-sm font-medium" />
         <BrowseCheckbox name="hiring" labelKey="common.hiringNow" defaultChecked={hiring} labelClassName={catalogCheckboxLabelClass} />
         <BrowseCheckbox name="verified" labelKey="common.verifiedListings" defaultChecked={verified} labelClassName={catalogCheckboxLabelClass} />
