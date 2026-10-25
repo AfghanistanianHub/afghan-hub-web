@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 import { ExternalImage } from "@/components/ui/external-image";
-import { discoveryIntentCards } from "@/components/discovery/goal-paths";
+import { discoveryIntentCards } from "@/components/discovery/goal-path-data";
 import { VerificationBadge } from "@/components/ui/verification-badge";
 import { B, BrowseField, BrowseSelect } from "@/components/i18n/browse";
 import { Localized } from "@/components/i18n/localized";

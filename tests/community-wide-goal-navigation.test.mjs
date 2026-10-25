@@ -6,6 +6,10 @@ const goalPaths = fs.readFileSync(
   new URL("../src/components/discovery/goal-paths.tsx", import.meta.url),
   "utf8",
 );
+const goalData = fs.readFileSync(
+  new URL("../src/components/discovery/goal-path-data.ts", import.meta.url),
+  "utf8",
+);
 const dashboard = fs.readFileSync(
   new URL("../src/app/(dashboard)/dashboard/page.tsx", import.meta.url),
   "utf8",
@@ -33,17 +37,17 @@ test("dashboard exposes community-wide goal-based navigation", () => {
     "Volunteer and help",
     "Grow my business",
   ]) {
-    assert.ok(goalPaths.includes(label), `Missing goal: ${label}`);
+    assert.ok(goalData.includes(label), `Missing goal: ${label}`);
   }
   assert.match(dashboard, /<GoalPaths \/>/);
 });
 
 test("goal cards route to explicit discovery intents where available", () => {
-  assert.match(goalPaths, /\/search\?intent=find_work/);
-  assert.match(goalPaths, /\/search\?intent=find_services/);
+  assert.match(goalData, /\/search\?intent=find_work/);
+  assert.match(goalData, /\/search\?intent=find_services/);
   assert.match(goalPaths, /\{goal\.number\}/);
-  assert.match(goalPaths, /\/search\?intent=join_community/);
-  assert.match(goalPaths, /\/search\?intent=volunteer/);
+  assert.match(goalData, /\/search\?intent=join_community/);
+  assert.match(goalData, /\/search\?intent=volunteer/);
 });
 
 test("search empty state offers visual goal navigation instead of a dead end", () => {
@@ -72,5 +76,5 @@ test("public landing exposes all five community areas and discovery paths", () =
   assert.match(publicNavigation, /\/login\?mode=join/);
   const finale = fs.readFileSync(new URL("../src/components/public/localized-homepage-final.tsx", import.meta.url), "utf8");
   assert.match(finale, /\/login\?mode=join/);
-  assert.doesNotMatch(goalPaths, /label: "Settle"/);
+  assert.doesNotMatch(goalData, /label: "Settle"/);
 });

@@ -199,7 +199,7 @@ export default async function DashboardPage() {
               ) : null}
             </div>
 
-            <div className="grid grid-cols-2 gap-3 border-t border-border pt-6 sm:grid-cols-3 xl:grid-cols-2 xl:border-l xl:border-t-0 xl:pl-8 xl:pt-0">
+            <div className="grid grid-cols-2 gap-3 border-t border-border pt-6 sm:grid-cols-3 xl:grid-cols-2 xl:border-s xl:border-t-0 xl:ps-8 xl:pt-0">
               <Link
                 href="/opportunities"
                 className="group rounded-[var(--radius-control)] px-2 py-3 transition hover:bg-secondary/60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
@@ -236,7 +236,7 @@ export default async function DashboardPage() {
                   <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] opacity-70"><DashboardText id="nextStep" /></p>
                   <p className="mt-1 font-semibold"><DashboardText id={nextStep.titleId} /></p>
                 </div>
-                <ArrowRight aria-hidden="true" className="size-4" />
+                <ArrowRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
               </Link>
             </div>
           </div>
@@ -250,9 +250,9 @@ export default async function DashboardPage() {
           <section className="border-y border-border py-6 md:py-7">
             <div className="flex items-end justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Recommended for you</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary"><DashboardText id="recommended" /></p>
                 <h2 className="mt-2 text-xl font-bold tracking-[-0.02em] text-foreground">
-                  Suggested opportunities
+                  <DashboardText id="suggested" />
                 </h2>
               </div>
 
@@ -260,7 +260,7 @@ export default async function DashboardPage() {
                 href="/opportunities"
                 className="hidden items-center gap-2 rounded-sm text-sm font-semibold text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:inline-flex"
               >
-                View all
+                <DashboardText id="viewAll" />
                 <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
             </div>
@@ -316,9 +316,9 @@ export default async function DashboardPage() {
               <div className="relative mt-6 overflow-hidden border-y border-dashed border-border bg-muted/25 px-5 py-9 text-center">
                 <div aria-hidden="true" className="absolute -right-8 -top-8 size-28 rounded-full border border-primary/10" />
                 <BriefcaseBusiness aria-hidden="true" className="relative mx-auto size-9 text-muted-foreground" />
-                <h3 className="relative mt-3 font-semibold text-foreground">No active opportunities yet</h3>
+                <h3 className="relative mt-3 font-semibold text-foreground"><DashboardText id="noActive" /></h3>
                 <p className="relative mt-2 text-sm text-muted-foreground">
-                  New opportunities will appear here when they are published.
+                  <DashboardText id="newAppear" />
                 </p>
               </div>
             )}
