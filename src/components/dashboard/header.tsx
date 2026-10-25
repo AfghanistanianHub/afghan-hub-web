@@ -81,7 +81,7 @@ export function Header({
             aria-label={copy.language}
             value={language}
             onChange={(e) => saveSiteLanguagePreference(e.target.value)}
-            className="h-9 min-w-20 min-[360px]:min-w-24 appearance-none rounded-md border border-border bg-background ps-3 pe-8 text-start text-xs leading-normal text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="h-9 min-w-24 appearance-none rounded-md border border-border bg-background ps-3 pe-8 text-start text-xs leading-normal text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             <option value="en" lang="en">English</option>
             <option value="fa" lang="fa">فارسی</option>
