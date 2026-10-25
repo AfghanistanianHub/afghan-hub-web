@@ -45,7 +45,9 @@ test("contextual prompts are available on opportunity, event and network surface
   assert.match(network, /label=\{copy\.artists\}/);
   assert.match(network, /Find artists working in arts and culture/);
   assert.match(network, /label=\{copy\.mentors\}/);
-  assert.match(uiCopy.en.network.findTech, /Find tech professionals/);
+  assert.equal(uiCopy.en.network.findTech, "Find professionals");
+  assert.match(network, /Find professionals across all fields and industries/);
+  assert.doesNotMatch(network, /Find professionals working in technology/);
   assert.match(uiCopy.en.network.findArtists, /Find artists/);
   assert.match(uiCopy.en.network.findMentors, /Find mentors/);
 });

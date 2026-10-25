@@ -11,7 +11,7 @@ export function NetworkOverview({memberCount,connectionCount,requestCount}:{memb
      <h1 className="mt-3 text-balance text-[clamp(2.1rem,3.8vw,3.6rem)] font-semibold leading-[1.18] tracking-tight text-foreground">{copy.title}</h1>
      <p className="mt-3 max-w-[65ch] text-base leading-7 text-muted-foreground">{copy.description}</p>
      <div className="mt-4 flex flex-wrap gap-2">
-      <ContextualAssistantPrompt label={copy.tech} query="Find professionals working in technology"/>
+      <ContextualAssistantPrompt label={copy.tech} query="Find professionals across all fields and industries"/>
       <ContextualAssistantPrompt label={copy.artists} query="Find artists working in arts and culture"/>
       <ContextualAssistantPrompt label={copy.mentors} query="Find mentors in the community"/>
      </div>
