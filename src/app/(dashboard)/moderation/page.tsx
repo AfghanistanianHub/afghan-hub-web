@@ -584,7 +584,7 @@ function ModerationButtons({
               minLength={10}
               maxLength={1000}
               rows={3}
-              className="mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-destructive focus:ring-2 focus:ring-destructive/10"
+              className="mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-3 py-2 text-sm text-foreground transition focus:border-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destructive"
             />
           </label>
           <PendingSubmitButton

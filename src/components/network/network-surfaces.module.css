@@ -104,10 +104,15 @@
   background: color-mix(in srgb, var(--card) 97%, var(--primary) 3%);
 }
 
+/* Pointer focus gets the border; the keyboard ring comes from
+   .search:focus-visible so the outline is never suppressed. */
 .search:focus {
-  outline: none;
   border-color: color-mix(in srgb, var(--primary) 55%, var(--border));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.search:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
