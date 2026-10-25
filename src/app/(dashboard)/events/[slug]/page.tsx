@@ -28,7 +28,7 @@ export default async function EventPage({ params, searchParams }: Props) {
   const [{ slug }, { rsvp, error: actionError }] = await Promise.all([params, searchParams]);
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const { data: event, error } = await supabase.from("events").select(`*,organization:organizations (name,slug)`).eq("slug", slug).single();
+  const { data: event, error } = await supabase.from("events").select(`address_line,business_id,capacity,city,country,created_at,creator_id,description,ends_at,id,is_online,online_url,organization_id,province_state,slug,starts_at,status,summary,title,updated_at,venue_name,organization:organizations (name,slug)`).eq("slug", slug).single();
   if (error || !event) notFound();
   const { data: viewerProfile } = user ? await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle() : { data: null };
   const canModerate = viewerProfile?.role === "admin" || viewerProfile?.role === "moderator";
