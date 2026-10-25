@@ -27,7 +27,7 @@ export function PublicNavigation() {
 
   return <header className={styles.header} lang={language} dir={language === "en" ? "ltr" : "rtl"}>
     <div className={styles.bar}>
-      <Brand />
+      <Brand language={language} />
       <nav className={styles.desktop} aria-label={copy.navigation}>{links}</nav>
       <div className={styles.account}>
         {languageSelector}
