@@ -5,7 +5,7 @@ import { CommunityNavigator } from "@/components/assistant/community-navigator";
 import { SignOutSubmit } from "@/components/dashboard/action-submit";
 import styles from "@/components/network/network-surfaces.module.css";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { logout } from "@/app/(dashboard)/actions";
 import { MobileNavigation } from "@/components/dashboard/mobile-navigation";
 import {
@@ -41,7 +41,7 @@ export function Header({
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
-    <header lang={language} dir={language === "en" ? "ltr" : "rtl"} className="sticky top-0 z-20 flex h-20 items-center justify-between gap-2 border-b border-border/70 bg-background px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12">
+    <header lang={language} dir={language === "en" ? "ltr" : "rtl"} className="sticky top-0 z-20 flex h-20 items-center justify-between gap-1 min-[360px]:gap-2 border-b border-border/70 bg-background px-2 min-[360px]:px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       <div className="flex min-w-0 items-center gap-2 sm:gap-3 md:flex-1">
         <MobileNavigation
           canModerate={canModerate}
@@ -51,7 +51,7 @@ export function Header({
 
         <Link
           href="/dashboard"
-          className="rounded-sm font-semibold tracking-[0.16em] text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary md:hidden"
+          className="hidden min-[360px]:inline rounded-sm font-semibold tracking-[0.16em] text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary md:hidden"
         >
           <span className="text-base sm:hidden">AH</span>
           <span className="hidden text-sm sm:inline">AFGHAN HUB</span>
@@ -74,20 +74,24 @@ export function Header({
         </form>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-        <label className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className="sr-only">{copy.language}</span>
+      <div className="flex shrink-0 items-center gap-1 min-[360px]:gap-2 sm:gap-3">
+        <div className="relative inline-flex shrink-0 items-center">
           <select
+            data-custom-chevron
             aria-label={copy.language}
             value={language}
             onChange={(e) => saveSiteLanguagePreference(e.target.value)}
-            className="rounded border border-border bg-background px-2 py-1 text-xs text-foreground focus-visible:outline-2 focus-visible:outline-primary"
+            className="h-9 min-w-24 appearance-none rounded-md border border-border bg-background ps-3 pe-8 text-start text-xs leading-normal text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             <option value="en" lang="en">English</option>
             <option value="fa" lang="fa">فارسی</option>
             <option value="ps" lang="ps">پښتو</option>
           </select>
-        </label>
+          <ChevronDown
+            aria-hidden="true"
+            className="pointer-events-none absolute end-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground"
+          />
+        </div>
 
         <CommunityNavigator />
         <NotificationBell
@@ -101,7 +105,7 @@ export function Header({
           <p lang="en" dir="ltr" title={email} className="max-w-48 truncate text-start text-xs text-muted-foreground">{email}</p>
         </div>
 
-        <div className="flex size-10 items-center justify-center rounded-full border border-primary/15 bg-primary font-bold text-primary-foreground ring-4 ring-primary/8 sm:size-11">
+        <div className="hidden min-[360px]:flex size-10 items-center justify-center rounded-full border border-primary/15 bg-primary font-bold text-primary-foreground ring-4 ring-primary/8 sm:size-11">
           {initial}
         </div>
 

@@ -1,3 +1,4 @@
+import { BusinessCategorySelect } from "@/components/businesses/business-category-select";
 import formStyles from "@/components/forms/listing-form.module.css";
 import { CommunitySignature } from "@/components/public/community-signature";
 import { notFound, redirect } from "next/navigation";
@@ -136,15 +137,7 @@ export default async function EditBusinessPage({
                 labelClassName="text-sm font-medium"
                 wrapperClassName="md:col-span-2"
               />
-              <LocalizedField
-                labelKey="business.categoryLabel"
-                name="category"
-                required
-                maxLength={120}
-                defaultValue={business.category}
-                fieldClassName={fieldClassName}
-                labelClassName="text-sm font-medium"
-              />
+              <BusinessCategorySelect required defaultValue={business.category} className={fieldClassName} labelClassName="grid gap-2 text-sm font-medium" />
               <LocalizedField
                 labelKey="common.website"
                 name="website_url"

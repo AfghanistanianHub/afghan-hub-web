@@ -54,3 +54,15 @@
   .section:dir(rtl) .stage { padding-inline-start:20px; }
   .section:dir(rtl) .category::before { right:-22px; }
 }
+
+/* The homepage's generic .page h2 Georgia rule must not override the
+   localized category-section heading. Match the established Persian/Pashto
+   typography used for other homepage headings. */
+.section:dir(rtl) .heading h2 {
+  font-family:var(--font-fa-heading);
+  letter-spacing:normal;
+  line-height:1.5;
+}
+.section[lang="ps"] .heading h2 {
+  font-family:var(--font-fa-body);
+}
