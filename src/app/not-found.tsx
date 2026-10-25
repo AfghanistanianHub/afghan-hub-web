@@ -18,13 +18,13 @@ export default function NotFound() {
           <B k="notFound.body" />
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/" className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90">
+          <Link href="/" className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
             <B k="notFound.home" />
           </Link>
-          <Link href="/explore" className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-border bg-card px-5 py-3 text-sm font-semibold transition hover:bg-muted">
+          <Link href="/explore" className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-border bg-card px-5 py-3 text-sm font-semibold transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
             <B k="notFound.explore" />
           </Link>
-          <Link href="/login" className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] px-5 py-3 text-sm font-semibold text-primary transition hover:bg-secondary">
+          <Link href="/login" className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] px-5 py-3 text-sm font-semibold text-primary transition hover:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
             <B k="notFound.signIn" />
           </Link>
         </div>

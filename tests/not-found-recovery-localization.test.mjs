@@ -95,6 +95,24 @@ test("404 screens keep their destinations and mirror directional icons", () => {
   }
 });
 
+test("every 404 call to action shows a keyboard focus ring", () => {
+  const ring = /focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary/;
+  const expectedLinks = {
+    "src/app/not-found.tsx": 3,
+    "src/app/(dashboard)/businesses/[slug]/not-found.tsx": 1,
+    "src/app/(dashboard)/organizations/[slug]/not-found.tsx": 1,
+    "src/app/(dashboard)/members/[id]/not-found.tsx": 1,
+    "src/app/(public)/explore/[kind]/[slug]/not-found.tsx": 1,
+  };
+  for (const [route, expected] of Object.entries(expectedLinks)) {
+    const links = read(route).match(/<Link[\s\S]*?>/g) ?? [];
+    assert.equal(links.length, expected, `${route} has ${links.length} call-to-action links, expected ${expected}`);
+    for (const link of links) {
+      assert.match(link, ring, `${route} has a call to action without a visible focus ring`);
+    }
+  }
+});
+
 test("the recovery screen reads every visible string from the catalogue", () => {
   assert.match(recoveryPage, /useBrowseCopy/);
   assert.match(recoveryPage, /<DocumentLanguage \/>/);
