@@ -317,7 +317,9 @@ async function member(label) {
 const message = text => `Synthetic browser ${stamp} ${text}`;
 async function send(page, text) {
   await fill(page, 'textarea[name=message]', text);
-  await click(page, 'button[aria-label="Send message"]');
+  // Select the composer submit button structurally: its accessible name follows
+  // the selected site language, which this journey changes on purpose.
+  await click(page, 'form:has(textarea[name=message]) button[type=submit]');
   await until(() => page.evaluate(`document.body.innerText.includes(${JSON.stringify(text)}) && document.querySelector('textarea[name=message]')?.value===''`), 'message persisted');
 }
 try {
@@ -437,7 +439,7 @@ try {
     await until(() => pageB.evaluate(`document.querySelector('main h2')?.textContent==='No submissions yet'`), 'empty submissions streamed content');
     assert.equal(await pageB.evaluate(`document.querySelectorAll('main article').length`), 0);
     assert.equal(await pageB.evaluate(`!!document.querySelector('main [role=alert]')`), false);
-    assert.deepEqual(await pageB.evaluate(`[...document.querySelectorAll('nav[aria-label="Submission categories"] span')].map(node=>node.textContent)`), ['0','0','0','0','0']);
+    assert.deepEqual(await pageB.evaluate(`[...document.querySelectorAll('nav[aria-labelledby="submission-categories-label"] span[aria-hidden="true"]')].map(node=>node.textContent)`), ['0','0','0','0','0']);
     await captureState(pageB,'submissions-empty');
   });
   await check('Member Navigator exposes the same three languages and RTL without changing profile languages', async () => {
@@ -704,7 +706,8 @@ try {
         await click(reviewerPage, `${form} summary`);
         await fill(reviewerPage, `${form} textarea[name=moderation_note]`, 'short');
         await click(reviewerPage, `${form} button[value=reject]`);
-        await until(() => reviewerPage.evaluate(`location.search.includes('error=') && document.querySelector('main [role=alert]')?.textContent.includes('between 10 and 1000')`), 'invalid rejection reason refused server-side');
+        // The refusal travels as a stable code and the visible hint is localized.
+        await until(() => reviewerPage.evaluate(`location.search.includes('error=invalid-reason') && document.querySelector('main [role=alert]')?.textContent.includes('between 10 and 1,000')`), 'invalid rejection reason refused server-side');
         assert.equal((await data(admin.from(table).select('status').eq('id',row.id).single())).status,'draft');
         await click(reviewerPage, `${form} summary`);
         const reason = `Synthetic ${role} review: please clarify the listing details.`;
@@ -783,7 +786,7 @@ try {
   });
   await check('Member workspaces: category links, permitted inbox search and responsive identity', async () => {
     await visit(pageA, '/submissions');
-    const nav = 'nav[aria-label="Submission categories"]';
+    const nav = 'nav[aria-labelledby="submission-categories-label"]';
     assert.equal(await pageA.evaluate(`document.querySelectorAll('${nav} a').length`), 5);
     await click(pageA, `${nav} a[href="/submissions?category=businesses"]`);
     await until(() => pageA.evaluate(`location.search==='?category=businesses'`), 'business submissions category');
@@ -799,10 +802,11 @@ try {
     await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes('No matching conversations')`), 'inbox filtered empty state');
     assert.equal(await pageA.evaluate(`!!document.querySelector(${JSON.stringify(`main a[href="${conversationPath}"]`)})`),false,'Filtered inbox must hide the real conversation');
     await visit(pageA, conversationPath);
-    assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-label="Conversation navigation"]')).display!=='none'`), true);
+    assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-labelledby="conversation-navigation-label"]')).display!=='none'`), true);
     await pageA.send('Emulation.setDeviceMetricsOverride', { width:390, height:1000, deviceScaleFactor:1, mobile:true });
-    assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-label="Conversation navigation"]')).display`), 'none');
-    await click(pageA, 'a[aria-label="Back to messages"]'); await pathname(pageA, '/messages');
+    assert.equal(await pageA.evaluate(`getComputedStyle(document.querySelector('aside[aria-labelledby="conversation-navigation-label"]')).display`), 'none');
+    // The back control now exposes its localized name through an sr-only span.
+    await click(pageA, 'header a[href="/messages"]'); await pathname(pageA, '/messages');
     await visit(pageA, `/members/${b.id}`);
     assert.equal(await pageA.evaluate(`!!document.querySelector('[data-hero-layer="architecture"]') || !!document.querySelector('main svg[data-illustration-kind]')`), false);
     assert.equal(await pageA.evaluate(`document.documentElement.scrollWidth>innerWidth`), false);

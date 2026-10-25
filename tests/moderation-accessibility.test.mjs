@@ -16,8 +16,9 @@ test("moderation errors and success messages are announced", () => {
 
 test("approve and reject actions prevent repeat submissions while pending", () => {
   assert.match(source, /<PendingSubmitButton/);
-  assert.match(source, /pendingLabel="Approving…"/);
-  assert.match(source, /pendingLabel="Rejecting…"/);
+  assert.match(source, /pendingLabel=\{<B k="moderation\.approving" \/>\}/);
+  assert.match(source, /pendingLabel=\{<B k="moderation\.rejecting" \/>\}/);
+  assert.doesNotMatch(source, /pendingLabel="[^"]*[A-Za-z][^"]*"/);
   assert.match(source, /name="decision"/);
   assert.match(source, /value="approve"/);
   assert.match(source, /value="reject"/);

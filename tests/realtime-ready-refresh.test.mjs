@@ -18,6 +18,8 @@ for (const [file,component,props] of [
    if(name==='next/navigation')return {useRouter:()=>({refresh(){refreshes++;}})};
    if(name==='@/lib/supabase/client')return {createClient:()=>({channel:()=>channel,removeChannel(value){assert.equal(value,channel);removed=true;}})};
    if(name==='@/lib/supabase/member-realtime')return {subscribeMemberChannel(client,channel){channelCleanup=()=>client.removeChannel(channel);channel.subscribe();return channelCleanup;}};
+   if(name==='@/components/i18n/localized')return {useUiCopy:()=>({language:'en',t:key=>key})};
+   if(name==='@/lib/i18n/format')return {formatSiteDate:()=>'date'};
    if(name.endsWith('.css'))return {default:{control: ''}};
    return {};
  }, document:{addEventListener(){},removeEventListener(){}}, Intl, Date, window:{}});

@@ -1,9 +1,9 @@
 .header { position:relative; z-index:30; background:color-mix(in srgb,var(--background) 96%,transparent); }
-.bar { max-width:1320px; margin:auto; padding:20px 36px; display:flex; align-items:center; justify-content:space-between; gap:26px; }
+.bar { max-width:1320px; margin:auto; padding:20px 36px; display:flex; align-items:center; justify-content:space-between; gap:26px; flex-wrap:wrap; row-gap:8px; }
 .brand { display:inline-flex; align-items:center; gap:11px; font: 28px/1 Georgia,'Times New Roman',serif; white-space:nowrap; color:#19152b; }
 .brandMark { display:block; position:relative; width:26px; height:30px; border-radius:16px 16px 0 0; background:linear-gradient(105deg,#624291 55%,#b88ae5); }
 .brandMark i { position:absolute; inset:7px 7px 0; background:var(--background); border-radius:10px 10px 0 0; }
-.desktop,.account { display:flex; align-items:center; gap:14px; font-size:var(--text-control); font-weight:550; }
+.desktop,.account { display:flex; align-items:center; gap:14px; font-size:var(--text-control); font-weight:550; flex-wrap:wrap; row-gap:4px; }
 .desktop a,.signIn { min-height:44px; display:inline-flex; align-items:center; padding:0 8px; transition:color 180ms; }
 .desktop a:hover,.desktop a[aria-current],.signIn:hover { color:var(--primary); }
 .desktop a[aria-current] { text-decoration:underline; text-underline-offset:7px; }
@@ -95,11 +95,10 @@
 /* At 320px the language switcher and search consume the flexible header space.
    Reserve a fixed menu slot rather than allowing the details box to overflow. */
 @media(max-width:360px) {
-  .bar { position:relative; padding-right:60px; }
-  .mobile { position:absolute; right:10px; top:50%; transform:translateY(-50%); width:44px; }
+  /* Keep the 44px menu target in flex flow; absolute positioning overlaps
+     the language selector and clips the open menu at 320px. */
+  .mobile { flex:0 0 44px; width:44px; }
   .account { flex-shrink:1; }
-  .header:dir(rtl) .bar { padding-right:10px; padding-left:60px; }
-  .header:dir(rtl) .mobile { right:auto; left:10px; }
 }
 /* The 320px navigation must fit its brand, locale and menu without scrolling.
    Search stays available from the opened mobile menu at this breakpoint. */

@@ -12,6 +12,9 @@ import {
   markNotificationRead,
 } from "@/app/(dashboard)/notifications/actions";
 import { ExternalImage } from "@/components/ui/external-image";
+import { useUiCopy } from "@/components/i18n/localized";
+import { formatSiteDate } from "@/lib/i18n/format";
+import type { UiCopyKey } from "@/lib/i18n/ui-copy";
 import { createClient } from "@/lib/supabase/client";
 import { subscribeMemberChannel } from "@/lib/supabase/member-realtime";
 
@@ -41,49 +44,49 @@ type NotificationBellProps = {
   unavailable?: boolean;
 };
 
-function getActorName(actor: NotificationSummary["actor"]) {
-  if (!actor) return "An Afghan Hub member";
+type Translate = (key: UiCopyKey, values?: Record<string, string | number>) => string;
 
+function getActorName(actor: NotificationSummary["actor"]) {
+  if (!actor) return null;
   return (
     actor.displayName?.trim() ||
     [actor.firstName, actor.lastName].filter(Boolean).join(" ") ||
-    "An Afghan Hub member"
+    null
   );
 }
 
-function getNotificationMessage(notification: NotificationSummary) {
-  const actorName = getActorName(notification.actor);
-
-  if (notification.type === "connection_request")
-    return `${actorName} sent you a connection request.`;
-  if (notification.type === "connection_accepted")
-    return `${actorName} accepted your connection request.`;
-  if (notification.type === "new_message")
-    return `${actorName} sent you a new message.`;
-  if (notification.type === "content_approved") {
-    return `Your ${notification.contentType ?? "submission"} “${
-      notification.contentTitle ?? "Untitled"
-    }” was approved.`;
-  }
-  if (notification.type === "content_rejected") {
-    const reason = notification.contentNote
-      ? ` Reason: ${notification.contentNote}`
-      : "";
-    return `Your ${notification.contentType ?? "submission"} “${
-      notification.contentTitle ?? "Untitled"
-    }” was not approved.${reason}`;
-  }
-
-  return "You have a new notification.";
+function contentTypeKey(contentType: string | null): UiCopyKey {
+  if (contentType === "opportunity") return "notifications.typeOpportunity";
+  if (contentType === "business") return "notifications.typeBusiness";
+  if (contentType === "organization") return "notifications.typeOrganization";
+  if (contentType === "event") return "notifications.typeEvent";
+  return "notifications.typeFallback";
 }
 
-function formatNotificationTime(value: string) {
-  return new Intl.DateTimeFormat("en-CA", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(value));
+function getNotificationMessage(notification: NotificationSummary, t: Translate) {
+  const actorName = getActorName(notification.actor) ?? t("notifications.memberFallback");
+
+  if (notification.type === "connection_request")
+    return t("notifications.connectionRequest", { name: actorName });
+  if (notification.type === "connection_accepted")
+    return t("notifications.connectionAccepted", { name: actorName });
+  if (notification.type === "new_message")
+    return t("notifications.newMessage", { name: actorName });
+
+  const type = t(contentTypeKey(notification.contentType));
+  const title = notification.contentTitle ?? t("notifications.untitled");
+
+  if (notification.type === "content_approved") {
+    return t("notifications.contentApproved", { type, title });
+  }
+  if (notification.type === "content_rejected") {
+    const base = t("notifications.contentRejected", { type, title });
+    return notification.contentNote
+      ? `${base}${t("notifications.reason", { reason: notification.contentNote })}`
+      : base;
+  }
+
+  return t("notifications.fallback");
 }
 
 export function NotificationBell({
@@ -98,6 +101,7 @@ export function NotificationBell({
   const panelRef = useRef<HTMLDivElement>(null);
   const panelId = useId();
   const router = useRouter();
+  const { language, t } = useUiCopy();
 
   useEffect(() => {
     const supabase = createClient();
@@ -162,10 +166,10 @@ export function NotificationBell({
   }, [isOpen]);
 
   const bellLabel = unavailable
-    ? "Notifications temporarily unavailable"
+    ? t("notifications.triggerUnavailable")
     : unreadCount > 0
-      ? `Notifications, ${unreadCount} unread`
-      : "Notifications";
+      ? t("notifications.triggerUnread", { count: unreadCount })
+      : t("notifications.trigger");
 
   return (
     <div ref={containerRef} className="relative">
@@ -193,20 +197,20 @@ export function NotificationBell({
           tabIndex={-1}
           id={panelId}
           role="dialog"
-          aria-label="Notifications"
+          aria-label={t("notifications.title")}
           className="fixed inset-x-4 top-[5.75rem] z-50 max-h-[calc(100dvh-7rem)] overflow-y-auto rounded-[var(--radius)] border border-border bg-card shadow-[0_8px_24px_#302b3512] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:absolute lg:inset-x-auto lg:right-0 lg:top-auto lg:mt-3 lg:w-96"
         >
           <div className="relative flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
             <div className="relative">
               <p className="font-semibold tracking-tight text-foreground">
-                Notifications
+                {t("notifications.title")}
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {unavailable
-                  ? "Temporarily unavailable"
+                  ? t("notifications.triggerUnavailable")
                   : unreadCount > 0
-                    ? `${unreadCount} unread`
-                    : "You’re all caught up"}
+                    ? t("notifications.unread", { count: unreadCount })
+                    : t("notifications.caughtUp")}
               </p>
             </div>
             {!unavailable && unreadCount > 0 ? (
@@ -214,7 +218,7 @@ export function NotificationBell({
                 <NotificationSubmit
                   className={`relative min-w-32 border border-primary/20 bg-secondary px-3 py-2 text-xs font-semibold text-primary hover:bg-primary/10 ${styles.control}`}
                 >
-                  Mark all read
+                  {t("notifications.markAllRead")}
                 </NotificationSubmit>
               </form>
             ) : null}
@@ -226,16 +230,16 @@ export function NotificationBell({
                 <Bell aria-hidden="true" className="size-6" />
               </span>
               <p className="mt-4 text-sm font-semibold text-foreground">
-                Notifications are temporarily unavailable
+                {t("notifications.unavailable")}
               </p>
               <p className="mx-auto mt-1 max-w-64 text-xs leading-5 text-muted-foreground">
-                Please close this panel and try again shortly.
+                {t("notifications.unavailableBody")}
               </p>
             </div>
           ) : notifications.length > 0 ? (
             <div className="max-h-[min(24rem,calc(100dvh-12rem))] overflow-y-auto">
               {notifications.map((notification) => {
-                const actorName = getActorName(notification.actor);
+                const actorName = getActorName(notification.actor) ?? t("notifications.memberFallback");
                 const isUnread = !notification.readAt;
                 const isModerationNotification =
                   notification.type === "content_approved" ||
@@ -297,15 +301,15 @@ export function NotificationBell({
                             isUnread ? "font-semibold" : ""
                           }`}
                         >
-                          {getNotificationMessage(notification)}
+                          {getNotificationMessage(notification, t)}
                         </span>
-                        <span className="mt-1 block text-xs text-muted-foreground">
-                          {formatNotificationTime(notification.createdAt)}
+                        <span className="mt-1 block text-xs text-muted-foreground" lang={language}>
+                          {formatSiteDate(language, notification.createdAt, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
                         </span>
                       </span>
 
                       {isUnread ? (
-                        <span aria-label="Unread" className="mt-2 size-2 shrink-0 rounded-full bg-primary" />
+                        <span aria-label={t("notifications.unreadLabel")} className="mt-2 size-2 shrink-0 rounded-full bg-primary" />
                       ) : null}
                     </NotificationSubmit>
                   </form>
@@ -318,10 +322,10 @@ export function NotificationBell({
                 <Bell aria-hidden="true" className="size-6" />
               </span>
               <p className="mt-4 text-sm font-semibold text-foreground">
-                No notifications yet
+                {t("notifications.empty")}
               </p>
               <p className="mx-auto mt-1 max-w-64 text-xs leading-5 text-muted-foreground">
-                New connections, messages, and moderation decisions will appear here.
+                {t("notifications.emptyBody")}
               </p>
             </div>
           )}

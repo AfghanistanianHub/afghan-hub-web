@@ -12,8 +12,11 @@ import {
 } from "lucide-react";
 
 import { ExternalImage } from "@/components/ui/external-image";
-import { discoveryIntentCards } from "@/components/discovery/goal-paths";
+import { discoveryIntentCards } from "@/components/discovery/goal-path-data";
 import { VerificationBadge } from "@/components/ui/verification-badge";
+import { B, BrowseField, BrowseSelect } from "@/components/i18n/browse";
+import { Localized } from "@/components/i18n/localized";
+import type { BrowseCopyKey } from "@/lib/i18n/browse-copy";
 import {
   getPhaseOneSearchIntent,
   limitIntentBrowseCandidates,
@@ -44,13 +47,55 @@ type SearchResult = {
   browse_verified?: boolean;
 };
 
+const intentOptions = [
+  { value: "", key: "search.anyIntent" },
+  ...phaseOneSearchIntents.map((option) => ({
+    value: option.value,
+    key: `intent.${option.value}` as BrowseCopyKey,
+  })),
+] as const;
+
+const intentEmptyKeys = {
+  find_work: "search.empty.find_work",
+  hire_talent: "search.empty.hire_talent",
+  find_mentor: "search.empty.find_mentor",
+  offer_mentorship: "search.empty.offer_mentorship",
+  volunteer: "search.empty.volunteer",
+  find_services: "search.empty.find_services",
+  join_community: "search.empty.join_community",
+} as const satisfies Record<string, BrowseCopyKey>;
+
+const intentReasonKeys: Record<string, BrowseCopyKey> = {
+  "Matches your work goal": "reason.matchesWork",
+  "Currently hiring": "reason.currentlyHiring",
+  "Member discovery for your hiring goal": "reason.memberDiscovery",
+  "Open to mentoring": "reason.openToMentoring",
+  "Looking for a mentor": "reason.lookingForMentor",
+  "Open to collaboration": "reason.openToCollaboration",
+  "Matches your funding goal": "reason.matchesFunding",
+  "Volunteer opportunity": "reason.volunteerOpportunity",
+  "Accepting volunteers": "reason.acceptingVolunteers",
+  "Business relevant to your services goal": "reason.businessServices",
+  "Community organization": "reason.communityOrganization",
+  "Upcoming community activity": "reason.upcomingActivity",
+};
+
+const goalCopyKeys: Record<string, { label: BrowseCopyKey; title: BrowseCopyKey; description: BrowseCopyKey }> = {
+  "/search?intent=find_work": { label: "goal.find_work.label", title: "goal.find_work.title", description: "goal.find_work.description" },
+  "/search?intent=find_services": { label: "goal.find_services.label", title: "goal.find_services.title", description: "goal.find_services.description" },
+  "/network": { label: "goal.connect.label", title: "goal.connect.title", description: "goal.connect.description" },
+  "/search?intent=join_community": { label: "goal.join_community.label", title: "goal.join_community.title", description: "goal.join_community.description" },
+  "/search?intent=volunteer": { label: "goal.volunteer.label", title: "goal.volunteer.title", description: "goal.volunteer.description" },
+};
+
 function isMemberResult(result: SearchResult) {
   return result.entity_type === "profile" || result.entity_type === "member";
 }
 
+/** Member names that look like an email address are replaced with localized copy. */
 function getSafeResultTitle(result: SearchResult) {
   if (isMemberResult(result) && /\S+@\S+\.\S+/.test(result.title)) {
-    return "Afghan Hub member";
+    return null;
   }
 
   return result.title;
@@ -92,42 +137,22 @@ function getResultIcon(entityType: string) {
   }
 }
 
-function getTypeLabel(entityType: string) {
+/** Entity types map to the shared public category copy; unknown values stay raw. */
+function ResultTypeLabel({ entityType }: { entityType: string }) {
   switch (entityType) {
     case "profile":
     case "member":
-      return "Member";
+      return <B k="search.typeMember" />;
     case "business":
-      return "Business";
+      return <Localized k="categories.businesses.singular" />;
     case "organization":
-      return "Organization";
+      return <Localized k="categories.organizations.singular" />;
     case "opportunity":
-      return "Opportunity";
+      return <Localized k="categories.opportunities.singular" />;
     case "event":
-      return "Event";
+      return <Localized k="categories.events.singular" />;
     default:
-      return entityType;
-  }
-}
-
-function getIntentEmptyCopy(intent: ReturnType<typeof getPhaseOneSearchIntent>) {
-  switch (intent) {
-    case "find_work":
-      return "No current jobs or explicitly hiring businesses match this view yet.";
-    case "hire_talent":
-      return "No eligible public member profiles are available in this view yet.";
-    case "find_mentor":
-      return "No eligible public members have opted in to offer mentorship in this view yet.";
-    case "offer_mentorship":
-      return "No eligible public members have said they are looking for a mentor in this view yet.";
-    case "volunteer":
-      return "No current volunteer roles or organizations explicitly accepting volunteers are available yet.";
-    case "find_services":
-      return "No published businesses are available in this view yet.";
-    case "join_community":
-      return "No published community organizations or current events are available in this view yet.";
-    default:
-      return null;
+      return <>{entityType}</>;
   }
 }
 
@@ -393,64 +418,54 @@ export default async function SearchPage({
   return (
     <main className={catalogPageContainerClass}>
       <div className="min-w-0">
-        <MemberPageHeader title="Search with purpose." description="Choose what you are trying to do, then browse or add a keyword. Afghan Hub uses only explicit, public signals to prioritize relevant people and listings." icon={Search} />
+        <MemberPageHeader title={<B k="search.title" />} description={<B k="search.description" />} icon={Search} />
 
         <form action="/search" role="search" className="relative mt-8 grid gap-3 rounded-[var(--radius)] border border-border/80 bg-card p-4 shadow-[0_1px_0_rgb(48_43_53/0.025)] md:grid-cols-[14rem_minmax(0,1fr)_auto] md:items-end">
-          <label className="grid gap-2 text-sm font-medium text-foreground">
-            What are you looking for?
-            <select
-              name="intent"
-              defaultValue={intent ?? ""}
-              className="rounded-[var(--radius-control)] border border-input bg-background px-4 py-4 text-sm text-foreground outline-none transition hover:border-primary focus:border-primary focus:bg-background focus:ring-4 focus:ring-primary/10"
-            >
-              <option value="">Anything in the community</option>
-              {phaseOneSearchIntents.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="relative grid gap-2 text-sm font-medium text-foreground">
-            Search Afghan Hub
-            <Search className="pointer-events-none absolute bottom-4 left-4 size-5 text-muted-foreground" />
-            <input
-              name="q"
-              type="search"
-              defaultValue={query}
-              placeholder={intent ? "Optional keyword…" : "Name, skill, organization, service, opportunity…"}
-              aria-label="Search Afghan Hub"
-              className="w-full rounded-[var(--radius-control)] border border-input bg-background py-4 pl-12 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary focus:border-primary focus:bg-background focus:ring-4 focus:ring-primary/10"
-            />
-          </label>
+          <BrowseSelect
+            labelKey="search.intentLabel"
+            name="intent"
+            defaultValue={intent ?? ""}
+            className="rounded-[var(--radius-control)] border border-input bg-background px-4 py-4 text-sm text-foreground outline-none transition hover:border-primary focus:border-primary focus:bg-background focus:ring-4 focus:ring-primary/10"
+            options={intentOptions}
+          />
+          <BrowseField
+            labelKey="search.fieldLabel"
+            name="q"
+            type="search"
+            defaultValue={query}
+            placeholderKey={intent ? "search.placeholderIntent" : "search.placeholder"}
+            className="w-full rounded-[var(--radius-control)] border border-input bg-background py-4 ps-12 pe-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary focus:border-primary focus:bg-background focus:ring-4 focus:ring-primary/10"
+            icon={<Search aria-hidden="true" className="size-5" />}
+            iconPlacement="field"
+          />
           <button
             type="submit"
             className="rounded-[var(--radius-control)] bg-primary px-5 py-4 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
-            {intent && !query ? "Browse" : "Search"}
+            {intent && !query ? <B k="search.browse" /> : <B k="search.submit" />}
           </button>
         </form>
 
         {query && query.length < 2 ? (
           <div className="mt-8 rounded-[var(--radius)] border border-amber-500/25 bg-amber-500/10 p-4 text-sm text-amber-700">
-            Enter at least two characters to search.
+            <B k="search.minChars" />
           </div>
         ) : null}
 
         {error ? (
           <div className="mt-8 rounded-[var(--radius)] border border-destructive/25 bg-destructive/8 p-4 text-sm text-destructive">
-            We could not complete your search. Please try again.
+            <B k="search.error" />
           </div>
         ) : null}
 
         {!error && (query.length >= 2 || isIntentOnlyBrowse) ? (
           <div className="mt-8">
             <p className="text-sm text-muted-foreground">
-              {results.length} {results.length === 1 ? "result" : "results"}
-              {query ? ` for “${query}”` : ""}
+              <B k={results.length === 1 ? "search.countOne" : "search.countMany"} values={{ count: results.length }} />
+              {query ? <> <B k="search.forQuery" values={{ query }} /></> : null}
               {intent
-                ? ` · ${isIntentOnlyBrowse ? "browsing" : "prioritized for"} ${phaseOneSearchIntents.find((option) => option.value === intent)?.label.toLowerCase()}`
-                : ""}
+                ? <> · <B k={isIntentOnlyBrowse ? "search.browsing" : "search.prioritizedFor"} /> <B k={`intent.${intent}` as BrowseCopyKey} /></>
+                : null}
             </p>
 
             {results.length > 0 ? (
@@ -461,6 +476,9 @@ export default async function SearchPage({
                   const location = [result.city, result.country]
                     .filter(Boolean)
                     .join(", ");
+                  const safeTitle = getSafeResultTitle(result);
+                  const reason = intentReasonByKey.get(getResultKey(result));
+                  const reasonKey = reason ? intentReasonKeys[reason] : undefined;
 
                   return (
                     <Link
@@ -486,12 +504,12 @@ export default async function SearchPage({
                       <div className="relative min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-semibold uppercase tracking-wide text-primary">
-                            {getTypeLabel(result.entity_type)}
+                            <ResultTypeLabel entityType={result.entity_type} />
                           </span>
                           {isVerifiedResult(result) ? <VerificationBadge compact /> : null}
                         </div>
                         <h2 className="mt-1 line-clamp-2 break-words font-bold leading-5 text-foreground">
-                          {getSafeResultTitle(result)}
+                          {safeTitle ?? <B k="search.memberFallback" />}
                         </h2>
                         {result.subtitle ? (
                           <p className="mt-1 line-clamp-2 text-sm leading-6 text-muted-foreground">
@@ -503,13 +521,13 @@ export default async function SearchPage({
                             {location}
                           </p>
                         ) : null}
-                        {intentReasonByKey.get(getResultKey(result)) ? (
+                        {reason ? (
                           <p className="mt-2 text-xs font-semibold text-primary">
-                            {intentReasonByKey.get(getResultKey(result))}
+                            {reasonKey ? <B k={reasonKey} /> : reason}
                           </p>
                         ) : null}
                       </div>
-                      <ArrowUpRight aria-hidden="true" className="relative mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                      <ArrowUpRight aria-hidden="true" className="relative mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary rtl:-scale-x-100" />
                     </Link>
                   );
                 })}
@@ -518,16 +536,16 @@ export default async function SearchPage({
               <div className="relative mt-5 flex min-h-64 flex-col items-center justify-center overflow-hidden rounded-[var(--radius)] border border-dashed border-border/80 bg-card/70 px-6 text-center shadow-[0_10px_30px_rgb(15_23_42/0.025)]">
                 <Search className="size-10 text-muted-foreground/60" />
                 <h2 className="mt-4 text-lg font-bold text-foreground">
-                  No results found
+                  <B k="search.emptyTitle" />
                 </h2>
                 <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                   {isIntentOnlyBrowse && intent
-                    ? getIntentEmptyCopy(intent)
-                    : "Try another name, location, skill, organization, business, opportunity, or event."}
+                    ? <B k={intentEmptyKeys[intent]} />
+                    : <B k="search.emptyBody" />}
                 </p>
                 {isIntentOnlyBrowse ? (
                   <p className="mt-3 max-w-md text-xs leading-5 text-muted-foreground">
-                    Add an optional keyword above to broaden or refine your discovery.
+                    <B k="search.emptyHint" />
                   </p>
                 ) : null}
               </div>
@@ -538,24 +556,22 @@ export default async function SearchPage({
         {!query && !intent ? (
           <section className="mt-8" aria-labelledby="search-start-heading">
             <div className="flex flex-col gap-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-                Start with a goal
-              </p>
+              <B k="search.startEyebrow" className="text-xs font-semibold uppercase tracking-[0.18em] text-primary" />
               <h2
                 id="search-start-heading"
                 className="text-2xl font-bold tracking-[-0.025em] text-foreground"
               >
-                Tell us what you are trying to do.
+                <B k="search.startTitle" />
               </h2>
               <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-                You do not need to know where something lives in Afghan Hub.
-                Choose a path and we will focus the kinds of results you see.
+                <B k="search.startBody" />
               </p>
             </div>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {discoveryIntentCards.map((goal) => {
                 const Icon = goal.icon;
+                const keys = goalCopyKeys[goal.href];
 
                 return (
                   <Link
@@ -573,18 +589,18 @@ export default async function SearchPage({
                       </span>
                       <ArrowUpRight
                         aria-hidden="true"
-                        className="size-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
+                        className="size-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary rtl:-scale-x-100"
                       />
                     </div>
                     <div className="relative mt-6">
                       <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-primary">
-                        {goal.label}
+                        {keys ? <B k={keys.label} /> : goal.label}
                       </p>
                       <h3 className="mt-1 text-lg font-bold tracking-[-0.02em] text-foreground">
-                        {goal.title}
+                        {keys ? <B k={keys.title} /> : goal.title}
                       </h3>
                       <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                        {goal.description}
+                        {keys ? <B k={keys.description} /> : goal.description}
                       </p>
                     </div>
                   </Link>
@@ -600,15 +616,12 @@ export default async function SearchPage({
                   <Search aria-hidden="true" className="size-5" />
                 </span>
                 <div className="relative mt-6">
-                  <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                    Explore
-                  </p>
+                  <B k="search.exploreEyebrow" className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-muted-foreground" />
                   <h3 className="mt-1 text-lg font-bold tracking-[-0.02em] text-foreground">
-                    Search anything
+                    <B k="search.anythingTitle" />
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    Use the search box above for a person, skill, service, place,
-                    organization, opportunity, or event.
+                    <B k="search.anythingBody" />
                   </p>
                 </div>
               </div>

@@ -2,13 +2,15 @@ import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { B } from "@/components/i18n/browse";
+
 /**
  * Editorial workspace heading: no decorative banner/card and one semantic h1.
  * Functional page actions stay visible and can wrap beneath the introduction.
  */
 export function MemberPageHeader({ title, description, icon: Icon, children }: {
-  title: string;
-  description: string;
+  title: ReactNode;
+  description: ReactNode;
   icon: LucideIcon;
   children?: ReactNode;
 }) {
@@ -18,7 +20,7 @@ export function MemberPageHeader({ title, description, icon: Icon, children }: {
         <div className="min-w-0 flex-1 basis-[19rem]">
           <p className="mb-4 inline-flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-primary">
             <Icon aria-hidden="true" className="size-4 shrink-0" />
-            Afghan Hub <span aria-hidden="true" className="text-muted-foreground/60">/</span> Community
+            Afghan Hub <span aria-hidden="true" className="text-muted-foreground/60">/</span> <B k="common.community" />
           </p>
           <h1 className="max-w-[21ch] text-balance text-[clamp(2rem,3.4vw,3.4rem)] font-medium leading-[1.08] tracking-[-0.045em] text-foreground">
             {title}
@@ -32,10 +34,10 @@ export function MemberPageHeader({ title, description, icon: Icon, children }: {
 }
 
 export function DirectoryEmptyState({ title, description, href, action }: {
-  title: string;
-  description: string;
+  title: ReactNode;
+  description: ReactNode;
   href: string;
-  action: string;
+  action: ReactNode;
 }) {
   return (
     <section className="mt-8 flex min-h-52 flex-col items-start justify-center border-y border-border/70 py-9 sm:py-12">

@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
+import { uiCopy } from "../src/lib/i18n/ui-copy.ts";
+import { browseCopy } from "../src/lib/i18n/browse-copy.ts";
 
 const launcher = fs.readFileSync(
   new URL("../src/components/assistant/contextual-assistant-prompt.tsx", import.meta.url),
@@ -19,7 +21,7 @@ const eventPage = fs.readFileSync(
   "utf8",
 );
 const network = fs.readFileSync(
-  new URL("../src/app/(dashboard)/network/page.tsx", import.meta.url),
+  new URL("../src/components/network/network-overview.tsx", import.meta.url),
   "utf8",
 );
 
@@ -31,14 +33,21 @@ test("contextual prompt launcher uses a shared non-navigation event contract", (
 });
 
 test("contextual prompts are available on opportunity, event and network surfaces", () => {
-  assert.match(opportunity, /Find similar opportunities/);
-  assert.match(opportunity, /Find people in this field/);
-  assert.match(eventPage, /Find similar events/);
-  assert.match(eventPage, /Find related organizations/);
-  assert.match(network, /Find tech professionals/);
-  assert.match(network, /Find artists/);
+  assert.match(opportunity, /opportunityDetail\.findSimilar/);
+  assert.match(opportunity, /opportunityDetail\.findPeople/);
+  assert.match(eventPage, /eventDetail\.findSimilar/);
+  assert.match(eventPage, /eventDetail\.findOrganizations/);
+  assert.equal(browseCopy.en["opportunityDetail.findSimilar"], "Find similar opportunities");
+  assert.equal(browseCopy.en["opportunityDetail.findPeople"], "Find people in this field");
+  assert.equal(browseCopy.en["eventDetail.findSimilar"], "Find similar events");
+  assert.equal(browseCopy.en["eventDetail.findOrganizations"], "Find related organizations");
+  assert.match(network, /label=\{copy\.tech\}/);
+  assert.match(network, /label=\{copy\.artists\}/);
   assert.match(network, /Find artists working in arts and culture/);
-  assert.match(network, /Find mentors/);
+  assert.match(network, /label=\{copy\.mentors\}/);
+  assert.match(uiCopy.en.network.findTech, /Find tech professionals/);
+  assert.match(uiCopy.en.network.findArtists, /Find artists/);
+  assert.match(uiCopy.en.network.findMentors, /Find mentors/);
 });
 
 test("contextual prompt contract does not add write actions", () => {

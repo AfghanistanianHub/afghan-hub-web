@@ -16,12 +16,14 @@ test("moderation team feedback is announced accessibly", () => {
 
 test("role updates prevent repeat submission while pending", () => {
   assert.match(source, /<PendingSubmitButton/);
-  assert.match(source, /pendingLabel="Saving role…"/);
+  assert.match(source, /pendingLabel=\{<B k="team\.savingRole" \/>\}/);
+  assert.match(source, /<B k="team\.saveRole" \/>/);
   assert.doesNotMatch(source, />\s*Save role\s*<\/button>/);
 });
 
 
 test("moderation team renders a clear empty state when no accounts are available", () => {
-  assert.match(source, /No member accounts to manage/);
-  assert.match(source, /Member accounts will appear here once they are available to the admin directory/);
+  assert.match(source, /<B k="team\.empty" \/>/);
+  assert.match(source, /<B k="team\.emptyBody" \/>/);
+  assert.doesNotMatch(source, /No member accounts to manage/);
 });

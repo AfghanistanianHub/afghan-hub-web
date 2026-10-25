@@ -13,6 +13,7 @@ for (const [folder, name, action] of [['events', 'DeleteEventButton', 'deleteEve
       'react/jsx-runtime': require('react/jsx-runtime'),
       'lucide-react': { Trash2: () => null },
       '@/components/forms/pending-submit-button': { PendingSubmitButton: () => null },
+      '@/components/i18n/browse': { B: () => null, useBrowseCopy: () => ({ language: 'en', t: (key) => key }) },
       [`@/app/(dashboard)/${folder}/actions`]: { [action]: serverAction },
     };
     new Function('require', 'exports', 'window', ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX } }).outputText)(key => imports[key], exports, { confirm: () => accepted });

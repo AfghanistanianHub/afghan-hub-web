@@ -19,6 +19,10 @@ const avatarSource = fs.readFileSync(
   new URL("../src/components/profile/avatar-upload.tsx", import.meta.url),
   "utf8",
 );
+const workspaceCopySource = fs.readFileSync(
+  new URL("../src/lib/i18n/workspace-copy.ts", import.meta.url),
+  "utf8",
+);
 
 test("profile errors are announced and profile submit exposes pending state", () => {
   assert.match(profileSource, /role="alert"/);
@@ -29,6 +33,9 @@ test("profile errors are announced and profile submit exposes pending state", ()
   assert.match(copy, /saving: "Saving profile…"/);
   assert.match(copy, /saving: "در حال ذخیره پروفایل…"/);
   assert.match(copy, /saving: "پروفایل ساتل کېږي…"/);
+  assert.match(profileSource, /<LocalizedSubmitButton/);
+  assert.match(profileSource, /pendingKey="profile.saving"/);
+  assert.match(workspaceCopySource, /"profile.saving": "Saving profile…"/);
 });
 
 test("settings feedback is announced and save action exposes pending state", () => {

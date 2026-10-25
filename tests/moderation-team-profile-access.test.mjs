@@ -26,5 +26,6 @@ test("moderation team does not expose raw database load errors", async () => {
   const pageSource = await readFile(pagePath, "utf8");
 
   assert.doesNotMatch(pageSource, /membersError\.message/);
-  assert.match(pageSource, /We could not load members\. Please try again\./);
+  // The load failure is rendered from the catalogue instead of raw provider text.
+  assert.match(pageSource, /<B k="team\.loadError" \/>/);
 });

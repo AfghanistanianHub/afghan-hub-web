@@ -3,6 +3,8 @@
 import { useState } from "react";
 
 import { ExternalImage } from "@/components/ui/external-image";
+import { useWorkspaceCopy } from "@/components/i18n/workspace";
+import type { WorkspaceCopyKey } from "@/lib/i18n/workspace-copy";
 import { createClient } from "@/lib/supabase/client";
 
 type BusinessMediaUploadProps = {
@@ -18,7 +20,25 @@ type UploadMessage = {
   kind: "success" | "error";
 } | null;
 
+type MediaKind = "logo" | "cover";
+
 const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+const businessMessages: Record<
+  MediaKind,
+  { uploadFailed: WorkspaceCopyKey; saveFailed: WorkspaceCopyKey; updated: WorkspaceCopyKey }
+> = {
+  cover: {
+    uploadFailed: "media.businessCoverUploadFailed",
+    saveFailed: "media.businessCoverSaveFailed",
+    updated: "media.businessCoverUpdated",
+  },
+  logo: {
+    uploadFailed: "media.businessLogoUploadFailed",
+    saveFailed: "media.businessLogoSaveFailed",
+    updated: "media.businessLogoUpdated",
+  },
+};
 
 export function BusinessMediaUpload({
   businessId,
@@ -28,19 +48,20 @@ export function BusinessMediaUpload({
   currentCoverUrl,
 }: BusinessMediaUploadProps) {
   const supabase = createClient();
+  const { t } = useWorkspaceCopy();
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<UploadMessage>(null);
 
-  async function uploadImage(file: File, kind: "logo" | "cover", maxSizeMb: number) {
+  async function uploadImage(file: File, kind: MediaKind, maxSizeMb: number) {
     setMessage(null);
 
     if (!allowedTypes.includes(file.type)) {
-      setMessage({ text: "Please select a JPG, PNG, or WebP image.", kind: "error" });
+      setMessage({ text: t("media.invalidType"), kind: "error" });
       return;
     }
 
     if (file.size > maxSizeMb * 1024 * 1024) {
-      setMessage({ text: `The image must be smaller than ${maxSizeMb} MB.`, kind: "error" });
+      setMessage({ text: t("media.tooLarge", { size: maxSizeMb }), kind: "error" });
       return;
     }
 
@@ -54,7 +75,7 @@ export function BusinessMediaUpload({
 
     if (uploadError) {
       setMessage({
-        text: `We could not upload the business ${kind}. Please try again.`,
+        text: t(businessMessages[kind].uploadFailed),
         kind: "error",
       });
       setUploading(false);
@@ -75,7 +96,7 @@ export function BusinessMediaUpload({
 
     if (updateError) {
       setMessage({
-        text: `The image uploaded, but we could not update the business ${kind}. Please try again.`,
+        text: t(businessMessages[kind].saveFailed),
         kind: "error",
       });
       setUploading(false);
@@ -83,7 +104,7 @@ export function BusinessMediaUpload({
     }
 
     setMessage({
-      text: `Business ${kind} updated. The listing has been resubmitted for review.`,
+      text: t(businessMessages[kind].updated),
       kind: "success",
     });
     setUploading(false);
@@ -96,24 +117,24 @@ export function BusinessMediaUpload({
   return (
     <div className="space-y-6" aria-busy={uploading}>
       <section className="relative border border-border bg-card overflow-hidden rounded-[var(--radius)] p-6 ">
-        <h2 className="text-xl font-semibold">Business cover</h2>
+        <h2 className="text-xl font-semibold">{t("media.businessCover")}</h2>
         <div className="mt-5">
           {currentCoverUrl ? (
-            <ExternalImage src={currentCoverUrl} alt={`${businessName} cover`} width={1200} height={400} className="h-48 w-full rounded-[var(--radius)] border border-border/70 object-cover " />
+            <ExternalImage src={currentCoverUrl} alt="" width={1200} height={400} className="h-48 w-full rounded-[var(--radius)] border border-border/70 object-cover " />
           ) : (
-            <div className="flex h-48 w-full items-center justify-center rounded-[var(--radius)] border border-dashed border-border bg-muted/45 text-sm text-muted-foreground">No cover image</div>
+            <div className="flex h-48 w-full items-center justify-center rounded-[var(--radius)] border border-dashed border-border bg-muted/45 text-sm text-muted-foreground">{t("media.noCover")}</div>
           )}
           <div className="mt-4">
-            <label className={uploadClass}><span role="status" aria-live="polite">{uploading ? "Uploading…" : "Upload cover"}</span><input type="file" aria-label="Upload business cover image" accept="image/jpeg,image/png,image/webp" disabled={uploading} aria-describedby="business-media-help business-media-message" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadImage(file, "cover", 8); }} /></label>
-            <p id="business-media-help" className="mt-2 text-xs text-muted-foreground">Recommended ratio: 3:1. Maximum size: 8 MB.</p>
+            <label className={uploadClass}><span role="status" aria-live="polite">{uploading ? t("media.uploading") : t("media.uploadCover")}</span><input type="file" aria-label={t("media.uploadBusinessCoverAria")} accept="image/jpeg,image/png,image/webp" disabled={uploading} aria-describedby="business-media-help business-media-message" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadImage(file, "cover", 8); }} /></label>
+            <p id="business-media-help" className="mt-2 text-xs text-muted-foreground">{t("media.coverHelp")}</p>
           </div>
         </div>
       </section>
       <section className="relative border border-border bg-card overflow-hidden rounded-[var(--radius)] p-6 ">
-        <h2 className="text-xl font-semibold">Business logo</h2>
+        <h2 className="text-xl font-semibold">{t("media.businessLogo")}</h2>
         <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
-          {currentLogoUrl ? <ExternalImage src={currentLogoUrl} alt={`${businessName} logo`} width={96} height={96} className="h-24 w-24 rounded-[var(--radius)] border border-border/70 object-cover " /> : <div className="flex h-24 w-24 items-center justify-center rounded-[var(--radius)] border border-border bg-primary/10 text-3xl font-bold text-primary ">{businessName.charAt(0).toUpperCase()}</div>}
-          <div><label className={uploadClass}><span role="status" aria-live="polite">{uploading ? "Uploading…" : "Upload logo"}</span><input type="file" aria-label="Upload business logo" accept="image/jpeg,image/png,image/webp" disabled={uploading} aria-describedby="business-logo-help business-media-message" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadImage(file, "logo", 5); }} /></label><p id="business-logo-help" className="mt-2 text-xs text-muted-foreground">JPG, PNG, or WebP. Maximum size: 5 MB.</p></div>
+          {currentLogoUrl ? <ExternalImage src={currentLogoUrl} alt="" width={96} height={96} className="h-24 w-24 rounded-[var(--radius)] border border-border/70 object-cover " /> : <div className="flex h-24 w-24 items-center justify-center rounded-[var(--radius)] border border-border bg-primary/10 text-3xl font-bold text-primary ">{businessName.charAt(0).toUpperCase()}</div>}
+          <div><label className={uploadClass}><span role="status" aria-live="polite">{uploading ? t("media.uploading") : t("media.uploadLogo")}</span><input type="file" aria-label={t("media.uploadBusinessLogoAria")} accept="image/jpeg,image/png,image/webp" disabled={uploading} aria-describedby="business-logo-help business-media-message" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadImage(file, "logo", 5); }} /></label><p id="business-logo-help" className="mt-2 text-xs text-muted-foreground">{t("media.logoHelp")}</p></div>
         </div>
       </section>
       {message ? <p id="business-media-message" role={message.kind === "error" ? "alert" : "status"} aria-live={message.kind === "error" ? "assertive" : "polite"} className={message.kind === "error" ? "rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm text-destructive" : "rounded-[var(--radius)] border border-primary/15 bg-primary/[0.05] px-3 py-2 text-sm text-primary"}>{message.text}</p> : null}

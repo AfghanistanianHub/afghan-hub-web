@@ -9,6 +9,11 @@ import {
 
 const labels = {
   en: {
+    recommended: "Recommended for you",
+    suggested: "Suggested opportunities",
+    viewAll: "View all",
+    noActive: "No active opportunities yet",
+    newAppear: "New opportunities will appear here when they are published.",
     eyebrow: "Your community, connected",
     welcome: "Welcome back,",
     description: "See what is moving, meet people relevant to you, and keep your next step close.",
@@ -27,6 +32,11 @@ const labels = {
     step_discovery: "Add languages or a professional link",
   },
   fa: {
+    recommended: "پیشنهادشده برای شما",
+    suggested: "فرصت‌های پیشنهادی",
+    viewAll: "مشاهده همه",
+    noActive: "هنوز فرصت فعالی وجود ندارد",
+    newAppear: "فرصت‌های جدید پس از انتشار در اینجا نمایش داده می‌شوند.",
     eyebrow: "جامعه شما، در ارتباط با یکدیگر",
     welcome: "خوش آمدید،",
     description: "از تازه‌ترین فعالیت‌ها آگاه شوید، با افراد مرتبط آشنا شوید و برای گام بعدی خود برنامه‌ریزی کنید.",
@@ -45,6 +55,11 @@ const labels = {
     step_discovery: "زبان‌ها یا لینک حرفه‌ای خود را اضافه کنید",
   },
   ps: {
+    recommended: "ستاسو لپاره وړاندیز شوي",
+    suggested: "وړاندیز شوي فرصتونه",
+    viewAll: "ټول وګورئ",
+    noActive: "تر اوسه فعال فرصتونه نشته",
+    newAppear: "نوي فرصتونه به له خپرېدو وروسته دلته ښکاره شي.",
     eyebrow: "ستاسو ټولنه، له یو بل سره تړلې",
     welcome: "بېرته ښه راغلاست،",
     description: "له تازه فعالیتونو خبر شئ، له اړوندو خلکو سره وپېژنئ او د خپل راتلونکي ګام لپاره چمتو اوسئ.",

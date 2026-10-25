@@ -1,3 +1,4 @@
+import { Localized } from "@/components/i18n/localized";
 import { ConversationList, type ConversationListItem } from "./conversation-list";
 import { createClient } from "@/lib/supabase/server";
 
@@ -11,15 +12,18 @@ export async function ConversationNavigation({ currentUserId, activeId }: { curr
   const profilesById = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
   const conversations: ConversationListItem[] = (inboxRows ?? []).map((row) => {
     const profile = row.other_member_id ? profilesById.get(row.other_member_id) : undefined;
+    const name = profile?.display_name?.trim() || [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || null;
     return {
       id: row.conversation_id,
-      name: profile?.display_name?.trim() || [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || "Afghan Hub Member",
+      name,
       avatarUrl: profile?.avatar_url ?? null,
-      preview: row.latest_message_body ? `${row.latest_message_sender_id === currentUserId ? "You: " : ""}${row.latest_message_body}` : profile?.headline || "Start the conversation",
+      preview: row.latest_message_body ?? profile?.headline ?? null,
+      previewKind: row.latest_message_body ? "message" : profile?.headline ? "headline" : "none",
+      sentByCurrentUser: Boolean(row.latest_message_body) && row.latest_message_sender_id === currentUserId,
       updatedAt: row.latest_message_created_at ?? row.conversation_updated_at,
       unreadCount: Number(row.unread_count),
     };
   });
-  if (error) return <p role="alert" aria-live="assertive" className="p-4 text-sm text-destructive">We could not load your conversations. Please try again.</p>;
-  return <>{profilesError ? <p role="status" className="p-4 text-sm text-muted-foreground">Your conversations loaded, but some member details are temporarily unavailable.</p> : null}<ConversationList conversations={conversations} activeId={activeId} /></>;
+  if (error) return <p role="alert" aria-live="assertive" className="p-4 text-sm text-destructive"><Localized k="messages.loadError" /></p>;
+  return <>{profilesError ? <p role="status" className="p-4 text-sm text-muted-foreground"><Localized k="messages.profilesPartial" /></p> : null}<ConversationList conversations={conversations} activeId={activeId} /></>;
 }

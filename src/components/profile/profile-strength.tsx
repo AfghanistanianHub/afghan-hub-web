@@ -1,3 +1,10 @@
+"use client";
+import { useSiteLanguage } from "@/components/i18n/localized";
+const strengthCopy = {
+ en: ["Profile strength", "You are ready to be discovered", "Make your profile work harder", "Your profile includes the core signals members use to understand and discover you.", "Complete profile", "Profile completeness"],
+ fa: ["تکمیل پروفایل", "پروفایل شما آماده نمایش است", "پروفایل خود را تکمیل کنید", "پروفایل شما اطلاعات اصلی لازم برای آشنایی دیگر اعضا با شما را دارد.", "تکمیل پروفایل", "میزان تکمیل پروفایل"],
+ ps: ["د پروفایل بشپړتیا", "ستاسو پروفایل د موندلو لپاره چمتو دی", "خپل پروفایل بشپړ کړئ", "ستاسو پروفایل هغه بنسټیز معلومات لري چې نور غړي پرې تاسو پېژني.", "پروفایل بشپړ کړئ", "د پروفایل د بشپړتیا کچه"],
+} as const;
 import Link from "next/link";
 import styles from "@/components/network/network-surfaces.module.css";
 import { CommunitySignature } from "@/components/public/community-signature";
@@ -29,6 +36,8 @@ export function ProfileStrength({
   language = "en",
 }: ProfileStrengthProps) {
   const t = copy[language];
+  const language = useSiteLanguage();
+  const copy = strengthCopy[language];
   const strength = getProfileCompleteness(profile);
   const nextSteps = strength.missing.slice(0, compact ? 2 : 3);
 
@@ -44,6 +53,10 @@ export function ProfileStrength({
           </p>
           <h2 className="mt-1 text-xl font-bold tracking-[-0.02em] text-foreground">
             {strength.complete ? t.ready : t.improve}
+            {copy[0]}
+          </p>
+          <h2 className="mt-1 text-xl font-bold tracking-[-0.02em] text-foreground">
+            {strength.complete ? copy[1] : copy[2]}
           </h2>
         </div>
         <span className="shrink-0 text-2xl font-bold tracking-tight text-foreground">
@@ -52,6 +65,7 @@ export function ProfileStrength({
       </div>
 
       <div className="relative mt-4 h-2 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label={t.completeness} aria-valuemin={0} aria-valuemax={100} aria-valuenow={strength.percent}>
+      <div className="relative mt-4 h-2 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label={copy[5]} aria-valuemin={0} aria-valuemax={100} aria-valuenow={strength.percent}>
         <div
           className="h-full rounded-full bg-primary transition-[width] motion-reduce:transition-none"
           style={{ width: `${strength.percent}%` }}
@@ -62,6 +76,7 @@ export function ProfileStrength({
         <div className="relative mt-5 flex items-start gap-3 rounded-[var(--radius)] bg-primary/[0.06] p-4 text-sm leading-6 text-foreground">
           <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4.5 shrink-0 text-primary" />
           {t.complete}
+          {copy[3]}
         </div>
       ) : (
         <div className="relative mt-5 space-y-3">
@@ -88,6 +103,8 @@ export function ProfileStrength({
 >
           {t.action}
           <ArrowRight aria-hidden="true" className="size-4" />
+          {copy[4]}
+          <ArrowRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
         </Link>
       ) : null}
     </div>

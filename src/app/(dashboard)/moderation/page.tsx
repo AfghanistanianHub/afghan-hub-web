@@ -14,8 +14,15 @@ import {
   X,
 } from "lucide-react";
 
+import type { ReactNode } from "react";
+
 import { moderateContent } from "@/app/(dashboard)/moderation/actions";
 import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
+import { B, BDate, BDatePhrase } from "@/components/i18n/browse";
+import { W } from "@/components/i18n/workspace";
+import { organizationTypeOptions } from "@/components/organizations/organization-type-options";
+import type { BrowseCopyKey } from "@/lib/i18n/browse-copy";
+import type { WorkspaceCopyKey } from "@/lib/i18n/workspace-copy";
 import { getMyAccessContext } from "@/lib/profile-access";
 import { createClient } from "@/lib/supabase/server";
 
@@ -43,24 +50,16 @@ type HistoryItem = {
   moderatedAt: string;
 };
 
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("en-CA", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  }).format(new Date(value));
-}
+const approvalMessages: Record<string, BrowseCopyKey> = {
+  approved: "moderation.successApproved",
+  rejected: "moderation.successRejected",
+};
 
-function formatDateTime(value: string) {
-  return new Intl.DateTimeFormat("en-CA", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  }).format(new Date(value));
-}
+const errorMessages: Record<string, BrowseCopyKey> = {
+  "invalid-request": "moderation.errorInvalidRequest",
+  "invalid-reason": "moderation.errorInvalidReason",
+  "apply-failed": "moderation.errorApplyFailed",
+};
 
 function isApproved(item: HistoryItem) {
   return item.status === "published";
@@ -73,11 +72,42 @@ function getEntityHref(entityType: ModerationEntityType, slug: string) {
   return `/organizations/${slug}`;
 }
 
-function getEntityLabel(entityType: ModerationEntityType) {
-  if (entityType === "opportunity") return "Opportunity";
-  if (entityType === "event") return "Event";
-  if (entityType === "business") return "Business";
-  return "Organization";
+function getEntityLabel(entityType: ModerationEntityType): BrowseCopyKey {
+  if (entityType === "opportunity") return "moderation.entityOpportunity";
+  if (entityType === "event") return "moderation.entityEvent";
+  if (entityType === "business") return "moderation.entityBusiness";
+  return "moderation.entityOrganization";
+}
+
+function opportunityTypeKey(value: string): BrowseCopyKey {
+  return value === "volunteer" ? "opportunityType.volunteer" : "opportunityType.job";
+}
+
+function organizationTypeKey(value: string | null): WorkspaceCopyKey | null {
+  if (!value) return null;
+  const option = organizationTypeOptions.find((entry) => entry.value === value);
+  return option?.key ?? null;
+}
+
+/** Localized entity label with an optional localized or user-data detail. */
+function EntityLabel({
+  entityType,
+  detail,
+}: {
+  entityType: ModerationEntityType;
+  detail?: ReactNode;
+}) {
+  return (
+    <>
+      <B k={getEntityLabel(entityType)} />
+      {detail ? (
+        <>
+          {" · "}
+          {detail}
+        </>
+      ) : null}
+    </>
+  );
 }
 
 export default async function ModerationPage({
@@ -231,8 +261,8 @@ export default async function ModerationPage({
   return (
     <main className={catalogPageContainerClass}>
       <div className="min-w-0">
-        <MemberPageHeader title="Content moderation" description="Review opportunities, events, businesses, and organizations before they become visible to the community." icon={CircleCheck}>
-          {accessContext.role === "admin" ? <Link href="/moderation/team" className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-border bg-card px-4 py-2.5 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Manage moderation team</Link> : null}
+        <MemberPageHeader title={<B k="moderation.title" />} description={<B k="moderation.description" />} icon={CircleCheck}>
+          {accessContext.role === "admin" ? <Link href="/moderation/team" className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-border bg-card px-4 py-2.5 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"><B k="moderation.manageTeam" /></Link> : null}
         </MemberPageHeader>
 
         {error ? (
@@ -241,7 +271,7 @@ export default async function ModerationPage({
             aria-live="assertive"
             className="mt-6 rounded-[var(--radius-control)] border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive"
           >
-            {error}
+            <B k={errorMessages[error] ?? "moderation.errorApplyFailed"} />
           </div>
         ) : null}
 
@@ -251,7 +281,7 @@ export default async function ModerationPage({
             aria-live="polite"
             className="mt-6 rounded-[var(--radius-control)] border border-primary/20 bg-primary/10 p-4 text-sm text-primary"
           >
-            The submission was {success}.
+            <B k={approvalMessages[success] ?? "moderation.successGeneric"} />
           </div>
         ) : null}
 
@@ -265,9 +295,9 @@ export default async function ModerationPage({
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Pending review
+            <B k="moderation.pendingTab" />
             {pendingCount > 0 ? (
-              <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
+              <span className="ms-2 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
                 {pendingCount}
               </span>
             ) : null}
@@ -281,14 +311,14 @@ export default async function ModerationPage({
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Recent decisions
+            <B k="moderation.historyTab" />
           </Link>
         </div>
 
         {activeView === "pending" ? (
           <>
             <div className="mt-8 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-foreground">Pending review</h2>
+              <h2 className="text-xl font-bold text-foreground"><B k="moderation.pendingHeading" /></h2>
               <span className="rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground">
                 {pendingCount}
               </span>
@@ -302,10 +332,22 @@ export default async function ModerationPage({
                     entityId={opportunity.id}
                     entityType="opportunity"
                     href={`/opportunities/${opportunity.slug}`}
-                    label={`Opportunity · ${opportunity.type}`}
+                    label={
+                      <EntityLabel
+                        entityType="opportunity"
+                        detail={<B k={opportunityTypeKey(opportunity.type)} />}
+                      />
+                    }
                     title={opportunity.title}
                     summary={opportunity.summary}
-                    meta={`Submitted ${formatDate(opportunity.created_at)}`}
+                    meta={
+                      <BDatePhrase
+                        k="moderation.submitted"
+                        date={opportunity.created_at}
+                        mode="shortDate"
+                        field="date"
+                      />
+                    }
                   />
                 ))}
                 {events?.map((event) => (
@@ -314,10 +356,17 @@ export default async function ModerationPage({
                     entityId={event.id}
                     entityType="event"
                     href={`/events/${event.slug}`}
-                    label="Event"
+                    label={<EntityLabel entityType="event" />}
                     title={event.title}
                     summary={event.summary}
-                    meta={`Starts ${formatDate(event.starts_at)}`}
+                    meta={
+                      <BDatePhrase
+                        k="moderation.starts"
+                        date={event.starts_at}
+                        mode="shortDate"
+                        field="date"
+                      />
+                    }
                   />
                 ))}
                 {businesses?.map((business) => (
@@ -326,10 +375,17 @@ export default async function ModerationPage({
                     entityId={business.id}
                     entityType="business"
                     href={`/businesses/${business.slug}`}
-                    label={`Business · ${business.category}`}
+                    label={<EntityLabel entityType="business" detail={business.category} />}
                     title={business.name}
                     summary={business.short_description}
-                    meta={`Submitted ${formatDate(business.created_at)}`}
+                    meta={
+                      <BDatePhrase
+                        k="moderation.submitted"
+                        date={business.created_at}
+                        mode="shortDate"
+                        field="date"
+                      />
+                    }
                   />
                 ))}
                 {organizations?.map((organization) => (
@@ -339,26 +395,43 @@ export default async function ModerationPage({
                     entityType="organization"
                     href={`/organizations/${organization.slug}`}
                     label={
-                      organization.organization_type
-                        ? `Organization · ${organization.organization_type}`
-                        : "Organization"
+                      <EntityLabel
+                        entityType="organization"
+                        detail={
+                          organization.organization_type ? (
+                            <W
+                              k={
+                                organizationTypeKey(organization.organization_type) ??
+                                "organization.typeOther"
+                              }
+                            />
+                          ) : null
+                        }
+                      />
                     }
                     title={organization.name}
                     summary={organization.short_description}
-                    meta={`Submitted ${formatDate(organization.created_at)}`}
+                    meta={
+                      <BDatePhrase
+                        k="moderation.submitted"
+                        date={organization.created_at}
+                        mode="shortDate"
+                        field="date"
+                      />
+                    }
                   />
                 ))}
               </div>
             ) : (
-              <div className="relative mt-5 overflow-hidden rounded-[var(--radius)] border border-dashed border-border/80 bg-muted/25 p-12 text-center text-muted-foreground"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-primary/[0.06] blur-3xl"/><span className="relative mx-auto flex size-14 items-center justify-center rounded-[var(--radius-control)] bg-primary/10 text-primary"><CircleCheck aria-hidden="true" className="size-7"/></span><p className="relative mt-5 font-medium text-foreground">Nothing waiting for review</p><p className="relative mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">New submissions will appear here when they need moderator approval.</p></div>
+              <div className="relative mt-5 overflow-hidden rounded-[var(--radius)] border border-dashed border-border/80 bg-muted/25 p-12 text-center text-muted-foreground"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-primary/[0.06] blur-3xl"/><span className="relative mx-auto flex size-14 items-center justify-center rounded-[var(--radius-control)] bg-primary/10 text-primary"><CircleCheck aria-hidden="true" className="size-7"/></span><p className="relative mt-5 font-medium text-foreground"><B k="moderation.nothingPending" /></p><span className="relative mx-auto mt-2 block max-w-md text-sm leading-6 text-muted-foreground"><B k="moderation.nothingPendingBody" /></span></div>
             )}
           </>
         ) : (
           <section className="mt-8">
             <div>
-              <h2 className="text-xl font-bold text-foreground">Recent decisions</h2>
+              <h2 className="text-xl font-bold text-foreground"><B k="moderation.historyHeading" /></h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                The latest approved and rejected submissions across all moderated content.
+                <B k="moderation.historyBody" />
               </p>
             </div>
 
@@ -377,7 +450,7 @@ export default async function ModerationPage({
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                              {getEntityLabel(item.entityType)}
+                              <EntityLabel entityType={item.entityType} />
                             </span>
                             <span
                               className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
@@ -387,7 +460,7 @@ export default async function ModerationPage({
                               }`}
                             >
                               <DecisionIcon aria-hidden="true" className="size-3.5" />
-                              {approved ? "Approved" : "Rejected"}
+                              <B k={approved ? "moderation.approved" : "moderation.rejected"} />
                             </span>
                           </div>
 
@@ -400,14 +473,17 @@ export default async function ModerationPage({
 
                           {item.moderationNote ? (
                             <p className="mt-3 break-words text-sm leading-6 text-muted-foreground">
-                              Reason: {item.moderationNote}
+                              <B
+                                k="moderation.reason"
+                                values={{ reason: item.moderationNote }}
+                              />
                             </p>
                           ) : null}
                         </div>
 
                         <p className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
                           <Clock3 aria-hidden="true" className="size-3.5" />
-                          {formatDateTime(item.moderatedAt)}
+                          <BDate value={item.moderatedAt} mode="datetime" />
                         </p>
                       </div>
                     </article>
@@ -415,7 +491,7 @@ export default async function ModerationPage({
                 })}
               </div>
             ) : (
-              <div className="relative mt-5 overflow-hidden rounded-[var(--radius)] border border-dashed border-border/80 bg-muted/25 p-12 text-center text-muted-foreground"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-accent/55 blur-3xl"/><span className="relative mx-auto flex size-14 items-center justify-center rounded-[var(--radius-control)] bg-primary/10 text-primary"><Clock3 aria-hidden="true" className="size-7"/></span><p className="relative mt-5 font-medium text-foreground">No moderation history yet</p><p className="relative mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">Approved and rejected submissions will appear here after the first review decision.</p></div>
+              <div className="relative mt-5 overflow-hidden rounded-[var(--radius)] border border-dashed border-border/80 bg-muted/25 p-12 text-center text-muted-foreground"><div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-accent/55 blur-3xl"/><span className="relative mx-auto flex size-14 items-center justify-center rounded-[var(--radius-control)] bg-primary/10 text-primary"><Clock3 aria-hidden="true" className="size-7"/></span><p className="relative mt-5 font-medium text-foreground"><B k="moderation.noHistory" /></p><span className="relative mx-auto mt-2 block max-w-md text-sm leading-6 text-muted-foreground"><B k="moderation.noHistoryBody" /></span></div>
             )}
           </section>
         )}
@@ -436,10 +512,10 @@ function ModerationCard({
   entityId: string;
   entityType: ModerationEntityType;
   href: string;
-  label: string;
+  label: ReactNode;
   title: string;
   summary: string | null;
-  meta: string;
+  meta: ReactNode;
 }) {
   const Icon =
     entityType === "opportunity"
@@ -489,19 +565,19 @@ function ModerationButtons({
         name="decision"
         value="approve"
         formNoValidate
-        pendingLabel="Approving…"
+        pendingLabel={<B k="moderation.approving" />}
         className="inline-flex min-h-11 items-center gap-2 rounded-[var(--radius-control)] bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
-        <Check aria-hidden="true" className="size-4" /> Approve
+        <Check aria-hidden="true" className="size-4" /> <B k="moderation.approve" />
       </PendingSubmitButton>
 
       <details className="rounded-[var(--radius-control)] border border-destructive/20 bg-destructive/5 p-3">
         <summary className="flex min-h-11 cursor-pointer items-center rounded-[var(--radius-control)] px-2 py-2 text-sm font-semibold text-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destructive">
-          Reject with a reason
+          <B k="moderation.rejectSummary" />
         </summary>
         <div className="mt-3 space-y-3">
           <label className="block text-xs font-medium text-foreground">
-            Explain what should be corrected
+            <B k="moderation.rejectLabel" />
             <textarea
               name="moderation_note"
               required
@@ -514,10 +590,10 @@ function ModerationButtons({
           <PendingSubmitButton
             name="decision"
             value="reject"
-            pendingLabel="Rejecting…"
+            pendingLabel={<B k="moderation.rejecting" />}
             className="inline-flex min-h-11 items-center gap-2 rounded-[var(--radius-control)] border border-destructive/30 px-4 py-2 text-sm font-semibold text-destructive transition hover:bg-destructive/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-destructive"
           >
-            <X aria-hidden="true" className="size-4" /> Reject submission
+            <X aria-hidden="true" className="size-4" /> <B k="moderation.reject" />
           </PendingSubmitButton>
         </div>
       </details>

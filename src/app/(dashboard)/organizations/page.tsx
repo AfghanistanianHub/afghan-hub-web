@@ -4,6 +4,7 @@ import { ArrowUpRight, Search, UsersRound } from "lucide-react";
 
 import { OrganizationDirectory } from "@/components/organizations/organization-directory";
 import { createClient } from "@/lib/supabase/server";
+import { B, BrowseCheckbox, BrowseField } from "@/components/i18n/browse";
 import {
   catalogCheckboxInputClass,
   catalogCheckboxLabelClass,
@@ -34,18 +35,19 @@ export default async function OrganizationsPage({ searchParams }: OrganizationsP
   if (verified) organizationsQuery = organizationsQuery.eq("is_verified", true);
   const { data: organizations, error } = await organizationsQuery;
   const hasFilters = Boolean(search || organizationType || city || volunteers || verified);
+  const count = organizations?.length ?? 0;
 
   return <main data-illustration-focus-scope className={catalogPageContainerClass}>
-    <MemberPageHeader title="Discover organizations" description="Explore Afghan-led nonprofits, associations and community initiatives." icon={UsersRound}><Link href="/organizations/new" className={catalogSubmitClass}>Add organization<ArrowUpRight className="ms-2 inline size-4" aria-hidden="true" /></Link></MemberPageHeader>
+    <MemberPageHeader title={<B k="organizations.title" />} description={<B k="organizations.description" />} icon={UsersRound}><Link href="/organizations/new" className={catalogSubmitClass}><B k="organizations.add" /><ArrowUpRight className="ms-2 inline size-4" aria-hidden="true" /></Link></MemberPageHeader>
     <form action="/organizations" method="get" className={`${catalogFilterPanelClass} md:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_auto_auto_auto]`}>
-      <label className="grid gap-2 text-sm font-medium text-foreground"><span className="inline-flex items-center gap-2"><Search className="size-4 text-primary" aria-hidden="true"/>Search organizations</span><input type="search" name="q" defaultValue={search} placeholder="Organization name" className={catalogFieldClass}/></label>
-      <label className="grid gap-2 text-sm font-medium text-foreground">Type<input type="search" name="type" defaultValue={organizationType} placeholder="Any type" className={catalogFieldClass}/></label>
-      <label className="grid gap-2 text-sm font-medium text-foreground">City<input type="search" name="city" defaultValue={city} placeholder="Any city" className={catalogFieldClass}/></label>
-      <label className={catalogCheckboxLabelClass}><input type="checkbox" name="volunteers" value="only" defaultChecked={volunteers} className={catalogCheckboxInputClass}/>Volunteers</label>
-      <label className={catalogCheckboxLabelClass}><input type="checkbox" name="verified" value="only" defaultChecked={verified} className={catalogCheckboxInputClass}/>Verified listings</label>
-      <div className="flex items-end gap-3"><button type="submit" className={catalogSubmitClass}>Apply</button>{hasFilters ? <Link href="/organizations" className={catalogClearClass}>Clear</Link> : null}</div>
+      <BrowseField labelKey="organizations.search" name="q" defaultValue={search} placeholderKey="organizations.searchPlaceholder" className={catalogFieldClass} labelClassName="grid gap-2 text-sm font-medium text-foreground" icon={<Search className="size-4 text-primary" aria-hidden="true" />} />
+      <BrowseField labelKey="common.type" name="type" defaultValue={organizationType} placeholderKey="organizations.anyType" className={catalogFieldClass} labelClassName="grid gap-2 text-sm font-medium text-foreground" />
+      <BrowseField labelKey="common.city" name="city" defaultValue={city} placeholderKey="common.anyCity" className={catalogFieldClass} labelClassName="grid gap-2 text-sm font-medium text-foreground" />
+      <BrowseCheckbox name="volunteers" labelKey="common.volunteers" defaultChecked={volunteers} labelClassName={catalogCheckboxLabelClass} inputClassName={catalogCheckboxInputClass} />
+      <BrowseCheckbox name="verified" labelKey="common.verifiedListings" defaultChecked={verified} labelClassName={catalogCheckboxLabelClass} inputClassName={catalogCheckboxInputClass} />
+      <div className="flex items-end gap-3"><button type="submit" className={catalogSubmitClass}><B k="common.apply" /></button>{hasFilters ? <Link href="/organizations" className={catalogClearClass}><B k="common.clear" /></Link> : null}</div>
     </form>
-    <div className="mt-6 flex flex-wrap items-center justify-between gap-4"><p className="text-sm text-muted-foreground">{error ? "Organizations could not be loaded." : `${organizations?.length ?? 0} ${organizations?.length === 1 ? "organization" : "organizations"} found`}</p>{hasFilters ? <p className="text-xs text-muted-foreground">Filters are reflected in the URL, so this view can be shared.</p> : null}</div>
-    {error ? <div role="alert" aria-live="assertive" className="relative mt-8 overflow-hidden rounded-[var(--radius)] border border-destructive/20 bg-destructive/5 p-5 text-sm text-destructive"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-destructive/[0.06] blur-3xl"/><span className="relative">We could not load organizations. Please try again.</span></div> : organizations?.length ? <OrganizationDirectory organizations={organizations}/> : <DirectoryEmptyState title={hasFilters ? "No organizations match these filters" : "No organizations yet"} description={hasFilters ? "Try adjusting or clearing your filters." : "Community organizations will appear here once they are added."} href={hasFilters ? "/organizations" : "/organizations/new"} action={hasFilters ? "Clear filters" : "Add an organization"} />}
+    <div className="mt-6 flex flex-wrap items-center justify-between gap-4"><p className="text-sm text-muted-foreground">{error ? <B k="organizations.loadError" /> : <B k={count === 1 ? "organizations.countOne" : "organizations.countMany"} values={{ count }} />}</p>{hasFilters ? <p className="text-xs text-muted-foreground"><B k="common.filtersShared" /></p> : null}</div>
+    {error ? <div role="alert" aria-live="assertive" className="relative mt-8 overflow-hidden rounded-[var(--radius)] border border-destructive/20 bg-destructive/5 p-5 text-sm text-destructive"><div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-destructive/[0.06] blur-3xl"/><span className="relative"><B k="organizations.loadErrorBody" /></span></div> : organizations?.length ? <OrganizationDirectory organizations={organizations}/> : <DirectoryEmptyState title={<B k={hasFilters ? "organizations.emptyFiltered" : "organizations.empty"} />} description={<B k={hasFilters ? "organizations.emptyFilteredBody" : "organizations.emptyBody"} />} href={hasFilters ? "/organizations" : "/organizations/new"} action={<B k={hasFilters ? "common.clearFilters" : "organizations.emptyAction"} />} />}
   </main>;
 }

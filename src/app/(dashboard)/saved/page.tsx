@@ -1,4 +1,5 @@
 import { MemberPageHeader } from "@/components/catalog/member-page-header";
+import { Localized } from "@/components/i18n/localized";
 import { catalogPageContainerClass } from "@/components/catalog/catalog-filter-styles";
 import Link from "next/link";
 import styles from "@/components/network/network-surfaces.module.css";
@@ -88,11 +89,11 @@ export default async function SavedOpportunitiesPage() {
   return (
     <main className={catalogPageContainerClass}>
       <div className="min-w-0">
-        <MemberPageHeader title="Saved opportunities" description="Keep useful jobs, scholarships, volunteer roles, and programs in one place." icon={Bookmark} />
+        <MemberPageHeader title={<Localized k="saved.title" />} description={<Localized k="saved.description" />} icon={Bookmark} />
 
         {error ? (
           <div role="alert" aria-live="assertive" className="relative mt-8 overflow-hidden rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive"><span className="relative">
-            We could not load your saved opportunities. Please try again.</span>
+            <Localized k="saved.error" /></span>
           </div>
         ) : null}
 
@@ -143,19 +144,19 @@ export default async function SavedOpportunitiesPage() {
             </div>
             <h2 className="relative mt-4 text-lg font-bold text-foreground">
               {savedCount > 0
-                ? "No saved opportunities are currently available"
-                : "No saved opportunities yet"}
+                ? <Localized k="saved.unavailable" />
+                : <Localized k="saved.empty" />}
             </h2>
             <p className="relative mt-2 max-w-md text-sm leading-6 text-muted-foreground">
               {savedCount > 0
-                ? "Some opportunities you saved may have expired or are no longer published. Browse current opportunities to find something new."
-                : "Save opportunities you want to review or apply for later."}
+                ? <Localized k="saved.expired" />
+                : <Localized k="saved.hint" />}
             </p>
             <Link
               href="/opportunities"
               className={`${styles.control} inline-flex items-center relative mt-6 rounded-[var(--radius)] bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition  hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
 >
-              Browse opportunities
+              <Localized k="saved.browse" />
             </Link>
           </div>
         ) : null}

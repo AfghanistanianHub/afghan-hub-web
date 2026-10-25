@@ -7,6 +7,10 @@ import { format, parseISO } from "date-fns";
 import { DayPicker } from "@daypicker/react";
 import "@daypicker/react/style.css";
 
+import { useWorkspaceCopy } from "@/components/i18n/workspace";
+import { formatSiteDate } from "@/lib/i18n/format";
+import { getCalendarLocale } from "@/lib/i18n/calendar-locale";
+
 type DeadlinePickerProps = {
   defaultValue?: string | null;
 };
@@ -14,6 +18,7 @@ type DeadlinePickerProps = {
 export function DeadlinePicker({
   defaultValue,
 }: DeadlinePickerProps) {
+  const { language, t } = useWorkspaceCopy();
   const initialDate = defaultValue
     ? parseISO(defaultValue.slice(0, 10))
     : undefined;
@@ -50,19 +55,30 @@ export function DeadlinePicker({
         aria-expanded={isOpen}
         aria-controls={isOpen ? panelId : undefined}
         aria-haspopup="dialog"
-        className={`${styles.trigger} flex w-full items-center justify-between rounded-[var(--radius)] border border-input bg-background px-4 py-3 text-left outline-none transition hover:border-primary/35 focus:border-primary focus:ring-2 focus:ring-ring/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
+        lang={language}
+        className={`${styles.trigger} flex w-full items-center justify-between rounded-[var(--radius)] border border-input bg-background px-4 py-3 text-start outline-none transition hover:border-primary/35 focus:border-primary focus:ring-2 focus:ring-ring/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
       >
         <span className={selectedDate ? "text-foreground" : "text-muted-foreground"}>
           {selectedDate
-            ? format(selectedDate, "MMMM d, yyyy")
-            : "Select a deadline"}
+            ? formatSiteDate(language, selectedDate, {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })
+            : t("deadline.select")}
         </span>
 
         <CalendarDays aria-hidden="true" className="size-5 shrink-0 text-primary" />
       </button>
 
       {isOpen ? (
-        <div id={panelId} role="dialog" aria-label="Choose deadline" className={styles.panel}>
+        <div
+          id={panelId}
+          role="dialog"
+          aria-label={t("deadline.dialog")}
+          dir={language === "en" ? "ltr" : "rtl"}
+          className={styles.panel}
+        >
           <DayPicker
             autoFocus
             mode="single"
@@ -75,6 +91,8 @@ export function DeadlinePicker({
               }
             }}
             disabled={{ before: new Date() }}
+            locale={getCalendarLocale(language)}
+            dir={language === "en" ? "ltr" : "rtl"}
           />
 
           <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
@@ -86,7 +104,7 @@ export function DeadlinePicker({
               }}
               className={`${styles.control} rounded-[var(--radius)] px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
             >
-              Clear
+              {t("deadline.clear")}
             </button>
 
             <button
@@ -94,7 +112,7 @@ export function DeadlinePicker({
               onClick={closePanel}
               className={`${styles.control} rounded-[var(--radius)] bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition  hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
             >
-              Done
+              {t("deadline.done")}
             </button>
           </div>
         </div>

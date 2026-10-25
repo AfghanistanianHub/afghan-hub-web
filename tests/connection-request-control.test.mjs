@@ -11,6 +11,7 @@ test('request responses retain one shared form, trusted request ID and distinct 
     'react/jsx-runtime': require('react/jsx-runtime'),
     'next/link': { default: 'link' },
     './network-surfaces.module.css': { default: {} },
+    './use-network-copy': { useNetworkCopy: () => ({ language: 'en', copy: { activity: 'New activity', requestTitle: 'Connection requests', accepting: 'Accepting…', accept: 'Accept', declining: 'Declining…', decline: 'Decline' } }) },
     'lucide-react': { UserRound: () => null },
     '@/components/public/community-signature': { CommunitySignature: () => null },
     '@/components/ui/external-image': { ExternalImage: () => null },

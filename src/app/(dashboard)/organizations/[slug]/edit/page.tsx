@@ -1,10 +1,19 @@
-import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import formStyles from "@/components/forms/listing-form.module.css";
 import { CommunitySignature } from "@/components/public/community-signature";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { OrganizationLogoUpload } from "@/components/organizations/organization-logo-upload";
+import { organizationTypeOptions } from "@/components/organizations/organization-type-options";
+import {
+  LocalizedBackLink,
+  LocalizedCancelLink,
+  LocalizedCheckbox,
+  LocalizedField,
+  LocalizedSelect,
+  LocalizedSubmitButton,
+  W,
+} from "@/components/i18n/workspace";
 import { createClient } from "@/lib/supabase/server";
+import { organizationFormErrorKey } from "@/lib/i18n/workspace-copy";
 import { updateOrganization } from "../../actions";
 
 type EditOrganizationPageProps = {
@@ -70,26 +79,29 @@ export default async function EditOrganizationPage({
   return (
     <main className={`${formStyles.page} px-4 py-8 md:px-8`}>
       <div className="mx-auto max-w-4xl">
-        <Link
+        <LocalizedBackLink
           href={`/organizations/${organization.slug}`}
+          k="common.backToOrganization"
           className="rounded-sm text-sm font-semibold text-primary transition hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-        >
-          ← Back to organization
-        </Link>
+        />
 
         <section className="relative mt-6 overflow-hidden rounded-[var(--radius)] border border-border/80 bg-card px-6 py-8 md:px-8 md:py-10">
-          
-          
           <CommunitySignature className={formStyles.signature} /><div className="relative">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Organization settings</p>
-            <h1 className="mt-3 break-words text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">Edit {organization.name}</h1>
-            <p className="mt-3 max-w-2xl text-muted-foreground">Keep your organization profile current and useful to the community.</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+              <W k="organization.settingsEyebrow" />
+            </p>
+            <h1 className="mt-3 break-words text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">
+              <W k="organization.editTitle" values={{ name: organization.name }} />
+            </h1>
+            <p className="mt-3 max-w-2xl text-muted-foreground">
+              <W k="organization.settingsBody" />
+            </p>
           </div>
         </section>
 
         {formError ? (
           <div role="alert" aria-live="assertive" className="mt-8 rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">
-            {formError}
+            <W k={organizationFormErrorKey(formError)} />
           </div>
         ) : null}
 
@@ -107,108 +119,147 @@ export default async function EditOrganizationPage({
           <input type="hidden" name="slug" value={organization.slug} />
 
           <section>
-            <h2 className="text-xl font-semibold text-foreground">Basic information</h2>
+            <h2 className="text-xl font-semibold text-foreground">
+              <W k="organization.basicHeading" />
+            </h2>
 
             <div className="mt-5 grid gap-5 md:grid-cols-2">
-              <label className="md:col-span-2">
-                <span className="text-sm font-semibold text-foreground">Organization name *</span>
-                <input required name="name" type="text" defaultValue={organization.name} className={fieldClassName} />
-              </label>
+              <LocalizedField
+                labelKey="organization.nameLabel"
+                name="name"
+                required
+                defaultValue={organization.name}
+                fieldClassName={fieldClassName}
+                labelClassName="text-sm font-semibold text-foreground"
+                wrapperClassName="md:col-span-2"
+              />
 
-              <label>
-                <span className="text-sm font-semibold text-foreground">Organization type</span>
-                <select name="organization_type" defaultValue={organization.organization_type ?? ""} className={fieldClassName}>
-                  <option value="">Select a type</option>
-                  <option value="Nonprofit">Nonprofit</option>
-                  <option value="Community organization">Community organization</option>
-                  <option value="Professional association">Professional association</option>
-                  <option value="Cultural organization">Cultural organization</option>
-                  <option value="Student organization">Student organization</option>
-                  <option value="Charity">Charity</option>
-                  <option value="Media organization">Media organization</option>
-                  <option value="Other">Other</option>
-                </select>
-              </label>
+              <LocalizedSelect
+                labelKey="organization.typeLabel"
+                name="organization_type"
+                placeholderKey="organization.selectType"
+                options={organizationTypeOptions}
+                defaultValue={organization.organization_type ?? ""}
+                fieldClassName={fieldClassName}
+                labelClassName="text-sm font-semibold text-foreground"
+              />
 
-              <label>
-                <span className="text-sm font-semibold text-foreground">Website</span>
-                <input name="website_url" type="url" defaultValue={organization.website_url ?? ""} className={fieldClassName} />
-              </label>
+              <LocalizedField
+                labelKey="common.website"
+                name="website_url"
+                type="url"
+                defaultValue={organization.website_url ?? ""}
+                fieldClassName={fieldClassName}
+                labelClassName="text-sm font-semibold text-foreground"
+              />
 
-              <label className="md:col-span-2">
-                <span className="text-sm font-semibold text-foreground">Short description</span>
-                <input name="short_description" type="text" maxLength={220} defaultValue={organization.short_description ?? ""} className={fieldClassName} />
-              </label>
+              <LocalizedField
+                labelKey="common.shortDescription"
+                name="short_description"
+                maxLength={220}
+                defaultValue={organization.short_description ?? ""}
+                fieldClassName={fieldClassName}
+                labelClassName="text-sm font-semibold text-foreground"
+                wrapperClassName="md:col-span-2"
+              />
 
-              <label className="md:col-span-2">
-                <span className="text-sm font-semibold text-foreground">Full description</span>
-                <textarea name="description" rows={6} defaultValue={organization.description ?? ""} className={fieldClassName} />
-              </label>
+              <LocalizedField
+                labelKey="common.fullDescription"
+                name="description"
+                rows={6}
+                defaultValue={organization.description ?? ""}
+                fieldClassName={fieldClassName}
+                labelClassName="text-sm font-semibold text-foreground"
+                wrapperClassName="md:col-span-2"
+              />
 
-              <label className="md:col-span-2">
-                <span className="text-sm font-semibold text-foreground">Mission</span>
-                <textarea name="mission" rows={4} defaultValue={organization.mission ?? ""} className={fieldClassName} />
-              </label>
+              <LocalizedField
+                labelKey="organization.mission"
+                name="mission"
+                rows={4}
+                defaultValue={organization.mission ?? ""}
+                fieldClassName={fieldClassName}
+                labelClassName="text-sm font-semibold text-foreground"
+                wrapperClassName="md:col-span-2"
+              />
 
-              <label className="md:col-span-2">
-                <span className="text-sm font-semibold text-foreground">Programs</span>
-                <input name="programs" type="text" defaultValue={organization.programs.join(", ")} className={fieldClassName} />
-                <span className="mt-2 block text-xs text-muted-foreground">Separate each program with a comma.</span>
-              </label>
+              <LocalizedField
+                labelKey="organization.programs"
+                name="programs"
+                defaultValue={organization.programs.join(", ")}
+                hintKey="organization.programsHint"
+                fieldClassName={fieldClassName}
+                labelClassName="text-sm font-semibold text-foreground"
+                wrapperClassName="md:col-span-2"
+              />
             </div>
           </section>
 
           <section className="border-t border-border pt-8">
-            <h2 className="text-xl font-semibold text-foreground">Contact and location</h2>
+            <h2 className="text-xl font-semibold text-foreground">
+              <W k="organization.contactLocationHeading" />
+            </h2>
 
             <div className="mt-5 grid gap-5 md:grid-cols-2">
-              <label>
-                <span className="text-sm font-semibold text-foreground">Email</span>
-                <input name="email" type="email" defaultValue={organization.email ?? ""} className={fieldClassName} />
-              </label>
+              <LocalizedField
+                labelKey="common.email"
+                name="email"
+                type="email"
+                defaultValue={organization.email ?? ""}
+                fieldClassName={fieldClassName}
+                labelClassName="text-sm font-semibold text-foreground"
+              />
+              <LocalizedField
+                labelKey="common.phone"
+                name="phone"
+                type="tel"
+                defaultValue={organization.phone ?? ""}
+                fieldClassName={fieldClassName}
+                labelClassName="text-sm font-semibold text-foreground"
+              />
+              <LocalizedField
+                labelKey="common.city"
+                name="city"
+                defaultValue={organization.city ?? ""}
+                fieldClassName={fieldClassName}
+                labelClassName="text-sm font-semibold text-foreground"
+              />
+              <LocalizedField
+                labelKey="common.province"
+                name="province_state"
+                defaultValue={organization.province_state ?? ""}
+                fieldClassName={fieldClassName}
+                labelClassName="text-sm font-semibold text-foreground"
+              />
+              <LocalizedField
+                labelKey="common.country"
+                name="country"
+                defaultValue={organization.country ?? ""}
+                fieldClassName={fieldClassName}
+                labelClassName="text-sm font-semibold text-foreground"
+              />
 
-              <label>
-                <span className="text-sm font-semibold text-foreground">Phone</span>
-                <input name="phone" type="tel" defaultValue={organization.phone ?? ""} className={fieldClassName} />
-              </label>
-
-              <label>
-                <span className="text-sm font-semibold text-foreground">City</span>
-                <input name="city" type="text" defaultValue={organization.city ?? ""} className={fieldClassName} />
-              </label>
-
-              <label>
-                <span className="text-sm font-semibold text-foreground">Province / State</span>
-                <input name="province_state" type="text" defaultValue={organization.province_state ?? ""} className={fieldClassName} />
-              </label>
-
-              <label>
-                <span className="text-sm font-semibold text-foreground">Country</span>
-                <input name="country" type="text" defaultValue={organization.country ?? ""} className={fieldClassName} />
-              </label>
-
-              <label className="flex cursor-pointer items-center gap-3 rounded-[var(--radius)] border border-border/80 bg-secondary/40 px-4 py-3 transition hover:border-primary/25 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15 md:self-end">
-                <input
-                  name="is_accepting_volunteers"
-                  type="checkbox"
-                  defaultChecked={organization.is_accepting_volunteers}
-                  className="size-5 shrink-0 rounded border-border accent-[var(--primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                />
-                <span className="text-sm font-medium text-foreground">Accepting volunteers</span>
-              </label>
+              <LocalizedCheckbox
+                name="is_accepting_volunteers"
+                labelKey="organization.volunteers"
+                defaultChecked={organization.is_accepting_volunteers}
+                inputClassName="size-5 shrink-0 rounded border-border accent-[var(--primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                labelSpanClassName="text-sm font-medium text-foreground"
+                wrapperClassName="flex cursor-pointer items-center gap-3 rounded-[var(--radius)] border border-border/80 bg-secondary/40 px-4 py-3 transition hover:border-primary/25 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15 md:self-end"
+              />
             </div>
           </section>
 
           <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:justify-end">
-            <Link
+            <LocalizedCancelLink
               href={`/organizations/${organization.slug}`}
               className="rounded-[var(--radius)] border border-border/80 bg-background px-5 py-3 text-center text-sm font-semibold transition hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-            >
-              Cancel
-            </Link>
-            <PendingSubmitButton pendingLabel="Saving changes…" className="rounded-[var(--radius)] bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
-              Save changes
-            </PendingSubmitButton>
+            />
+            <LocalizedSubmitButton
+              k="common.saveChanges"
+              pendingKey="common.savingChanges"
+              className="rounded-[var(--radius)] bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+            />
           </div>
         </form>
       </div>

@@ -14,8 +14,16 @@ const memberPage = fs.readFileSync(
   new URL("../src/app/(dashboard)/members/[id]/page.tsx", import.meta.url),
   "utf8",
 );
+const memberCopy = fs.readFileSync(
+  new URL("../src/components/i18n/member-copy.tsx", import.meta.url),
+  "utf8",
+);
 const databaseTypes = fs.readFileSync(
   new URL("../src/types/database.ts", import.meta.url),
+  "utf8",
+);
+const workspaceCopy = fs.readFileSync(
+  new URL("../src/lib/i18n/workspace-copy.ts", import.meta.url),
   "utf8",
 );
 
@@ -30,6 +38,10 @@ test("profile editor exposes explicit opt-in mentorship fields", () => {
   assert.match(copy, /not credentials or endorsements by Afghan Hub/i);
   assert.match(copy, /حداکثر ۱۲ موضوع/);
   assert.match(copy, /تر ۱۲ موضوعاتو/);
+  assert.match(profilePage, /hintKey="profile.mentorshipTopicsHint"/);
+  assert.match(profilePage, /k="profile.mentorshipNote"/);
+  assert.match(workspaceCopy, /up to 12 topics, 60 characters each/i);
+  assert.match(workspaceCopy, /not credentials or endorsements by Afghan Hub/i);
 });
 
 test("profile action keeps mentorship topics bounded before database write", () => {
@@ -59,10 +71,12 @@ test("member profile only renders explicit mentorship signals", () => {
   );
   assert.match(memberPage, /const hasMentorshipSignals=/);
   assert.match(memberPage, /\{hasMentorshipSignals\?<section/);
-  assert.match(memberPage, /Open to mentoring/);
-  assert.match(memberPage, /Looking for a mentor/);
+  assert.match(memberPage, /<MemberCopy id="open"\/>/);
+  assert.match(memberCopy, /Open to mentoring/);
+  assert.match(memberPage, /<MemberCopy id="looking"\/>/);
+  assert.match(memberCopy, /Looking for a mentor/);
   assert.match(
-    memberPage,
+    memberCopy,
     /member-selected preferences, not a credential or endorsement by Afghan Hub/i,
   );
 });

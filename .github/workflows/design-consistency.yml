@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   review:
-    if: startsWith(github.head_ref || github.ref_name, 'design/final-cross-page-quality-')
+    if: startsWith(github.head_ref || github.ref_name, 'design/final-cross-page-quality-') || startsWith(github.head_ref || github.ref_name, 'design/precision-spacing-')
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:

@@ -71,6 +71,28 @@ export async function login(formData: FormData) {
   redirect(getAuthDestination(formData.get("next")));
 }
 
+const googleErrorMessage = "Google sign-in could not be completed. Please try again or use your email and password.";
+
+export async function signInWithGoogle(formData: FormData) {
+  const supabase = await createClient();
+  const flow = String(formData.get("flow") ?? "") === "join" ? "join" : "login";
+  const loginPath = flow === "join" ? "/login?mode=join" : "/login";
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${getSiteUrl()}/auth/callback?next=/dashboard&flow=oauth`,
+      skipBrowserRedirect: true,
+    },
+  });
+
+  if (error || !data.url) {
+    redirect(`${loginPath}${loginPath.includes("?") ? "&" : "?"}error=${encodeURIComponent(googleErrorMessage)}`);
+  }
+
+  redirect(data.url);
+}
+
 export async function signup(formData: FormData) {
   const language = await rememberLanguage(formData);
   const supabase = await createClient();

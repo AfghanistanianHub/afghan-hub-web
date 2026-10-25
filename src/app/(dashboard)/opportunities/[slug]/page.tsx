@@ -18,9 +18,13 @@ import {
   MapPin,
   Sparkles,
 } from "lucide-react";
+import { B, BDate, BDatePhrase } from "@/components/i18n/browse";
+import {
+  opportunityActionErrorKey,
+  opportunityTypeKey,
+} from "@/lib/i18n/browse-copy";
 import { rankRelatedOpportunities } from "@/lib/listing-recommendations";
 import {
-  formatOpportunityDeadline,
   getUtcDateKey,
   hasOpportunityDeadlinePassed,
 } from "@/lib/opportunities";
@@ -107,6 +111,7 @@ export default async function OpportunityPage({
     relatedCandidates ?? [],
     3,
   );
+  const typeKey = opportunityTypeKey(opportunity.type);
 
   return (
     <main data-illustration-focus-scope className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10">
@@ -114,32 +119,32 @@ export default async function OpportunityPage({
         href="/opportunities"
         className="inline-flex items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
-        <ArrowLeft aria-hidden="true" className="size-4" />
-        Back to opportunities
+        <ArrowLeft aria-hidden="true" className="size-4 rtl:rotate-180" />
+        <B k="detail.backToOpportunities" />
       </Link>
 
       <div className="mt-6 space-y-4">
         {actionError ? (
           <div role="alert" aria-live="assertive" className="rounded-[var(--radius)] border border-destructive/20 bg-destructive/[0.06] p-4 text-sm text-destructive">
-            {actionError}
+            <B k={opportunityActionErrorKey(actionError)} />
           </div>
         ) : null}
 
         {opportunity.status !== "published" ? (
           <div role="status" aria-live="polite" className="rounded-[var(--radius)] border border-accent/50 bg-accent/35 p-4 text-sm leading-6 text-accent-foreground">
-            {opportunity.status === "draft"
-              ? "This opportunity is waiting for moderator approval and is not visible to the community yet."
-              : `This opportunity was not approved.${
-                  opportunity.moderation_note
-                    ? ` Reason: ${opportunity.moderation_note}`
-                    : ""
-                } Edit it to submit it for review again.`}
+            {opportunity.status === "draft" ? (
+              <B k="opportunityDetail.draft" />
+            ) : opportunity.moderation_note ? (
+              <B k="opportunityDetail.rejectedReason" values={{ reason: opportunity.moderation_note }} />
+            ) : (
+              <B k="opportunityDetail.rejected" />
+            )}
           </div>
         ) : null}
 
         {opportunity.status === "published" && isExpired ? (
           <div role="status" aria-live="polite" className="rounded-[var(--radius)] border border-border bg-muted/50 p-4 text-sm text-muted-foreground">
-            This opportunity has passed its application deadline and is no longer active.
+            <B k="opportunityDetail.expired" />
           </div>
         ) : null}
       </div>
@@ -152,11 +157,11 @@ export default async function OpportunityPage({
               <div className="flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-primary">
                   <BriefcaseBusiness aria-hidden="true" className="size-3.5" />
-                  {opportunity.type}
+                  {typeKey ? <B k={typeKey} /> : opportunity.type}
                 </span>
                 {!isExpired && opportunity.status === "published" ? (
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-background px-3 py-1.5 text-xs font-medium text-primary">
-                    <Sparkles aria-hidden="true" className="size-3" /> Active
+                    <Sparkles aria-hidden="true" className="size-3" /> <B k="opportunityDetail.active" />
                   </span>
                 ) : null}
               </div>
@@ -180,7 +185,7 @@ export default async function OpportunityPage({
                 {opportunity.deadline ? (
                   <span className="inline-flex items-center gap-2 rounded-[var(--radius-control)] border border-border bg-background/85 px-3.5 py-2 text-muted-foreground shadow-sm">
                     <CalendarDays aria-hidden="true" className="size-4 text-primary" />
-                    {isExpired ? "Closed " : "Apply by "}{formatOpportunityDeadline(opportunity.deadline)}
+                    <BDatePhrase k={isExpired ? "opportunityDetail.closedOn" : "opportunityDetail.applyBy"} date={opportunity.deadline} mode="shortDate" />
                   </span>
                 ) : null}
               </div>
@@ -193,7 +198,7 @@ export default async function OpportunityPage({
                     <input type="hidden" name="opportunity_id" value={opportunity.id} />
                     <input type="hidden" name="opportunity_slug" value={opportunity.slug} />
                     <PendingSubmitButton
-                      pendingLabel={isSaved ? "Removing…" : "Saving…"}
+                      pendingLabel={<B k={isSaved ? "opportunityDetail.removing" : "opportunityDetail.saving"} />}
                       aria-pressed={isSaved}
                       className={`inline-flex min-h-11 min-w-28 items-center gap-2 rounded-[var(--radius)] border px-4 py-2.5 text-sm font-semibold transition-colors motion-reduce:transition-none active:bg-primary/15 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${
                         isSaved
@@ -202,7 +207,7 @@ export default async function OpportunityPage({
                       }`}
                     >
                       <span className="inline-flex items-center gap-2"><Bookmark aria-hidden="true" className="size-4" fill={isSaved ? "currentColor" : "none"} />
-                      {isSaved ? "Saved" : "Save"}</span>
+                      <B k={isSaved ? "opportunityDetail.saved" : "opportunityDetail.save"} /></span>
                     </PendingSubmitButton>
                   </form>
                 ) : null}
@@ -213,7 +218,7 @@ export default async function OpportunityPage({
                       href={`/opportunities/${opportunity.slug}/edit`}
                       className="rounded-[var(--radius-control)] border border-border bg-background/85 px-4 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                     >
-                      Edit
+                      <B k="common.edit" />
                     </Link>
                     <DeleteOpportunityButton slug={opportunity.slug} />
                   </>
@@ -225,23 +230,23 @@ export default async function OpportunityPage({
 
         <div className="relative grid border-t border-border/70 lg:grid-cols-[minmax(0,1fr)_330px]">
           <article className="min-w-0 px-6 py-8 md:px-9 md:py-10 lg:border-r lg:border-border/70">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">About this opportunity</p>
+            <B k="opportunityDetail.about" className="text-xs font-semibold uppercase tracking-[0.18em] text-primary" />
             <div className="mt-5 whitespace-pre-wrap break-words text-[1.02rem] leading-8 text-foreground/88">
               {opportunity.description}
             </div>
           </article>
 
           <aside className="h-fit bg-muted/25 px-6 py-8 md:px-8 lg:sticky lg:top-20">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Take the next step</p>
+            <B k="detail.takeNextStep" className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground" />
 
             {opportunity.status === "published" ? (
               <div className="mt-4 flex flex-wrap gap-2">
                 <ContextualAssistantPrompt
-                  label="Find similar opportunities"
+                  label={<B k="opportunityDetail.findSimilar" />}
                   query={`Find opportunities similar to ${opportunity.title}`}
                 />
                 <ContextualAssistantPrompt
-                  label="Find people in this field"
+                  label={<B k="opportunityDetail.findPeople" />}
                   query={`Find professionals related to ${opportunity.title}`}
                 />
               </div>
@@ -254,14 +259,14 @@ export default async function OpportunityPage({
                 rel="noopener noreferrer"
                 className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[var(--radius-control)] bg-primary px-4 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
-                Apply now
+                <B k="opportunityDetail.applyNow" />
                 <ExternalLink aria-hidden="true" className="size-4" />
               </a>
             ) : null}
 
             {opportunity.external_url && isExpired ? (
               <p className="mt-4 rounded-[var(--radius-control)] bg-muted px-4 py-3 text-center text-sm font-medium text-muted-foreground">
-                Applications closed
+                <B k="opportunityDetail.applicationsClosed" />
               </p>
             ) : null}
 
@@ -272,7 +277,7 @@ export default async function OpportunityPage({
                     <MapPin aria-hidden="true" className="size-4" />
                   </span>
                   <div className="min-w-0">
-                    <p className="font-semibold text-foreground">Location</p>
+                    <p className="font-semibold text-foreground"><B k="common.location" /></p>
                     <p className="mt-1 break-words text-muted-foreground">{location}</p>
                   </div>
                 </div>
@@ -284,9 +289,9 @@ export default async function OpportunityPage({
                     <CalendarDays aria-hidden="true" className="size-4" />
                   </span>
                   <div>
-                    <p className="font-semibold text-foreground">Deadline</p>
+                    <p className="font-semibold text-foreground"><B k="opportunities.deadlineLabel" /></p>
                     <p className="mt-1 text-muted-foreground">
-                      {formatOpportunityDeadline(opportunity.deadline)}
+                      <BDate value={opportunity.deadline} mode="shortDate" />
                     </p>
                   </div>
                 </div>
@@ -294,9 +299,10 @@ export default async function OpportunityPage({
 
               {opportunity.contact_email ? (
                 <div className="rounded-[var(--radius)] border border-border bg-background p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Contact</p>
+                  <B k="opportunityDetail.contact" className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground" />
                   <a
                     href={`mailto:${opportunity.contact_email}`}
+                    dir="ltr"
                     className="mt-2 block break-words rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                   >
                     {opportunity.contact_email}
@@ -312,25 +318,26 @@ export default async function OpportunityPage({
         <section className="mt-10" aria-labelledby="related-opportunities-heading">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Keep exploring</p>
+              <B k="common.keepExploring" className="text-xs font-semibold uppercase tracking-[0.18em] text-primary" />
               <h2 id="related-opportunities-heading" className="mt-2 text-2xl font-bold tracking-[-0.025em] text-foreground">
-                Related opportunities
+                <B k="opportunityDetail.related" />
               </h2>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                Similar active opportunities based on type, topic, and location.
+                <B k="opportunityDetail.relatedBody" />
               </p>
             </div>
             <Link href="/opportunities" className="hidden items-center gap-2 rounded-sm text-sm font-semibold text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:inline-flex">
-              View all
-              <ArrowRight aria-hidden="true" className="size-4" />
+              <B k="common.viewAll" />
+              <ArrowRight aria-hidden="true" className="size-4 rtl:rotate-180" />
             </Link>
           </div>
 
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             {relatedOpportunities.map((related) => {
-              const relatedLocation = related.is_remote
-                ? "Remote"
-                : [related.city, related.country].filter(Boolean).join(", ");
+              const relatedTypeKey = opportunityTypeKey(related.type);
+              const relatedLocation = [related.city, related.country]
+                .filter(Boolean)
+                .join(", ");
 
               return (
                 <Link
@@ -340,7 +347,7 @@ export default async function OpportunityPage({
                 >
                   <div className="flex items-start justify-between gap-3">
                     <span className="rounded-full bg-primary/[0.08] px-2.5 py-1 text-[0.68rem] font-semibold capitalize text-primary">
-                      {related.type}
+                      {relatedTypeKey ? <B k={relatedTypeKey} /> : related.type}
                     </span>
                     <ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground transition group-hover:text-primary" />
                   </div>
@@ -353,14 +360,14 @@ export default async function OpportunityPage({
                     </p>
                   ) : null}
                   <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                    {relatedLocation ? (
+                    {related.is_remote || relatedLocation ? (
                       <span className="inline-flex min-w-0 items-start gap-1.5">
                         <MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-primary" />
-                        <span className="min-w-0 break-words">{relatedLocation}</span>
+                        <span className="min-w-0 break-words">{related.is_remote ? <B k="common.remote" /> : relatedLocation}</span>
                       </span>
                     ) : null}
                     {related.deadline ? (
-                      <span>Apply by {formatOpportunityDeadline(related.deadline)}</span>
+                      <BDatePhrase k="opportunityDetail.applyBy" date={related.deadline} mode="shortDate" />
                     ) : null}
                   </div>
                 </Link>

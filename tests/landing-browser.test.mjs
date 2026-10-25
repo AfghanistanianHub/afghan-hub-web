@@ -166,9 +166,9 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   // A new visitor sees the language entrance first. Choose English through the
   // actual UI before exercising the existing homepage layout and motion suite.
   await page.send("Page.navigate", {url:appUrl});
-  await waitFor(() => page.evaluate("!!document.querySelector('main button[lang=en]')"), "first-visit language entrance");
+  await waitFor(() => page.evaluate("!!document.querySelector('main a[hreflang=en]')"), "first-visit language entrance");
   assert.equal(await page.evaluate("document.querySelector('[data-community-node]')===null"), true, "Homepage stays hidden until language selection");
-  await page.evaluate("document.querySelector('main button[lang=en]').click()");
+  await page.evaluate("document.querySelector('main a[hreflang=en]').click()");
   await waitFor(() => page.evaluate("!!document.querySelector('[data-community-node]')"), "homepage after language selection");
   // Approved living network: meaningful destinations, stable bounds and reduced motion.
   await page.send("Emulation.setScrollbarsHidden", {hidden:true});
@@ -356,7 +356,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
       assert.deepEqual(await page.evaluate(`(()=>{const r=document.querySelector('[data-category-illustration=${kind}]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()`),bounds,'Stable category illustration bounds');
       await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:8,y:8});await delay(650);
       assert.deepEqual(await page.evaluate(sectionMotion(kind)),resting,`Page artwork returns to rest ${kind}`);
-      await page.evaluate("document.querySelector('nav[aria-label=\"Listing categories\"] a[aria-current=page]').focus({preventScroll:true})");await delay(650);
+      await page.evaluate("document.querySelector('nav[aria-labelledby=\u0022explore-categories-label\u0022] a[aria-current=page]').focus({preventScroll:true})");await delay(650);
       assert.notDeepEqual(await page.evaluate(sectionMotion(kind)),resting,`Equivalent category keyboard feedback ${kind}`);
       await page.evaluate('document.activeElement.blur()');await delay(650);
       for(let reversal=0;reversal<4;reversal++){await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',...point});await delay(25);await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:8,y:8});await delay(25);}
@@ -374,7 +374,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
         for(let frame=0;frame<frames.length;frame++)emitScreenshot(`section_${kind}_${String(frame).padStart(2,'0')}.jpg`,frames[frame]);
       }
       await page.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
-      await page.evaluate("document.querySelector('nav[aria-label=\"Listing categories\"] a[aria-current=page]').focus({preventScroll:true})");
+      await page.evaluate("document.querySelector('nav[aria-labelledby=\u0022explore-categories-label\u0022] a[aria-current=page]').focus({preventScroll:true})");
       assert.ok(await page.evaluate(`(()=>{const e=document.querySelector('[data-category-illustration=${kind}]');return [...e.querySelectorAll('[data-motion]')].every(n=>getComputedStyle(n).transitionDuration.split(',').every(v=>parseFloat(v)===0)&&getComputedStyle(n).animationName==='none')})()`),`Static reduced-motion category ${kind}`);
       // Existing listing link remains the single actionable target; its cover shares the same motion.
       await page.evaluate("document.activeElement.blur();document.querySelector('article h3 a').focus()");
@@ -420,7 +420,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   await waitFor(()=>page.evaluate("document.readyState==='complete'&&location.pathname==='/explore'&&location.search==='?type=organizations'&&!!document.querySelector('input[name=q]')"),"catalogue interactions");
   await waitFor(()=>page.evaluate("document.readyState==='complete'&&!!document.querySelector('input[name=q]')"),"catalogue interactions");
   await page.evaluate("document.fonts.ready.then(()=>true)");
-  assert.equal(await page.evaluate("document.querySelector('nav[aria-label=\"Listing categories\"] a[aria-current=page]').getAttribute('href')"),'/explore?type=organizations#results-heading');
+  assert.equal(await page.evaluate("document.querySelector('nav[aria-labelledby=\u0022explore-categories-label\u0022] a[aria-current=page]').getAttribute('href')"),'/explore?type=organizations#results-heading');
   // Exercise the category controls themselves with real pointer, keyboard and first tap.
   for (const [width,touch] of [[1440,false],[390,true]]) {
     await page.send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:touch});
@@ -430,7 +430,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
       // Dispatch one native click/tap only after the intended link is stable and
       // actually wins hit testing; never retry navigation or replace it with JS.
       await page.evaluate('document.fonts.ready.then(()=>true)');
-      const selector=`nav[aria-label="Listing categories"] a[href="/explore?type=${kind}#results-heading"]`;
+      const selector=`nav[aria-labelledby=\u0022explore-categories-label\u0022] a[href="/explore?type=${kind}#results-heading"]`;
       const stablePoint=()=>page.evaluate(`new Promise(resolve => {
         const a=document.querySelector(${JSON.stringify(selector)});if(!a){resolve(null);return;}
         a.scrollIntoView({block:'center',behavior:'instant'});
@@ -466,9 +466,9 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
         await page.send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});
       }
       try {
-      await waitFor(()=>page.evaluate(`document.readyState==='complete'&&location.search==='?type=${kind}'&&document.querySelector('nav[aria-label="Listing categories"] a[aria-current=page]')?.getAttribute('href')==='/explore?type=${kind}#results-heading'&&document.querySelector('input[name=type]')?.value==='${kind}'`),'actual category navigation '+kind+' at '+width);
+      await waitFor(()=>page.evaluate(`document.readyState==='complete'&&location.search==='?type=${kind}'&&document.querySelector('nav[aria-labelledby=\u0022explore-categories-label\u0022] a[aria-current=page]')?.getAttribute('href')==='/explore?type=${kind}#results-heading'&&document.querySelector('input[name=type]')?.value==='${kind}'`),'actual category navigation '+kind+' at '+width);
       } catch(error) {
-        const state=await page.evaluate(`({path:location.pathname,query:location.search,hash:location.hash,ready:document.readyState,fonts:document.fonts.status,active:document.querySelector('nav[aria-label="Listing categories"] a[aria-current=page]')?.getAttribute('href'),formType:document.querySelector('input[name=type]')?.value,click:window.__categoryClick})`);
+        const state=await page.evaluate(`({path:location.pathname,query:location.search,hash:location.hash,ready:document.readyState,fonts:document.fonts.status,active:document.querySelector('nav[aria-labelledby=\u0022explore-categories-label\u0022] a[aria-current=page]')?.getAttribute('href'),formType:document.querySelector('input[name=type]')?.value,click:window.__categoryClick})`);
         throw new Error(error.message+'; category state: '+JSON.stringify(state));
       }
       await waitFor(()=>page.evaluate("(()=>{const r=document.querySelector('#results-heading').getBoundingClientRect();return r.top>=0&&r.bottom<innerHeight&&document.activeElement.id==='results-heading'})()"),'Category navigation reveals and focuses results');
@@ -476,7 +476,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   }
   await page.send('Emulation.setTouchEmulationEnabled',{enabled:false});
   await page.send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
-  await page.evaluate("document.querySelector('nav[aria-label=\"Listing categories\"] a').focus({preventScroll:true})");
+  await page.evaluate("document.querySelector('nav[aria-labelledby=\u0022explore-categories-label\u0022] a').focus({preventScroll:true})");
   await page.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});
   await page.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});
   await waitFor(()=>page.evaluate("location.search==='?type=opportunities'&&document.querySelector('input[name=type]')?.value==='opportunities'"),'category keyboard navigation');
