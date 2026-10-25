@@ -6,7 +6,7 @@ import {
   Store,
   UsersRound,
 } from "lucide-react";
-const goalPaths = [
+export const goalPaths = [
   {
     label: "Work",
     title: "Find work",
