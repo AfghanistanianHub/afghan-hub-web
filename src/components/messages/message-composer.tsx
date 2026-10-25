@@ -10,14 +10,7 @@ import {
   type SendMessageState,
 } from "@/app/(dashboard)/messages/actions";
 import { useUiCopy } from "@/components/i18n/localized";
-import type { UiCopyKey } from "@/lib/i18n/ui-copy";
-
-const errorKeys: Record<string, UiCopyKey> = {
-  "Unable to identify this conversation.": "messages.errorConversation",
-  "Enter a message between 1 and 4,000 characters.": "messages.errorLength",
-  "You no longer have access to this conversation.": "messages.errorAccess",
-  "Your message could not be sent. Please try again.": "messages.errorSend",
-};
+import { messageActionErrorKey } from "@/lib/i18n/ui-copy";
 
 type MessageComposerProps = {
   conversationId: string;
@@ -89,7 +82,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       <div className="mt-2 flex flex-col items-start gap-1.5 text-xs sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         {state.error ? (
           <p id="message-error" role="alert" aria-live="assertive" className="rounded-sm border border-destructive/20 bg-destructive/[0.05] px-2.5 py-1.5 text-destructive">
-            {errorKeys[state.error] ? t(errorKeys[state.error]) : state.error}
+            {t(messageActionErrorKey(state.error))}
           </p>
         ) : (
           <p className="text-muted-foreground">{t("messages.composerHint")}</p>

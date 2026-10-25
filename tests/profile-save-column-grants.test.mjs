@@ -84,14 +84,14 @@ test("missing own profile inserts with authenticated identity after zero-row upd
 
 test("failed update never falls back to insert or exposes database details", async () => {
   const h = harness({ updateError: { message: "sensitive detail" } });
-  await assert.rejects(h.save(form()), /We%20could%20not%20save%20your%20profile/);
+  await assert.rejects(h.save(form()), /error=save-failed/);
   assert.equal(h.calls.length, 1);
   assert.deepEqual(h.invalidations,[]);
 });
 
 test("failed or concurrently conflicting insert does not report success", async () => {
   const h = harness({ missing: true, insertError: { code: "23505", message: "sensitive detail" } });
-  await assert.rejects(h.save(form()), /We%20could%20not%20save%20your%20profile/);
+  await assert.rejects(h.save(form()), /error=save-failed/);
 });
 
 test("signed-out callers cannot write profiles", async () => {
@@ -102,12 +102,12 @@ test("signed-out callers cannot write profiles", async () => {
 
 test("invalid links fail before any profile write", async () => {
   const h = harness(); const data = form(); data.set("website_url", "javascript:alert(1)");
-  await assert.rejects(h.save(data), /Enter%20a%20valid%20website%20URL/);
+  await assert.rejects(h.save(data), /error=website-url-invalid/);
   assert.equal(h.calls.length, 0);
 });
 
 test("failed mentorship update after insert does not report success or expose details", async () => {
   const h = harness({ missing: true, mentorshipUpdateError: { message: "sensitive detail" } });
-  await assert.rejects(h.save(form()), /We%20could%20not%20save%20your%20mentorship%20preferences/);
+  await assert.rejects(h.save(form()), /error=mentorship-save-failed/);
   assert.deepEqual(h.calls.map(c => c.operation), ["update", "insert", "update"]);
 });

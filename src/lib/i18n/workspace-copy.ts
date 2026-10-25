@@ -238,6 +238,17 @@ export const workspaceCopy = {
     "organizationForm.errorGeneric":
       "Something went wrong with this form. Please review the fields and try again.",
 
+    "profileForm.errorLinkedinUrl": "Enter a valid LinkedIn URL.",
+    "profileForm.errorWebsiteUrl": "Enter a valid website URL.",
+    "profileForm.errorMentorshipTopics":
+      "Add up to 12 mentorship topics, each 60 characters or less.",
+    "profileForm.errorSaveFailed":
+      "We could not save your profile. Please try again.",
+    "profileForm.errorMentorshipSaveFailed":
+      "We could not save your mentorship preferences. Please try again.",
+    "profileForm.errorGeneric":
+      "Something went wrong with this form. Please review the fields and try again.",
+
     "deadline.select": "Select a deadline",
     "deadline.dialog": "Choose deadline",
     "deadline.clear": "Clear",
@@ -545,6 +556,17 @@ export const workspaceCopy = {
     "organizationForm.errorGeneric":
       "در این فرم مشکلی رخ داد. لطفاً فیلدها را بررسی کنید و دوباره تلاش کنید.",
 
+    "profileForm.errorLinkedinUrl": "یک نشانی معتبر لینکدین وارد کنید.",
+    "profileForm.errorWebsiteUrl": "یک نشانی وب‌سایت معتبر وارد کنید.",
+    "profileForm.errorMentorshipTopics":
+      "حداکثر ۱۲ موضوع منتورینگ اضافه کنید، هر کدام ۶۰ نویسه یا کمتر.",
+    "profileForm.errorSaveFailed":
+      "ذخیره پروفایل شما امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "profileForm.errorMentorshipSaveFailed":
+      "ذخیره ترجیحات منتورینگ شما امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+    "profileForm.errorGeneric":
+      "در این فرم مشکلی رخ داد. لطفاً فیلدها را بررسی کنید و دوباره تلاش کنید.",
+
     "deadline.select": "مهلتی را انتخاب کنید",
     "deadline.dialog": "انتخاب مهلت",
     "deadline.clear": "پاک کردن",
@@ -850,6 +872,17 @@ export const workspaceCopy = {
     "organizationForm.errorGeneric":
       "په دې فورمې کې ستونزه رامنځته شوه. مهرباني وکړئ ساحې وګورئ او بیا هڅه وکړئ.",
 
+    "profileForm.errorLinkedinUrl": "د لینکډین سمه پته ولیکئ.",
+    "profileForm.errorWebsiteUrl": "د وېبپاڼې سمه پته ولیکئ.",
+    "profileForm.errorMentorshipTopics":
+      "تر ۱۲ منتورۍ موضوعاتو پورې ورزیات کړئ، هر یو تر ۶۰ تورو پورې.",
+    "profileForm.errorSaveFailed":
+      "ستاسو پروفایل خوندي نه شو. مهرباني وکړئ بیا هڅه وکړئ.",
+    "profileForm.errorMentorshipSaveFailed":
+      "ستاسو د منتورۍ غوراوي خوندي نه شول. مهرباني وکړئ بیا هڅه وکړئ.",
+    "profileForm.errorGeneric":
+      "په دې فورمې کې ستونزه رامنځته شوه. مهرباني وکړئ ساحې وګورئ او بیا هڅه وکړئ.",
+
     "deadline.select": "پای نېټه وټاکئ",
     "deadline.dialog": "د پای نېټې ټاکل",
     "deadline.clear": "پاکول",
@@ -1017,4 +1050,17 @@ const organizationFormErrorKeys: Record<string, WorkspaceCopyKey> = {
 export function organizationFormErrorKey(code: string | undefined): WorkspaceCopyKey {
   if (!code) return "organizationForm.errorGeneric";
   return organizationFormErrorKeys[code] ?? "organizationForm.errorGeneric";
+}
+
+const profileFormErrorKeys: Record<string, WorkspaceCopyKey> = {
+  "linkedin-url-invalid": "profileForm.errorLinkedinUrl",
+  "website-url-invalid": "profileForm.errorWebsiteUrl",
+  "mentorship-topics-invalid": "profileForm.errorMentorshipTopics",
+  "save-failed": "profileForm.errorSaveFailed",
+  "mentorship-save-failed": "profileForm.errorMentorshipSaveFailed",
+};
+
+export function profileFormErrorKey(code: string | undefined): WorkspaceCopyKey {
+  if (!code) return "profileForm.errorGeneric";
+  return profileFormErrorKeys[code] ?? "profileForm.errorGeneric";
 }

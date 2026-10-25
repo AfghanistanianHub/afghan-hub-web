@@ -18,5 +18,7 @@ test("profile save does not expose raw database errors in the redirect", async (
   const source = await readFile(actionsPath, "utf8");
 
   assert.doesNotMatch(source, /encodeURIComponent\(error\.message\)/);
-  assert.match(source, /We%20could%20not%20save%20your%20profile/);
+  // Save failures travel as codes; the page localizes them.
+  assert.match(source, /error=save-failed/);
+  assert.doesNotMatch(source, /error=[A-Za-z]+%20/);
 });
