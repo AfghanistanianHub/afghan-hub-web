@@ -9,6 +9,7 @@ import {
 
 const labels = {
   en: {
+    loading: "Loading your Afghan Hub workspace.",
     recommended: "Recommended for you",
     suggested: "Suggested opportunities",
     viewAll: "View all",
@@ -32,6 +33,7 @@ const labels = {
     step_discovery: "Add languages or a professional link",
   },
   fa: {
+    loading: "محیط کار شما در افغان هاب در حال بارگذاری است.",
     recommended: "پیشنهادشده برای شما",
     suggested: "فرصت‌های پیشنهادی",
     viewAll: "مشاهده همه",
@@ -55,6 +57,7 @@ const labels = {
     step_discovery: "زبان‌ها یا لینک حرفه‌ای خود را اضافه کنید",
   },
   ps: {
+    loading: "ستاسو د افغان هاب کاري چاپېریال بارېږي.",
     recommended: "ستاسو لپاره وړاندیز شوي",
     suggested: "وړاندیز شوي فرصتونه",
     viewAll: "ټول وګورئ",

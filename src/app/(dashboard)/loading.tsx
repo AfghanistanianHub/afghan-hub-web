@@ -1,3 +1,4 @@
+import { DashboardText } from "@/components/dashboard/dashboard-text";
 export default function DashboardLoading() {
   const pulse = "animate-pulse bg-muted motion-reduce:animate-none";
 
@@ -8,7 +9,7 @@ export default function DashboardLoading() {
       aria-busy="true"
     >
       <div role="status" aria-live="polite" className="space-y-8">
-        <span className="sr-only">Loading your Afghan Hub workspace.</span>
+        <span className="sr-only"><DashboardText id="loading" /></span>
 
         <section className="relative overflow-hidden rounded-[var(--radius)] border border-border/70 bg-card px-6 py-7 sm:px-8 sm:py-9">
           <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-16 size-56 rounded-full border border-primary/10" />
