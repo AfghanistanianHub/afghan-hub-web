@@ -154,7 +154,7 @@ const legalNavigation = {
   ps: { privacy: "محرمیت", terms: "د کارولو شرطونه", support: "ملاتړ", navigation: "محرمیت، شرطونه او ملاتړ" },
 } as const satisfies Record<SiteLanguage, {privacy: string; terms: string; support: string; navigation: string}>;
 
-export function LocalizedLoginContent({ error, message, mode }: { error?: string; message?: string; mode?: string }) {
+export function LocalizedLoginContent({ error, message, mode }: { error?: string; message?: string; mode?: string; next?: string }) {
   const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
   const t = labels[language];
   const joining = mode === "join";
