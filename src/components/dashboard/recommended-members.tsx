@@ -90,11 +90,11 @@ export function RecommendedMembers({
                 )}
 
                 <div className="min-w-0 flex-1">
-                  <h3 className="line-clamp-2 break-words font-bold leading-5 text-foreground transition group-hover:text-primary">
+                  <h3 dir="auto" className="line-clamp-2 break-words font-bold leading-5 text-foreground transition group-hover:text-primary">
                     {memberName}
                   </h3>
                   {member.headline ? (
-                    <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">
+                    <p dir="auto" className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">
                       {member.headline}
                     </p>
                   ) : null}
