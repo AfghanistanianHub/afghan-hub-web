@@ -135,7 +135,7 @@ test("root layout language bootstrap stays aligned with callback language and bl
   const match = layout.match(/const languageBootstrap = `([\s\S]*?)`;/);
   assert.ok(match, "pre-paint language bootstrap exists");
   // Evaluate JavaScript template escapes just as TypeScript does; no interpolation is expected.
-  const bootstrap = Function("return `" + match[1] + "`")();
+  const bootstrap = runInNewContext("`" + match[1] + "`");
   const run = ({ pathname = "/", search = "", cookie = "", stored = {}, blocked = false }) => {
     const document = { cookie, documentElement: { lang: "en", dir: "ltr" } };
     const location = { pathname, search };
