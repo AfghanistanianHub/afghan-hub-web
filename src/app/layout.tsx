@@ -54,7 +54,7 @@ export const metadata: Metadata = {
 // Runs before first paint so /fa and /ps (and a stored Farsi/Pashto choice) never flash English.
 // Mirrors normalizeSiteLanguage/readSiteLanguagePreference in src/lib/i18n/site-language.ts.
 // Honor callback language cookies even when localStorage is empty or blocked.
-const languageBootstrap = `(function(){try{var m=location.pathname.match(/^\\\\/(en|fa|ps)\\\\/?$/);var l=m&&m[1];if(!l){var c=document.cookie.match(/(?:^|;\\\\s*)afghan-hub-auth-language=(en|fa|ps)(?:;|$)/);var q=new URLSearchParams(location.search).get('lang');var s=q==='en'||q==='fa'||q==='ps'?q:(c?c[1]:(localStorage.getItem('afghan-hub-site-language')||localStorage.getItem('afghan-hub-navigator-language')||''));s=s.trim().replace(/_/g,'-').toLowerCase();l=(s==='fa'||s.indexOf('fa-')===0||s==='prs'||s.indexOf('prs-')===0)?'fa':(s==='ps'||s.indexOf('ps-')===0)?'ps':'en';}document.documentElement.lang=l;document.documentElement.dir=l==='en'?'ltr':'rtl';}catch(e){}})();`;
+const languageBootstrap = `(function(){try{var m=location.pathname.match(/^\\/(en|fa|ps)\\/?$/);var l=m&&m[1];if(!l){var c=document.cookie.match(/(?:^|;\\s*)afghan-hub-auth-language=(en|fa|ps)(?:;|$)/);var q=new URLSearchParams(location.search).get('lang');var s=q==='en'||q==='fa'||q==='ps'?q:(c?c[1]:(localStorage.getItem('afghan-hub-site-language')||localStorage.getItem('afghan-hub-navigator-language')||''));s=s.trim().replace(/_/g,'-').toLowerCase();l=(s==='fa'||s.indexOf('fa-')===0||s==='prs'||s.indexOf('prs-')===0)?'fa':(s==='ps'||s.indexOf('ps-')===0)?'ps':'en';}document.documentElement.lang=l;document.documentElement.dir=l==='en'?'ltr':'rtl';}catch(e){}})();`;
 
 export default function RootLayout({
   children,
