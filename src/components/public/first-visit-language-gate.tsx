@@ -1,8 +1,8 @@
 "use client";
 
-import { useSyncExternalStore, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { saveSiteLanguagePreference, siteLanguagePreferenceKey, subscribeSiteLanguagePreference, type SiteLanguage } from "@/lib/i18n/site-language";
+import { saveSiteLanguagePreference, type SiteLanguage } from "@/lib/i18n/site-language";
 import styles from "./first-visit-language-gate.module.css";
 
 const languages: { code: SiteLanguage; label: string; native?: string }[] = [
@@ -14,23 +14,9 @@ const languages: { code: SiteLanguage; label: string; native?: string }[] = [
 /** Only the root homepage is gated. All deep links bypass the entrance. */
 export function FirstVisitLanguageGate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const selection = useSyncExternalStore(
-    subscribeSiteLanguagePreference,
-    () => {
-      try {
-        const saved = window.localStorage.getItem(siteLanguagePreferenceKey);
-        const legacy = window.localStorage.getItem("afghan-hub-navigator-language");
-        return saved === null && legacy === null ? "unselected" : "selected";
-      } catch {
-        return "unselected";
-      }
-    },
-    () => "loading",
-  );
-
+  // The root URL is the language entrance on every visit, even if a
+  // language preference is saved. Locale deep links keep their own routing.
   if (pathname !== "/") return <>{children}</>;
-  if (selection === "loading") return <div className={styles.loading} aria-label="Loading" />;
-  if (selection === "selected") return <>{children}</>;
 
   return (
     <main id="main-content" className={styles.entrance}>
