@@ -77,6 +77,7 @@ export function Header({
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         <div className="relative inline-flex shrink-0 items-center">
           <select
+            data-custom-chevron
             aria-label={copy.language}
             value={language}
             onChange={(e) => saveSiteLanguagePreference(e.target.value)}
