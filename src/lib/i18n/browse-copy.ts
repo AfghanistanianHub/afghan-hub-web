@@ -448,6 +448,27 @@ export const browseCopy = {
     "verification.meaning": "What verification means:",
     "verification.aria": "Verified listing. {explanation}",
 
+    "member.back": "Back to network",
+    "member.fallbackName": "Afghan Hub member",
+    "member.profile": "Profile",
+    "member.about": "About",
+    "member.bioEmpty": "This member has not added a biography yet.",
+    "member.expertise": "Expertise",
+    "member.skills": "Skills",
+    "member.skillsEmpty": "No skills have been added.",
+    "member.mentorship": "Mentorship",
+    "member.openToMentoring": "Open to mentoring",
+    "member.lookingForMentor": "Looking for a mentor",
+    "member.mentorshipNote":
+      "These are member-selected preferences, not a credential or endorsement by Afghan Hub.",
+    "member.languages": "Languages",
+    "member.languagesEmpty": "No languages added.",
+    "member.links": "Links",
+    "member.website": "Website",
+    "member.linkedin": "LinkedIn",
+    "member.conversationError":
+      "We could not start this conversation. Please try again.",
+
     "opportunityAction.errorExpired":
       "This opportunity has expired, so it can no longer be saved.",
     "opportunityAction.errorCannotDelete":
@@ -905,6 +926,27 @@ export const browseCopy = {
       "مدیران افغان هاب این آگهی را تأییدشده علامت‌گذاری کرده‌اند. تأیید به معنای توصیه یا تضمین نیست.",
     "verification.meaning": "معنای تأیید:",
     "verification.aria": "آگهی تأییدشده. {explanation}",
+
+    "member.back": "بازگشت به شبکه",
+    "member.fallbackName": "عضو افغان هاب",
+    "member.profile": "پروفایل",
+    "member.about": "درباره",
+    "member.bioEmpty": "این عضو هنوز شرح‌حالی ثبت نکرده است.",
+    "member.expertise": "تخصص",
+    "member.skills": "مهارت‌ها",
+    "member.skillsEmpty": "هنوز مهارتی ثبت نشده است.",
+    "member.mentorship": "راهنمایی حرفه‌ای",
+    "member.openToMentoring": "آماده راهنمایی دیگران",
+    "member.lookingForMentor": "در جست‌وجوی راهنما",
+    "member.mentorshipNote":
+      "این موارد انتخاب خود عضو هستند و به معنای تأیید صلاحیت یا توصیه افغان هاب نیستند.",
+    "member.languages": "زبان‌ها",
+    "member.languagesEmpty": "هنوز زبانی ثبت نشده است.",
+    "member.links": "پیوندها",
+    "member.website": "وب‌سایت",
+    "member.linkedin": "لینکدین",
+    "member.conversationError":
+      "آغاز این گفتگو امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
 
     "opportunityAction.errorExpired":
       "این فرصت منقضی شده است و دیگر قابل ذخیره نیست.",
@@ -1366,6 +1408,27 @@ export const browseCopy = {
     "verification.meaning": "د تایید معنا:",
     "verification.aria": "تایید شوې. {explanation}",
 
+    "member.back": "شبکې ته بېرته",
+    "member.fallbackName": "د افغان هب غړی",
+    "member.profile": "پروفایل",
+    "member.about": "په اړه",
+    "member.bioEmpty": "دې غړي تر اوسه ژوندلیک نه دی لیکلی.",
+    "member.expertise": "تخصص",
+    "member.skills": "مهارتونه",
+    "member.skillsEmpty": "تر اوسه مهارتونه نه دي ثبت شوي.",
+    "member.mentorship": "لارښوونه",
+    "member.openToMentoring": "نورو ته د لارښوونې لپاره چمتو",
+    "member.lookingForMentor": "د لارښود په لټه کې",
+    "member.mentorshipNote":
+      "دا د غړي خپلې ټاکنې دي، د افغان هاب له خوا تصدیق یا سپارښتنه نه ده.",
+    "member.languages": "ژبې",
+    "member.languagesEmpty": "تر اوسه ژبې نه دي ثبت شوې.",
+    "member.links": "اړیکې",
+    "member.website": "وېبپاڼه",
+    "member.linkedin": "لینکډین",
+    "member.conversationError":
+      "دا خبرې اترې پیل نه شوې. مهرباني وکړئ بیا هڅه وکړئ.",
+
     "opportunityAction.errorExpired":
       "دا فرصت پای ته رسېدلی، نو بیا خوندي کېدای نه شي.",
     "opportunityAction.errorCannotDelete":
@@ -1446,6 +1509,16 @@ const verificationActionErrorKeys: Record<string, BrowseCopyKey> = {
 export function verificationActionErrorKey(code: string | undefined): BrowseCopyKey {
   if (!code) return "action.errorGeneric";
   return verificationActionErrorKeys[code] ?? "action.errorGeneric";
+}
+
+const memberActionErrorKeys: Record<string, BrowseCopyKey> = {
+  "start-failed": "member.conversationError",
+};
+
+/** Member-profile actions report failures as stable codes. */
+export function memberActionErrorKey(code: string | undefined): BrowseCopyKey {
+  if (!code) return "action.errorGeneric";
+  return memberActionErrorKeys[code] ?? "action.errorGeneric";
 }
 
 export function opportunityTypeKey(value: string | null | undefined): BrowseCopyKey | null {

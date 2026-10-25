@@ -14,8 +14,8 @@ const memberPage = fs.readFileSync(
   new URL("../src/app/(dashboard)/members/[id]/page.tsx", import.meta.url),
   "utf8",
 );
-const memberCopy = fs.readFileSync(
-  new URL("../src/components/i18n/member-copy.tsx", import.meta.url),
+const browseCopy = fs.readFileSync(
+  new URL("../src/lib/i18n/browse-copy.ts", import.meta.url),
   "utf8",
 );
 const databaseTypes = fs.readFileSync(
@@ -69,12 +69,12 @@ test("member profile only renders explicit mentorship signals", () => {
   );
   assert.match(memberPage, /const hasMentorshipSignals=/);
   assert.match(memberPage, /\{hasMentorshipSignals\?<section/);
-  assert.match(memberPage, /<MemberCopy id="open"\/>/);
-  assert.match(memberCopy, /Open to mentoring/);
-  assert.match(memberPage, /<MemberCopy id="looking"\/>/);
-  assert.match(memberCopy, /Looking for a mentor/);
+  assert.match(memberPage, /<B k="member\.openToMentoring"\/>/);
+  assert.match(browseCopy, /"member\.openToMentoring": "Open to mentoring"/);
+  assert.match(memberPage, /<B k="member\.lookingForMentor"\/>/);
+  assert.match(browseCopy, /"member\.lookingForMentor": "Looking for a mentor"/);
   assert.match(
-    memberCopy,
+    browseCopy,
     /member-selected preferences, not a credential or endorsement by Afghan Hub/i,
   );
 });
