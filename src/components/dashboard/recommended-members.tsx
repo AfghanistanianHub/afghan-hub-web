@@ -1,3 +1,10 @@
+"use client";
+import { useSiteLanguage } from "@/components/i18n/localized";
+const copy = {
+ en:["People worth meeting","Relevant people from the community","Explore network","More people to discover","Members with similar skills, work or location"],
+ fa:["افرادی که ارزش آشنایی دارند","اعضای مرتبط از جامعه","کاوش در شبکه","افراد بیشتر برای آشنایی","اعضایی با مهارت، شغل یا موقعیت مشابه"],
+ ps:["د پېژندلو وړ خلک","د ټولنې اړوند غړي","شبکه وپلټئ","نور د پېژندلو وړ خلک","د ورته مهارتونو، کار یا ځای غړي"],
+} as const;
 import Link from "next/link";
 import styles from "@/components/network/network-surfaces.module.css";
 import { ArrowRight, BriefcaseBusiness, MapPin, UserRound } from "lucide-react";
@@ -32,6 +39,7 @@ export function RecommendedMembers({
   eyebrow = "People worth meeting",
   title = "Relevant people from the community",
 }: RecommendedMembersProps) {
+  const language = useSiteLanguage();
   if (!members.length) return null;
 
   return (
@@ -39,18 +47,18 @@ export function RecommendedMembers({
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-            {eyebrow}
+            {eyebrow === "People worth meeting" ? copy[language][0] : eyebrow === "More people to discover" ? copy[language][3] : eyebrow}
           </p>
           <h2 className="mt-2 text-xl font-bold tracking-[-0.02em] text-foreground">
-            {title}
+            {title === "Relevant people from the community" ? copy[language][1] : title === "Members with similar skills, work or location" ? copy[language][4] : title}
           </h2>
         </div>
         <Link
           href="/network"
           className="hidden min-h-11 items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:text-primary/80 sm:inline-flex focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
-          Explore network
-          <ArrowRight aria-hidden="true" className="size-4" />
+          {copy[language][2]}
+          <ArrowRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
         </Link>
       </div>
 
@@ -58,13 +66,13 @@ export function RecommendedMembers({
         {members.map((member) => {
           const memberName = getMemberName(member);
           const location = [member.city, member.country].filter(Boolean).join(", ");
-          const work = [member.profession, member.company].filter(Boolean).join(" at ");
+          const work = [member.profession, member.company].filter(Boolean).join(" · ");
 
           return (
             <Link
               key={member.id}
               href={`/members/${member.id}`}
-              className={`group border-b border-border p-5 md:border-b-0 md:border-r md:last:border-r-0 ${styles.profile}`}
+              className={`group border-b border-border p-5 md:border-b-0 md:border-e md:last:border-e-0 ${styles.profile}`}
             >
               <div className="flex items-start gap-3.5">
                 {member.avatar_url ? (
@@ -123,7 +131,7 @@ export function RecommendedMembers({
         className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:hidden"
       >
         Explore network
-        <ArrowRight aria-hidden="true" className="size-4" />
+        <ArrowRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
       </Link>
     </section>
   );
