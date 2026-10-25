@@ -64,7 +64,8 @@ Translation status legend:
 | `/moderation` | Translated | Queue headings, tabs, per-entity labels, dates, approve/reject controls and reason field, history view, empty and error states localized in this audit. |
 | `/moderation/team` | Translated | Team heading, role chips, role picker, save state, self-role and empty/error states localized in this audit. |
 | Global loading boundary | Translated | Workspace loading announcement localized (#524 candidate); not merged into `main`. |
-| 404 / error states | English-only | Default framework copy remains English. |
+| 404 (`not-found.tsx`, businesses, organizations, members, explore listing) | Verified | All five boundaries render from `notFound.*` in the discovery catalogue: localized eyebrow, title, body and calls to action, local `۴۰۴` digits, mirrored back arrow, and `DocumentLanguage` restoring `lang`/`dir` on refresh-loaded 404s. The root and public listing 404s were rendered in en/fa/ps at 320, 390, 768, 1280, 1440 and 1920 px with 200% text; the three signed-in 404s are **Translated** because they need an authenticated session. |
+| Error boundary / recovery | Translated | `PageRecovery` reads `recovery.*` from the same catalogue, sets its own `lang`/`dir` boundary, and the global error document reloads the stored language before first paint and localizes its `<title>`. Rendered in en/fa/ps by `tests/page-recovery.test.mjs`; not triggered in a browser. |
 
 ## Workspace catalog (this audit)
 
@@ -107,6 +108,11 @@ member-facing detail pages. `src/components/i18n/browse.tsx` provides `<B>`, `us
 - `tests/browse-copy-contract.test.mjs` enforces key parity, non-empty values, no English fallback,
   interpolation, opportunity-type mapping, catalog usage on every localized route, removal of the
   previously hardcoded English chrome, and locale-aware date/number helpers.
+- Not-found and recovery screens read `notFound.*` and `recovery.*` from this catalogue, and
+  `DocumentLanguage` re-applies `lang`/`dir` to the document because a document served from an
+  error shell never runs the root layout's language bootstrap. `tests/not-found-recovery-localization.test.mjs`
+  enforces three-language key parity, no Latin fallback, per-route catalogue usage, that every key
+  is rendered, and that the previously hardcoded English is gone.
 - Server actions no longer put English sentences in the `error` query parameter. Failures redirect
   with stable codes (`title-required`, `create-failed`, `cannot-delete`, `invalid-role`, …) and the
   page maps them through `opportunityFormErrorKey`, `opportunityActionErrorKey`,
@@ -184,9 +190,8 @@ Fixes made in this pass:
   events, submissions, messaging, moderation and connection flows — but those journeys assert
   English copy on the authenticated surfaces. A signed-in pass that switches each of those
   routes through Farsi and Pashto is still outstanding.
-- Localize the remaining surfaces: 404/error boundaries, the avatar/profile-strength widgets
-  and the remaining dashboard recommendation blocks, all listed as English-only or partial
-  above.
+- Localize the remaining surfaces: the avatar/profile-strength widgets and the remaining
+  dashboard recommendation blocks, all listed as English-only or partial above.
 - Localize the remaining server-side action error strings. Opportunity, moderation, event,
   business, organization, profile and messaging failures now travel as message codes
   (`opportunityFormErrorKey`, `opportunityActionErrorKey`, `moderation.error*`, `team.error*`,

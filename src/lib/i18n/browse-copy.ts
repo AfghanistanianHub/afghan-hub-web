@@ -2,7 +2,8 @@ import type { SiteLanguage } from "./site-language";
 
 /**
  * UI copy for the discovery surfaces: search, the opportunity, business,
- * organization and event directories, and their member-facing detail pages.
+ * organization and event directories, their member-facing detail pages, and
+ * the not-found and recovery screens those routes can land on.
  *
  * Kept separate from `ui-copy.ts` (public marketing/detail catalogue) and
  * `workspace-copy.ts` (onboarding and create/edit forms) so each catalogue can
@@ -494,6 +495,41 @@ export const browseCopy = {
       "Are you sure you want to delete this event? This action cannot be undone.",
     "delete.action": "Delete",
     "delete.deleting": "Deleting…",
+
+    "notFound.eyebrow": "404 · Page not found",
+    "notFound.title": "This page isn’t available.",
+    "notFound.body":
+      "The link may be outdated, the page may have moved, or you may not have access to it. You can head home or keep exploring Afghan Hub.",
+    "notFound.home": "Go to homepage",
+    "notFound.explore": "Explore community",
+    "notFound.signIn": "Sign in",
+    "notFound.businessTitle": "Business not found",
+    "notFound.businessBody":
+      "This business does not exist or is not publicly available.",
+    "notFound.viewBusinesses": "View businesses",
+    "notFound.organizationTitle": "Organization not found",
+    "notFound.organizationBody":
+      "This organization does not exist or is not publicly available.",
+    "notFound.viewOrganizations": "View organizations",
+    "notFound.memberTitle": "Member not found",
+    "notFound.memberBody":
+      "This profile may not exist, may not be public, or may not have completed onboarding.",
+    "notFound.returnToNetwork": "Return to network",
+    "notFound.listingTitle": "This listing isn’t available.",
+    "notFound.listingBody":
+      "It may have been removed, unpublished, or is no longer available to the public.",
+    "notFound.exploreListings": "Explore community listings",
+
+    "recovery.eyebrow": "Page unavailable",
+    "recovery.title": "We couldn’t load this page.",
+    "recovery.body":
+      "Something went wrong. You can try the page again, or return to Afghan Hub and continue from there.",
+    "recovery.retry": "Try again",
+    "recovery.retrying": "Trying again…",
+    "recovery.home": "Go to home",
+    "recovery.privacyNote":
+      "For privacy, Afghan Hub does not show internal error details on this screen.",
+    "recovery.documentTitle": "Page unavailable | Afghan Hub",
   },
   fa: {
     "common.community": "جامعه",
@@ -974,6 +1010,41 @@ export const browseCopy = {
       "آیا مطمئن هستید که می‌خواهید این رویداد را حذف کنید؟ این عمل قابل بازگشت نیست.",
     "delete.action": "حذف",
     "delete.deleting": "در حال حذف…",
+
+    "notFound.eyebrow": "۴۰۴ · صفحه پیدا نشد",
+    "notFound.title": "این صفحه در دسترس نیست.",
+    "notFound.body":
+      "ممکن است این پیوند قدیمی شده باشد، صفحه جابه‌جا شده باشد یا شما به آن دسترسی نداشته باشید. می‌توانید به صفحه اصلی بروید یا کاوش در افغان هاب را ادامه دهید.",
+    "notFound.home": "رفتن به صفحه اصلی",
+    "notFound.explore": "کاوش در جامعه",
+    "notFound.signIn": "ورود",
+    "notFound.businessTitle": "کسب‌وکار پیدا نشد",
+    "notFound.businessBody":
+      "این کسب‌وکار وجود ندارد یا به‌صورت عمومی در دسترس نیست.",
+    "notFound.viewBusinesses": "مشاهده کسب‌وکارها",
+    "notFound.organizationTitle": "سازمان پیدا نشد",
+    "notFound.organizationBody":
+      "این سازمان وجود ندارد یا به‌صورت عمومی در دسترس نیست.",
+    "notFound.viewOrganizations": "مشاهده سازمان‌ها",
+    "notFound.memberTitle": "عضو پیدا نشد",
+    "notFound.memberBody":
+      "ممکن است این پروفایل وجود نداشته باشد، عمومی نباشد یا مراحل تکمیل حساب را کامل نکرده باشد.",
+    "notFound.returnToNetwork": "بازگشت به شبکه",
+    "notFound.listingTitle": "این آگهی در دسترس نیست.",
+    "notFound.listingBody":
+      "ممکن است حذف شده باشد، منتشر نشده باشد یا دیگر برای عموم در دسترس نباشد.",
+    "notFound.exploreListings": "کاوش در آگهی‌های جامعه",
+
+    "recovery.eyebrow": "صفحه در دسترس نیست",
+    "recovery.title": "نتوانستیم این صفحه را بارگیری کنیم.",
+    "recovery.body":
+      "چیزی اشتباه پیش رفت. می‌توانید این صفحه را دوباره امتحان کنید یا به افغان هاب بازگردید و از آنجا ادامه دهید.",
+    "recovery.retry": "تلاش دوباره",
+    "recovery.retrying": "در حال تلاش دوباره…",
+    "recovery.home": "رفتن به خانه",
+    "recovery.privacyNote":
+      "برای حفظ حریم خصوصی، افغان هاب جزئیات خطاهای داخلی را در این صفحه نشان نمی‌دهد.",
+    "recovery.documentTitle": "صفحه در دسترس نیست | افغان هاب",
   },
   ps: {
     "common.community": "ټولنه",
@@ -1455,6 +1526,41 @@ export const browseCopy = {
       "ایا ډاډه یاست چې غواړئ دا پېښه ړنګه کړئ؟ دا کار بېرته نه شي کېدای.",
     "delete.action": "ړنګول",
     "delete.deleting": "ړنګېږي…",
+
+    "notFound.eyebrow": "۴۰۴ · پاڼه ونه موندل شوه",
+    "notFound.title": "دا پاڼه نشته.",
+    "notFound.body":
+      "کېدای شي دا لینک زوړ شوی وي، پاڼه بل ځای ته لېږدول شوې وي، یا تاسو ورته لاسرسی نه لرئ. کولای شئ کور ته لاړ شئ یا په افغان هب کې لټون ته دوام ورکړئ.",
+    "notFound.home": "کور پاڼې ته لاړ شئ",
+    "notFound.explore": "ټولنه وپلټئ",
+    "notFound.signIn": "ننوتل",
+    "notFound.businessTitle": "سوداګري ونه موندل شوه",
+    "notFound.businessBody":
+      "دا سوداګري نشته یا په عامه توګه د لاسرسي وړ نه ده.",
+    "notFound.viewBusinesses": "سوداګرۍ وګورئ",
+    "notFound.organizationTitle": "سازمان ونه موندل شو",
+    "notFound.organizationBody":
+      "دا سازمان نشته یا په عامه توګه د لاسرسي وړ نه دی.",
+    "notFound.viewOrganizations": "سازمانونه وګورئ",
+    "notFound.memberTitle": "غړی ونه موندل شو",
+    "notFound.memberBody":
+      "کېدای شي دا پروفایل نه وي، عامه نه وي، یا د پیل بشپړولو پروسه یې نه وي بشپړه کړې.",
+    "notFound.returnToNetwork": "شبکې ته بېرته",
+    "notFound.listingTitle": "دا لېست نشته.",
+    "notFound.listingBody":
+      "کېدای شي لرې شوی وي، نه وي خپور شوی، یا نور عامو خلکو ته د لاسرسي وړ نه وي.",
+    "notFound.exploreListings": "د ټولنې لېستونه وپلټئ",
+
+    "recovery.eyebrow": "پاڼه نشته",
+    "recovery.title": "دا پاڼه مو بار نه کړای شوه.",
+    "recovery.body":
+      "یو څه سم نه وو. کولای شئ دا پاڼه بیا هڅه کړئ، یا افغان هب ته بېرته لاړ شئ او له هغه ځایه دوام ورکړئ.",
+    "recovery.retry": "بیا هڅه",
+    "recovery.retrying": "بیا هڅه کېږي…",
+    "recovery.home": "کور ته لاړ شئ",
+    "recovery.privacyNote":
+      "د محرمیت لپاره، افغان هب په دې پاڼه کې د داخلي تېروتنو جزئیات نه ښیي.",
+    "recovery.documentTitle": "پاڼه نشته | افغان هب",
   },
 } satisfies Record<SiteLanguage, Record<string, string>>;
 

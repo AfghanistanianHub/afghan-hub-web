@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 import {
   formatCopy,
@@ -19,6 +19,21 @@ export function useSiteLanguage(): SiteLanguage {
     readSiteLanguagePreference,
     (): SiteLanguage => "en",
   );
+}
+
+/**
+ * Applies the active language to the document element. The root layout's
+ * bootstrap script normally does this before first paint, but a document that
+ * is served from an error shell (404, error boundary) never runs it, leaving
+ * Farsi and Pashto content in an LTR document and unmirrored RTL icons.
+ */
+export function DocumentLanguage() {
+  const language = useSiteLanguage();
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.documentElement.dir = language === "en" ? "ltr" : "rtl";
+  }, [language]);
+  return null;
 }
 
 /** Client components use this to localize attributes, dates and formatted text. */
