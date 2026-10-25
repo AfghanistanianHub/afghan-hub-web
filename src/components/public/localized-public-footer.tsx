@@ -11,11 +11,13 @@ import styles from "@/components/public/public-navigation.module.css";
 export function LocalizedPublicFooter() {
   const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
   const t = getSharedUiCopy(language);
+  const platformHeading = language === "en" ? "Afghan Hub" : language === "fa" ? "افغان هاب" : "افغان هب";
+  const supportHeading = language === "en" ? "Help & support" : language === "fa" ? "راهنما و پشتیبانی" : "مرسته او ملاتړ";
   return <footer className={styles.footer} lang={language} dir={language === "en" ? "ltr" : "rtl"}>
     <div><Brand /><p>{language === "en" ? "A more connected Afghan future. A place for people, possibilities, and meaningful connections." : language === "fa" ? "آینده‌ای پیوسته‌تر برای جامعه افغانستان؛ جایی برای افراد، فرصت‌ها و ارتباط‌های معنادار." : "د افغان ټولنې لپاره لا تړلی راتلونکی؛ د خلکو، فرصتونو او ارزښتناکو اړیکو ځای."}</p></div>
     <nav aria-label={t.explore}><h2>{t.explore}</h2>{communityAreas.map(area => <Link key={area.key} href={area.href}>{t[area.key]}</Link>)}</nav>
-    <nav aria-label={language === "en" ? "Platform" : language === "fa" ? "پلتفرم" : "پلېټفارم"}><h2>Afghan Hub</h2><Link href="/about">{t.about}</Link><Link href="/#how-it-works">{language === "en" ? "How it works" : language === "fa" ? "چگونه کار می‌کند" : "څنګه کار کوي"}</Link><Link href="/#ai-navigator">{language === "en" ? "AI Navigator" : language === "fa" ? "راهنمای هوشمند" : "ځیرک لارښود"}</Link><Link href="/login?mode=join">{t.getStarted}</Link><Link href="/login">{t.signIn}</Link></nav>
-    <nav aria-label={t.support}><h2>{t.support}</h2><Link href="/support">{t.support}</Link><Link href="/privacy">{t.privacy}</Link><Link href="/terms">{t.terms}</Link></nav>
+    <nav aria-label={language === "en" ? "Platform" : language === "fa" ? "پلتفرم" : "پلېټفارم"}><h2>{platformHeading}</h2><Link href="/about">{t.about}</Link><Link href="/#how-it-works">{language === "en" ? "How it works" : language === "fa" ? "چگونه کار می‌کند" : "څنګه کار کوي"}</Link><Link href="/#ai-navigator">{language === "en" ? "AI Navigator" : language === "fa" ? "راهنمای هوشمند" : "ځیرک لارښود"}</Link><Link href="/login?mode=join">{t.getStarted}</Link><Link href="/login">{t.signIn}</Link></nav>
+    <nav aria-label={supportHeading}><h2>{supportHeading}</h2><Link href="/support">{t.support}</Link><Link href="/privacy">{t.privacy}</Link><Link href="/terms">{t.terms}</Link></nav>
     <p className={styles.copyright}>© {new Date().getFullYear()} Afghan Hub. {language === "en" ? "All rights reserved." : language === "fa" ? "تمام حقوق محفوظ است." : "ټول حقونه خوندي دي."}</p>
   </footer>;
 }
