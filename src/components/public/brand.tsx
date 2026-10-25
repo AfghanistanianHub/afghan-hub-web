@@ -9,7 +9,7 @@ const homeLabels: Record<SiteLanguage, string> = {
 };
 
 export function Brand({ language = "en" }: { language?: SiteLanguage }) {
-  return <Link href="/" aria-label={homeLabels[language]} className={styles.brand}>
+  return <Link href={`/${language}`} aria-label={homeLabels[language]} className={styles.brand}>
     <span className={styles.brandMark} aria-hidden="true"> <i /> </span>
     <span>Afghan Hub</span>
   </Link>;
