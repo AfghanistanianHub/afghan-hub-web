@@ -1,5 +1,4 @@
 import {
-  ArrowUpRight,
   BriefcaseBusiness,
   Building2,
   HandHeart,
