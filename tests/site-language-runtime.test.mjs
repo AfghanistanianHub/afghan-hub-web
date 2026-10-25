@@ -127,3 +127,32 @@ test("locale parsing accepts mixed case and underscore separators", async () => 
     assert.equal(language.normalizeSiteLanguage(value), "en");
   }
 });
+
+test("root layout language bootstrap stays aligned with callback language and blocked storage", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const { runInNewContext } = await import("node:vm");
+  const layout = await readFile(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
+  const match = layout.match(/const languageBootstrap = `([\s\S]*?)`;/);
+  assert.ok(match, "pre-paint language bootstrap exists");
+  // Evaluate JavaScript template escapes just as TypeScript does; no interpolation is expected.
+  const bootstrap = Function("return `" + match[1] + "`")();
+  const run = ({ pathname = "/", search = "", cookie = "", stored = {}, blocked = false }) => {
+    const document = { cookie, documentElement: { lang: "en", dir: "ltr" } };
+    const location = { pathname, search };
+    const localStorage = {
+      getItem(key) {
+        if (blocked) throw new Error("Storage blocked");
+        return stored[key] ?? null;
+      },
+    };
+    runInNewContext(bootstrap, { document, location, localStorage, URLSearchParams });
+    return document.documentElement;
+  };
+  assert.equal(run({ pathname: "/fa", stored: { "afghan-hub-site-language": "en" } }).dir, "rtl");
+  assert.equal(run({ pathname: "/ps" }).lang, "ps");
+  assert.equal(run({ search: "?lang=ps", cookie: "afghan-hub-auth-language=fa" }).lang, "ps");
+  assert.equal(run({ cookie: "afghan-hub-auth-language=fa", blocked: true }).lang, "fa");
+  assert.equal(run({ cookie: "afghan-hub-auth-language=ps", stored: { "afghan-hub-site-language": "en" } }).lang, "ps");
+  assert.equal(run({ stored: { "afghan-hub-site-language": "prs-AF" } }).lang, "fa");
+  assert.equal(run({ blocked: true }).dir, "ltr");
+});
