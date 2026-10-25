@@ -14,6 +14,10 @@ const messages = {
 } as const satisfies Record<SiteLanguage, Record<string, string>>;
 
 const recoveryFeedback = {
+  "The password reset link is invalid or has expired. Request a new link and try again.": {
+    fa: "لینک بازنشانی رمز عبور نامعتبر یا منقضی شده است. لینک جدیدی درخواست کرده و دوباره تلاش کنید.",
+    ps: "د پټنوم بدلولو لینک ناسم دی یا پای ته رسېدلی. نوی لینک وغواړئ او بیا هڅه وکړئ.",
+  },
   "Enter your email address.": {
     fa: "نشانی ایمیل خود را وارد کنید.",
     ps: "خپله برېښنالیک پته ولیکئ.",

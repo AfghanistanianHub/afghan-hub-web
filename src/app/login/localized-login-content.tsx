@@ -11,10 +11,13 @@ import {
   PASSWORD_MIN_LENGTH,
   PASSWORD_POLICY_HINT,
 } from "@/lib/password-policy";
+import { login, signup, continueWithGoogle } from "./actions";
+import { getAuthDestination } from "@/lib/auth-navigation";
 import { login, signInWithGoogle, signup } from "./actions";
 
 const labels = {
   "en": {
+    "google": "Continue with Google", "emailOption": "Continue with Email", "or": "or", "connecting": "Connecting…",
     "join": "Join the community",
     "access": "Member access",
     "joinTitle": "Create your Afghan Hub account",
@@ -39,6 +42,7 @@ const labels = {
     "or": "or"
   },
   "fa": {
+    "google": "ادامه با Google", "emailOption": "ادامه با ایمیل", "or": "یا", "connecting": "در حال اتصال…",
     "join": "پیوستن به جامعه",
     "access": "ورود اعضا",
     "joinTitle": "حساب کاربری افغان هاب خود را بسازید",
@@ -63,6 +67,7 @@ const labels = {
     "or": "یا"
   },
   "ps": {
+    "google": "د Google له لارې دوام ورکړئ", "emailOption": "د برېښنالیک له لارې دوام ورکړئ", "or": "یا", "connecting": "نښلول کېږي…",
     "join": "له ټولنې سره یوځای شئ",
     "access": "د غړو ننوتل",
     "joinTitle": "خپل افغان هاب حساب جوړ کړئ",
@@ -89,6 +94,18 @@ const labels = {
 } as const satisfies Record<SiteLanguage, Record<string,string>>;
 
 const authFeedback = {
+  "Google sign-in was cancelled. Please try again or continue with email.": {
+    fa: "ورود با Google لغو شد. دوباره تلاش کنید یا با ایمیل ادامه دهید.",
+    ps: "د Google له لارې ننوتل لغوه شول. بیا هڅه وکړئ یا د برېښنالیک له لارې دوام ورکړئ.",
+  },
+  "Google sign-in could not be completed. Please try again or continue with email.": {
+    fa: "ورود با Google انجام نشد. دوباره تلاش کنید یا با ایمیل ادامه دهید.",
+    ps: "د Google له لارې ننوتل بشپړ نه شول. بیا هڅه وکړئ یا د برېښنالیک له لارې دوام ورکړئ.",
+  },
+  "The confirmation link is invalid or has expired. Please sign in if your account is already confirmed, or create the account again.": {
+    fa: "لینک تأیید نامعتبر یا منقضی شده است. اگر حساب شما تأیید شده، وارد شوید؛ در غیر آن دوباره حساب بسازید.",
+    ps: "د تایید لینک ناسم دی یا پای ته رسېدلی. که حساب مو تایید شوی وي، ننوځئ؛ که نه، بیا حساب جوړ کړئ.",
+  },
   "Password must include at least 3 of: lowercase letters, uppercase letters, numbers, symbols.": {
     fa: "رمز عبور باید شامل دست‌کم سه مورد از چهار گروه باشد: حروف کوچک انگلیسی، حروف بزرگ انگلیسی، اعداد و نمادها.",
     ps: "پټنوم باید له څلورو ډلو لږ تر لږه درې ولري: کوچني انګلیسي توري، لوی توري، شمېرې او نښې.",
@@ -139,13 +156,13 @@ function GoogleSignInButton({ label, pendingLabel }: { label: string; pendingLab
 }
 
 function feedbackText(value: string, language: SiteLanguage): string {
-  if (language === "en") return value;
   const localized = authFeedback[value as keyof typeof authFeedback];
-  if (localized) return localized[language];
+  if (localized) return language === "en" ? value : localized[language];
   if (value === `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`) {
-    return language === "fa" ? `رمز عبور باید دست‌کم ${PASSWORD_MIN_LENGTH} نویسه داشته باشد.` : `پټنوم باید لږ تر لږه ${PASSWORD_MIN_LENGTH} توري ولري.`;
+    return language === "en" ? value : language === "fa" ? `رمز عبور باید دست‌کم ${PASSWORD_MIN_LENGTH} نویسه داشته باشد.` : `پټنوم باید لږ تر لږه ${PASSWORD_MIN_LENGTH} توري ولري.`;
   }
-  return value;
+  // Query strings are untrusted; show only our known feedback messages.
+  return language === "en" ? "Please try again." : language === "fa" ? "لطفاً دوباره تلاش کنید." : "مهرباني وکړئ بیا هڅه وکړئ.";
 }
 
 const legalNavigation = {
@@ -154,7 +171,7 @@ const legalNavigation = {
   ps: { privacy: "محرمیت", terms: "د کارولو شرطونه", support: "ملاتړ", navigation: "محرمیت، شرطونه او ملاتړ" },
 } as const satisfies Record<SiteLanguage, {privacy: string; terms: string; support: string; navigation: string}>;
 
-export function LocalizedLoginContent({ error, message, mode }: { error?: string; message?: string; mode?: string }) {
+export function LocalizedLoginContent({ error, message, mode, next }: { error?: string; message?: string; mode?: string; next?: string }) {
   const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
   const t = labels[language];
   const joining = mode === "join";
@@ -191,6 +208,25 @@ export function LocalizedLoginContent({ error, message, mode }: { error?: string
             </div>
           ) : null}
 
+          <form action={continueWithGoogle} className="mt-7">
+            <input type="hidden" name="lang" value={language} />
+            <input type="hidden" name="next" value={getAuthDestination(next)} />
+            <SubmitButton variant="google" label={t.google} pendingLabel={t.connecting}>
+              <span className="flex items-center justify-center gap-3">
+                <svg aria-hidden="true" viewBox="0 0 48 48" className="size-5 shrink-0 rounded-full bg-white">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z" />
+                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6C44.4 38.03 46.98 31.87 46.98 24.55Z" />
+                  <path fill="#FBBC05" d="M10.53 28.59A14.41 14.41 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.87 23.87 0 0 0 0 24c0 3.87.93 7.53 2.56 10.78l7.97-6.19Z" />
+                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.18 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z" />
+                </svg>
+                {t.google}
+              </span>
+            </SubmitButton>
+          </form>
+          <div className="my-5 flex items-center gap-3 text-sm text-muted-foreground"><span className="h-px flex-1 bg-border" /><span>{t.or}</span><span className="h-px flex-1 bg-border" /></div>
+          <form id="join" aria-label={t.emailOption} action={joining ? signup : login} className="space-y-5">
+            <input type="hidden" name="lang" value={language} />
+            <input type="hidden" name="next" value={getAuthDestination(next)} />
           <form action={signInWithGoogle} className="mt-7">
             <input type="hidden" name="flow" value={joining ? "join" : "login"} />
             <GoogleSignInButton label={t.google} pendingLabel={t.googleConnecting} />
@@ -251,12 +287,12 @@ export function LocalizedLoginContent({ error, message, mode }: { error?: string
             </div>
 
             <SubmitButton pendingLabel={joining ? t.creating : t.signing}>
-              {joining ? t.create : t.signin}
+              {t.emailOption}
             </SubmitButton>
 
             <p className="text-center text-sm text-muted-foreground">
               {joining ? t.already : t.new}
-              <Link href={joining ? "/login" : "/login?mode=join"} className="rounded-sm font-semibold text-primary underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+              <Link href={`/login?${new URLSearchParams({ ...(joining ? {} : { mode: "join" }), next: getAuthDestination(next) })}`} className="rounded-sm font-semibold text-primary underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
                 {joining ? t.signin : t.newAccount}
               </Link>
             </p>
