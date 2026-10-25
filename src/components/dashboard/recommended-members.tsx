@@ -141,7 +141,7 @@ export function RecommendedMembers({
         href="/network"
         className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-semibold text-primary transition hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:hidden"
       >
-        Explore network
+        {copy[language][2]}
         <ArrowRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
       </Link>
     </section>
