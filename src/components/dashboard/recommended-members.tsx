@@ -34,6 +34,17 @@ function getInitials(name: string) {
     .join("");
 }
 
+function localizeReason(reason: string, language: "en" | "fa" | "ps") {
+  if (language === "en") return reason;
+  const shared = reason.startsWith("Shared skill: ");
+  const same = reason.startsWith("Also in ");
+  if (!shared && !same) return reason;
+  const detail = reason.slice(shared ? "Shared skill: ".length : "Also in ".length);
+  return shared
+    ? (language === "fa" ? `مهارت مشترک: ${detail}` : `ګډ مهارت: ${detail}`)
+    : (language === "fa" ? `همچنین در ${detail}` : `همدارنګه په ${detail} کې`);
+}
+
 export function RecommendedMembers({
   members,
   eyebrow = "People worth meeting",
@@ -102,8 +113,8 @@ export function RecommendedMembers({
               </div>
 
               {member.reason ? (
-                <p className="mt-4 inline-flex max-w-full break-words rounded-full bg-primary/[0.07] px-2.5 py-1 text-[0.68rem] font-semibold text-primary">
-                  {member.reason}
+                <p dir="auto" className="mt-4 inline-flex max-w-full break-words rounded-full bg-primary/[0.07] px-2.5 py-1 text-[0.68rem] font-semibold text-primary">
+                  {localizeReason(member.reason, language)}
                 </p>
               ) : null}
 
