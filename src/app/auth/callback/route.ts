@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const google = flow === "google" || flow === "oauth";
   const code = params.get("code");
   const next = getAuthDestination(params.get("next"));
-  const recoveryDestination = flow === "recovery" && params.get("next") === "/update-password"
+  const recoveryDestination = !google && flow !== "signup" && params.get("next") === "/update-password"
     ? "/update-password" : next;
   const redirectTo = new URL(recoveryDestination, getSiteUrl());
   const validCode = Boolean(code && code.length <= 4096 && params.getAll("code").length === 1 && !params.has("error"));
