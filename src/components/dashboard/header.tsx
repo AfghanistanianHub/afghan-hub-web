@@ -5,7 +5,7 @@ import { CommunityNavigator } from "@/components/assistant/community-navigator";
 import { SignOutSubmit } from "@/components/dashboard/action-submit";
 import styles from "@/components/network/network-surfaces.module.css";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { logout } from "@/app/(dashboard)/actions";
 import { MobileNavigation } from "@/components/dashboard/mobile-navigation";
 import {
@@ -75,19 +75,22 @@ export function Header({
       </div>
 
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-        <label className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className="sr-only">{copy.language}</span>
+        <div className="relative inline-flex shrink-0 items-center">
           <select
             aria-label={copy.language}
             value={language}
             onChange={(e) => saveSiteLanguagePreference(e.target.value)}
-            className="rounded border border-border bg-background px-2 py-1 text-xs text-foreground focus-visible:outline-2 focus-visible:outline-primary"
+            className="h-9 min-w-24 appearance-none rounded-md border border-border bg-background ps-3 pe-8 text-start text-xs leading-normal text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             <option value="en" lang="en">English</option>
             <option value="fa" lang="fa">فارسی</option>
             <option value="ps" lang="ps">پښتو</option>
           </select>
-        </label>
+          <ChevronDown
+            aria-hidden="true"
+            className="pointer-events-none absolute end-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground"
+          />
+        </div>
 
         <CommunityNavigator />
         <NotificationBell
