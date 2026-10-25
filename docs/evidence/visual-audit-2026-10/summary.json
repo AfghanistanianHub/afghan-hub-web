@@ -1,0 +1,13 @@
+{
+  "sourcePages": 41,
+  "handlers": 7,
+  "boundaries": 9,
+  "publicCaptureCases": 567,
+  "privateCaptureCases": 1026,
+  "blockedPrivateAttempts": 0,
+  "interactionCases": 124,
+  "headerVerificationCases": 27,
+  "totalImages": 4453,
+  "ledgerCases": 2608,
+  "blockedLedgerCases": 864
+}

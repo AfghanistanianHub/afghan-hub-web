@@ -1,0 +1,12 @@
+import {execFileSync,spawn} from 'node:child_process';
+import {readFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+import {resolve} from 'node:path';
+const dir=process.env.LOCAL_QA_DIR;
+assert.ok(dir,'LOCAL_QA_DIR required');
+assert.match(readFileSync(resolve(dir,'supabase/config.toml'),'utf8'),/project_id = "afghan-hub-forensic-20261023"/);
+const status=JSON.parse(execFileSync('supabase',['--workdir',dir,'status','-o','json'],{encoding:'utf8',stdio:['ignore','pipe','pipe']}));
+assert.equal(new URL(status.API_URL).origin,'http://127.0.0.1:56321');
+const child=spawn(process.execPath,['node_modules/next/dist/bin/next','dev','--hostname','127.0.0.1','--port','3100'],{stdio:['ignore','inherit','inherit'],env:{...process.env,NEXT_PUBLIC_SUPABASE_URL:status.API_URL,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:status.ANON_KEY,NEXT_PUBLIC_SITE_URL:'http://localhost:3100',NAVIGATOR_MODEL_PROVIDER:'structured',NAVIGATOR_MODEL_ENABLED:'false',NEXT_TELEMETRY_DISABLED:'1'}});
+for(const signal of ['SIGTERM','SIGINT'])process.on(signal,()=>child.kill(signal));
+child.on('exit',code=>process.exitCode=code??1);

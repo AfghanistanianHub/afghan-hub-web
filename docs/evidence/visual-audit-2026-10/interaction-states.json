@@ -1,0 +1,5392 @@
+{
+  "browser": "156.0.8078.47",
+  "results": [
+    {
+      "id": "menu-open",
+      "language": "en",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-open-en-320.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 391,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 228,
+          "y": 14,
+          "width": 80,
+          "height": 44
+        },
+        "menu": {
+          "x": 266,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 42,
+        "navigation": {
+          "x": 266,
+          "y": 58,
+          "width": 48,
+          "height": 434
+        },
+        "navigator": {
+          "x": 20,
+          "y": 961.171875,
+          "width": 280,
+          "height": 594.375
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "menu-escape",
+      "language": "en",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-escape-en-320.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 320,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 228,
+          "y": 14,
+          "width": 80,
+          "height": 44
+        },
+        "menu": {
+          "x": 266,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 42,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 961.171875,
+          "width": 280,
+          "height": 594.375
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      },
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "navigator-guide",
+      "language": "en",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-en-320.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 320,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 228,
+          "y": -925,
+          "width": 80,
+          "height": 44
+        },
+        "menu": {
+          "x": 266,
+          "y": -925,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 42,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 22.171875,
+          "width": 280,
+          "height": 1361.75
+        },
+        "input": {
+          "x": 37,
+          "y": 1210.921875,
+          "width": 246,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "en",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-en-320.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 320,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 228,
+          "y": -925,
+          "width": 80,
+          "height": 44
+        },
+        "menu": {
+          "x": 266,
+          "y": -925,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 42,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 22.171875,
+          "width": 280,
+          "height": 1413.75
+        },
+        "input": {
+          "x": 37,
+          "y": 1204.921875,
+          "width": 246,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "en",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-en-320.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 320,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 228,
+          "y": -1263,
+          "width": 80,
+          "height": 44
+        },
+        "menu": {
+          "x": 266,
+          "y": -1263,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 42,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": -315.828125,
+          "width": 280,
+          "height": 1355.75
+        },
+        "input": {
+          "x": 37,
+          "y": 866.921875,
+          "width": 246,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "text-200-percent",
+      "language": "en",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-text-200-percent-en-320.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 443,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 219.140625,
+          "y": 14,
+          "width": 88.859375,
+          "height": 44
+        },
+        "menu": {
+          "x": 266,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 42,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 2067.546875,
+          "width": 280,
+          "height": 2193.734375
+        },
+        "input": {
+          "x": 37,
+          "y": 4243.078125,
+          "width": 246,
+          "height": 70
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      },
+      "method": "Double each element computed font-size; text-only stress, not native browser text scaling"
+    },
+    {
+      "id": "menu-open",
+      "language": "en",
+      "width": 375,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-open-en-375.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 375,
+        "viewport": 375,
+        "headerSelector": {
+          "x": 173,
+          "y": 14,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 315,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": {
+          "x": 0,
+          "y": 72,
+          "width": 375,
+          "height": 401
+        },
+        "navigator": {
+          "x": 20,
+          "y": 973.078125,
+          "width": 335,
+          "height": 522.484375
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "menu-escape",
+      "language": "en",
+      "width": 375,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-escape-en-375.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 375,
+        "viewport": 375,
+        "headerSelector": {
+          "x": 173,
+          "y": 14,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 315,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 973.078125,
+          "width": 335,
+          "height": 522.484375
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      },
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "navigator-guide",
+      "language": "en",
+      "width": 375,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-en-375.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 375,
+        "viewport": 375,
+        "headerSelector": {
+          "x": 173,
+          "y": -937,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 315,
+          "y": -937,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 22.078125,
+          "width": 335,
+          "height": 1243.859375
+        },
+        "input": {
+          "x": 37,
+          "y": 1092.9375,
+          "width": 301,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "en",
+      "width": 375,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-en-375.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 375,
+        "viewport": 375,
+        "headerSelector": {
+          "x": 173,
+          "y": -937,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 315,
+          "y": -937,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 22.078125,
+          "width": 335,
+          "height": 1295.859375
+        },
+        "input": {
+          "x": 37,
+          "y": 1086.9375,
+          "width": 301,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "en",
+      "width": 375,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-en-375.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 375,
+        "viewport": 375,
+        "headerSelector": {
+          "x": 173,
+          "y": -1157,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 315,
+          "y": -1157,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": -197.921875,
+          "width": 335,
+          "height": 1237.859375
+        },
+        "input": {
+          "x": 37,
+          "y": 866.9375,
+          "width": 301,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "menu-open",
+      "language": "en",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-open-en-390.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 188,
+          "y": 14,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 330,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": {
+          "x": 0,
+          "y": 72,
+          "width": 390,
+          "height": 401
+        },
+        "navigator": {
+          "x": 20,
+          "y": 923.078125,
+          "width": 350,
+          "height": 504.484375
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "menu-escape",
+      "language": "en",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-escape-en-390.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 188,
+          "y": 14,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 330,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 923.078125,
+          "width": 350,
+          "height": 504.484375
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      },
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "navigator-guide",
+      "language": "en",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-en-390.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 188,
+          "y": -887,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 330,
+          "y": -887,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 22.078125,
+          "width": 350,
+          "height": 1225.859375
+        },
+        "input": {
+          "x": 37,
+          "y": 1074.9375,
+          "width": 316,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "en",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-en-390.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 188,
+          "y": -887,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 330,
+          "y": -887,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 22.078125,
+          "width": 350,
+          "height": 1277.859375
+        },
+        "input": {
+          "x": 37,
+          "y": 1068.9375,
+          "width": 316,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "en",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-en-390.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 188,
+          "y": -1089,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 330,
+          "y": -1089,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": -179.921875,
+          "width": 350,
+          "height": 1219.859375
+        },
+        "input": {
+          "x": 37,
+          "y": 866.9375,
+          "width": 316,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "text-200-percent",
+      "language": "en",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-text-200-percent-en-390.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 443,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 188,
+          "y": 14,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 330,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 1026.09375,
+          "width": 350,
+          "height": 1458.859375
+        },
+        "input": {
+          "x": 37,
+          "y": 2435.953125,
+          "width": 316,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      },
+      "method": "Double each element computed font-size; text-only stress, not native browser text scaling"
+    },
+    {
+      "id": "menu-open",
+      "language": "en",
+      "width": 430,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-open-en-430.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 430,
+        "viewport": 430,
+        "headerSelector": {
+          "x": 228,
+          "y": 14,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 370,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": {
+          "x": 0,
+          "y": 72,
+          "width": 430,
+          "height": 401
+        },
+        "navigator": {
+          "x": 20,
+          "y": 899.28125,
+          "width": 390,
+          "height": 504.484375
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "menu-escape",
+      "language": "en",
+      "width": 430,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-escape-en-430.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 430,
+        "viewport": 430,
+        "headerSelector": {
+          "x": 228,
+          "y": 14,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 370,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 899.28125,
+          "width": 390,
+          "height": 504.484375
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      },
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "navigator-guide",
+      "language": "en",
+      "width": 430,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-en-430.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 430,
+        "viewport": 430,
+        "headerSelector": {
+          "x": 228,
+          "y": -863,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 370,
+          "y": -863,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 22.28125,
+          "width": 390,
+          "height": 1225.859375
+        },
+        "input": {
+          "x": 37,
+          "y": 1075.140625,
+          "width": 356,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "en",
+      "width": 430,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-en-430.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 430,
+        "viewport": 430,
+        "headerSelector": {
+          "x": 228,
+          "y": -863,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 370,
+          "y": -863,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 22.28125,
+          "width": 390,
+          "height": 1277.859375
+        },
+        "input": {
+          "x": 37,
+          "y": 1037.953125,
+          "width": 356,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "en",
+      "width": 430,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-en-430.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 430,
+        "viewport": 430,
+        "headerSelector": {
+          "x": 228,
+          "y": -1034,
+          "width": 90,
+          "height": 44
+        },
+        "menu": {
+          "x": 370,
+          "y": -1034,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": -148.71875,
+          "width": 390,
+          "height": 1188.671875
+        },
+        "input": {
+          "x": 37,
+          "y": 866.953125,
+          "width": 356,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "menu-open",
+      "language": "en",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-open-en-768.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 421.53125,
+          "y": 20,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 700,
+          "y": 20,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": {
+          "x": 0,
+          "y": 84,
+          "width": 768,
+          "height": 401
+        },
+        "navigator": {
+          "x": 24,
+          "y": 856.1875,
+          "width": 720,
+          "height": 418.296875
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "menu-escape",
+      "language": "en",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-escape-en-768.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 421.53125,
+          "y": 20,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 700,
+          "y": 20,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 856.1875,
+          "width": 720,
+          "height": 418.296875
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      },
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "navigator-guide",
+      "language": "en",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-en-768.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 421.53125,
+          "y": -814,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 700,
+          "y": -814,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 22.1875,
+          "width": 720,
+          "height": 878.484375
+        },
+        "input": {
+          "x": 51,
+          "y": 783.671875,
+          "width": 566.59375,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "en",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-en-768.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 421.53125,
+          "y": -814,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 700,
+          "y": -814,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 22.1875,
+          "width": 720,
+          "height": 930.484375
+        },
+        "input": {
+          "x": 51,
+          "y": 835.671875,
+          "width": 566.59375,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "en",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-en-768.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 421.53125,
+          "y": -814,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 700,
+          "y": -814,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 22.1875,
+          "width": 720,
+          "height": 930.484375
+        },
+        "input": {
+          "x": 51,
+          "y": 835.671875,
+          "width": 566.59375,
+          "height": 44
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "text-200-percent",
+      "language": "en",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-text-200-percent-en-768.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 346.0625,
+          "y": 20,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 700,
+          "y": 20,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 856.1875,
+          "width": 720,
+          "height": 1069.484375
+        },
+        "input": {
+          "x": 51,
+          "y": 1898.671875,
+          "width": 517.1875,
+          "height": 56
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      },
+      "method": "Double each element computed font-size; text-only stress, not native browser text scaling"
+    },
+    {
+      "id": "navigator-guide",
+      "language": "en",
+      "width": 1024,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-en-1024.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1024,
+        "viewport": 1024,
+        "headerSelector": {
+          "x": 668.21875,
+          "y": -330,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 154,
+          "width": 976,
+          "height": 746.078125
+        },
+        "input": {
+          "x": 51,
+          "y": 783.078125,
+          "width": 822.59375,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "en",
+      "width": 1024,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-en-1024.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1024,
+        "viewport": 1024,
+        "headerSelector": {
+          "x": 668.21875,
+          "y": -330,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 154,
+          "width": 976,
+          "height": 798.078125
+        },
+        "input": {
+          "x": 51,
+          "y": 835.078125,
+          "width": 822.59375,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "en",
+      "width": 1024,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-en-1024.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1024,
+        "viewport": 1024,
+        "headerSelector": {
+          "x": 668.21875,
+          "y": -330,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 154,
+          "width": 976,
+          "height": 798.078125
+        },
+        "input": {
+          "x": 51,
+          "y": 835.078125,
+          "width": 822.59375,
+          "height": 44
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-guide",
+      "language": "en",
+      "width": 1280,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-en-1280.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1280,
+        "viewport": 1280,
+        "headerSelector": {
+          "x": 882.21875,
+          "y": -250,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 36,
+          "y": 244,
+          "width": 1208,
+          "height": 655.78125
+        },
+        "input": {
+          "x": 63,
+          "y": 782.78125,
+          "width": 1054.59375,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "en",
+      "width": 1280,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-en-1280.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1280,
+        "viewport": 1280,
+        "headerSelector": {
+          "x": 882.21875,
+          "y": -250,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 36,
+          "y": 244,
+          "width": 1208,
+          "height": 707.78125
+        },
+        "input": {
+          "x": 63,
+          "y": 834.78125,
+          "width": 1054.59375,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "en",
+      "width": 1280,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-en-1280.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1280,
+        "viewport": 1280,
+        "headerSelector": {
+          "x": 882.21875,
+          "y": -250,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 36,
+          "y": 244,
+          "width": 1208,
+          "height": 707.78125
+        },
+        "input": {
+          "x": 63,
+          "y": 834.78125,
+          "width": 1054.59375,
+          "height": 44
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-guide",
+      "language": "en",
+      "width": 1440,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-en-1440.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "headerSelector": {
+          "x": 982.21875,
+          "y": -280,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 96,
+          "y": 244.390625,
+          "width": 1248,
+          "height": 655.78125
+        },
+        "input": {
+          "x": 123,
+          "y": 783.171875,
+          "width": 1094.59375,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "en",
+      "width": 1440,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-en-1440.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "headerSelector": {
+          "x": 982.21875,
+          "y": -280,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 96,
+          "y": 244.390625,
+          "width": 1248,
+          "height": 707.78125
+        },
+        "input": {
+          "x": 123,
+          "y": 835.171875,
+          "width": 1094.59375,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "en",
+      "width": 1440,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-en-1440.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "headerSelector": {
+          "x": 982.21875,
+          "y": -280,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 96,
+          "y": 244.390625,
+          "width": 1248,
+          "height": 707.78125
+        },
+        "input": {
+          "x": 123,
+          "y": 835.171875,
+          "width": 1094.59375,
+          "height": 44
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "text-200-percent",
+      "language": "en",
+      "width": 1440,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-text-200-percent-en-1440.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1568,
+        "viewport": 1440,
+        "headerSelector": {
+          "x": 1171.1875,
+          "y": 40,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 96,
+          "y": 584.390625,
+          "width": 1248,
+          "height": 829.1875
+        },
+        "input": {
+          "x": 123,
+          "y": 1330.578125,
+          "width": 1045.1875,
+          "height": 56
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      },
+      "method": "Double each element computed font-size; text-only stress, not native browser text scaling"
+    },
+    {
+      "id": "navigator-guide",
+      "language": "en",
+      "width": 1920,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-en-1920.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1920,
+        "viewport": 1920,
+        "headerSelector": {
+          "x": 1222.21875,
+          "y": -280,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 336,
+          "y": 244.390625,
+          "width": 1248,
+          "height": 655.78125
+        },
+        "input": {
+          "x": 363,
+          "y": 783.171875,
+          "width": 1094.59375,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "en",
+      "width": 1920,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-en-1920.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1920,
+        "viewport": 1920,
+        "headerSelector": {
+          "x": 1222.21875,
+          "y": -280,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 336,
+          "y": 244.390625,
+          "width": 1248,
+          "height": 707.78125
+        },
+        "input": {
+          "x": 363,
+          "y": 835.171875,
+          "width": 1094.59375,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "en",
+      "width": 1920,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-en-1920.jpg",
+      "measurement": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1920,
+        "viewport": 1920,
+        "headerSelector": {
+          "x": 1222.21875,
+          "y": -280,
+          "width": 97,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 336,
+          "y": 244.390625,
+          "width": 1248,
+          "height": 707.78125
+        },
+        "input": {
+          "x": 363,
+          "y": 835.171875,
+          "width": 1094.59375,
+          "height": 44
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "One network.Many ways to belong."
+      }
+    },
+    {
+      "id": "menu-open",
+      "language": "fa",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-open-fa-320.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 363,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 60,
+          "y": 14,
+          "width": 78,
+          "height": 44
+        },
+        "menu": {
+          "x": 10,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": {
+          "x": 6,
+          "y": 58,
+          "width": 48,
+          "height": 407
+        },
+        "navigator": {
+          "x": 20,
+          "y": 973.25,
+          "width": 280,
+          "height": 568.1875
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "menu-escape",
+      "language": "fa",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-escape-fa-320.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 320,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 60,
+          "y": 14,
+          "width": 78,
+          "height": 44
+        },
+        "menu": {
+          "x": 10,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 973.25,
+          "width": 280,
+          "height": 568.1875
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      },
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "navigator-guide",
+      "language": "fa",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-fa-320.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 320,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 60,
+          "y": -937,
+          "width": 78,
+          "height": 44
+        },
+        "menu": {
+          "x": 10,
+          "y": -937,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 22.25,
+          "width": 280,
+          "height": 1345.1875
+        },
+        "input": {
+          "x": 37,
+          "y": 1194.4375,
+          "width": 246,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "fa",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-fa-320.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 320,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 60,
+          "y": -937,
+          "width": 78,
+          "height": 44
+        },
+        "menu": {
+          "x": 10,
+          "y": -937,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 22.25,
+          "width": 280,
+          "height": 1397.1875
+        },
+        "input": {
+          "x": 37,
+          "y": 1188.4375,
+          "width": 246,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "fa",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-fa-320.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 320,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 60,
+          "y": -1260,
+          "width": 78,
+          "height": 44
+        },
+        "menu": {
+          "x": 10,
+          "y": -1260,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": -300.75,
+          "width": 280,
+          "height": 1339.1875
+        },
+        "input": {
+          "x": 37,
+          "y": 865.4375,
+          "width": 246,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "text-200-percent",
+      "language": "fa",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-text-200-percent-fa-320.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 339,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 60,
+          "y": 14,
+          "width": 78,
+          "height": 44
+        },
+        "menu": {
+          "x": 10,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 1056.8125,
+          "width": 280,
+          "height": 1553.1875
+        },
+        "input": {
+          "x": 37,
+          "y": 2561,
+          "width": 246,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      },
+      "method": "Double each element computed font-size; text-only stress, not native browser text scaling"
+    },
+    {
+      "id": "menu-open",
+      "language": "fa",
+      "width": 375,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-open-fa-375.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 375,
+        "viewport": 375,
+        "headerSelector": {
+          "x": 112,
+          "y": 14,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": {
+          "x": 0,
+          "y": 72,
+          "width": 375,
+          "height": 401
+        },
+        "navigator": {
+          "x": 20,
+          "y": 948.0625,
+          "width": 335,
+          "height": 547.1875
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "menu-escape",
+      "language": "fa",
+      "width": 375,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-escape-fa-375.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 375,
+        "viewport": 375,
+        "headerSelector": {
+          "x": 112,
+          "y": 14,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 948.0625,
+          "width": 335,
+          "height": 547.1875
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      },
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "navigator-guide",
+      "language": "fa",
+      "width": 375,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-fa-375.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 375,
+        "viewport": 375,
+        "headerSelector": {
+          "x": 112,
+          "y": -912,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -912,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 22.0625,
+          "width": 335,
+          "height": 1278.1875
+        },
+        "input": {
+          "x": 37,
+          "y": 1127.25,
+          "width": 301,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "fa",
+      "width": 375,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-fa-375.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 375,
+        "viewport": 375,
+        "headerSelector": {
+          "x": 112,
+          "y": -912,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -912,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 22.0625,
+          "width": 335,
+          "height": 1330.1875
+        },
+        "input": {
+          "x": 37,
+          "y": 1085.25,
+          "width": 301,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "fa",
+      "width": 375,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-fa-375.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 375,
+        "viewport": 375,
+        "headerSelector": {
+          "x": 112,
+          "y": -1132,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -1132,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": -197.9375,
+          "width": 335,
+          "height": 1236.1875
+        },
+        "input": {
+          "x": 37,
+          "y": 865.25,
+          "width": 301,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "menu-open",
+      "language": "fa",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-open-fa-390.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 112,
+          "y": 14,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": {
+          "x": 0,
+          "y": 72,
+          "width": 390,
+          "height": 401
+        },
+        "navigator": {
+          "x": 20,
+          "y": 943.640625,
+          "width": 350,
+          "height": 512.6875
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "menu-escape",
+      "language": "fa",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-escape-fa-390.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 112,
+          "y": 14,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 943.640625,
+          "width": 350,
+          "height": 512.6875
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      },
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "navigator-guide",
+      "language": "fa",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-fa-390.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 112,
+          "y": -908,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -908,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 21.640625,
+          "width": 350,
+          "height": 1243.6875
+        },
+        "input": {
+          "x": 37,
+          "y": 1092.328125,
+          "width": 316,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "fa",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-fa-390.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 112,
+          "y": -908,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -908,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 21.640625,
+          "width": 350,
+          "height": 1295.6875
+        },
+        "input": {
+          "x": 37,
+          "y": 1050.328125,
+          "width": 316,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "fa",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-fa-390.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 112,
+          "y": -1093,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -1093,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": -163.359375,
+          "width": 350,
+          "height": 1201.6875
+        },
+        "input": {
+          "x": 37,
+          "y": 865.328125,
+          "width": 316,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "text-200-percent",
+      "language": "fa",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-text-200-percent-fa-390.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 112,
+          "y": 14,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 1019.328125,
+          "width": 350,
+          "height": 1482.6875
+        },
+        "input": {
+          "x": 37,
+          "y": 2414.015625,
+          "width": 316,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      },
+      "method": "Double each element computed font-size; text-only stress, not native browser text scaling"
+    },
+    {
+      "id": "menu-open",
+      "language": "fa",
+      "width": 430,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-open-fa-430.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 430,
+        "viewport": 430,
+        "headerSelector": {
+          "x": 112,
+          "y": 14,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": {
+          "x": 0,
+          "y": 72,
+          "width": 430,
+          "height": 401
+        },
+        "navigator": {
+          "x": 20,
+          "y": 954.703125,
+          "width": 390,
+          "height": 474.890625
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "menu-escape",
+      "language": "fa",
+      "width": 430,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-escape-fa-430.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 430,
+        "viewport": 430,
+        "headerSelector": {
+          "x": 112,
+          "y": 14,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 954.703125,
+          "width": 390,
+          "height": 474.890625
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      },
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "navigator-guide",
+      "language": "fa",
+      "width": 430,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-fa-430.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 430,
+        "viewport": 430,
+        "headerSelector": {
+          "x": 112,
+          "y": -919,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -919,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 21.703125,
+          "width": 390,
+          "height": 1205.890625
+        },
+        "input": {
+          "x": 37,
+          "y": 1054.59375,
+          "width": 356,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "fa",
+      "width": 430,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-fa-430.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 430,
+        "viewport": 430,
+        "headerSelector": {
+          "x": 112,
+          "y": -919,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -919,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 21.703125,
+          "width": 390,
+          "height": 1257.890625
+        },
+        "input": {
+          "x": 37,
+          "y": 1012.59375,
+          "width": 356,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "fa",
+      "width": 430,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-fa-430.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 430,
+        "viewport": 430,
+        "headerSelector": {
+          "x": 112,
+          "y": -1067,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -1067,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": -126.296875,
+          "width": 390,
+          "height": 1163.890625
+        },
+        "input": {
+          "x": 37,
+          "y": 864.59375,
+          "width": 356,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "menu-open",
+      "language": "fa",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-open-fa-768.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 232.921875,
+          "y": 20,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 24,
+          "y": 20,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": {
+          "x": 0,
+          "y": 84,
+          "width": 768,
+          "height": 401
+        },
+        "navigator": {
+          "x": 24,
+          "y": 994.375,
+          "width": 720,
+          "height": 426.890625
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "menu-escape",
+      "language": "fa",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-escape-fa-768.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 232.921875,
+          "y": 20,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 24,
+          "y": 20,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 994.375,
+          "width": 720,
+          "height": 426.890625
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      },
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "navigator-guide",
+      "language": "fa",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-fa-768.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 232.921875,
+          "y": -952,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 24,
+          "y": -952,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 22.375,
+          "width": 720,
+          "height": 891.890625
+        },
+        "input": {
+          "x": 124.9375,
+          "y": 797.265625,
+          "width": 592.0625,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "fa",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-fa-768.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 232.921875,
+          "y": -952,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 24,
+          "y": -952,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 22.375,
+          "width": 720,
+          "height": 943.890625
+        },
+        "input": {
+          "x": 124.9375,
+          "y": 849.265625,
+          "width": 592.0625,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "fa",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-fa-768.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 232.921875,
+          "y": -952,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 24,
+          "y": -952,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 22.375,
+          "width": 720,
+          "height": 943.890625
+        },
+        "input": {
+          "x": 124.9375,
+          "y": 849.265625,
+          "width": 592.0625,
+          "height": 44
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "text-200-percent",
+      "language": "fa",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-text-200-percent-fa-768.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 291.84375,
+          "y": 20,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 24,
+          "y": 20,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 994.375,
+          "width": 720,
+          "height": 1040.890625
+        },
+        "input": {
+          "x": 148.859375,
+          "y": 1969.265625,
+          "width": 568.140625,
+          "height": 56
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      },
+      "method": "Double each element computed font-size; text-only stress, not native browser text scaling"
+    },
+    {
+      "id": "navigator-guide",
+      "language": "fa",
+      "width": 1024,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-fa-1024.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 1024,
+        "viewport": 1024,
+        "headerSelector": {
+          "x": 221.390625,
+          "y": -377,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 156.875,
+          "width": 976,
+          "height": 742.6875
+        },
+        "input": {
+          "x": 124.9375,
+          "y": 782.5625,
+          "width": 848.0625,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "fa",
+      "width": 1024,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-fa-1024.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 1024,
+        "viewport": 1024,
+        "headerSelector": {
+          "x": 221.390625,
+          "y": -377,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 156.875,
+          "width": 976,
+          "height": 794.6875
+        },
+        "input": {
+          "x": 124.9375,
+          "y": 834.5625,
+          "width": 848.0625,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "fa",
+      "width": 1024,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-fa-1024.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 1024,
+        "viewport": 1024,
+        "headerSelector": {
+          "x": 221.390625,
+          "y": -377,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 156.875,
+          "width": 976,
+          "height": 794.6875
+        },
+        "input": {
+          "x": 124.9375,
+          "y": 834.5625,
+          "width": 848.0625,
+          "height": 44
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-guide",
+      "language": "fa",
+      "width": 1280,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-fa-1280.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 1280,
+        "viewport": 1280,
+        "headerSelector": {
+          "x": 263.390625,
+          "y": -344,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 36,
+          "y": 231.265625,
+          "width": 1208,
+          "height": 668.6875
+        },
+        "input": {
+          "x": 136.9375,
+          "y": 782.953125,
+          "width": 1080.0625,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "fa",
+      "width": 1280,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-fa-1280.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 1280,
+        "viewport": 1280,
+        "headerSelector": {
+          "x": 263.390625,
+          "y": -344,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 36,
+          "y": 231.265625,
+          "width": 1208,
+          "height": 720.6875
+        },
+        "input": {
+          "x": 136.9375,
+          "y": 834.953125,
+          "width": 1080.0625,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "fa",
+      "width": 1280,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-fa-1280.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 1280,
+        "viewport": 1280,
+        "headerSelector": {
+          "x": 263.390625,
+          "y": -344,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 36,
+          "y": 231.265625,
+          "width": 1208,
+          "height": 720.6875
+        },
+        "input": {
+          "x": 136.9375,
+          "y": 834.953125,
+          "width": 1080.0625,
+          "height": 44
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-guide",
+      "language": "fa",
+      "width": 1440,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-fa-1440.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "headerSelector": {
+          "x": 323.390625,
+          "y": -372,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 96,
+          "y": 231.4375,
+          "width": 1248,
+          "height": 668.6875
+        },
+        "input": {
+          "x": 196.9375,
+          "y": 783.125,
+          "width": 1120.0625,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "fa",
+      "width": 1440,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-fa-1440.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "headerSelector": {
+          "x": 323.390625,
+          "y": -372,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 96,
+          "y": 231.4375,
+          "width": 1248,
+          "height": 720.6875
+        },
+        "input": {
+          "x": 196.9375,
+          "y": 835.125,
+          "width": 1120.0625,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "fa",
+      "width": 1440,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-fa-1440.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "headerSelector": {
+          "x": 323.390625,
+          "y": -372,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 96,
+          "y": 231.4375,
+          "width": 1248,
+          "height": 720.6875
+        },
+        "input": {
+          "x": 196.9375,
+          "y": 835.125,
+          "width": 1120.0625,
+          "height": 44
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "text-200-percent",
+      "language": "fa",
+      "width": 1440,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-text-200-percent-fa-1440.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 1474,
+        "viewport": 1440,
+        "headerSelector": {
+          "x": 222.484375,
+          "y": 40,
+          "width": 120,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 96,
+          "y": 1502.515625,
+          "width": 1248,
+          "height": 1111.96875
+        },
+        "input": {
+          "x": 220.859375,
+          "y": 2527.484375,
+          "width": 1096.140625,
+          "height": 64
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      },
+      "method": "Double each element computed font-size; text-only stress, not native browser text scaling"
+    },
+    {
+      "id": "navigator-guide",
+      "language": "fa",
+      "width": 1920,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-fa-1920.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 1920,
+        "viewport": 1920,
+        "headerSelector": {
+          "x": 563.390625,
+          "y": -372,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 336,
+          "y": 231.4375,
+          "width": 1248,
+          "height": 668.6875
+        },
+        "input": {
+          "x": 436.9375,
+          "y": 783.125,
+          "width": 1120.0625,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "fa",
+      "width": 1920,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-fa-1920.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 1920,
+        "viewport": 1920,
+        "headerSelector": {
+          "x": 563.390625,
+          "y": -372,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 336,
+          "y": 231.4375,
+          "width": 1248,
+          "height": 720.6875
+        },
+        "input": {
+          "x": 436.9375,
+          "y": 835.125,
+          "width": 1120.0625,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "fa",
+      "width": 1920,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-fa-1920.jpg",
+      "measurement": {
+        "lang": "fa",
+        "dir": "rtl",
+        "scrollWidth": 1920,
+        "viewport": 1920,
+        "headerSelector": {
+          "x": 563.390625,
+          "y": -372,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 336,
+          "y": 231.4375,
+          "width": 1248,
+          "height": 720.6875
+        },
+        "input": {
+          "x": 436.9375,
+          "y": 835.125,
+          "width": 1120.0625,
+          "height": 44
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یک شبکه.راه‌های بی‌شمار برای همراه شدن."
+      }
+    },
+    {
+      "id": "menu-open",
+      "language": "ps",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-open-ps-320.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 348,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 60,
+          "y": 14,
+          "width": 78,
+          "height": 44
+        },
+        "menu": {
+          "x": 10,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": {
+          "x": 6,
+          "y": 58,
+          "width": 48,
+          "height": 479
+        },
+        "navigator": {
+          "x": 20,
+          "y": 957.59375,
+          "width": 280,
+          "height": 589.1875
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "menu-escape",
+      "language": "ps",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-escape-ps-320.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 320,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 60,
+          "y": 14,
+          "width": 78,
+          "height": 44
+        },
+        "menu": {
+          "x": 10,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 957.59375,
+          "width": 280,
+          "height": 589.1875
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      },
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "navigator-guide",
+      "language": "ps",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-ps-320.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 320,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 60,
+          "y": -922,
+          "width": 78,
+          "height": 44
+        },
+        "menu": {
+          "x": 10,
+          "y": -922,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 21.59375,
+          "width": 280,
+          "height": 1366.1875
+        },
+        "input": {
+          "x": 37,
+          "y": 1214.78125,
+          "width": 246,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "ps",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-ps-320.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 320,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 60,
+          "y": -922,
+          "width": 78,
+          "height": 44
+        },
+        "menu": {
+          "x": 10,
+          "y": -922,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 21.59375,
+          "width": 280,
+          "height": 1324.1875
+        },
+        "input": {
+          "x": 37,
+          "y": 1172.78125,
+          "width": 246,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "ps",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-ps-320.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 320,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 60,
+          "y": -1230,
+          "width": 78,
+          "height": 44
+        },
+        "menu": {
+          "x": 10,
+          "y": -1230,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": -286.40625,
+          "width": 280,
+          "height": 1324.1875
+        },
+        "input": {
+          "x": 37,
+          "y": 864.78125,
+          "width": 246,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "text-200-percent",
+      "language": "ps",
+      "width": 320,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-text-200-percent-ps-320.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 320,
+        "viewport": 320,
+        "headerSelector": {
+          "x": 60,
+          "y": 14,
+          "width": 75.578125,
+          "height": 44
+        },
+        "menu": {
+          "x": 10,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 2177.171875,
+          "width": 280,
+          "height": 2186.15625
+        },
+        "input": {
+          "x": 37,
+          "y": 4328.328125,
+          "width": 246,
+          "height": 70
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      },
+      "method": "Double each element computed font-size; text-only stress, not native browser text scaling"
+    },
+    {
+      "id": "menu-open",
+      "language": "ps",
+      "width": 375,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-open-ps-375.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 375,
+        "viewport": 375,
+        "headerSelector": {
+          "x": 112,
+          "y": 14,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": {
+          "x": 0,
+          "y": 72,
+          "width": 375,
+          "height": 401
+        },
+        "navigator": {
+          "x": 20,
+          "y": 948.75,
+          "width": 335,
+          "height": 474.890625
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "menu-escape",
+      "language": "ps",
+      "width": 375,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-escape-ps-375.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 375,
+        "viewport": 375,
+        "headerSelector": {
+          "x": 112,
+          "y": 14,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 948.75,
+          "width": 335,
+          "height": 474.890625
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      },
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "navigator-guide",
+      "language": "ps",
+      "width": 375,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-ps-375.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 375,
+        "viewport": 375,
+        "headerSelector": {
+          "x": 112,
+          "y": -913,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -913,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 21.75,
+          "width": 335,
+          "height": 1205.890625
+        },
+        "input": {
+          "x": 37,
+          "y": 1054.640625,
+          "width": 301,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "ps",
+      "width": 375,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-ps-375.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 375,
+        "viewport": 375,
+        "headerSelector": {
+          "x": 112,
+          "y": -913,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -913,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 21.75,
+          "width": 335,
+          "height": 1257.890625
+        },
+        "input": {
+          "x": 37,
+          "y": 1012.640625,
+          "width": 301,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "ps",
+      "width": 375,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-ps-375.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 375,
+        "viewport": 375,
+        "headerSelector": {
+          "x": 112,
+          "y": -1061,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -1061,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": -126.25,
+          "width": 335,
+          "height": 1163.890625
+        },
+        "input": {
+          "x": 37,
+          "y": 864.640625,
+          "width": 301,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "menu-open",
+      "language": "ps",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-open-ps-390.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 112,
+          "y": 14,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": {
+          "x": 0,
+          "y": 72,
+          "width": 390,
+          "height": 401
+        },
+        "navigator": {
+          "x": 20,
+          "y": 948.75,
+          "width": 350,
+          "height": 474.890625
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "menu-escape",
+      "language": "ps",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-escape-ps-390.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 112,
+          "y": 14,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 948.75,
+          "width": 350,
+          "height": 474.890625
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      },
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "navigator-guide",
+      "language": "ps",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-ps-390.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 112,
+          "y": -913,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -913,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 21.75,
+          "width": 350,
+          "height": 1205.890625
+        },
+        "input": {
+          "x": 37,
+          "y": 1054.640625,
+          "width": 316,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "ps",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-ps-390.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 112,
+          "y": -913,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -913,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 21.75,
+          "width": 350,
+          "height": 1257.890625
+        },
+        "input": {
+          "x": 37,
+          "y": 1012.640625,
+          "width": 316,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "ps",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-ps-390.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 112,
+          "y": -1061,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -1061,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": -126.25,
+          "width": 350,
+          "height": 1163.890625
+        },
+        "input": {
+          "x": 37,
+          "y": 864.640625,
+          "width": 316,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "text-200-percent",
+      "language": "ps",
+      "width": 390,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-text-200-percent-ps-390.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewport": 390,
+        "headerSelector": {
+          "x": 112,
+          "y": 14,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 1024.4375,
+          "width": 350,
+          "height": 1407.890625
+        },
+        "input": {
+          "x": 37,
+          "y": 2344.328125,
+          "width": 316,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      },
+      "method": "Double each element computed font-size; text-only stress, not native browser text scaling"
+    },
+    {
+      "id": "menu-open",
+      "language": "ps",
+      "width": 430,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-open-ps-430.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 430,
+        "viewport": 430,
+        "headerSelector": {
+          "x": 112,
+          "y": 14,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": {
+          "x": 0,
+          "y": 72,
+          "width": 430,
+          "height": 401
+        },
+        "navigator": {
+          "x": 20,
+          "y": 935,
+          "width": 390,
+          "height": 474.890625
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "menu-escape",
+      "language": "ps",
+      "width": 430,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-escape-ps-430.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 430,
+        "viewport": 430,
+        "headerSelector": {
+          "x": 112,
+          "y": 14,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 935,
+          "width": 390,
+          "height": 474.890625
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      },
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "navigator-guide",
+      "language": "ps",
+      "width": 430,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-ps-430.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 430,
+        "viewport": 430,
+        "headerSelector": {
+          "x": 112,
+          "y": -899,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -899,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 22,
+          "width": 390,
+          "height": 1205.890625
+        },
+        "input": {
+          "x": 37,
+          "y": 1054.890625,
+          "width": 356,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "ps",
+      "width": 430,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-ps-430.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 430,
+        "viewport": 430,
+        "headerSelector": {
+          "x": 112,
+          "y": -899,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -899,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": 22,
+          "width": 390,
+          "height": 1257.890625
+        },
+        "input": {
+          "x": 37,
+          "y": 1012.890625,
+          "width": 356,
+          "height": 46
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "ps",
+      "width": 430,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-ps-430.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 430,
+        "viewport": 430,
+        "headerSelector": {
+          "x": 112,
+          "y": -1047,
+          "width": 88,
+          "height": 44
+        },
+        "menu": {
+          "x": 16,
+          "y": -1047,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 20,
+          "y": -126,
+          "width": 390,
+          "height": 1163.890625
+        },
+        "input": {
+          "x": 37,
+          "y": 864.890625,
+          "width": 356,
+          "height": 46
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "menu-open",
+      "language": "ps",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-open-ps-768.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 225.8125,
+          "y": 20,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 24,
+          "y": 20,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": {
+          "x": 0,
+          "y": 84,
+          "width": 768,
+          "height": 401
+        },
+        "navigator": {
+          "x": 24,
+          "y": 912.375,
+          "width": 720,
+          "height": 426.890625
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "menu-escape",
+      "language": "ps",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-menu-escape-ps-768.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 225.8125,
+          "y": 20,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 24,
+          "y": 20,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 912.375,
+          "width": 720,
+          "height": 426.890625
+        },
+        "input": null,
+        "focus": {
+          "tag": "SUMMARY",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      },
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "navigator-guide",
+      "language": "ps",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-ps-768.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 225.8125,
+          "y": -870,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 24,
+          "y": -870,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 22.375,
+          "width": 720,
+          "height": 891.890625
+        },
+        "input": {
+          "x": 122,
+          "y": 797.265625,
+          "width": 595,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "ps",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-ps-768.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 225.8125,
+          "y": -870,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 24,
+          "y": -870,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 22.375,
+          "width": 720,
+          "height": 943.890625
+        },
+        "input": {
+          "x": 122,
+          "y": 849.265625,
+          "width": 595,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "ps",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-ps-768.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 225.8125,
+          "y": -870,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 24,
+          "y": -870,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 22.375,
+          "width": 720,
+          "height": 943.890625
+        },
+        "input": {
+          "x": 122,
+          "y": 849.265625,
+          "width": 595,
+          "height": 44
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "text-200-percent",
+      "language": "ps",
+      "width": 768,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-text-200-percent-ps-768.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 768,
+        "viewport": 768,
+        "headerSelector": {
+          "x": 277.625,
+          "y": 20,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 24,
+          "y": 20,
+          "width": 44,
+          "height": 44
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 912.375,
+          "width": 720,
+          "height": 1040.890625
+        },
+        "input": {
+          "x": 143,
+          "y": 1887.265625,
+          "width": 574,
+          "height": 56
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      },
+      "method": "Double each element computed font-size; text-only stress, not native browser text scaling"
+    },
+    {
+      "id": "navigator-guide",
+      "language": "ps",
+      "width": 1024,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-ps-1024.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 1024,
+        "viewport": 1024,
+        "headerSelector": {
+          "x": 219.109375,
+          "y": -384,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 157.375,
+          "width": 976,
+          "height": 742.6875
+        },
+        "input": {
+          "x": 122,
+          "y": 783.0625,
+          "width": 851,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "ps",
+      "width": 1024,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-ps-1024.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 1024,
+        "viewport": 1024,
+        "headerSelector": {
+          "x": 219.109375,
+          "y": -384,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 157.375,
+          "width": 976,
+          "height": 794.6875
+        },
+        "input": {
+          "x": 122,
+          "y": 835.0625,
+          "width": 851,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "ps",
+      "width": 1024,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-ps-1024.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 1024,
+        "viewport": 1024,
+        "headerSelector": {
+          "x": 219.109375,
+          "y": -384,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 24,
+          "y": 157.375,
+          "width": 976,
+          "height": 794.6875
+        },
+        "input": {
+          "x": 122,
+          "y": 835.0625,
+          "width": 851,
+          "height": 44
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-guide",
+      "language": "ps",
+      "width": 1280,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-ps-1280.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 1280,
+        "viewport": 1280,
+        "headerSelector": {
+          "x": 261.109375,
+          "y": -353,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 36,
+          "y": 231.171875,
+          "width": 1208,
+          "height": 668.6875
+        },
+        "input": {
+          "x": 134,
+          "y": 782.859375,
+          "width": 1083,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "ps",
+      "width": 1280,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-ps-1280.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 1280,
+        "viewport": 1280,
+        "headerSelector": {
+          "x": 261.109375,
+          "y": -353,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 36,
+          "y": 231.171875,
+          "width": 1208,
+          "height": 720.6875
+        },
+        "input": {
+          "x": 134,
+          "y": 834.859375,
+          "width": 1083,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "ps",
+      "width": 1280,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-ps-1280.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 1280,
+        "viewport": 1280,
+        "headerSelector": {
+          "x": 261.109375,
+          "y": -353,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 36,
+          "y": 231.171875,
+          "width": 1208,
+          "height": 720.6875
+        },
+        "input": {
+          "x": 134,
+          "y": 834.859375,
+          "width": 1083,
+          "height": 44
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-guide",
+      "language": "ps",
+      "width": 1440,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-ps-1440.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "headerSelector": {
+          "x": 321.109375,
+          "y": -382,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 96,
+          "y": 231.375,
+          "width": 1248,
+          "height": 668.6875
+        },
+        "input": {
+          "x": 194,
+          "y": 783.0625,
+          "width": 1123,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "ps",
+      "width": 1440,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-ps-1440.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "headerSelector": {
+          "x": 321.109375,
+          "y": -382,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 96,
+          "y": 231.375,
+          "width": 1248,
+          "height": 720.6875
+        },
+        "input": {
+          "x": 194,
+          "y": 835.0625,
+          "width": 1123,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "ps",
+      "width": 1440,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-ps-1440.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "headerSelector": {
+          "x": 321.109375,
+          "y": -382,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 96,
+          "y": 231.375,
+          "width": 1248,
+          "height": 720.6875
+        },
+        "input": {
+          "x": 194,
+          "y": 835.0625,
+          "width": 1123,
+          "height": 44
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "text-200-percent",
+      "language": "ps",
+      "width": 1440,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-text-200-percent-ps-1440.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "headerSelector": {
+          "x": 402.21875,
+          "y": 20,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 96,
+          "y": 633.375,
+          "width": 1248,
+          "height": 800.09375
+        },
+        "input": {
+          "x": 215,
+          "y": 1350.46875,
+          "width": 1102,
+          "height": 56
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      },
+      "method": "Double each element computed font-size; text-only stress, not native browser text scaling"
+    },
+    {
+      "id": "navigator-guide",
+      "language": "ps",
+      "width": 1920,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-guide-ps-1920.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 1920,
+        "viewport": 1920,
+        "headerSelector": {
+          "x": 561.109375,
+          "y": -382,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 336,
+          "y": 231.375,
+          "width": 1248,
+          "height": 668.6875
+        },
+        "input": {
+          "x": 434,
+          "y": 783.0625,
+          "width": 1123,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-topic",
+      "language": "ps",
+      "width": 1920,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-topic-ps-1920.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 1920,
+        "viewport": 1920,
+        "headerSelector": {
+          "x": 561.109375,
+          "y": -382,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 336,
+          "y": 231.375,
+          "width": 1248,
+          "height": 720.6875
+        },
+        "input": {
+          "x": 434,
+          "y": 835.0625,
+          "width": 1123,
+          "height": 44
+        },
+        "focus": {
+          "tag": "H3",
+          "outline": "none"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "navigator-long-input",
+      "language": "ps",
+      "width": 1920,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/state-navigator-long-input-ps-1920.jpg",
+      "measurement": {
+        "lang": "ps",
+        "dir": "rtl",
+        "scrollWidth": 1920,
+        "viewport": 1920,
+        "headerSelector": {
+          "x": 561.109375,
+          "y": -382,
+          "width": 94,
+          "height": 44
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "headerOverlap": 0,
+        "navigation": null,
+        "navigator": {
+          "x": 336,
+          "y": 231.375,
+          "width": 1248,
+          "height": 720.6875
+        },
+        "input": {
+          "x": 434,
+          "y": 835.0625,
+          "width": 1123,
+          "height": 44
+        },
+        "focus": {
+          "tag": "INPUT",
+          "outline": "solid"
+        },
+        "headingText": "یوه شبکه.د یوځای کېدو بېلابېلې لارې."
+      }
+    },
+    {
+      "id": "zoom-equivalent",
+      "language": "en",
+      "width": 1440,
+      "status": "EXERCISED",
+      "screenshot": "screenshots/zoom-equivalent-en-1440-200.jpg",
+      "method": "720x450 layout viewport at DPR2; native browser zoom NOT TESTED"
+    }
+  ]
+}
