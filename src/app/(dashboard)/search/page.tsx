@@ -425,7 +425,7 @@ export default async function SearchPage({
             labelKey="search.intentLabel"
             name="intent"
             defaultValue={intent ?? ""}
-            className="rounded-[var(--radius-control)] border border-input bg-background px-4 py-4 text-sm text-foreground outline-none transition hover:border-primary focus:border-primary focus:bg-background focus:ring-4 focus:ring-primary/10"
+            className="rounded-[var(--radius-control)] border border-input bg-background px-4 py-4 text-sm text-foreground transition hover:border-primary focus:border-primary focus:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             options={intentOptions}
           />
           <BrowseField
@@ -434,7 +434,7 @@ export default async function SearchPage({
             type="search"
             defaultValue={query}
             placeholderKey={intent ? "search.placeholderIntent" : "search.placeholder"}
-            className="w-full rounded-[var(--radius-control)] border border-input bg-background py-4 ps-12 pe-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground hover:border-primary focus:border-primary focus:bg-background focus:ring-4 focus:ring-primary/10"
+            className="w-full rounded-[var(--radius-control)] border border-input bg-background py-4 ps-12 pe-4 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-primary focus:border-primary focus:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             icon={<Search aria-hidden="true" className="size-5" />}
             iconPlacement="field"
           />
