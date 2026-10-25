@@ -63,9 +63,9 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
   const hasError = Object.values(errors).some(Boolean);
   const submissions = [
     ...(opportunities ?? []).map((item) => ({ id: item.id, title: item.title, category: "Opportunities", type: "Opportunity", path: `/opportunities/${item.slug}`, updatedAt: item.updated_at, status: item.status === "published" && hasOpportunityDeadlinePassed(item.deadline, today) ? "expired" : item.status, moderationNote: moderationNotes.get(`opportunity:${item.id}`) ?? null })),
-    ...(businesses ?? []).map((item) => ({ id: item.id, title: item.name, category: "Businesses", type: "Business", path: `/businesses/${item.slug}`, updatedAt: item.updated_at, status: item.status, moderationNote: moderationNotes.get(`event:${item.id}`) ?? null })),
-    ...(organizations ?? []).map((item) => ({ id: item.id, title: item.name, category: "Organizations", type: "Organization", path: `/organizations/${item.slug}`, updatedAt: item.updated_at, status: item.status, moderationNote: moderationNotes.get(`business:${item.id}`) ?? null })),
-    ...(events ?? []).map((item) => ({ id: item.id, title: item.title, category: "Events", type: "Event", path: `/events/${item.slug}`, updatedAt: item.updated_at, status: item.status, moderationNote: moderationNotes.get(`organization:${item.id}`) ?? null })),
+    ...(businesses ?? []).map((item) => ({ id: item.id, title: item.name, category: "Businesses", type: "Business", path: `/businesses/${item.slug}`, updatedAt: item.updated_at, status: item.status, moderationNote: moderationNotes.get(`business:${item.id}`) ?? null })),
+    ...(organizations ?? []).map((item) => ({ id: item.id, title: item.name, category: "Organizations", type: "Organization", path: `/organizations/${item.slug}`, updatedAt: item.updated_at, status: item.status, moderationNote: moderationNotes.get(`organization:${item.id}`) ?? null })),
+    ...(events ?? []).map((item) => ({ id: item.id, title: item.title, category: "Events", type: "Event", path: `/events/${item.slug}`, updatedAt: item.updated_at, status: item.status, moderationNote: moderationNotes.get(`event:${item.id}`) ?? null })),
   ].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   const visible = submissions.filter((item) => selected === "All" || item.category === selected);
   const selectedFailed = selected !== "All" && Boolean(errors[selected]);
