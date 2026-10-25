@@ -95,8 +95,8 @@
 /* At 320px the language switcher and search consume the flexible header space.
    Reserve a fixed menu slot rather than allowing the details box to overflow. */
 @media(max-width:360px) {
-  /* Keep the menu in flow so its hit area cannot overlap the locale control.
-     The open nav remains positioned against .header, not a transformed details. */
+  /* Keep the 44px menu target in flex flow; absolute positioning overlaps
+     the language selector and clips the open menu at 320px. */
   .mobile { flex:0 0 44px; width:44px; }
   .account { flex-shrink:1; }
 }
