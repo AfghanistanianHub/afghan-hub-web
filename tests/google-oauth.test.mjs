@@ -16,6 +16,9 @@ function loadModule(path, requireMap) {
     exports,
     URL,
     URLSearchParams,
+    Headers,
+    AbortSignal,
+    process: { env: { NODE_ENV: "test" } },
     require(name) {
       if (name in requireMap) return requireMap[name]({ setOAuthInput: input => { oauthInput = input; } });
       throw new Error(`unexpected import ${name}`);
@@ -30,6 +33,8 @@ function loginActions({ oauthResult }) {
     "next/navigation": () => ({ redirect: path => { throw new Error(path); } }),
     "@/lib/site-url": () => ({ getSiteUrl: () => "https://app.apnbc.ca" }),
     "@/lib/password-policy": () => ({ getPasswordPolicyError: () => null }),
+    "next/headers": () => ({ cookies: async () => ({ set() {} }) }),
+    "@/lib/auth-navigation": () => ({ authLanguageCookie: "afghan-hub-auth-language", getAuthLanguage: value => value === "fa" || value === "ps" ? value : "en", getAuthDestination: value => typeof value === "string" && ["/dashboard", "/messages", "/network"].includes(value) ? value : "/dashboard" }),
     "@/lib/supabase/server": ({ setOAuthInput }) => ({
       createClient: async () => ({
         auth: {
@@ -68,7 +73,10 @@ function callbackRoute({ exchangeError = null } = {}) {
   let exchanged = [];
   const loaded = loadModule("../src/app/auth/callback/route.ts", {
     "next/server": () => ({
-      NextResponse: { redirect: url => ({ location: url.toString() }) },
+      NextResponse: class {
+        constructor(_body, init = {}) { this.status = init.status; this.headers = new Headers(init.headers); }
+        static redirect(url, status) { const response = new this(null, { status }); response.location = url.toString(); response.cookies = { set() {} }; return response; }
+      },
     }),
     "@/lib/supabase/server": () => ({
       createClient: async () => ({
@@ -81,6 +89,7 @@ function callbackRoute({ exchangeError = null } = {}) {
       }),
     }),
     "@/lib/site-url": () => ({ getSiteUrl: () => "https://app.apnbc.ca" }),
+    "@/lib/auth-navigation": () => ({ authLanguageCookie: "afghan-hub-auth-language", getAuthLanguage: value => value === "fa" || value === "ps" ? value : "en", getAuthDestination: value => typeof value === "string" && ["/dashboard", "/messages", "/network"].includes(value) ? value : "/dashboard" }),
   });
   return { GET: loaded.GET, exchanged };
 }

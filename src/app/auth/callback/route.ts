@@ -7,91 +7,47 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
+  const flow = params.get("flow");
+  const google = flow === "google" || flow === "oauth";
   const code = params.get("code");
-  const flow = params.get("flow") === "google" ? "google" : params.get("flow") === "signup" ? "signup" : "recovery";
-  const nextPath = flow === "recovery" && params.get("next") === "/update-password"
-    ? "/update-password" : getAuthDestination(params.get("next"));
-  const redirectTo = new URL(nextPath, getSiteUrl());
+  const next = getAuthDestination(params.get("next"));
+  const recoveryDestination = !google && flow !== "signup" && params.get("next") === "/update-password"
+    ? "/update-password" : next;
+  const redirectTo = new URL(recoveryDestination, getSiteUrl());
+  const validCode = Boolean(code && code.length <= 4096 && params.getAll("code").length === 1 && !params.has("error"));
   let succeeded = false;
-
-  if (code && code.length <= 4096 && params.getAll("code").length === 1 && !params.has("error")) {
+  if (validCode) {
     try {
       const supabase = await createClient();
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
+      const { error } = await supabase.auth.exchangeCodeForSession(code!);
       succeeded = !error;
     } catch {
-      // Never log authorization codes or provider errors.
+      // Never expose provider details, tokens or callback codes.
     }
   }
 
   if (!succeeded) {
-    if (flow === "google") {
+    if (google) {
       redirectTo.pathname = "/login";
-      redirectTo.searchParams.set("next", getAuthDestination(params.get("next")));
-      redirectTo.searchParams.set("error", params.get("error") === "access_denied"
+      redirectTo.search = "";
+      const fallback = "Google sign-in could not be completed. Please try again or use your email and password.";
+      redirectTo.searchParams.set("error", flow === "oauth" ? fallback :
+        params.get("error") === "access_denied"
         ? "Google sign-in was cancelled. Please try again or continue with email."
         : "Google sign-in could not be completed. Please try again or continue with email.");
+      if (flow === "google") redirectTo.searchParams.set("next", next);
     } else if (flow === "signup") {
       redirectTo.pathname = "/login";
+      redirectTo.search = "";
       redirectTo.searchParams.set("mode", "join");
       redirectTo.searchParams.set("error", "The confirmation link is invalid or has expired. Please sign in if your account is already confirmed, or create the account again.");
     } else {
       redirectTo.pathname = "/forgot-password";
+      redirectTo.search = "";
       redirectTo.searchParams.set("error", "The password reset link is invalid or has expired. Request a new link and try again.");
     }
-  const code = request.nextUrl.searchParams.get("code");
-  const providerError = request.nextUrl.searchParams.get("error");
-  const flowParam = request.nextUrl.searchParams.get("flow");
-  const flow = flowParam === "signup" ? "signup" : flowParam === "oauth" ? "oauth" : "recovery";
-  const nextPath = getSafeNextPath(request.nextUrl.searchParams.get("next"));
-
-  // The upstream host can differ from the public URL behind a proxy.
-  const redirectTo = new URL(nextPath, getSiteUrl());
-
-  if (flow === "oauth" && (providerError || !code)) {
-    // Cancelled consent or a provider failure: return to sign-in without a session.
-    const loginUrl = new URL("/login", getSiteUrl());
-    loginUrl.searchParams.set(
-      "error",
-      "Google sign-in could not be completed. Please try again or use your email and password."
-    );
-    return NextResponse.redirect(loginUrl);
   }
 
-  if (code) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-    if (!error) {
-      return NextResponse.redirect(redirectTo);
-    }
-  }
-
-  if (flow === "oauth") {
-    const loginUrl = new URL("/login", getSiteUrl());
-    loginUrl.searchParams.set(
-      "error",
-      "Google sign-in could not be completed. Please try again or use your email and password."
-    );
-    return NextResponse.redirect(loginUrl);
-  }
-
-  if (flow === "signup") {
-    redirectTo.pathname = "/login";
-    redirectTo.searchParams.set("mode", "join");
-    redirectTo.searchParams.set(
-      "error",
-      "The confirmation link is invalid or has expired. Please sign in if your account is already confirmed, or create the account again."
-    );
-  } else {
-    redirectTo.pathname = "/forgot-password";
-    redirectTo.searchParams.set(
-      "error",
-      "The password reset link is invalid or has expired. Request a new link and try again."
-    );
-  }
-
-  // Also carry locale to the trusted destination if proxy and canonical hosts differ.
   if (params.has("lang")) redirectTo.searchParams.set("lang", getAuthLanguage(params.get("lang")));
   const response = NextResponse.redirect(redirectTo, 303);
   response.headers.set("Cache-Control", "private, no-store, max-age=0");
