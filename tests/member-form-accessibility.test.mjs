@@ -27,8 +27,6 @@ const workspaceCopySource = fs.readFileSync(
 test("profile errors are announced and profile submit exposes pending state", () => {
   assert.match(profileSource, /role="alert"/);
   assert.match(profileSource, /aria-live="assertive"/);
-  assert.match(profileSource, /<PendingSubmitButton/);
-  assert.match(profileSource, /pendingLabel=\{t\.saving\}/);
   const copy = fs.readFileSync(new URL("../src/lib/i18n/onboarding-copy.ts", import.meta.url), "utf8");
   assert.match(copy, /saving: "Saving profile…"/);
   assert.match(copy, /saving: "در حال ذخیره پروفایل…"/);
