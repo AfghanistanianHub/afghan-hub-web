@@ -65,11 +65,11 @@ export async function saveProfile(formData: FormData) {
   const websiteUrl = getOptionalString(formData, "website_url");
 
   if (linkedinUrl && !isValidHttpUrl(linkedinUrl)) {
-    redirect("/profile?error=Enter%20a%20valid%20LinkedIn%20URL");
+    redirect("/profile?error=linkedin-url-invalid");
   }
 
   if (websiteUrl && !isValidHttpUrl(websiteUrl)) {
-    redirect("/profile?error=Enter%20a%20valid%20website%20URL");
+    redirect("/profile?error=website-url-invalid");
   }
 
   const languages = getOptionalString(formData, "languages")
@@ -95,9 +95,7 @@ export async function saveProfile(formData: FormData) {
     mentorshipTopics.length > 12 ||
     mentorshipTopics.some((topic) => topic.length > 60)
   ) {
-    redirect(
-      "/profile?error=Add%20up%20to%2012%20mentorship%20topics%2C%20each%2060%20characters%20or%20less.",
-    );
+    redirect("/profile?error=mentorship-topics-invalid");
   }
 
   const displayName =
@@ -136,7 +134,7 @@ export async function saveProfile(formData: FormData) {
     .maybeSingle();
 
   if (updateError) {
-    redirect("/profile?error=We%20could%20not%20save%20your%20profile.%20Please%20try%20again.");
+    redirect("/profile?error=save-failed");
   }
 
   if (!updatedProfile) {
@@ -147,7 +145,7 @@ export async function saveProfile(formData: FormData) {
       .single();
 
     if (insertError) {
-      redirect("/profile?error=We%20could%20not%20save%20your%20profile.%20Please%20try%20again.");
+      redirect("/profile?error=save-failed");
     }
 
     const { error: mentorshipUpdateError } = await supabase
@@ -156,7 +154,7 @@ export async function saveProfile(formData: FormData) {
       .eq("id", user.id);
 
     if (mentorshipUpdateError) {
-      redirect("/profile?error=We%20could%20not%20save%20your%20mentorship%20preferences.%20Please%20try%20again.");
+      redirect("/profile?error=mentorship-save-failed");
     }
   }
 

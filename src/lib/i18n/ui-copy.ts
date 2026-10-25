@@ -151,6 +151,8 @@ export type UiCopy = {
     errorLength: string;
     errorAccess: string;
     errorSend: string;
+    errorStart: string;
+    errorGeneric: string;
   };
   network: {
     eyebrow: string;
@@ -394,6 +396,8 @@ export const uiCopy: Record<SiteLanguage, UiCopy> = {
       errorLength: "Enter a message between 1 and 4,000 characters.",
       errorAccess: "You no longer have access to this conversation.",
       errorSend: "Your message could not be sent. Please try again.",
+      errorStart: "We could not start this conversation. Please try again.",
+      errorGeneric: "Something went wrong. Please try again.",
     },
     network: {
       eyebrow: "Community network",
@@ -633,6 +637,8 @@ export const uiCopy: Record<SiteLanguage, UiCopy> = {
       errorLength: "پیامی بین ۱ تا ۴٬۰۰۰ نویسه بنویسید.",
       errorAccess: "شما دیگر به این گفتگو دسترسی ندارید.",
       errorSend: "پیام شما ارسال نشد. لطفاً دوباره تلاش کنید.",
+      errorStart: "آغاز این گفتگو امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
+      errorGeneric: "مشکلی رخ داد. لطفاً دوباره تلاش کنید.",
     },
     network: {
       eyebrow: "شبکه جامعه",
@@ -872,6 +878,8 @@ export const uiCopy: Record<SiteLanguage, UiCopy> = {
       errorLength: "له ۱ څخه تر ۴٬۰۰۰ تورو پورې پیغام ولیکئ.",
       errorAccess: "تاسو نور دې خبرو اترو ته لاسرسی نه لرئ.",
       errorSend: "ستاسو پیغام ونه لېږل شو. مهرباني وکړئ بیا هڅه وکړئ.",
+      errorStart: "دا خبرې اترې پیل نه شوې. مهرباني وکړئ بیا هڅه وکړئ.",
+      errorGeneric: "ستونزه رامنځته شوه. مهرباني وکړئ بیا هڅه وکړئ.",
     },
     network: {
       eyebrow: "د ټولنې شبکه",
@@ -966,6 +974,24 @@ export function formatCopy(template: string, values: Record<string, string | num
   return template.replace(/\{(\w+)\}/g, (match, key: string) =>
     Object.hasOwn(values, key) ? String(values[key]) : match,
   );
+}
+
+/**
+ * Messaging actions return stable codes instead of English sentences, so the
+ * visible failure is always localized. Unknown codes fall back to the generic
+ * message so a new failure never leaks untranslated text.
+ */
+const messageActionErrorKeys: Record<string, UiCopyKey> = {
+  "invalid-conversation": "messages.errorConversation",
+  "invalid-length": "messages.errorLength",
+  "no-access": "messages.errorAccess",
+  "send-failed": "messages.errorSend",
+  "start-failed": "messages.errorStart",
+};
+
+export function messageActionErrorKey(code: string | null | undefined): UiCopyKey {
+  if (!code) return "messages.errorGeneric";
+  return messageActionErrorKeys[code] ?? "messages.errorGeneric";
 }
 
 export function getUiCopy(language: SiteLanguage, key: UiCopyKey): string {

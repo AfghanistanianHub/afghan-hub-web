@@ -7,6 +7,10 @@ import { createClient } from "@/lib/supabase/server";
 const uuidPattern =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+/**
+ * `error` carries a stable message code, never a sentence: the composer maps it
+ * through the typed catalogue so Farsi and Pashto readers never see English.
+ */
 export type SendMessageState = {
   error: string | null;
   sentAt: number | null;
@@ -39,7 +43,7 @@ export async function startConversation(formData: FormData) {
   );
 
   if (error || !conversationId) {
-    redirect(`/members/${memberId}?error=Unable%20to%20start%20conversation`);
+    redirect(`/members/${memberId}?error=start-failed`);
   }
 
   revalidatePath("/messages");
@@ -69,7 +73,7 @@ export async function sendMessage(
     typeof messageValue !== "string"
   ) {
     return {
-      error: "Unable to identify this conversation.",
+      error: "invalid-conversation",
       sentAt: null,
     };
   }
@@ -78,7 +82,7 @@ export async function sendMessage(
 
   if (!message || message.length > 4000) {
     return {
-      error: "Enter a message between 1 and 4,000 characters.",
+      error: "invalid-length",
       sentAt: null,
     };
   }
@@ -92,7 +96,7 @@ export async function sendMessage(
 
   if (!membership) {
     return {
-      error: "You no longer have access to this conversation.",
+      error: "no-access",
       sentAt: null,
     };
   }
@@ -105,7 +109,7 @@ export async function sendMessage(
 
   if (error) {
     return {
-      error: "Your message could not be sent. Please try again.",
+      error: "send-failed",
       sentAt: null,
     };
   }

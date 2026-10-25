@@ -19,6 +19,7 @@ import {
   W,
 } from "@/components/i18n/workspace";
 import { createClient } from "@/lib/supabase/server";
+import { profileFormErrorKey } from "@/lib/i18n/workspace-copy";
 import { saveProfile } from "./actions";
 
 type ProfilePageProps = {
@@ -106,7 +107,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
               </div>
 
               {error ? (
-                <div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive">{error}</div>
+                <div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] p-4 text-sm text-destructive"><W k={profileFormErrorKey(error)} /></div>
               ) : null}
 
               <form action={saveProfile} className="mt-8 space-y-9">

@@ -33,7 +33,7 @@ Translation status legend:
 | `/login` | Translated | Auth localization merged in #517–#523; signed-in/browser re-verification outstanding. |
 | `/forgot-password` | Translated | Same as above. |
 | `/update-password` | Translated | Same as above. |
-| `/profile` | Translated | Identity, work/skills, mentorship, location and link sections, hints, placeholders, fallbacks and submit state localized in this audit; server action error strings and the avatar/profile-strength widgets remain English. |
+| `/profile` | Translated | Identity, work/skills, mentorship, location and link sections, hints, placeholders, fallbacks, submit state and server-action failures (`profileFormErrorKey`) localized in this audit; the avatar and profile-strength widgets remain English. |
 | `/dashboard` | Partial | Greeting, workspace header, next-step guidance and navigation are localized; recommended/suggested opportunity blocks remain English. |
 | `/network` | Translated | Heading, stats, directory, mentorship filters, connection actions and empty states localized in this audit; signed-in browser pass outstanding. |
 | `/search` | Translated | Headings, intent selector and goal labels, keyword field, result counts, per-intent empty states, intent reasons, result type labels, goal cards and explorer card localized in this audit; server error strings and result titles stay as stored. |
@@ -57,7 +57,7 @@ Translation status legend:
 | `/events/my` | Translated | Registered-events heading, table labels, status chips, dates, empty state and actions localized in this audit. |
 | `/members/[id]` | English-only | Profile detail headings, biography fallback, connection actions. |
 | `/messages` | Translated | Header, inbox search, counts, previews, dates, unread labels and empty states localized; message bodies are user content. |
-| `/messages/[conversationId]` | Translated | Thread chrome, read receipts, composer labels, limits and known error messages localized; message bodies untouched. |
+| `/messages/[conversationId]` | Translated | Thread chrome, read receipts, composer labels, limits and send failures (`messageActionErrorKey`) localized; message bodies untouched. |
 | `/saved` | Translated | Heading, description, load error, expired/empty states and CTA localized in this audit; signed-in browser pass outstanding. |
 | `/submissions` | Translated | Heading, filters, counts, status labels, dates, moderator note and empty/error states localized; signed-in browser pass outstanding. |
 | `/settings` | Translated | Merged in #522; not re-rendered in this audit. |
@@ -188,12 +188,14 @@ Fixes made in this pass:
   avatar/profile-strength widgets and the remaining dashboard recommendation blocks, all listed
   as English-only or partial above.
 - Localize the remaining server-side action error strings. Opportunity, moderation, event,
-  business and organization failures now travel as message codes (`opportunityFormErrorKey`,
-  `opportunityActionErrorKey`, `moderation.error*`, `team.error*`, `eventFormErrorKey`,
-  `businessFormErrorKey`, `organizationFormErrorKey`, `eventActionErrorKey`,
-  `verificationActionErrorKey`); `src/app/profile/actions.ts` and
-  `src/app/(dashboard)/messages/actions.ts` still redirect with English text that their pages
-  render verbatim.
+  business, organization, profile and messaging failures now travel as message codes
+  (`opportunityFormErrorKey`, `opportunityActionErrorKey`, `moderation.error*`, `team.error*`,
+  `eventFormErrorKey`, `businessFormErrorKey`, `organizationFormErrorKey`,
+  `eventActionErrorKey`, `verificationActionErrorKey`, `profileFormErrorKey`,
+  `messageActionErrorKey`). `/profile` renders its banner from `profileFormErrorKey` and the
+  message composer from `messageActionErrorKey`. `/members/[id]` still ignores the
+  `?error=start-failed` code that a failed conversation start redirects to, so that page needs
+  its own localized banner alongside its remaining English chrome.
 - Localize page titles/metadata through a deliberate routing or cookie decision.
 - Native Farsi and Pashto editorial sign-off recorded with reviewer, date and commit SHA.
 - Full `npm run lint`, `npx tsc --noEmit`, `node --test tests/*.test.mjs`, `npm run build` and the
