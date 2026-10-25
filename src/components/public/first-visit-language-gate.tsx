@@ -53,11 +53,7 @@ export function FirstVisitLanguageGate({ children }: { children: ReactNode }) {
             </nav>
           </div>
 
-          <div className={styles.livingType} aria-hidden="true">
-            <div className={`${styles.message} ${styles.messageEnglish}`}>You <em>belong</em> here.</div>
-            <div className={`${styles.message} ${styles.messageFarsi}`} lang="fa" dir="rtl">اینجا جای توست</div>
-            <div className={`${styles.message} ${styles.messagePashto}`} lang="ps" dir="rtl">دلته ستا ځای دی</div>
-          </div>
+
         </div>
       </div>
     </main>
