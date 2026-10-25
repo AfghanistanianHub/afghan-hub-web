@@ -28,6 +28,19 @@ test("form fields draw the shared focus ring and never suppress it", () => {
   }
 });
 
+test("the picker controls no longer suppress the ring they ask for", () => {
+  const pickers = {
+    "src/components/moderation/member-role-select.tsx": /focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary/,
+    "src/components/ui/deadline-picker.tsx": /focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary/,
+    "src/components/ui/event-date-time-picker.tsx": /focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary/,
+  };
+  for (const [file, ring] of Object.entries(pickers)) {
+    const source = read(file);
+    assert.match(source, ring, `${file} lost its ring classes`);
+    assert.doesNotMatch(source, /outline-none/, `${file} still disables its own ring through outline-none`);
+  }
+});
+
 test("the shared search field draws the ring instead of suppressing the outline", () => {
   const css = read("src/components/network/network-surfaces.module.css");
   const focusRule = css.match(/\.search:focus\s*{([^}]*)}/);
