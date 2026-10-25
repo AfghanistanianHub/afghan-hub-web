@@ -563,7 +563,7 @@ try {
   for (const [table, titleField, ownerField] of [['businesses','name','owner_id'],['organizations','name','owner_id'],['opportunities','title','author_id'],['events','title','creator_id']]) {
     await check(`${table}: owner create/edit, draft privacy and foreign edit boundary through browser`, async () => {
       const title = `Synthetic ${stamp} ${table}`; await visit(pageA, `/${table}/new`); await fill(pageA, `[name=${titleField}]`, title);
-      if (table === 'businesses') { await pageA.selectOption('[name=category]', 'Professional Services'); await fill(pageA, '[name=short_description]', 'Synthetic business summary'); }
+      if (table === 'businesses') { await until(() => pageA.evaluate(`!!document.querySelector('form select[name="category"]')`), 'business category select'); await pageA.evaluate(`(() => { const field=document.querySelector('form select[name="category"]'); field.value='Professional Services'; field.dispatchEvent(new Event('change',{bubbles:true})); return true; })()`); await fill(pageA, '[name=short_description]', 'Synthetic business summary'); }
       else if (table === 'organizations') await fill(pageA, '[name=short_description]', 'Synthetic organization summary');
       else {
         await fill(pageA, '[name=summary]', 'Synthetic listing summary'); await fill(pageA, '[name=description]', 'Synthetic listing description for isolated browser verification.');
