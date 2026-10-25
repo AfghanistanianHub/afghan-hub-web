@@ -2,16 +2,30 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
 
-const verificationSource = fs.readFileSync(
-  new URL("../src/components/ui/verification-badge.tsx", import.meta.url),
-  "utf8",
-);
+const read = (path) => fs.readFileSync(new URL(path, import.meta.url), "utf8");
+
+const verificationSource = read("../src/components/ui/verification-badge.tsx");
+const catalogSource = read("../src/lib/i18n/browse-copy.ts");
 
 test("verification UI uses bounded listing language", () => {
-  assert.match(verificationSource, /Verified listing/);
-  assert.match(verificationSource, /administrators have marked this listing as verified/i);
+  assert.match(verificationSource, /verification\.label/);
+  assert.match(verificationSource, /verification\.aria/);
+  assert.match(catalogSource, /"verification\.label": "Verified listing"/);
+  assert.match(catalogSource, /administrators have marked this listing as verified/i);
 });
 
 test("verification UI does not imply endorsement or guarantee", () => {
-  assert.match(verificationSource, /not an endorsement or guarantee/i);
+  assert.match(catalogSource, /not an endorsement or guarantee/i);
+});
+
+test("verification copy is translated for every supported language", () => {
+  assert.equal(
+    (catalogSource.match(/"verification\.label":/g) ?? []).length,
+    3,
+  );
+  assert.equal(
+    (catalogSource.match(/"verification\.explanation":/g) ?? []).length,
+    3,
+  );
+  assert.doesNotMatch(verificationSource, /Verified listing/);
 });

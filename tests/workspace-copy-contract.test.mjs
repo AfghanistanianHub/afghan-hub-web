@@ -26,9 +26,13 @@ test("no workspace copy value is empty or only whitespace", () => {
 });
 
 test("Farsi and Pashto workspace copy does not silently fall back to English", () => {
+  // File formats, size units and brand names keep their Latin spelling by design.
+  const allowed = /https?:\/\/|JPG|PNG|WebP|PDF|MB|Afghan Hub|URL/g;
   for (const language of ["fa", "ps"]) {
     for (const [key, value] of Object.entries(workspaceCopy[language])) {
-      const withoutPlaceholders = value.replace(/\{name\}/g, "");
+      const withoutPlaceholders = value
+        .replace(/\{\w+\}/g, "")
+        .replace(allowed, "");
       assert.doesNotMatch(withoutPlaceholders, /[A-Za-z]/, `${language} ${key} contains Latin text: ${value}`);
     }
   }

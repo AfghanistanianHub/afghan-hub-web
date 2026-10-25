@@ -11,6 +11,7 @@ import {
   W,
 } from "@/components/i18n/workspace";
 import { createClient } from "@/lib/supabase/server";
+import { eventFormErrorKey } from "@/lib/i18n/workspace-copy";
 import { updateEvent } from "../../actions";
 
 type Props = {
@@ -64,7 +65,7 @@ export default async function EditEventPage({ params, searchParams }: Props) {
       </section>
 
       {error ? (
-        <div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/25 bg-destructive/8 px-4 py-3 text-sm text-destructive">{error}</div>
+        <div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/25 bg-destructive/8 px-4 py-3 text-sm text-destructive"><W k={eventFormErrorKey(error)} /></div>
       ) : null}
 
       <form action={updateEvent} className="surface-panel mt-8 space-y-8 rounded-[var(--radius)] p-6 md:p-8">

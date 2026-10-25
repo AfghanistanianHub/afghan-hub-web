@@ -1,12 +1,40 @@
-import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 import formStyles from "@/components/forms/listing-form.module.css";
 import { CommunitySignature } from "@/components/public/community-signature";
 import { redirect } from "next/navigation";
 import { DeadlinePicker } from "@/components/ui/deadline-picker";
 import { createClient } from "@/lib/supabase/server";
+import {
+  LocalizedCheckbox,
+  LocalizedChoiceField,
+  LocalizedField,
+  LocalizedSelect,
+  LocalizedSubmitButton,
+  W,
+} from "@/components/i18n/workspace";
+import { opportunityFormErrorKey } from "@/lib/i18n/workspace-copy";
 import { createOpportunity } from "../actions";
 
-export default async function NewOpportunityPage() {
+const opportunityTypeOptions = [
+  { value: "job", key: "opportunity.typeJob" },
+  { value: "volunteer", key: "opportunity.typeVolunteer" },
+  { value: "scholarship", key: "opportunity.typeScholarship" },
+  { value: "mentorship", key: "opportunity.typeMentorship" },
+  { value: "investment", key: "opportunity.typeInvestment" },
+  { value: "housing", key: "opportunity.typeHousing" },
+  { value: "event", key: "opportunity.typeEvent" },
+  { value: "education", key: "opportunity.typeEducation" },
+] as const;
+
+type NewOpportunityPageProps = {
+  searchParams: Promise<{
+    error?: string;
+  }>;
+};
+
+export default async function NewOpportunityPage({
+  searchParams,
+}: NewOpportunityPageProps) {
+  const { error } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -31,93 +59,61 @@ export default async function NewOpportunityPage() {
         
         
         <CommunitySignature className={formStyles.signature} /><div className="relative">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Create an opportunity</p>
-        <h1 className="mt-3 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl">Post an Opportunity</h1>
+        <W k="opportunity.newEyebrow" className="text-sm font-semibold uppercase tracking-[0.18em] text-primary" />
+        <h1 className="mt-3 text-3xl font-medium tracking-[-0.035em] text-foreground md:text-4xl"><W k="opportunity.newTitle" /></h1>
         <p className="mt-3 text-muted-foreground">
-          Share a job, scholarship, volunteer role, mentorship, or another opportunity.
+          <W k="opportunity.newBody" />
         </p>
         <p className="mt-4 inline-flex rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-sm font-medium text-primary">
-          Your submission will be reviewed before it appears publicly.
+          <W k="common.reviewNotice" />
         </p>
         </div>
       </section>
 
+      {error ? (
+        <div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/25 bg-destructive/[0.06] px-4 py-3 text-sm text-destructive">
+          <W k={opportunityFormErrorKey(error)} />
+        </div>
+      ) : null}
+
       <form action={createOpportunity} className="surface-panel mt-8 space-y-8 rounded-[var(--radius)] p-6 md:p-8">
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-foreground">Title</label>
-          <input id="title" name="title" type="text" required className={fieldClassName} />
-        </div>
+        <LocalizedField labelKey="common.title" name="title" id="title" required fieldClassName={fieldClassName} labelClassName="block text-sm font-medium text-foreground" />
 
-        <div>
-          <label htmlFor="organization_id" className="block text-sm font-medium text-foreground">Posted by</label>
-          <select id="organization_id" name="organization_id" className={fieldClassName}>
-            <option value="">Personal / No organization</option>
-            {organizations?.map((organization) => (
-              <option key={organization.id} value={organization.id}>{organization.name}</option>
-            ))}
-          </select>
-        </div>
+        <LocalizedChoiceField labelKey="opportunity.postedBy" name="organization_id" id="organization_id" placeholderKey="common.personalOrganization" fieldClassName={fieldClassName} labelClassName="block text-sm font-medium text-foreground">
+          {organizations?.map((organization) => (
+            <option key={organization.id} value={organization.id}>{organization.name}</option>
+          ))}
+        </LocalizedChoiceField>
 
-        <div>
-          <label htmlFor="type" className="block text-sm font-medium text-foreground">Opportunity type</label>
-          <select id="type" name="type" required className={fieldClassName}>
-            <option value="">Select a type</option>
-            <option value="job">Job</option>
-            <option value="volunteer">Volunteer</option>
-            <option value="scholarship">Scholarship</option>
-            <option value="mentorship">Mentorship</option>
-            <option value="investment">Investment</option>
-            <option value="housing">Housing</option>
-            <option value="event">Event</option>
-            <option value="education">Education</option>
-          </select>
-        </div>
+        <LocalizedSelect labelKey="opportunity.type" name="type" id="type" required placeholderKey="common.selectType" options={opportunityTypeOptions} fieldClassName={fieldClassName} labelClassName="block text-sm font-medium text-foreground" />
 
-        <div>
-          <label htmlFor="summary" className="block text-sm font-medium text-foreground">Short summary</label>
-          <textarea id="summary" name="summary" rows={3} required className={fieldClassName} />
-        </div>
+        <LocalizedField labelKey="common.shortSummary" name="summary" id="summary" rows={3} required fieldClassName={fieldClassName} labelClassName="block text-sm font-medium text-foreground" />
 
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-foreground">Full description</label>
-          <textarea id="description" name="description" rows={8} required className={fieldClassName} />
-        </div>
+        <LocalizedField labelKey="common.fullDescription" name="description" id="description" rows={8} required fieldClassName={fieldClassName} labelClassName="block text-sm font-medium text-foreground" />
 
         <div className="grid gap-6 md:grid-cols-2">
-          <div>
-            <label htmlFor="city" className="block text-sm font-medium text-foreground">City</label>
-            <input id="city" name="city" type="text" className={fieldClassName} />
-          </div>
-          <div>
-            <label htmlFor="country" className="block text-sm font-medium text-foreground">Country</label>
-            <input id="country" name="country" type="text" className={fieldClassName} />
-          </div>
+          <LocalizedField labelKey="common.city" name="city" id="city" fieldClassName={fieldClassName} labelClassName="block text-sm font-medium text-foreground" />
+          <LocalizedField labelKey="common.country" name="country" id="country" fieldClassName={fieldClassName} labelClassName="block text-sm font-medium text-foreground" />
         </div>
 
-        <label className="flex cursor-pointer items-center gap-3 rounded-[var(--radius)] border border-border/80 bg-secondary/40 p-4 transition hover:border-primary/25 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15">
-          <input name="is_remote" type="checkbox" className="size-5 shrink-0 rounded border-input accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
-          <span className="text-sm font-medium text-foreground">Remote opportunity</span>
-        </label>
+        <LocalizedCheckbox
+          name="is_remote"
+          labelKey="opportunity.remote"
+          wrapperClassName="flex cursor-pointer items-center gap-3 rounded-[var(--radius)] border border-border/80 bg-secondary/40 p-4 transition hover:border-primary/25 focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15"
+          inputClassName="size-5 shrink-0 rounded border-input accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        />
+
+        <LocalizedField labelKey="opportunity.externalUrl" name="external_url" id="external_url" type="url" fieldClassName={fieldClassName} labelClassName="block text-sm font-medium text-foreground" />
+
+        <LocalizedField labelKey="opportunity.contactEmail" name="contact_email" id="contact_email" type="email" fieldClassName={fieldClassName} labelClassName="block text-sm font-medium text-foreground" />
 
         <div>
-          <label htmlFor="external_url" className="block text-sm font-medium text-foreground">Application or external link</label>
-          <input id="external_url" name="external_url" type="url" className={fieldClassName} />
-        </div>
-
-        <div>
-          <label htmlFor="contact_email" className="block text-sm font-medium text-foreground">Contact email</label>
-          <input id="contact_email" name="contact_email" type="email" className={fieldClassName} />
-        </div>
-
-        <div>
-          <label htmlFor="deadline" className="block text-sm font-medium text-foreground">Deadline</label>
+          <span className="block text-sm font-medium text-foreground"><W k="common.deadline" /></span>
           <div className="mt-2"><DeadlinePicker /></div>
         </div>
 
         <div className="flex justify-end border-t border-border pt-6">
-          <PendingSubmitButton pendingLabel="Submitting for review…" className="rounded-[var(--radius)] bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
-            Submit for Review
-          </PendingSubmitButton>
+          <LocalizedSubmitButton k="common.submitForReview" pendingKey="common.submittingForReview" className="rounded-[var(--radius)] bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary" />
         </div>
       </form>
     </main>

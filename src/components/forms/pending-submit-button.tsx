@@ -4,7 +4,7 @@ import { useFormStatus } from "react-dom";
 
 type PendingSubmitButtonProps = {
   children: React.ReactNode;
-  pendingLabel: string;
+  pendingLabel: React.ReactNode;
   className?: string;
   disabled?: boolean;
   name?: string;
