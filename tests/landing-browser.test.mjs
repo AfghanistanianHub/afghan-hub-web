@@ -166,9 +166,9 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   // A new visitor sees the language entrance first. Choose English through the
   // actual UI before exercising the existing homepage layout and motion suite.
   await page.send("Page.navigate", {url:appUrl});
-  await waitFor(() => page.evaluate("!!document.querySelector('main button[lang=en]')"), "first-visit language entrance");
+  await waitFor(() => page.evaluate("!!document.querySelector('main a[hreflang=en]')"), "first-visit language entrance");
   assert.equal(await page.evaluate("document.querySelector('[data-community-node]')===null"), true, "Homepage stays hidden until language selection");
-  await page.evaluate("document.querySelector('main button[lang=en]').click()");
+  await page.evaluate("document.querySelector('main a[hreflang=en]').click()");
   await waitFor(() => page.evaluate("!!document.querySelector('[data-community-node]')"), "homepage after language selection");
   // Approved living network: meaningful destinations, stable bounds and reduced motion.
   await page.send("Emulation.setScrollbarsHidden", {hidden:true});
