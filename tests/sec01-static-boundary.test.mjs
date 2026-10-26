@@ -21,7 +21,10 @@ test("SEC-01: pages use scoped moderation RPC rather than table-level notes", ()
 });
 
 test("SEC-01: no wildcard SELECT in listing detail pages", () => {
-  for (const [path] of pages.slice(2)) {
+  for (const [path] of [...pages.slice(2),
+    ["../src/app/(dashboard)/events/[slug]/edit/page.tsx"],
+    ["../src/app/(dashboard)/opportunities/[slug]/edit/page.tsx"],
+  ]) {
     const source = read(path);
     assert.doesNotMatch(source, /\.select\(\s*["'`]\*[,\x60"'\s)]/, path);
   }
