@@ -174,7 +174,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   await page.send("Emulation.setScrollbarsHidden", {hidden:true});
   for (const width of [320,390,768,1024,1280,1440]) {
     await page.send("Emulation.setDeviceMetricsOverride", {width,height:1000,deviceScaleFactor:1,mobile:false});
-    await page.send("Page.navigate", {url:appUrl});
+    await page.send("Page.navigate", {url:new URL('/en', appUrl).href});
     await waitFor(() => page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-community-node]')"), `landing ${width}`);
     await page.evaluate("document.fonts.ready.then(()=>true)");
     await delay(950);
@@ -197,7 +197,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
     console.log(`AFGHAN_HUB_BROWSER_RESULT ${width}: five usable destinations, no overflow, zero axe violations`);
   }
   await page.send("Emulation.setDeviceMetricsOverride", {width:1440,height:1000,deviceScaleFactor:1,mobile:false});
-  await page.send("Page.navigate",{url:appUrl});
+  await page.send("Page.navigate",{url:new URL('/en', appUrl).href});
   await waitFor(()=>page.evaluate("!!document.querySelector('[data-community-node]')"),"network focus");
   await delay(950);
   const bounds = await page.evaluate("document.querySelector('[data-hero-region]').getBoundingClientRect().toJSON()");
@@ -320,7 +320,7 @@ test("geometric landing responsive layout, hero wayfinding and accessibility in 
   await page.send("Emulation.setDeviceMetricsOverride",{width:390,height:1000,deviceScaleFactor:1,mobile:true});
   await page.send("Emulation.setTouchEmulationEnabled",{enabled:true});
   for(const key of ["people","organizations","businesses","events","opportunities"]) {
-    await page.send("Page.navigate",{url:appUrl});
+    await page.send("Page.navigate",{url:new URL('/en', appUrl).href});
     await waitFor(()=>page.evaluate("document.readyState==='complete' && !!document.querySelector('[data-community-node]')"),"touch landing");
     await delay(300);
     await page.evaluate(`document.querySelector('[data-community-node=${key}]').scrollIntoView({block:'center'})`);

@@ -70,7 +70,7 @@ try {
         await link.waitFor();
         await link.click();
         await languagePage.waitForURL(url => url.pathname === `/${selected}`, { timeout: 45000 });
-        assert.equal(await languagePage.evaluate(() => localStorage.getItem("afghan-hub-site-language")), selected);
+        await languagePage.waitForFunction(lang => localStorage.getItem("afghan-hub-site-language") === lang, selected, {timeout:15000});
       } finally {
         await visitor.close();
       }
@@ -88,10 +88,15 @@ try {
     console.log(JSON.stringify({ viewport: viewport.name, localeEntry: entryState }));
     await page.screenshot({ path: `${output}/${viewport.name}-locale-entry.png`, fullPage: true });
     await page.locator("header select").first().waitFor();
-    assert.equal(await page.evaluate(() => localStorage.getItem("afghan-hub-site-language")), "en");
+    await page.waitForFunction(() => localStorage.getItem("afghan-hub-site-language") === "en", null, {timeout:15000});
     await page.reload({waitUntil:"domcontentloaded"});
     await page.locator("header select").first().waitFor();
-    assert.equal(await page.locator('a[hreflang="en"]').count(), 0, "Returning visitors bypass entrance");
+    assert.equal(await page.locator('main a[hreflang="en"]').count(), 0, "Localized homepage bypasses entrance");
+    await page.goto(base, {waitUntil:"domcontentloaded"});
+    await page.locator('main a[hreflang="en"]').waitFor();
+    assert.equal(await page.locator('main a[hreflang="en"], main a[hreflang="fa"], main a[hreflang="ps"]').count(), 3, "Root always shows entrance after selection");
+    await page.goto(base + "/en", {waitUntil:"domcontentloaded"});
+    await page.locator("header select").first().waitFor();
     // An internal deep link remains accessible without any prior language preference.
     const direct = await browser.newContext({viewport, reducedMotion:"reduce"});
     try {

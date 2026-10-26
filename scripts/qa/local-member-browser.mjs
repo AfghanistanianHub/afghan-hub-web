@@ -371,11 +371,12 @@ try {
       await until(() => pageA.evaluate(`/Seccomp-BPF sandbox\\s+Yes/.test(document.body?.innerText ?? '')`), 'renderer sandbox');
     }
   });
-  await check('Navigator exposes three languages and migrates legacy Persian preference with RTL', async () => {
+  await check('Navigator supports Persian and Pashto RTL and preserves legacy preference', async () => {
     await visit(pageA, '/');
     await pageA.evaluate(`localStorage.removeItem('afghan-hub-site-language'); localStorage.setItem('afghan-hub-navigator-language','fa-AF')`);
-    await visit(pageA, '/');
-    await until(() => pageA.evaluate(`document.querySelector('#ai-navigator select')?.value==='fa' && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`), 'legacy preference hydrated');
+    // Root is always the language entrance; open the localized homepage for Navigator assertions.
+    await visit(pageA, '/fa');
+    await until(() => pageA.evaluate(`document.querySelector('#ai-navigator select')?.value==='fa' && document.querySelector('#ai-navigator')?.getAttribute('dir')==='rtl'`), 'Persian localized homepage hydrated');
     assert.deepEqual(await pageA.evaluate(`[...document.querySelectorAll('#ai-navigator select option')].map(node=>node.value)`), ['en','fa','ps']);
     assert.equal(await pageA.evaluate(`localStorage.getItem('afghan-hub-navigator-language')`), 'fa-AF'); // Legacy storage is read-only; the shared preference reader normalizes its value.
     await select(pageA, '#ai-navigator select', 'ps');
@@ -900,7 +901,9 @@ try {
         }
       }
       for (const locale of ['en','fa','ps']) {
-        await visit(memberVisual, '/');
+        // The root URL is always the entrance, not a Navigator-bearing homepage.
+        await visit(memberVisual, `/${locale}`);
+        await until(() => memberVisual.evaluate(`!!document.querySelector('#ai-navigator select')`), 'localized homepage Navigator hydrated', 30000);
         await select(memberVisual, '#ai-navigator select', locale);
         await until(() => memberVisual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)}`), 'Navigator language selected');
         for (const width of widths) {
