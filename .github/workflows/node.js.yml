@@ -50,6 +50,9 @@ jobs:
       - name: Messaging regression tests
         run: node --test tests/*.test.mjs
 
+      - name: SEC-01 scoped RPC contract tests
+        run: node --test tests/security/sec01-rpc-contract.test.mjs
+
       - name: Explicit Data API grant guard
         run: npm run security:migration-grants
 

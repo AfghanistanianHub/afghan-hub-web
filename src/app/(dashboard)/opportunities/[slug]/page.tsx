@@ -54,13 +54,21 @@ export default async function OpportunityPage({
 
   const { data: opportunity, error } = await supabase
     .from("opportunities")
-    .select("*")
+    .select("id,author_id,business_id,organization_id,title,slug,summary,description,type,city,province_state,country,is_remote,external_url,contact_email,deadline,status,created_at,updated_at")
     .eq("slug", slug)
     .single();
 
   if (error || !opportunity) {
     notFound();
   }
+
+  const { data: moderationFeedback } = user && opportunity.status !== "published"
+    ? await supabase.rpc("get_listing_moderation_feedback", {
+        target_entity_type: "opportunity",
+        target_entity_id: opportunity.id,
+      })
+    : { data: null };
+  const moderationNote = moderationFeedback?.[0]?.moderation_note ?? null;
 
   const { data: viewerProfile } = user
     ? await supabase
@@ -134,8 +142,8 @@ export default async function OpportunityPage({
           <div role="status" aria-live="polite" className="rounded-[var(--radius)] border border-accent/50 bg-accent/35 p-4 text-sm leading-6 text-accent-foreground">
             {opportunity.status === "draft" ? (
               <B k="opportunityDetail.draft" />
-            ) : opportunity.moderation_note ? (
-              <B k="opportunityDetail.rejectedReason" values={{ reason: opportunity.moderation_note }} />
+            ) : moderationNote ? (
+              <B k="opportunityDetail.rejectedReason" values={{ reason: moderationNote }} />
             ) : (
               <B k="opportunityDetail.rejected" />
             )}

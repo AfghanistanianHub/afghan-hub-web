@@ -814,6 +814,28 @@ export type Database = {
     }
     Functions: {
       can_moderate: { Args: never; Returns: boolean }
+      list_moderation_history: {
+        Args: never
+        Returns: {
+          entity_type: string
+          entity_id: string
+          title: string
+          slug: string
+          status: string
+          moderation_note: string | null
+          moderated_at: string
+        }[]
+      }
+      get_listing_moderation_feedback: {
+        Args: { target_entity_type: string; target_entity_id: string }
+        Returns: {
+          entity_type: string
+          entity_id: string
+          moderation_note: string | null
+          moderated_at: string | null
+          moderated_by: string | null
+        }[]
+      }
       get_event_rsvp_count: {
         Args: { target_event_id: string }
         Returns: number
