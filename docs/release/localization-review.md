@@ -190,8 +190,9 @@ Fixes made in this pass:
   events, submissions, messaging, moderation and connection flows — but those journeys assert
   English copy on the authenticated surfaces. A signed-in pass that switches each of those
   routes through Farsi and Pashto is still outstanding.
-- Localize the remaining surfaces: the avatar/profile-strength widgets and the remaining
-  dashboard recommendation blocks, all listed as English-only or partial above.
+- Localize the remaining surfaces: 404/error boundaries, the avatar/profile-strength widgets
+  and the remaining dashboard recommendation blocks, all listed as English-only or partial
+  above.
 - Localize the remaining server-side action error strings. Opportunity, moderation, event,
   business, organization, profile and messaging failures now travel as message codes
   (`opportunityFormErrorKey`, `opportunityActionErrorKey`, `moderation.error*`, `team.error*`,
