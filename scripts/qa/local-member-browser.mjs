@@ -903,6 +903,7 @@ try {
       for (const locale of ['en','fa','ps']) {
         // The root URL is always the entrance, not a Navigator-bearing homepage.
         await visit(memberVisual, `/${locale}`);
+        await until(() => memberVisual.evaluate(`!!document.querySelector('#ai-navigator select')`), 'localized homepage Navigator hydrated', 30000);
         await select(memberVisual, '#ai-navigator select', locale);
         await until(() => memberVisual.evaluate(`document.querySelector('#ai-navigator')?.getAttribute('lang')===${JSON.stringify(locale)}`), 'Navigator language selected');
         for (const width of widths) {
