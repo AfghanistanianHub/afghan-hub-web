@@ -11,7 +11,7 @@
 .search:hover { background:var(--secondary); }
 .join { display:inline-flex; align-items:center; justify-content:center; padding:0 21px; min-height:44px; border-radius:var(--radius-control); background:var(--primary); color:white; transition:background 180ms; }
 .join:hover { background:#4d3178; }
-.bar a:focus-visible,.mobile summary:focus-visible { outline:2px solid var(--primary); outline-offset:5px; border-radius:4px; }
+.bar a:focus-visible,.mobile summary:focus-visible { outline:2px solid var(--primary); outline-offset:4px; border-radius:4px; }
 .mobile { display:none; }
 .footer { width:100%; max-width:1320px; margin:auto; padding:30px 36px 22px; border-top:1px solid var(--border); display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; font-size:var(--text-control); line-height:1.5; }
 .footer p { max-width:270px; margin:14px 0 0; color:var(--muted-foreground); }
@@ -19,7 +19,7 @@
 .footer h2 { font:600 12px/1.5 var(--font-geist-sans),sans-serif; margin:0 0 9px; }
 .footer nav a { min-height:var(--control-height); display:flex; align-items:center; color:var(--muted-foreground); }
 .footer a:hover { color:var(--primary); }
-.footer a:focus-visible { outline:2px solid var(--primary); outline-offset:3px; }
+.footer a:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
 .copyright { grid-column:1/-1; margin-top:0 !important; font-size:11px; }
 @media(max-width:1120px) { .bar { gap:12px; padding-inline:24px; } .desktop { gap:2px; } .account { gap:4px; } .brand { font-size:25px; } }
 @media(max-width:960px) {
@@ -58,7 +58,7 @@
   padding:0 12px 0 34px;
   background-position:left 12px center;
 }
-.languageControl select:focus-visible { outline:2px solid var(--primary); outline-offset:3px; }
+.languageControl select:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
 .languageControl option[lang="fa"],.languageControl option[lang="ps"] { font-family:var(--font-fa-body); }
 .footer:dir(rtl) nav { align-items:flex-start; text-align:start; }
 .footer:dir(rtl) nav a { text-align:start; }

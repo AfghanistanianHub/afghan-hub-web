@@ -19,7 +19,7 @@
 .description { margin-top:5px; font-size:11px; line-height:1.45; color:#615b6e; max-width:110px; }
 .node:hover .icon,.node:focus-visible .icon { background:#f1e8f9; box-shadow:0 0 0 5px #6242910b; transform:translateY(-2px); }
 .node:hover .label,.node:focus-visible .label { color:var(--primary); }
-.node:focus-visible { outline:2px solid var(--primary); outline-offset:3px; }
+.node:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
 .node:active .icon { transform:translateY(0); }
 .network:has(.node:hover) .branch,.network:has(.node:focus-visible) .branch { opacity:.3; }
 .network:has(.node.people:is(:hover,:focus-visible)) .branch.people,
