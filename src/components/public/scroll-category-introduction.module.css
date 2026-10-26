@@ -18,7 +18,7 @@
 .section[data-reveal="true"] .category[data-reveal-visible="false"] { pointer-events:none; }
 .category:hover .title { color:var(--primary); }
 .section[data-reveal="true"] .category:focus-visible { opacity:1; transform:none; pointer-events:auto; }
-.category:focus-visible { outline:2px solid var(--primary); outline-offset:6px; }
+.category:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
 @media(max-width:599px) {
   .section { margin:32px 0; }
   .stage { padding-left:20px; }

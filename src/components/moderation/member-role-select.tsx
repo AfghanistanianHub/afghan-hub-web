@@ -16,7 +16,7 @@ export function MemberRoleSelect({ defaultValue }: { defaultValue: string }) {
       <select
         name="role"
         defaultValue={defaultValue}
-        className="min-h-11 rounded-[var(--radius-control)] border border-input bg-card px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+        className="min-h-11 rounded-[var(--radius-control)] border border-input bg-card px-3 py-2.5 text-sm text-foreground transition focus:border-primary focus:ring-4 focus:ring-primary/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
         <option value="member">{t("team.roleMember")}</option>
         <option value="moderator">{t("team.roleModerator")}</option>

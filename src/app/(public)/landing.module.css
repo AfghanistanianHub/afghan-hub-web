@@ -1,7 +1,7 @@
 .page { max-width:1320px; width:100%; margin:auto; padding:0 36px 24px; color:#19152b; }
 .page h2 { font:28px/1.14 Georgia,'Times New Roman',serif; letter-spacing:-.8px; }
 .page p { color:#615b6e; }
-.page a:focus-visible { outline:2px solid var(--primary); outline-offset:5px; border-radius:4px; }
+.page a:focus-visible { outline:2px solid var(--primary); outline-offset:4px; border-radius:4px; }
 .hero { display:grid; grid-template-columns:1fr 1.08fr; gap:14px; align-items:center; margin:0 -12px 0 0; min-height:420px; }
 .statement { position:relative; z-index:1; padding:30px 0 40px; animation:reveal 550ms both; }
 .eyebrow { display:flex; align-items:center; gap:12px; color:#615b6e; font-size:10px; letter-spacing:.05em; margin:0 0 24px; }

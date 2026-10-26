@@ -82,7 +82,7 @@ export function EventDateTimePicker({
     : resolvedLabel;
 
   const fieldClass =
-    "w-full rounded-[var(--radius)] border border-input bg-background px-3 py-3 text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/20";
+    "w-full rounded-[var(--radius)] border border-input bg-background px-3 py-3 text-foreground transition focus:border-primary focus:ring-2 focus:ring-ring/20";
 
   return (
     <div className={styles.root} onKeyDown={(event) => {
@@ -102,7 +102,7 @@ export function EventDateTimePicker({
         aria-expanded={isOpen}
         aria-controls={isOpen ? panelId : undefined}
         aria-haspopup="dialog"
-        className={`${styles.trigger} flex w-full items-center justify-between rounded-[var(--radius)] border border-input bg-background px-4 py-3 text-left text-foreground outline-none transition hover:border-primary/50 hover:bg-muted/40 focus:border-primary focus:ring-2 focus:ring-ring/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
+        className={`${styles.trigger} flex w-full items-center justify-between rounded-[var(--radius)] border border-input bg-background px-4 py-3 text-left text-foreground transition hover:border-primary/50 hover:bg-muted/40 focus:border-primary focus:ring-2 focus:ring-ring/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
       >
         <span className={selectedDate && hour && minute ? "text-foreground" : "text-muted-foreground"}>
           {displayValue}
