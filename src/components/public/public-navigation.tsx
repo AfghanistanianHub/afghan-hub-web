@@ -31,7 +31,7 @@ export function PublicNavigation() {
       <nav className={styles.desktop} aria-label={copy.navigation}>{links}</nav>
       <div className={styles.account}>
         {languageSelector}
-        <Link href="/#ai-navigator" aria-label={language === "en" ? "Search with the Afghan Hub Navigator" : language === "fa" ? "جست‌وجو با راهنمای افغان هاب" : "د افغان هب له لارښود سره لټون"} className={styles.search}><Search size={19} aria-hidden="true" /></Link>
+        <Link href={`/${language}#ai-navigator`} aria-label={language === "en" ? "Search with the Afghan Hub Navigator" : language === "fa" ? "جست‌وجو با راهنمای افغان هاب" : "د افغان هب له لارښود سره لټون"} className={styles.search}><Search size={19} aria-hidden="true" /></Link>
         <Link href="/login" className={styles.signIn}>{copy.signIn}</Link>
         <Link href="/login?mode=join" className={styles.join}>{copy.getStarted}</Link>
       </div>
@@ -39,7 +39,7 @@ export function PublicNavigation() {
         if (event.key === "Escape") { close(); menu.current?.querySelector("summary")?.focus(); }
       }}>
         <summary aria-label={copy.navigation}><Menu size={22} aria-hidden="true" /></summary>
-        <nav aria-label={copy.navigation}>{links}<Link href="/#ai-navigator" onClick={close}>{language === "en" ? "Search with Navigator" : language === "fa" ? "جست‌وجو با راهنما" : "د لارښود له لارې لټون"}</Link><Link href="/login" onClick={close}>{copy.signIn}</Link><Link href="/login?mode=join" onClick={close}>{copy.getStarted}</Link></nav>
+        <nav aria-label={copy.navigation}>{links}<Link href={`/${language}#ai-navigator`} onClick={close}>{language === "en" ? "Search with Navigator" : language === "fa" ? "جست‌وجو با راهنما" : "د لارښود له لارې لټون"}</Link><Link href="/login" onClick={close}>{copy.signIn}</Link><Link href="/login?mode=join" onClick={close}>{copy.getStarted}</Link></nav>
       </details>
     </div>
   </header>;
