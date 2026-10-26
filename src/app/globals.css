@@ -104,7 +104,9 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    /* Focus rings are the same colour as this default, so a focused control
+       does not animate its outline from half strength into full strength. */
+    @apply border-border outline-ring;
   }
 
   html {
