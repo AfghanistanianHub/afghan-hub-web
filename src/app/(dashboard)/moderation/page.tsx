@@ -163,30 +163,58 @@ export default async function ModerationPage({
       .order("created_at", { ascending: true }),
     supabase
       .from("opportunities")
-      .select("id,title,slug,status,moderation_note,moderated_at")
+      .select("id,title,slug,status,moderated_at")
       .not("moderated_at", "is", null)
       .order("moderated_at", { ascending: false })
       .limit(20),
     supabase
       .from("events")
-      .select("id,title,slug,status,moderation_note,moderated_at")
+      .select("id,title,slug,status,moderated_at")
       .not("moderated_at", "is", null)
       .order("moderated_at", { ascending: false })
       .limit(20),
     supabase
       .from("businesses")
-      .select("id,name,slug,status,moderation_note,moderated_at")
+      .select("id,name,slug,status,moderated_at")
       .not("moderated_at", "is", null)
       .order("moderated_at", { ascending: false })
       .limit(20),
     supabase
       .from("organizations")
-      .select("id,name,slug,status,moderation_note,moderated_at")
+      .select("id,name,slug,status,moderated_at")
       .not("moderated_at", "is", null)
       .order("moderated_at", { ascending: false })
       .limit(20),
   ]);
 
+  // Privileged review metadata is read via the reviewer-scoped RPC, never directly
+  // from public listing projections. Keep the per-category query order intact.
+  async function hydrateReviewFeedback<T extends { id: string; moderated_at: string | null }>(
+    entityType: "opportunity" | "event" | "business" | "organization",
+    entries: T[] | null,
+  ) {
+    return Promise.all((entries ?? []).map(async (entry) => {
+      const { data, error } = await supabase.rpc("get_listing_moderation_feedback", {
+        target_entity_type: entityType,
+        target_entity_id: entry.id,
+      });
+      return {
+        ...entry,
+        moderation_note: error ? null : data?.[0]?.moderation_note ?? null,
+      };
+    }));
+  }
+  const [
+    historyOpportunities,
+    historyEvents,
+    historyBusinesses,
+    historyOrganizations,
+  ] = await Promise.all([
+    hydrateReviewFeedback("opportunity", moderatedOpportunities),
+    hydrateReviewFeedback("event", moderatedEvents),
+    hydrateReviewFeedback("business", moderatedBusinesses),
+    hydrateReviewFeedback("organization", moderatedOrganizations),
+  ]);
   const pendingCount =
     (opportunities?.length ?? 0) +
     (events?.length ?? 0) +
@@ -194,7 +222,7 @@ export default async function ModerationPage({
     (organizations?.length ?? 0);
 
   const history: HistoryItem[] = [
-    ...(moderatedOpportunities ?? [])
+    ...(historyOpportunities ?? [])
       .filter(
         (item): item is typeof item & { moderated_at: string } =>
           Boolean(item.moderated_at),
@@ -208,7 +236,7 @@ export default async function ModerationPage({
         moderationNote: item.moderation_note,
         moderatedAt: item.moderated_at,
       })),
-    ...(moderatedEvents ?? [])
+    ...(historyEvents ?? [])
       .filter(
         (item): item is typeof item & { moderated_at: string } =>
           Boolean(item.moderated_at),
@@ -222,7 +250,7 @@ export default async function ModerationPage({
         moderationNote: item.moderation_note,
         moderatedAt: item.moderated_at,
       })),
-    ...(moderatedBusinesses ?? [])
+    ...(historyBusinesses ?? [])
       .filter(
         (item): item is typeof item & { moderated_at: string } =>
           Boolean(item.moderated_at),
@@ -236,7 +264,7 @@ export default async function ModerationPage({
         moderationNote: item.moderation_note,
         moderatedAt: item.moderated_at,
       })),
-    ...(moderatedOrganizations ?? [])
+    ...(historyOrganizations ?? [])
       .filter(
         (item): item is typeof item & { moderated_at: string } =>
           Boolean(item.moderated_at),
