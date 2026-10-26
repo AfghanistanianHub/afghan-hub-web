@@ -53,7 +53,7 @@ export function LocalizedForgotPasswordContent({ error, message }: { error?: str
           <form action={requestPasswordReset} className="mt-7 space-y-5">
             <div>
               <label htmlFor="email" className="mb-2 block text-sm font-medium">{copy.email}</label>
-              <input id="email" name="email" type="email" required autoComplete="email" dir="ltr" placeholder="you@example.com" className="w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10" />
+              <input id="email" name="email" type="email" required autoComplete="email" dir="ltr" placeholder="you@example.com" className="w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 text-foreground transition placeholder:text-muted-foreground focus:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
             </div>
             <SubmitButton pendingLabel={copy.pending}>{copy.send}</SubmitButton>
           </form>

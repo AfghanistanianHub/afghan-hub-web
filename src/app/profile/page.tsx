@@ -45,7 +45,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
     .maybeSingle();
 
   const fieldClassName =
-    `${styles.search} mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10`;
+    `${styles.search} mt-2 w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 text-foreground transition placeholder:text-muted-foreground focus:border-primary`;
   const displayName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ");
   const location = [profile?.city, profile?.province_state, profile?.country].filter(Boolean).join(", ");
   const hasProfessionalDetails = Boolean(profile?.headline || profile?.profession || profile?.company);

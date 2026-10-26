@@ -56,7 +56,7 @@ export function DeadlinePicker({
         aria-controls={isOpen ? panelId : undefined}
         aria-haspopup="dialog"
         lang={language}
-        className={`${styles.trigger} flex w-full items-center justify-between rounded-[var(--radius)] border border-input bg-background px-4 py-3 text-start outline-none transition hover:border-primary/35 focus:border-primary focus:ring-2 focus:ring-ring/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
+        className={`${styles.trigger} flex w-full items-center justify-between rounded-[var(--radius)] border border-input bg-background px-4 py-3 text-start transition hover:border-primary/35 focus:border-primary focus:ring-2 focus:ring-ring/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`}
       >
         <span className={selectedDate ? "text-foreground" : "text-muted-foreground"}>
           {selectedDate

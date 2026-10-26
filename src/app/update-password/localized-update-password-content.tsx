@@ -32,7 +32,7 @@ const errors: Record<string, Partial<Record<SiteLanguage, string>>> = {
 export function LocalizedUpdatePasswordContent({ error }: { error?: string }) {
   const language = useSyncExternalStore(subscribeSiteLanguagePreference, readSiteLanguagePreference, (): SiteLanguage => "en");
   const t = copy[language];
-  const fieldClassName = "w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10";
+  const fieldClassName = "w-full rounded-[var(--radius-control)] border border-input bg-background px-4 py-3 text-foreground transition placeholder:text-muted-foreground focus:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
   return (
     <main id="main-content" lang={language} dir={language === "en" ? "ltr" : "rtl"} className="auth-page min-h-screen text-foreground">
       <AuthBrand />
