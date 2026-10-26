@@ -136,10 +136,6 @@ export default async function ModerationPage({
     { data: events },
     { data: businesses },
     { data: organizations },
-    { data: moderatedOpportunities },
-    { data: moderatedEvents },
-    { data: moderatedBusinesses },
-    { data: moderatedOrganizations },
   ] = await Promise.all([
     supabase
       .from("opportunities")
@@ -161,130 +157,29 @@ export default async function ModerationPage({
       .select("id,name,slug,short_description,organization_type,created_at")
       .eq("status", "draft")
       .order("created_at", { ascending: true }),
-    supabase
-      .from("opportunities")
-      .select("id,title,slug,status,moderated_at")
-      .not("moderated_at", "is", null)
-      .order("moderated_at", { ascending: false })
-      .limit(20),
-    supabase
-      .from("events")
-      .select("id,title,slug,status,moderated_at")
-      .not("moderated_at", "is", null)
-      .order("moderated_at", { ascending: false })
-      .limit(20),
-    supabase
-      .from("businesses")
-      .select("id,name,slug,status,moderated_at")
-      .not("moderated_at", "is", null)
-      .order("moderated_at", { ascending: false })
-      .limit(20),
-    supabase
-      .from("organizations")
-      .select("id,name,slug,status,moderated_at")
-      .not("moderated_at", "is", null)
-      .order("moderated_at", { ascending: false })
-      .limit(20),
   ]);
 
-  // Privileged review metadata is read via the reviewer-scoped RPC, never directly
-  // from public listing projections. Keep the per-category query order intact.
-  async function hydrateReviewFeedback<T extends { id: string; moderated_at: string | null }>(
-    entityType: "opportunity" | "event" | "business" | "organization",
-    entries: T[] | null,
-  ) {
-    return Promise.all((entries ?? []).map(async (entry) => {
-      const { data, error } = await supabase.rpc("get_listing_moderation_feedback", {
-        target_entity_type: entityType,
-        target_entity_id: entry.id,
-      });
-      return {
-        ...entry,
-        moderation_note: error ? null : data?.[0]?.moderation_note ?? null,
-      };
-    }));
+  const { data: moderationHistory, error: historyError } = await supabase.rpc("list_moderation_history");
+  if (historyError) {
+    console.error("Moderation history query failed");
   }
-  const [
-    historyOpportunities,
-    historyEvents,
-    historyBusinesses,
-    historyOrganizations,
-  ] = await Promise.all([
-    hydrateReviewFeedback("opportunity", moderatedOpportunities),
-    hydrateReviewFeedback("event", moderatedEvents),
-    hydrateReviewFeedback("business", moderatedBusinesses),
-    hydrateReviewFeedback("organization", moderatedOrganizations),
-  ]);
   const pendingCount =
     (opportunities?.length ?? 0) +
     (events?.length ?? 0) +
     (businesses?.length ?? 0) +
     (organizations?.length ?? 0);
 
-  const history: HistoryItem[] = [
-    ...(historyOpportunities ?? [])
-      .filter(
-        (item): item is typeof item & { moderated_at: string } =>
-          Boolean(item.moderated_at),
-      )
-      .map((item) => ({
-        id: item.id,
-        entityType: "opportunity" as const,
-        title: item.title,
-        slug: item.slug,
-        status: item.status,
-        moderationNote: item.moderation_note,
-        moderatedAt: item.moderated_at,
-      })),
-    ...(historyEvents ?? [])
-      .filter(
-        (item): item is typeof item & { moderated_at: string } =>
-          Boolean(item.moderated_at),
-      )
-      .map((item) => ({
-        id: item.id,
-        entityType: "event" as const,
-        title: item.title,
-        slug: item.slug,
-        status: item.status,
-        moderationNote: item.moderation_note,
-        moderatedAt: item.moderated_at,
-      })),
-    ...(historyBusinesses ?? [])
-      .filter(
-        (item): item is typeof item & { moderated_at: string } =>
-          Boolean(item.moderated_at),
-      )
-      .map((item) => ({
-        id: item.id,
-        entityType: "business" as const,
-        title: item.name,
-        slug: item.slug,
-        status: item.status,
-        moderationNote: item.moderation_note,
-        moderatedAt: item.moderated_at,
-      })),
-    ...(historyOrganizations ?? [])
-      .filter(
-        (item): item is typeof item & { moderated_at: string } =>
-          Boolean(item.moderated_at),
-      )
-      .map((item) => ({
-        id: item.id,
-        entityType: "organization" as const,
-        title: item.name,
-        slug: item.slug,
-        status: item.status,
-        moderationNote: item.moderation_note,
-        moderatedAt: item.moderated_at,
-      })),
-  ]
-    .sort(
-      (a, b) =>
-        new Date(b.moderatedAt).getTime() -
-        new Date(a.moderatedAt).getTime(),
-    )
-    .slice(0, 40);
+  const history: HistoryItem[] = (moderationHistory ?? [])
+    .filter((item) => Boolean(item.moderated_at))
+    .map((item) => ({
+      id: item.entity_id,
+      entityType: item.entity_type as ModerationEntityType,
+      title: item.title,
+      slug: item.slug,
+      status: item.status,
+      moderationNote: item.moderation_note,
+      moderatedAt: item.moderated_at!,
+    }));
 
   return (
     <main className={catalogPageContainerClass}>
