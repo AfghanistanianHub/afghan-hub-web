@@ -13,6 +13,7 @@ GRANT SELECT (id,owner_id,name,slug,logo_url,cover_url,organization_type,short_d
 DO $assert$ DECLARE t text; c text; role_name text; BEGIN
 FOREACH t IN ARRAY ARRAY['businesses','events','opportunities','organizations'] LOOP
  FOREACH c IN ARRAY ARRAY['moderation_note','moderated_by','moderated_at','search_vector'] LOOP
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name=t AND column_name=c) THEN CONTINUE; END IF;
   FOREACH role_name IN ARRAY ARRAY['anon','authenticated'] LOOP
    IF has_column_privilege(role_name,format('public.%I',t),c,'SELECT') THEN
     RAISE EXCEPTION 'unexpected exposed %.% to %', t,c,role_name;
