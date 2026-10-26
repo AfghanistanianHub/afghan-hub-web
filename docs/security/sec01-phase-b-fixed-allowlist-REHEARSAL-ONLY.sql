@@ -22,5 +22,21 @@ FOREACH t IN ARRAY ARRAY['businesses','events','opportunities','organizations'] 
  END LOOP;
 END LOOP;
 END $assert$;
+DO $dml$ DECLARE t text; r text; BEGIN
+ FOREACH t IN ARRAY ARRAY['businesses','events','opportunities','organizations'] LOOP
+  IF NOT (SELECT relrowsecurity FROM pg_class WHERE oid=format('public.%I',t)::regclass) THEN
+    RAISE EXCEPTION 'RLS disabled for %', t;
+  END IF;
+  FOREACH r IN ARRAY ARRAY['anon','authenticated'] LOOP
+   IF has_table_privilege(r,format('public.%I',t),'SELECT') THEN
+    RAISE EXCEPTION 'table-wide SELECT remains for % on %', r,t;
+   END IF;
+  END LOOP;
+  IF NOT has_table_privilege('authenticated',format('public.%I',t),'INSERT')
+    OR NOT has_table_privilege('authenticated',format('public.%I',t),'UPDATE')
+    OR NOT has_table_privilege('authenticated',format('public.%I',t),'DELETE')
+  THEN RAISE EXCEPTION 'authenticated DML privilege lost on %',t; END IF;
+ END LOOP;
+END $dml$;
 SELECT 'frozen_four_catalog_acl_assertions_passed' AS result;
 ROLLBACK;
