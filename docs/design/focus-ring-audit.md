@@ -71,7 +71,7 @@ Every one of these is the correct colour (primary) at 2px — only the distance 
 
 ### 4. Colour drift
 
-`first-visit-language-gate.module.css` hardcodes `outline: 2px solid #6e3fa0` instead of `var(--primary)`. The two purples differ by 1.06:1 — invisible today, but the ring will not follow a palette change.
+`first-visit-language-gate.module.css` hardcoded `outline: 2px solid #6e3fa0` instead of `var(--primary)`. The two purples differ by 1.06:1 — invisible today, but the ring would not follow a palette change. The language-entrance ring now uses `var(--primary)`; the file's other `#6e3fa0` values are accent text and underline colours, not focus indicators, and were left alone.
 
 ### 5. Deliberate, and correct
 
@@ -84,7 +84,7 @@ Every one of these is the correct colour (primary) at 2px — only the distance 
 1. Give the uncovered fields a real ring: drop `outline-none` and use the pattern the listing forms already achieve — `focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary` inside bordered inputs, keeping the border change for pointer users.
 2. Remove `outline-none` from the three picker components so their existing ring classes start working.
 3. ~~Align or delete `ui/button.tsx` before anything imports it.~~ Deleted; nothing imported it.
-4. Replace `#6e3fa0` with `var(--primary)`.
+4. ~~Replace `#6e3fa0` with `var(--primary)`.~~ Done for the language-entrance focus ring.
 5. Standardise offsets: 4px by default, 2px inside bordered containers, −2px only where a container clips.
 
 ## Method and limits
