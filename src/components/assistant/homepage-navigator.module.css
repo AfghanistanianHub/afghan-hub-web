@@ -10,7 +10,7 @@
 .search { display:flex; align-items:center; gap:12px; border:1px solid var(--input); border-radius:var(--radius-control); padding:5px 5px 5px 16px; min-height:var(--field-height); color:var(--primary); background:var(--background); }
 .search input:disabled { cursor:wait; }
 .search input { min-width:0; width:100%; border:0; outline:0; font-size:1rem; color:var(--foreground); background:transparent; min-height:var(--control-height); }
-.search:focus-within { outline:2px solid var(--primary); outline-offset:3px; }
+.search:focus-within { outline:2px solid var(--primary); outline-offset:4px; }
 .search input::placeholder { color:var(--muted-foreground); opacity:1; }
 .search button { width:44px; height:44px; flex-shrink:0; display:grid; place-items:center; background:var(--primary); color:var(--primary-foreground); border-radius:50%; }
 .entries { display:flex; align-items:stretch; gap:12px; margin-top:22px; }
@@ -34,7 +34,7 @@
 .search { display:flex; align-items:center; gap:12px; border:1px solid var(--input); border-radius:30px; padding:5px 5px 5px 16px; min-height:48px; color:var(--primary); background:var(--card); }
 .search input:disabled { cursor:wait; }
 .search input { min-width:0; width:100%; border:0; outline:0; font-size:16px; color:var(--foreground); background:transparent; min-height:36px; }
-.search:focus-within { outline:2px solid var(--primary); outline-offset:3px; }
+.search:focus-within { outline:2px solid var(--primary); outline-offset:4px; }
 .search input::placeholder { color:var(--muted-foreground); opacity:1; }
 .search button { width:44px; height:44px; flex-shrink:0; display:grid; place-items:center; background:var(--primary); color:white; border-radius:50%; }
 .entries { display:flex; align-items:stretch; gap:12px; margin-top:22px; }

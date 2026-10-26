@@ -56,22 +56,21 @@ The scaffolded `Button` primitive carried `outline-none focus-visible:border-rin
 
 It was imported nowhere (`<Button` appeared only in its own file), so the defect was latent rather than live. Rather than maintain a second, conflicting button style next to the inline class strings the app actually uses, the file was deleted. Reintroducing it would mean porting the shared rule: `focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary`, with no `outline-none`.
 
-### 3. Offset drift
+### 3. Offset drift — **standardised**
 
-Every one of these is the correct colour (primary) at 2px — only the distance varies.
+The distance is now constant: **4px by default, 2px inside a bordered container, −2px only where a scroll container would clip an outer ring.** Every other value was drift and has been folded into the default.
 
 | Offset | Where | Count | Assessment |
 |---|---|---|---|
-| 4px | shared default | 128 TSX usages | baseline |
-| 2px | checkboxes, calendar panel, listing-form inputs, moderation summary, privacy summary | 29 TSX usages + 2 module rules | reasonable for small/contained controls |
-| 3px | public-navigation, living-network, catalog, homepage-navigator search, community-navigator launcher/drawer | 1 TSX + 6 module rules | cosmetic drift |
-| 5px | landing-page links, public-navigation | 2 module rules | deliberate hero emphasis |
-| 6px | scroll-category-introduction | 1 module rule | cosmetic drift |
+| 4px | shared default; every link, button and row on the public and workspace surfaces | 135 TSX + 19 module rules | baseline |
+| 2px | checkboxes, calendar panel, listing-form inputs, moderation summary, privacy summary | 37 TSX + 4 module rules | inside a bordered container, where a 4px ring would sit on the border |
 | −2px (inset) | inbox rows, directory rows, notification bell, event/opportunity lists, `network-surfaces` | 6 TSX + 1 module rule | justified: an outer ring would be clipped by the scroll container |
+
+The old 3px rules (community-navigator launcher and drawer, homepage-navigator search, catalog listing, living-network nodes, public-navigation footer and language select, the contextual assistant prompt), the 5px rules (landing-page links, public-navigation bar) and the 6px scroll-category rule all now use 4px. [focus-ring-offset-standard.test.mjs](../../tests/focus-ring-offset-standard.test.mjs) fails on any other value, and the 5px hero ring is no longer a separate case: one distance reads as one system.
 
 ### 4. Colour drift
 
-`first-visit-language-gate.module.css` hardcodes `outline: 2px solid #6e3fa0` instead of `var(--primary)`. The two purples differ by 1.06:1 — invisible today, but the ring will not follow a palette change.
+`first-visit-language-gate.module.css` hardcoded `outline: 2px solid #6e3fa0` instead of `var(--primary)`. The two purples differ by 1.06:1 — invisible today, but the ring would not follow a palette change. The language-entrance ring now uses `var(--primary)`; the file's other `#6e3fa0` values are accent text and underline colours, not focus indicators, and were left alone.
 
 ### 5. Deliberate, and correct
 
@@ -84,8 +83,8 @@ Every one of these is the correct colour (primary) at 2px — only the distance 
 1. Give the uncovered fields a real ring: drop `outline-none` and use the pattern the listing forms already achieve — `focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary` inside bordered inputs, keeping the border change for pointer users.
 2. Remove `outline-none` from the three picker components so their existing ring classes start working.
 3. ~~Align or delete `ui/button.tsx` before anything imports it.~~ Deleted; nothing imported it.
-4. Replace `#6e3fa0` with `var(--primary)`.
-5. Standardise offsets: 4px by default, 2px inside bordered containers, −2px only where a container clips.
+4. ~~Replace `#6e3fa0` with `var(--primary)`.~~ Done for the language-entrance focus ring.
+5. ~~Standardise offsets: 4px by default, 2px inside bordered containers, −2px only where a container clips.~~ Done; a test guards the values.
 
 ## Method and limits
 

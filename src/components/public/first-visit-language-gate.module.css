@@ -63,7 +63,7 @@
 }
 .language:hover, .language:focus-visible { background: rgba(239,231,247,.45); }
 .language:hover::after, .language:focus-visible::after { transform: scaleX(1); }
-.language:focus-visible { outline: 2px solid #6e3fa0; outline-offset: 4px; }
+.language:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
 .number {
   width: 2em; flex: none; font-family: Georgia, serif;
   font-size: 15px; font-style: italic; color: #a45031;

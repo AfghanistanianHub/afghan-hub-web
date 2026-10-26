@@ -3,7 +3,7 @@
 @media(min-width:1280px) { .launcherLabel { display:inline; } }
 .launcher:hover { border-color:color-mix(in srgb,var(--primary) 48%,var(--border)); background:var(--secondary); color:var(--primary); box-shadow:0 7px 20px rgb(98 66 145 / .1); }
 .launcher:active { box-shadow:inset 0 2px 4px #302b3520; }
-.launcher:focus-visible, .drawer button:focus-visible, .drawer a:focus-visible { outline:2px solid var(--primary); outline-offset:3px; }
+.launcher:focus-visible, .drawer button:focus-visible, .drawer a:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
 
 .drawer { position:fixed; inset:0 0 0 auto; margin:0; padding:0; width:min(720px,100%); max-width:100%; height:100dvh; max-height:100dvh; border:0; border-inline-start:1px solid color-mix(in srgb,var(--border) 82%,var(--foreground)); background:var(--background); color:var(--foreground); box-shadow:-24px 0 70px rgb(47 42 52 / .16); }
 .drawer[open] { display:flex; flex-direction:column; }
