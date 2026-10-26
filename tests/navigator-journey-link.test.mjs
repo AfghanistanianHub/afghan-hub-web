@@ -13,7 +13,7 @@ function fixture(present, reduced=false) {
 }
 test('cross-page journey keeps native homepage navigation and modified clicks',()=>{
  for(const present of [false,true])for(const modifiers of present?[{ctrlKey:true},{metaKey:true},{shiftKey:true},{altKey:true}]:[{}]){
-  const {link,events}=fixture(present);link.props.onClick({...modifiers,preventDefault:()=>assert.fail('Native navigation must continue')});assert.equal(events.length,0);assert.equal(link.props.href,'/?journey=Artists%20%26%20Creatives#ai-navigator');
+  const {link,events}=fixture(present);link.props.onClick({...modifiers,preventDefault:()=>assert.fail('Native navigation must continue')});assert.equal(events.length,0);assert.equal(link.props.href,'/en?journey=Artists%20%26%20Creatives#ai-navigator');
  }
 });
 test('mounted journey dispatches context once and respects reduced motion',()=>{
