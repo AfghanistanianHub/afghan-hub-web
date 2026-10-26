@@ -136,10 +136,6 @@ export default async function ModerationPage({
     { data: events },
     { data: businesses },
     { data: organizations },
-    { data: moderatedOpportunities },
-    { data: moderatedEvents },
-    { data: moderatedBusinesses },
-    { data: moderatedOrganizations },
   ] = await Promise.all([
     supabase
       .from("opportunities")
@@ -161,30 +157,6 @@ export default async function ModerationPage({
       .select("id,name,slug,short_description,organization_type,created_at")
       .eq("status", "draft")
       .order("created_at", { ascending: true }),
-    supabase
-      .from("opportunities")
-      .select("id,title,slug,status,moderation_note,moderated_at")
-      .not("moderated_at", "is", null)
-      .order("moderated_at", { ascending: false })
-      .limit(20),
-    supabase
-      .from("events")
-      .select("id,title,slug,status,moderation_note,moderated_at")
-      .not("moderated_at", "is", null)
-      .order("moderated_at", { ascending: false })
-      .limit(20),
-    supabase
-      .from("businesses")
-      .select("id,name,slug,status,moderation_note,moderated_at")
-      .not("moderated_at", "is", null)
-      .order("moderated_at", { ascending: false })
-      .limit(20),
-    supabase
-      .from("organizations")
-      .select("id,name,slug,status,moderation_note,moderated_at")
-      .not("moderated_at", "is", null)
-      .order("moderated_at", { ascending: false })
-      .limit(20),
   ]);
 
   const pendingCount =
@@ -193,70 +165,20 @@ export default async function ModerationPage({
     (businesses?.length ?? 0) +
     (organizations?.length ?? 0);
 
-  const history: HistoryItem[] = [
-    ...(moderatedOpportunities ?? [])
-      .filter(
-        (item): item is typeof item & { moderated_at: string } =>
-          Boolean(item.moderated_at),
-      )
-      .map((item) => ({
-        id: item.id,
-        entityType: "opportunity" as const,
-        title: item.title,
-        slug: item.slug,
-        status: item.status,
-        moderationNote: item.moderation_note,
-        moderatedAt: item.moderated_at,
-      })),
-    ...(moderatedEvents ?? [])
-      .filter(
-        (item): item is typeof item & { moderated_at: string } =>
-          Boolean(item.moderated_at),
-      )
-      .map((item) => ({
-        id: item.id,
-        entityType: "event" as const,
-        title: item.title,
-        slug: item.slug,
-        status: item.status,
-        moderationNote: item.moderation_note,
-        moderatedAt: item.moderated_at,
-      })),
-    ...(moderatedBusinesses ?? [])
-      .filter(
-        (item): item is typeof item & { moderated_at: string } =>
-          Boolean(item.moderated_at),
-      )
-      .map((item) => ({
-        id: item.id,
-        entityType: "business" as const,
-        title: item.name,
-        slug: item.slug,
-        status: item.status,
-        moderationNote: item.moderation_note,
-        moderatedAt: item.moderated_at,
-      })),
-    ...(moderatedOrganizations ?? [])
-      .filter(
-        (item): item is typeof item & { moderated_at: string } =>
-          Boolean(item.moderated_at),
-      )
-      .map((item) => ({
-        id: item.id,
-        entityType: "organization" as const,
-        title: item.name,
-        slug: item.slug,
-        status: item.status,
-        moderationNote: item.moderation_note,
-        moderatedAt: item.moderated_at,
-      })),
-  ]
-    .sort(
-      (a, b) =>
-        new Date(b.moderatedAt).getTime() -
-        new Date(a.moderatedAt).getTime(),
-    )
-    .slice(0, 40);
+  const { data: moderationHistory, error: historyError } = await supabase.rpc("get_moderation_history", { target_limit: 40 });
+  if (historyError) {
+    // Fail closed: do not fall back to direct table-level moderation columns.
+    throw new Error("Moderation history could not be loaded");
+  }
+  const history: HistoryItem[] = (moderationHistory ?? []).map((item) => ({
+    id: item.entity_id,
+    entityType: item.entity_type as ModerationEntityType,
+    title: item.title,
+    slug: item.entity_slug,
+    status: item.status,
+    moderationNote: item.moderation_note,
+    moderatedAt: item.moderated_at,
+  }));
 
   return (
     <main className={catalogPageContainerClass}>

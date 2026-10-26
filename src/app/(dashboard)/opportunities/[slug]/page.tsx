@@ -54,7 +54,7 @@ export default async function OpportunityPage({
 
   const { data: opportunity, error } = await supabase
     .from("opportunities")
-    .select("*")
+    .select("author_id,business_id,city,contact_email,country,created_at,deadline,description,external_url,id,is_remote,organization_id,province_state,slug,status,summary,title,type,updated_at")
     .eq("slug", slug)
     .single();
 
@@ -73,6 +73,10 @@ export default async function OpportunityPage({
   const canModerate =
     viewerProfile?.role === "admin" || viewerProfile?.role === "moderator";
   const isOwner = user?.id === opportunity.author_id;
+  const { data: ownerModerationNote } = user?.id === opportunity.author_id && opportunity.status !== "published"
+    ? await supabase.rpc("get_owned_listing_moderation_note", { target_entity_type: "opportunity", target_entity_id: opportunity.id })
+    : { data: null };
+
 
   if (opportunity.status !== "published" && !isOwner && !canModerate) {
     notFound();
@@ -134,8 +138,8 @@ export default async function OpportunityPage({
           <div role="status" aria-live="polite" className="rounded-[var(--radius)] border border-accent/50 bg-accent/35 p-4 text-sm leading-6 text-accent-foreground">
             {opportunity.status === "draft" ? (
               <B k="opportunityDetail.draft" />
-            ) : opportunity.moderation_note ? (
-              <B k="opportunityDetail.rejectedReason" values={{ reason: opportunity.moderation_note }} />
+            ) : ownerModerationNote ? (
+              <B k="opportunityDetail.rejectedReason" values={{ reason: ownerModerationNote }} />
             ) : (
               <B k="opportunityDetail.rejected" />
             )}

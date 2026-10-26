@@ -23,10 +23,11 @@ import { cleanPublicText } from "@/lib/public-content";
 type BusinessPageProps={params:Promise<{slug:string}>;searchParams:Promise<{error?:string}>};
 export default async function BusinessPage({params,searchParams}:BusinessPageProps){
  const {slug}=await params; const {error:actionError}=await searchParams; const supabase=await createClient();
- const {data:business,error}=await supabase.from("businesses").select(`id,name,slug,category,short_description,description,services,website_url,email,phone,address_line,city,province_state,country,logo_url,cover_url,is_verified,is_hiring,status,moderation_note,owner_id`).eq("slug",slug).maybeSingle();
+ const {data:business,error}=await supabase.from("businesses").select(`id,name,slug,category,short_description,description,services,website_url,email,phone,address_line,city,province_state,country,logo_url,cover_url,is_verified,is_hiring,status,owner_id`).eq("slug",slug).maybeSingle();
  if(error||!business)notFound();
  const {data:{user}}=await supabase.auth.getUser();
  const {data:viewerProfile}=user?await getMyAccessContext(supabase,user.id):{data:null};
+ const {data: ownerModerationNote}=user?.id===business.owner_id && business.status!=="published" ? await supabase.rpc("get_owned_listing_moderation_note",{target_entity_type:"business",target_entity_id:business.id}) : {data:null};
  const canEdit=user?.id===business.owner_id; const canVerify=viewerProfile?.role==="admin"&&business.status==="published";
  // Placeholder copy such as "N/A" is not listing content; hide it rather than render it.
  const shortDescription=cleanPublicText(business.short_description); const aboutText=cleanPublicText(business.description);
@@ -35,7 +36,7 @@ export default async function BusinessPage({params,searchParams}:BusinessPagePro
  return <main data-illustration-focus-scope className="px-4 py-8 md:px-8"><div className="mx-auto max-w-6xl">
   <Link href="/businesses" className="inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-medium text-primary transition hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"><ArrowLeft aria-hidden="true" className="size-4 rtl:rotate-180"/><B k="detail.backToBusinesses" /></Link>
   {actionError?<div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"><B k={verificationActionErrorKey(actionError)} /></div>:null}
-  {business.status!=="published"?<div role="status" aria-live="polite" className="mt-6 rounded-[var(--radius)] border border-accent/50 bg-accent/40 p-4 text-sm leading-6 text-accent-foreground">{business.status==="draft"?<B k="businessDetail.draft" />:business.moderation_note?<B k="businessDetail.rejectedReason" values={{reason:business.moderation_note}} />:<B k="businessDetail.rejected" />}</div>:null}
+  {business.status!=="published"?<div role="status" aria-live="polite" className="mt-6 rounded-[var(--radius)] border border-accent/50 bg-accent/40 p-4 text-sm leading-6 text-accent-foreground">{business.status==="draft"?<B k="businessDetail.draft" />:ownerModerationNote?<B k="businessDetail.rejectedReason" values={{reason:ownerModerationNote}} />:<B k="businessDetail.rejected" />}</div>:null}
 
   <section data-illustration-trigger className="relative mt-6 overflow-hidden rounded-sm border border-border bg-card">
    <div className="relative">{business.cover_url?<ExternalImage src={business.cover_url} alt="" width={1200} height={400} className="h-44 w-full object-cover md:h-64"/>:<MemberListingArtwork kind="businesses" />}<div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-card/70 to-transparent"/></div>

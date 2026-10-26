@@ -23,17 +23,18 @@ import { createClient } from "@/lib/supabase/server";
 type OrganizationPageProps={params:Promise<{slug:string}>;searchParams:Promise<{error?:string}>};
 export default async function OrganizationPage({params,searchParams}:OrganizationPageProps){
  const {slug}=await params; const {error:actionError}=await searchParams; const supabase=await createClient();
- const {data:organization,error}=await supabase.from("organizations").select(`id,name,slug,short_description,description,organization_type,mission,programs,website_url,email,phone,city,province_state,country,logo_url,cover_url,is_verified,is_accepting_volunteers,status,moderation_note,owner_id`).eq("slug",slug).maybeSingle();
+ const {data:organization,error}=await supabase.from("organizations").select(`id,name,slug,short_description,description,organization_type,mission,programs,website_url,email,phone,city,province_state,country,logo_url,cover_url,is_verified,is_accepting_volunteers,status,owner_id`).eq("slug",slug).maybeSingle();
  if(error||!organization)notFound();
  const {data:{user}}=await supabase.auth.getUser();
  const {data:viewerProfile}=user?await getMyAccessContext(supabase,user.id):{data:null};
+ const {data: ownerModerationNote}=user?.id===organization.owner_id && organization.status!=="published" ? await supabase.rpc("get_owned_listing_moderation_note",{target_entity_type:"organization",target_entity_id:organization.id}) : {data:null};
  const canEdit=user?.id===organization.owner_id; const canVerify=viewerProfile?.role==="admin"&&organization.status==="published";
  const programs=Array.isArray(organization.programs)?organization.programs.filter((program:unknown):program is string=>typeof program==="string"):[];
  const location=[organization.city,organization.province_state,organization.country].filter(Boolean).join(", ");
  return <main data-illustration-focus-scope className="px-4 py-8 md:px-8"><div className="mx-auto max-w-6xl">
   <Link href="/organizations" className="inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-medium text-primary transition hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"><ArrowLeft aria-hidden="true" className="size-4 rtl:rotate-180"/><B k="detail.backToOrganizations" /></Link>
   {actionError?<div role="alert" aria-live="assertive" className="mt-6 rounded-[var(--radius)] border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"><B k={verificationActionErrorKey(actionError)} /></div>:null}
-  {organization.status!=="published"?<div role="status" aria-live="polite" className="mt-6 rounded-[var(--radius)] border border-accent/50 bg-accent/40 p-4 text-sm leading-6 text-accent-foreground">{organization.status==="draft"?<B k="organizationDetail.draft" />:organization.moderation_note?<B k="organizationDetail.rejectedReason" values={{reason:organization.moderation_note}} />:<B k="organizationDetail.rejected" />}</div>:null}
+  {organization.status!=="published"?<div role="status" aria-live="polite" className="mt-6 rounded-[var(--radius)] border border-accent/50 bg-accent/40 p-4 text-sm leading-6 text-accent-foreground">{organization.status==="draft"?<B k="organizationDetail.draft" />:ownerModerationNote?<B k="organizationDetail.rejectedReason" values={{reason:ownerModerationNote}} />:<B k="organizationDetail.rejected" />}</div>:null}
 
   <section data-illustration-trigger className="relative mt-6 overflow-hidden rounded-sm border border-border bg-card">
    <div className="relative">{organization.cover_url?<ExternalImage src={organization.cover_url} alt="" width={1200} height={400} className="h-44 w-full object-cover md:h-64"/>:<MemberListingArtwork kind="organizations" />}<div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-card/70 to-transparent"/></div>

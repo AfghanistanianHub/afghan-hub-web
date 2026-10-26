@@ -40,18 +40,33 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
     { data: businesses, error: businessesError },
     { data: organizations, error: organizationsError },
   ] = await Promise.all([
-    supabase.from("opportunities").select("id,title,slug,summary,type,status,deadline,moderation_note,created_at,updated_at").eq("author_id", user.id).order("updated_at", { ascending: false }),
-    supabase.from("events").select("id,title,slug,summary,status,moderation_note,starts_at,created_at,updated_at").eq("creator_id", user.id).order("updated_at", { ascending: false }),
-    supabase.from("businesses").select("id,name,slug,short_description,category,status,moderation_note,updated_at").eq("owner_id", user.id).order("updated_at", { ascending: false }),
-    supabase.from("organizations").select("id,name,slug,short_description,organization_type,status,moderation_note,updated_at").eq("owner_id", user.id).order("updated_at", { ascending: false }),
+    supabase.from("opportunities").select("id,title,slug,summary,type,status,deadline,created_at,updated_at").eq("author_id", user.id).order("updated_at", { ascending: false }),
+    supabase.from("events").select("id,title,slug,summary,status,starts_at,created_at,updated_at").eq("creator_id", user.id).order("updated_at", { ascending: false }),
+    supabase.from("businesses").select("id,name,slug,short_description,category,status,updated_at").eq("owner_id", user.id).order("updated_at", { ascending: false }),
+    supabase.from("organizations").select("id,name,slug,short_description,organization_type,status,updated_at").eq("owner_id", user.id).order("updated_at", { ascending: false }),
   ]);
+  // Scoped RPC prevents unrelated members from reading moderation feedback.
+  const ownerNoteTargets = [
+    ...(opportunities ?? []).filter((item) => item.status !== "published" && item.status !== "draft").map((item) => ({ entityType: "opportunity", id: item.id })),
+    ...(events ?? []).filter((item) => item.status !== "published" && item.status !== "draft").map((item) => ({ entityType: "event", id: item.id })),
+    ...(businesses ?? []).filter((item) => item.status !== "published" && item.status !== "draft").map((item) => ({ entityType: "business", id: item.id })),
+    ...(organizations ?? []).filter((item) => item.status !== "published" && item.status !== "draft").map((item) => ({ entityType: "organization", id: item.id })),
+  ];
+  const ownerNotes = await Promise.all(ownerNoteTargets.map(async (item) => {
+    const { data, error } = await supabase.rpc("get_owned_listing_moderation_note", {
+      target_entity_type: item.entityType, target_entity_id: item.id,
+    });
+    if (error) throw new Error("Owner moderation feedback could not be loaded");
+    return { key: `${item.entityType}:${item.id}`, note: data };
+  }));
+  const moderationNotes = new Map(ownerNotes.map((item) => [item.key, item.note]));
   const errors = { Opportunities: opportunitiesError, Businesses: businessesError, Organizations: organizationsError, Events: eventsError };
   const hasError = Object.values(errors).some(Boolean);
   const submissions = [
-    ...(opportunities ?? []).map((item) => ({ id: item.id, title: item.title, category: "Opportunities", type: "Opportunity", path: `/opportunities/${item.slug}`, updatedAt: item.updated_at, status: item.status === "published" && hasOpportunityDeadlinePassed(item.deadline, today) ? "expired" : item.status, moderationNote: item.moderation_note })),
-    ...(businesses ?? []).map((item) => ({ id: item.id, title: item.name, category: "Businesses", type: "Business", path: `/businesses/${item.slug}`, updatedAt: item.updated_at, status: item.status, moderationNote: item.moderation_note })),
-    ...(organizations ?? []).map((item) => ({ id: item.id, title: item.name, category: "Organizations", type: "Organization", path: `/organizations/${item.slug}`, updatedAt: item.updated_at, status: item.status, moderationNote: item.moderation_note })),
-    ...(events ?? []).map((item) => ({ id: item.id, title: item.title, category: "Events", type: "Event", path: `/events/${item.slug}`, updatedAt: item.updated_at, status: item.status, moderationNote: item.moderation_note })),
+    ...(opportunities ?? []).map((item) => ({ id: item.id, title: item.title, category: "Opportunities", type: "Opportunity", path: `/opportunities/${item.slug}`, updatedAt: item.updated_at, status: item.status === "published" && hasOpportunityDeadlinePassed(item.deadline, today) ? "expired" : item.status, moderationNote: moderationNotes.get(`opportunity:${item.id}`) ?? null })),
+    ...(businesses ?? []).map((item) => ({ id: item.id, title: item.name, category: "Businesses", type: "Business", path: `/businesses/${item.slug}`, updatedAt: item.updated_at, status: item.status, moderationNote: moderationNotes.get(`business:${item.id}`) ?? null })),
+    ...(organizations ?? []).map((item) => ({ id: item.id, title: item.name, category: "Organizations", type: "Organization", path: `/organizations/${item.slug}`, updatedAt: item.updated_at, status: item.status, moderationNote: moderationNotes.get(`organization:${item.id}`) ?? null })),
+    ...(events ?? []).map((item) => ({ id: item.id, title: item.title, category: "Events", type: "Event", path: `/events/${item.slug}`, updatedAt: item.updated_at, status: item.status, moderationNote: moderationNotes.get(`event:${item.id}`) ?? null })),
   ].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   const visible = submissions.filter((item) => selected === "All" || item.category === selected);
   const selectedFailed = selected !== "All" && Boolean(errors[selected]);
