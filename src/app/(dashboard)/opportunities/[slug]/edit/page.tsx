@@ -54,7 +54,7 @@ export default async function EditOpportunityPage({
 
   const { data: opportunity } = await supabase
     .from("opportunities")
-    .select("*")
+    .select("author_id,business_id,city,contact_email,country,created_at,deadline,description,external_url,id,is_remote,organization_id,province_state,slug,status,summary,title,type,updated_at")
     .eq("slug", slug)
     .eq("author_id", user.id)
     .maybeSingle();
