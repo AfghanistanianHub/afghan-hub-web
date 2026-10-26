@@ -28,8 +28,16 @@ export default async function EventPage({ params, searchParams }: Props) {
   const [{ slug }, { rsvp, error: actionError }] = await Promise.all([params, searchParams]);
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const { data: event, error } = await supabase.from("events").select(`*,organization:organizations (name,slug)`).eq("slug", slug).single();
+  const { data: event, error } = await supabase.from("events").select(`id,creator_id,business_id,organization_id,title,slug,summary,description,venue_name,address_line,city,province_state,country,is_online,online_url,starts_at,ends_at,capacity,status,created_at,updated_at,organization:organizations (name,slug)`).eq("slug", slug).single();
   if (error || !event) notFound();
+  const { data: moderationFeedback } = user && event.status !== "published"
+    ? await supabase.rpc("get_listing_moderation_feedback", {
+        target_entity_type: "event",
+        target_entity_id: event.id,
+      })
+    : { data: null };
+  const moderationNote = moderationFeedback?.[0]?.moderation_note ?? null;
+
   const { data: viewerProfile } = user ? await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle() : { data: null };
   const canModerate = viewerProfile?.role === "admin" || viewerProfile?.role === "moderator";
   const isOwner = user?.id === event.creator_id;
@@ -68,7 +76,7 @@ export default async function EventPage({ params, searchParams }: Props) {
       {rsvp === "full" || rsvp === "started" ? <div role="status" aria-live="polite" className="rounded-[var(--radius)] border border-accent/50 bg-accent/40 p-4 text-sm text-accent-foreground"><B k={rsvp === "full" ? "eventDetail.rsvpFull" : "eventDetail.rsvpStarted"} /></div> : null}
       {rsvp === "error" ? <div role="alert" aria-live="assertive" className="rounded-[var(--radius)] border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"><B k="eventDetail.rsvpError" /></div> : null}
       {actionError ? <div role="alert" aria-live="assertive" className="rounded-[var(--radius)] border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"><B k={eventActionErrorKey(actionError)} /></div> : null}
-      {event.status !== "published" ? <div role="status" aria-live="polite" className="rounded-[var(--radius)] border border-accent/50 bg-accent/40 p-4 text-sm leading-6 text-accent-foreground">{event.status === "draft" ? <B k="eventDetail.draft" /> : event.moderation_note ? <B k="eventDetail.rejectedReason" values={{ reason: event.moderation_note }} /> : <B k="eventDetail.rejected" />}</div> : null}
+      {event.status !== "published" ? <div role="status" aria-live="polite" className="rounded-[var(--radius)] border border-accent/50 bg-accent/40 p-4 text-sm leading-6 text-accent-foreground">{event.status === "draft" ? <B k="eventDetail.draft" /> : moderationNote ? <B k="eventDetail.rejectedReason" values={{ reason: moderationNote }} /> : <B k="eventDetail.rejected" />}</div> : null}
     </div>
 
     <section data-illustration-trigger className="relative mt-6 overflow-hidden rounded-sm border border-border bg-card">
