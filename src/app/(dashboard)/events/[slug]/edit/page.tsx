@@ -29,7 +29,7 @@ export default async function EditEventPage({ params, searchParams }: Props) {
 
   const { data: event } = await supabase
     .from("events")
-    .select("*")
+    .select("address_line,business_id,capacity,city,country,created_at,creator_id,description,ends_at,id,is_online,online_url,organization_id,province_state,slug,starts_at,status,summary,title,updated_at,venue_name")
     .eq("slug", slug)
     .eq("creator_id", user.id)
     .maybeSingle();
