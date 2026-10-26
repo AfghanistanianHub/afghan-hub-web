@@ -716,6 +716,30 @@ try {
         await until(() => reviewerPage.evaluate(`location.search==='?success=rejected' && document.querySelector('main [role=status]')?.textContent.includes('rejected')`), 'rejection confirmation');
         const rejected = await data(admin.from(table).select('status,moderation_note,moderated_by').eq('id',row.id).single());
         assert.equal(rejected.status,table === 'opportunities' ? 'closed' : 'suspended'); assert.equal(rejected.moderation_note,reason); assert.equal(rejected.moderated_by,reviewer.id);
+        // SEC-01: real, independently authenticated RPC IDOR checks in disposable Supabase.
+        const rpcClient = () => createClient(apiUrl,status.ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+        const ownerClient=rpcClient(), unrelatedClient=rpcClient(), reviewerClient=rpcClient();
+        try {
+          for(const [client,email] of [[ownerClient,a.email],[unrelatedClient,b.email],[reviewerClient,reviewer.email]]) {
+            const {error:loginError}=await client.auth.signInWithPassword({email,password});
+            assert.equal(loginError,null);
+          }
+          const args={target_entity_type:table==='businesses'?'business':table==='organizations'?'organization':table==='opportunities'?'opportunity':'event',target_entity_id:row.id};
+          const owned=await data(ownerClient.rpc('get_listing_moderation_feedback',args));
+          assert.equal(owned.length,1); assert.equal(owned[0].moderation_note,reason);
+          assert.equal(owned[0].moderated_by,null);
+          const foreign=await data(unrelatedClient.rpc('get_listing_moderation_feedback',args));
+          assert.deepEqual(foreign,[]);
+          const reviewerFeedback=await data(reviewerClient.rpc('get_listing_moderation_feedback',args));
+          assert.equal(reviewerFeedback.length,1);
+          assert.equal(reviewerFeedback[0].moderated_by,reviewer.id);
+          const deniedHistory=await unrelatedClient.rpc('list_moderation_history');
+          assert.ok(deniedHistory.error);
+          const allowedHistory=await data(reviewerClient.rpc('list_moderation_history'));
+          assert.ok(allowedHistory.some(item=>item.entity_id===row.id && item.moderation_note===reason));
+        } finally {
+          await Promise.all([ownerClient,unrelatedClient,reviewerClient].map(client=>client.auth.signOut({scope:'local'})));
+        }
         await visit(pageA,'/submissions');
         await until(() => pageA.evaluate(`document.querySelector('main')?.innerText.includes(${JSON.stringify(reason)})`), 'owner rejection feedback');
         if(role==='admin' && table==='opportunities') await captureState(pageA,'submissions-owner-note');
