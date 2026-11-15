@@ -95,6 +95,5 @@ export function CommunityHeroMotion({ children, className, depth = 3, scrollDept
   return <div ref={root} className={`${className} ${styles.motion}`} data-community-motion data-landing-hero data-running="false"
     onPointerMove={move} onPointerLeave={reset}>
     {children}
-    <noscript><style>{`[data-community-motion] [data-hero-draw], [data-community-motion] [data-hero-reveal], [data-community-motion] [data-hero-accent] { animation:none; opacity:1; stroke-dashoffset:0; }`}</style></noscript>
   </div>;
 }
