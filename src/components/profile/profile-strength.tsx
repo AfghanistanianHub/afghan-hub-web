@@ -49,12 +49,14 @@ export function ProfileStrength({
         </span>
       </div>
 
-      <div className="relative mt-4 h-2 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label={copy[5]} aria-valuemin={0} aria-valuemax={100} aria-valuenow={strength.percent}>
-        <div
-          className="h-full rounded-full bg-primary transition-[width] motion-reduce:transition-none"
-          style={{ width: `${strength.percent}%` }}
-        />
-      </div>
+      {/* Native <progress> instead of a width: inline style attribute, so the bar
+          renders without a style-src-attr allowance. */}
+      <progress
+        className={`${styles.strengthProgress} relative mt-4`}
+        value={strength.percent}
+        max={100}
+        aria-label={copy[5]}
+      />
 
       {strength.complete ? (
         <div className="relative mt-5 flex items-start gap-3 rounded-[var(--radius)] bg-primary/[0.06] p-4 text-sm leading-6 text-foreground">

@@ -40,6 +40,8 @@ const pages = {
 
 const recoveryPage = read("src/components/feedback/page-recovery.tsx");
 const globalError = read("src/app/global-error.tsx");
+const siteLanguage = read("src/lib/i18n/site-language.ts");
+const localized = read("src/components/i18n/localized.tsx");
 
 test("every 404 screen renders its copy through the typed catalogue", () => {
   for (const [route, keys] of Object.entries(pages)) {
@@ -144,9 +146,17 @@ test("the recovery screen reads every visible string from the catalogue", () => 
 test("the global error document follows the stored language instead of forcing English", () => {
   assert.match(globalError, /RecoveryDocumentTitle/);
   assert.match(globalError, /suppressHydrationWarning/);
-  assert.match(globalError, /afghan-hub-auth-language=\(en\|fa\|ps\)/);
-  assert.match(globalError, /localStorage\.getItem\('afghan-hub-site-language'\)/);
-  assert.match(globalError, /document\.documentElement\.dir=l==='en'\?'ltr':'rtl'/);
+  // The boundary is a Client Component: it cannot read headers(), so it can
+  // never carry the CSP nonce. It must not ship an inline script at all.
+  assert.doesNotMatch(globalError, /<script/);
+  assert.doesNotMatch(globalError, /dangerouslySetInnerHTML/);
+  // Language and direction come from the shared client effect instead.
+  assert.match(globalError, /<PageRecovery reset=\{reset\} \/>/);
+  assert.match(recoveryPage, /<DocumentLanguage \/>/);
+  assert.match(localized, /document\.documentElement\.dir = language === "en" \? "ltr" : "rtl"/);
+  // Same preference sources as the root layout: callback cookie, then storage.
+  assert.match(siteLanguage, /afghan-hub-auth-language=\(en\|fa\|ps\)/);
+  assert.match(siteLanguage, /localStorage\.getItem\(siteLanguagePreferenceKey\)/);
   assert.ok(
     !globalError.includes("<title>Page unavailable | Afghan Hub</title>"),
     "the global error title is still the hardcoded English one",

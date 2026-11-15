@@ -186,3 +186,31 @@
     transform: none;
   }
 }
+
+/* Profile completeness bar. A native <progress> keeps the markup free of a
+   style="..." attribute (no nonce can be attached to one). */
+.strengthProgress {
+  display: block;
+  width: 100%;
+  height: 0.5rem;
+  appearance: none;
+  overflow: hidden;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--muted);
+}
+
+.strengthProgress::-webkit-progress-bar {
+  border-radius: inherit;
+  background: var(--muted);
+}
+
+.strengthProgress::-webkit-progress-value {
+  border-radius: inherit;
+  background: var(--primary);
+}
+
+.strengthProgress::-moz-progress-bar {
+  border-radius: inherit;
+  background: var(--primary);
+}

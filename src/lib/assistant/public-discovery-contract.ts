@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+// The site runs a nonce-based CSP without 'unsafe-eval'. Zod probes for eval
+// support on first use, which the browser reports as a CSP violation (zod then
+// falls back to its interpreted path). Opt out explicitly so the probe never
+// runs and no violation is logged; this module reaches the browser bundle via
+// the homepage navigator.
+z.config({ jitless: true });
+
 // Accept old fa-AF clients at the boundary; only canonical locales reach the planner.
 export const navigatorLanguageSchema = z.enum(["en", "fa", "fa-AF", "ps"])
   .transform(value => value === "fa-AF" ? "fa" as const : value);

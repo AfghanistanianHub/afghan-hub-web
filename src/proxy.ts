@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { isPublicPath } from "@/lib/public-catalog";
 import { updateSession } from "@/lib/supabase/proxy";
 
@@ -17,11 +17,14 @@ const isDev = process.env.NODE_ENV !== "production";
  * `'strict-dynamic'` instead would ignore `'self'` and require a nonce on every
  * third-party script tag as well.
  *
- * Styles are split by directive, which is why `style-src` no longer needs
- * `'unsafe-inline'`:
- * - `<style>` blocks need the nonce (Next nonces the ones it renders).
+ * Styles are split by directive, so neither one needs `'unsafe-inline'`:
+ * - `<style>` blocks (including any injected one) need the nonce.
  * - `style="..."` attributes cannot carry a nonce in any browser, so
- *   `style-src-attr` keeps them allowed. Base UI positioners rely on them.
+ *   `style-src-attr` is `'none'`. The app and its dependencies apply styles
+ *   through the CSSOM (React `style` props, Base UI positioners), which this
+ *   directive does not govern, and no route serialises a style attribute into
+ *   server HTML (checked with a report-only `style-src-attr 'none'` pass over
+ *   the public pages, the workspace shell, the mobile dialog and the calendars).
  *
  * `script-src-attr 'none'` is safe because React attaches handlers through
  * addEventListener; nothing in the app emits an `onclick="..."` attribute.
@@ -43,7 +46,7 @@ function buildContentSecurityPolicy(nonce: string): string {
     scriptSrc,
     "script-src-attr 'none'",
     `style-src 'self' 'nonce-${nonce}'`,
-    "style-src-attr 'unsafe-inline'",
+    "style-src-attr 'none'",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
     [

@@ -45,6 +45,8 @@ test("baseline security headers are returned for every route", async () => {
     "X-Content-Type-Options": "nosniff",
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "X-Frame-Options": "DENY",
+    "Permissions-Policy":
+      "camera=(self), microphone=(self), geolocation=(self), payment=(), usb=(), serial=(), midi=(), magnetometer=(), gyroscope=(), accelerometer=(), browsing-topics=(), interest-cohort=()",
   });
 });
 
