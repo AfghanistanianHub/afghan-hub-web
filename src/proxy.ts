@@ -17,8 +17,14 @@ const isDev = process.env.NODE_ENV !== "production";
  * `'strict-dynamic'` instead would ignore `'self'` and require a nonce on every
  * third-party script tag as well.
  *
- * `style-src` keeps `'unsafe-inline'` because React inline `style` attributes
- * cannot carry a nonce and Tailwind ships its runtime styles inline.
+ * Styles are split by directive, which is why `style-src` no longer needs
+ * `'unsafe-inline'`:
+ * - `<style>` blocks need the nonce (Next nonces the ones it renders).
+ * - `style="..."` attributes cannot carry a nonce in any browser, so
+ *   `style-src-attr` keeps them allowed. Base UI positioners rely on them.
+ *
+ * `script-src-attr 'none'` is safe because React attaches handlers through
+ * addEventListener; nothing in the app emits an `onclick="..."` attribute.
  */
 function buildContentSecurityPolicy(nonce: string): string {
   const scriptSrc = [
@@ -35,7 +41,9 @@ function buildContentSecurityPolicy(nonce: string): string {
     "frame-ancestors 'none'",
     "form-action 'self'",
     scriptSrc,
-    "style-src 'self' 'unsafe-inline'",
+    "script-src-attr 'none'",
+    `style-src 'self' 'nonce-${nonce}'`,
+    "style-src-attr 'unsafe-inline'",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
     [
