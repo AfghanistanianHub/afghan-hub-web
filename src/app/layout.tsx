@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Estedad, Geist, Geist_Mono, Vazirmatn } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -56,11 +57,16 @@ export const metadata: Metadata = {
 // Honor callback language cookies even when localStorage is empty or blocked.
 const languageBootstrap = `(function(){try{var m=location.pathname.match(/^\\/(en|fa|ps)\\/?$/);var l=m&&m[1];if(!l){var c=document.cookie.match(/(?:^|;\\s*)afghan-hub-auth-language=(en|fa|ps)(?:;|$)/);var q=new URLSearchParams(location.search).get('lang');var s=q==='en'||q==='fa'||q==='ps'?q:(c?c[1]:(function(){try{return localStorage.getItem('afghan-hub-site-language')||localStorage.getItem('afghan-hub-navigator-language')||'';}catch(e){return '';}})());s=s.trim().replace(/_/g,'-').toLowerCase();l=(s==='fa'||s.indexOf('fa-')===0||s==='prs'||s.indexOf('prs-')===0)?'fa':(s==='ps'||s.indexOf('ps-')===0)?'ps':'en';}document.documentElement.lang=l;document.documentElement.dir=l==='en'?'ltr':'rtl';}catch(e){}})();`;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // The per-request nonce is minted in src/proxy.ts. Next.js stamps it on the
+  // scripts it renders itself; this hand-written bootstrap needs it explicitly
+  // or the browser blocks it under the nonce-based CSP.
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <html
       lang="en"
@@ -68,7 +74,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${estedad.variable} ${vazirmatn.variable} h-full antialiased`}
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: languageBootstrap }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: languageBootstrap }} />
       </head>
       <body className="min-h-full flex flex-col">
         <GlobalNetworkBackground />
