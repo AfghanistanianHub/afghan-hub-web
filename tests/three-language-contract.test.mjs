@@ -16,7 +16,11 @@ function walk(dir) {
 test("root layout sets document language and direction before first paint", () => {
   const layout = read("src/app/layout.tsx");
   assert.match(layout, /suppressHydrationWarning/);
-  assert.match(layout, /<script dangerouslySetInnerHTML=\{\{ __html: languageBootstrap \}\} \/>/);
+  // The CSP in src/proxy.ts only allows inline scripts that carry the nonce.
+  assert.match(
+    layout,
+    /<script nonce=\{nonce\} dangerouslySetInnerHTML=\{\{ __html: languageBootstrap \}\} \/>/
+  );
   assert.match(layout, /localStorage\.getItem\('afghan-hub-site-language'\)/);
   assert.match(layout, /document\.documentElement\.dir=l==='en'\?'ltr':'rtl'/);
 });
